@@ -1,0 +1,122 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  @apply bg-slate-100 text-slate-900 antialiased;
+}
+
+/* Numeric alignment for money columns */
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- 80mm thermal receipt printing ----
+   Set on <html> just before window.print() and cleared after. Thermal rolls are
+   nominally 80mm wide but the printable area is ~72mm (203dpi heads), so we lay
+   out at 72mm and let the driver handle the rest. Everything is forced to black
+   on white with no rules that a thermal head can't render sharply. */
+@media print {
+  html[data-print="thermal"] .print-area {
+    /* Named page below switches the roll width; this is applied to the element. */
+    page: thermal;
+    width: 72mm !important;
+    max-width: 72mm !important;
+    padding: 2mm 1.5mm !important;
+    margin: 0 auto !important;
+    font-size: 10.5px;
+    line-height: 1.35;
+    color: #000;
+  }
+
+  /* Collapse the wide two/three-column header and summary blocks into the roll width. */
+  html[data-print="thermal"] .print-area .grid {
+    display: block !important;
+  }
+
+  html[data-print="thermal"] .print-area table {
+    width: 100% !important;
+    font-size: 10px;
+  }
+
+  /* Narrow columns don't fit a receipt, so tally columns stay and the rest drops out. */
+  html[data-print="thermal"] .print-area table th,
+  html[data-print="thermal"] .print-area table td {
+    padding: 1px 2px !important;
+  }
+
+  html[data-print="thermal"] .print-area dl {
+    width: 100% !important;
+  }
+
+  html[data-print="thermal"] .print-area .text-right {
+    text-align: right;
+  }
+
+  /* The signature block wastes vertical roll; a receipt doesn't need one. */
+  html[data-print="thermal"] .print-area .thermal-hide {
+    display: none !important;
+  }
+}
+
+/* ---- Printing (invoices / reports) ----
+   Only the .print-area is visible on paper; app chrome is hidden. */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 10mm;
+  }
+
+  /* Named page used by the thermal receipt: an 80mm continuous roll, no margins
+     (the driver trims). CSS only allows @page at the top level, so the invoice
+     opts into this by setting `page: thermal` on its .print-area.
+     The second length is the sheet *height*: an explicit tall value keeps the
+     optimizer from discarding `size`, while still letting the roll run as long
+     as the receipt needs. */
+  @page thermal {
+    size: 80mm 297mm;
+    margin: 0;
+  }
+
+  body {
+    background: #fff;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  .print-area,
+  .print-area * {
+    visibility: visible;
+  }
+
+  .print-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    box-shadow: none;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  /* Keep table rows and totals from splitting across pages */
+  tr,
+  .print-area dl {
+    break-inside: avoid;
+  }
+}

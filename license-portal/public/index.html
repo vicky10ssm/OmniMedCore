@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0f766e" />
+  <title>MediCore Licence Portal</title>
+  <style>
+    :root { font-family: system-ui, -apple-system, Segoe UI, sans-serif; color: #0f172a; background: #f1f5f9; }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    header { background: #0f172a; color: white; padding: 18px 24px; display: flex; align-items: center; gap: 12px; }
+    .mark { width: 34px; height: 34px; border-radius: 9px; background: #0d9488; display: grid; place-items: center; font-weight: 700; }
+    header h1 { font-size: 18px; margin: 0; }
+    header p { margin: 2px 0 0; font-size: 12px; color: #94a3b8; }
+    main { max-width: 1180px; margin: 0 auto; padding: 22px; display: grid; gap: 18px; grid-template-columns: 420px 1fr; }
+    @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
+    .card { background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px; box-shadow: 0 1px 2px #0f172a12; }
+    h2 { font-size: 15px; margin: 0 0 4px; }
+    .hint { font-size: 12px; color: #64748b; margin: 0 0 16px; }
+    label { display: block; font-size: 12px; font-weight: 600; color: #475569; margin: 10px 0 4px; }
+    input, select, textarea { width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 9px 10px; font: inherit; font-size: 13px; background: white; }
+    textarea { font-family: ui-monospace, monospace; font-size: 11px; }
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    button { border: 0; border-radius: 8px; padding: 10px 14px; font-weight: 600; font-size: 13px; cursor: pointer; background: #e2e8f0; color: #334155; }
+    button.primary { background: #0f766e; color: white; }
+    button.ghost { background: #f8fafc; border: 1px solid #cbd5e1; }
+    button.danger { background: #e11d48; color: white; }
+    button:disabled { opacity: .55; cursor: not-allowed; }
+    .actions { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+    .msg { font-size: 12px; padding: 9px 11px; border-radius: 8px; margin-top: 10px; display: none; white-space: pre-wrap; }
+    .msg.error { display: block; background: #fff1f2; color: #be123c; }
+    .msg.ok { display: block; background: #ecfdf5; color: #047857; }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    th { text-align: left; color: #64748b; font-size: 10px; text-transform: uppercase; letter-spacing: .05em; border-bottom: 1px solid #e2e8f0; padding: 8px; }
+    td { border-bottom: 1px solid #f1f5f9; padding: 9px 8px; vertical-align: top; }
+    .tag { display: inline-block; padding: 2px 7px; border-radius: 99px; background: #f1f5f9; color: #475569; font-size: 10px; margin: 1px; }
+    .status-active { color: #047857; font-weight: 600; }
+    .status-revoked { color: #be123c; font-weight: 600; }
+    .mono { font-family: ui-monospace, monospace; font-size: 10px; word-break: break-all; }
+    .checks { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 10px; margin: 8px 0; }
+    .checks label { display: flex; align-items: center; gap: 6px; font-weight: 400; font-size: 12px; margin: 0; }
+    .checks input { width: auto; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+<header>
+  <div class="mark">M</div>
+  <div>
+    <h1>MediCore Licence Portal</h1>
+    <p>Vendor-only signed licence administration · Diagnostics · Pharmacy · Hospital</p>
+  </div>
+</header>
+<main>
+  <section class="card">
+    <h2>Portal access</h2>
+    <p class="hint">Enter the admin token configured on the portal server. It is held only in this tab.</p>
+    <label for="token">Admin token</label>
+    <input id="token" type="password" autocomplete="off" />
+    <div class="actions"><button class="primary" onclick="saveToken()">Use token</button></div>
+    <div id="authMsg" class="msg"></div>
+  </section>
+
+  <section class="card">
+    <h2>Issue licence</h2>
+    <p class="hint">One licence may cover multiple tenant IDs and devices. Device binding is enforced by the app.</p>
+    <div class="grid2">
+      <div><label for="customer">Customer name *</label><input id="customer" placeholder="Example Diagnostics" /></div>
+      <div><label for="edition">Edition</label><select id="edition" onchange="syncEdition()">
+        <option value="diagnostics">Diagnostics</option>
+        <option value="pharmacy">Pharmacy</option>
+        <option value="hospital">Hospital</option>
+        <option value="complete">Complete</option>
+        <option value="custom">Custom modules</option>
+      </select></div>
+    </div>
+    <label for="tenants">Tenant IDs * <span style="font-weight:400;color:#94a3b8">(comma separated)</span></label>
+    <textarea id="tenants" rows="2" placeholder="tenant-default"></textarea>
+    <label for="devices">Device IDs * <span style="font-weight:400;color:#94a3b8">(comma separated)</span></label>
+    <textarea id="devices" rows="2" placeholder="terminal device id"></textarea>
+    <div class="grid2">
+      <div><label for="maxTerminals">Max terminals</label><input id="maxTerminals" type="number" min="1" value="1" /></div>
+      <div><label for="expiresAt">Expiry date</label><input id="expiresAt" type="date" /></div>
+      <div><label for="graceDays">Grace days</label><input id="graceDays" type="number" min="0" value="30" /></div>
+      <div><label for="support">Support reference</label><input id="support" placeholder="Optional" /></div>
+    </div>
+    <label>Modules</label>
+    <div id="modules" class="checks"></div>
+    <div class="actions">
+      <button class="primary" id="issueBtn" onclick="issue()">Issue & download licence</button>
+    </div>
+    <div id="issueMsg" class="msg"></div>
+  </section>
+
+  <section class="card" style="grid-column:1/-1">
+    <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap">
+      <div><h2>Issued licences</h2><p class="hint">Signed files are generated on demand. Revocation requires the buyer to import a replacement/revoked file or validate online.</p></div>
+      <button class="ghost" onclick="loadLicences()">Refresh</button>
+    </div>
+    <div id="listMsg" class="msg"></div>
+    <div style="overflow:auto">
+      <table>
+        <thead><tr><th>Licence</th><th>Customer / edition</th><th>Tenant / device</th><th>Expiry</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="licences"><tr><td colspan="6" style="color:#94a3b8;text-align:center;padding:24px">Enter token and refresh.</td></tr></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+<script>
+const MODULES = ["patients","billing","invoices","dues","admissions","samples","reports","tests","doctors","pharmacy","expenses","compliance"];
+const EDITIONS = {
+  diagnostics: ["patients","billing","invoices","dues","samples","reports","tests","doctors","expenses","compliance"],
+  pharmacy: ["patients","pharmacy","expenses","compliance"],
+  hospital: ["patients","admissions","expenses","compliance"],
+  complete: MODULES,
+  custom: []
+};
+let token = sessionStorage.getItem("medicore.portal.token") || "";
+let licences = [];
+
+function el(id) { return document.getElementById(id); }
+function esc(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function msg(id, text, ok=false) { const m=el(id); m.textContent=text; m.className='msg '+(ok?'ok':'error'); }
+function clearMsg(id){ const m=el(id); m.textContent=''; m.className='msg'; }
+function saveToken(){ token=el('token').value.trim(); sessionStorage.setItem('medicore.portal.token',token); clearMsg('authMsg'); loadLicences(); }
+function headers(){ return {'Content-Type':'application/json','Authorization':'Bearer '+token}; }
+function syncEdition(){
+  const edition=el('edition').value;
+  const selected=new Set(EDITIONS[edition] || []);
+  el('modules').innerHTML=MODULES.map(m=>`<label><input type="checkbox" value="${m}" ${selected.has(m)?'checked':''} ${edition==='custom'?'':'disabled'}> ${m}</label>`).join('');
+}
+async function issue(){
+  clearMsg('issueMsg');
+  try {
+    const modules=[...el('modules').querySelectorAll('input:checked')].map(x=>x.value);
+    const body={
+      customerName:el('customer').value.trim(),
+      edition:el('edition').value,
+      tenantIds:el('tenants').value.split(',').map(s=>s.trim()).filter(Boolean),
+      deviceIds:el('devices').value.split(',').map(s=>s.trim()).filter(Boolean),
+      maxTerminals:Number(el('maxTerminals').value||1),
+      expiresAt:el('expiresAt').value?new Date(el('expiresAt').value+'T23:59:59').toISOString():null,
+      graceDays:Number(el('graceDays').value||30),
+      supportReference:el('support').value.trim(),
+      modules
+    };
+    const r=await fetch('/api/licenses',{method:'POST',headers:headers(),body:JSON.stringify(body)});
+    const data=await r.json();
+    if(!r.ok)throw new Error(data.error||'Issue failed');
+    download(data,body.customerName);
+    msg('issueMsg','Licence issued and downloaded.',true);
+    await loadLicences();
+  } catch(e){ msg('issueMsg',e.message); }
+}
+function download(data,customer){
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download=(customer||'customer').replace(/[^a-z0-9]+/gi,'-').toLowerCase()+'-'+data.payload.licenseId+'.medicore-license.json';
+  a.click(); URL.revokeObjectURL(a.href);
+}
+async function loadLicences(){
+  clearMsg('listMsg');
+  try {
+    const r=await fetch('/api/licenses',{headers:headers()});
+    const data=await r.json();
+    if(!r.ok)throw new Error(data.error||'Could not load licences');
+    licences=data.licenses||[];
+    el('licences').innerHTML = licences.length ? licences.map(l=>`<tr>
+      <td class="mono">${esc(l.licenseId)}</td>
+      <td><b>${esc(l.customerName)}</b><br><span class="tag">${esc(l.edition)}</span>${l.modules.map(m=>`<span class="tag">${esc(m)}</span>`).join('')}</td>
+      <td class="mono">Tenants: ${esc(l.tenantIds.join(', '))}<br>Devices: ${esc(l.deviceIds.join(', '))}</td>
+      <td>${l.expiresAt?esc(new Date(l.expiresAt).toLocaleDateString()):'Perpetual'}</td>
+      <td class="status-${esc(l.status)}">${esc(l.status)}</td>
+      <td style="white-space:nowrap">
+        <button class="ghost" onclick="downloadExisting('${esc(l.licenseId)}')">Download</button>
+        <button class="ghost" onclick="renew('${esc(l.licenseId)}')">Renew</button>
+        <button class="danger" onclick="revoke('${esc(l.licenseId)}')">Revoke</button>
+      </td>
+    </tr>`).join('') : '<tr><td colspan="6" style="color:#94a3b8;text-align:center;padding:24px">No licences yet.</td></tr>';
+  } catch(e){ msg('listMsg',e.message); }
+}
+async function downloadExisting(id){
+  try{
+    const r=await fetch('/api/licenses/'+encodeURIComponent(id),{headers:headers()});
+    const data=await r.json();
+    if(!r.ok)throw new Error(data.error||'Download failed');
+    download(data,data.payload.customerName);
+  }catch(e){msg('listMsg',e.message);}
+}
+async function renew(id){
+  const value=prompt('New expiry date (YYYY-MM-DD):');
+  if(!value)return;
+  try{
+    const r=await fetch('/api/licenses/'+encodeURIComponent(id)+'/renew',{method:'POST',headers:headers(),body:JSON.stringify({expiresAt:new Date(value+'T23:59:59').toISOString()})});
+    const data=await r.json(); if(!r.ok)throw new Error(data.error||'Renew failed');
+    download(data,data.payload.customerName); msg('listMsg','Renewed. Import the downloaded file on the device.',true); loadLicences();
+  }catch(e){msg('listMsg',e.message);}
+}
+async function revoke(id){
+  if(!confirm('Revoke '+id+'? Offline devices must import the revoked file or validate online.'))return;
+  try{
+    const r=await fetch('/api/licenses/'+encodeURIComponent(id)+'/revoke',{method:'POST',headers:headers(),body:'{}'});
+    const data=await r.json(); if(!r.ok)throw new Error(data.error||'Revoke failed');
+    download(data,data.payload.customerName); msg('listMsg','Revoked. Deliver/validate the revocation file.',true); loadLicences();
+  }catch(e){msg('listMsg',e.message);}
+}
+el('token').value=token; syncEdition(); if(token)loadLicences();
+</script>
+</body>
+</html>
