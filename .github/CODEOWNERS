@@ -1,0 +1,25 @@
+cd C:\dev\medicore
+New-Item -ItemType Directory -Force .github | Out-Null
+
+$owner = gh api user --jq .login
+
+$content = @"
+# MediCore code ownership
+# Owners must have write access to this repository.
+# Last matching pattern wins.
+
+/src/db/                    @$owner
+/src/licensing/             @$owner
+/license-portal/            @$owner
+/.github/workflows/         @$owner
+/SECURITY.md                @$owner
+/package-lock.json          @$owner
+/COMPLIANCE.md              @$owner
+/docs/                      @$owner
+"@
+
+[System.IO.File]::WriteAllText(
+  "$PWD\.github\CODEOWNERS",
+  $content,
+  (New-Object System.Text.UTF8Encoding($false))
+)
