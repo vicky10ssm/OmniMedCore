@@ -5,6 +5,10 @@ production releases begin.
 
 ## [Unreleased]
 
+No changes yet.
+
+## [0.3.0] - 2026-11-03
+
 ### Added
 
 - SQLCipher 4.20 (AES-256) encryption for the Tauri desktop database.
@@ -13,12 +17,15 @@ production releases begin.
 - Encryption status, key backend and SQLCipher version in Settings → Device & sync.
 - SQLCipher-aware backup validation and restore; legacy plaintext backups are re-encrypted before
   activation.
+- Locally signed app, NSIS installer and MSI using a self-signed certificate and `signtool.exe`.
+- Public local root certificate in `code-signing/`.
 
 ### Security
 
 - The database key is never written to configuration files, localStorage, logs or source control.
 - The desktop app fails closed if an encrypted database exists but its Credential Manager key is missing.
 - Backups produced from the encrypted database are encrypted.
+- Windows builds are timestamped and signed; client machines must install the local root certificate.
 - Browser/development IndexedDB remains separate and is not covered by desktop SQLCipher.
 
 ### Remaining
