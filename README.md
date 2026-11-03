@@ -181,7 +181,7 @@ Read [CONTRIBUTING.md](CONTRIBUTING.md) before changing code or data rules.
 
 ## Current limitations
 
-- Unsigned NSIS/MSI Windows installers have been built; code signing, clean-machine acceptance and distribution are still pending
+- Locally self-signed NSIS/MSI installers have been built and verified; publicly trusted code signing, clean-machine acceptance and distribution are still pending
 - Browser storage is still the current persistence layer
 - Desktop snapshots are SQLCipher-encrypted, but key export/import and cross-machine restore are not yet
   implemented; the daily schedule runs only while the desktop app is open

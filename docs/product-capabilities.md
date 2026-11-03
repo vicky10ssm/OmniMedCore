@@ -152,7 +152,7 @@ Status meanings: **Ready**, **Pilot**, **Partial**, **Not available**, **Externa
 | Append-only sync queue | Pilot | Local `sync_queue` captures invoice/report/admission snapshots; `sync_ack` records central ACKs |
 | Desktop background sync | Pilot | Polls endpoint every 30 seconds while the Tauri app is open; not a Windows service when closed |
 | Read-only "monitor from anywhere" | Pilot | Next.js/PostgreSQL dashboard and sync receiver code exist; hosting, per-device tokens, SSO and operational hardening are pending |
-| Tauri Windows installer | Partial | Native SQLCipher database, single-instance guard and NSIS/MSI installers build successfully; installer signing, clean-machine acceptance and distribution are still pending |
+| Tauri Windows installer | Partial | Native SQLCipher database, single-instance guard and locally self-signed NSIS/MSI installers build successfully; public-CA signing, clean-machine acceptance and distribution are still pending |
 | Browser/PWA install | Pilot | Development/local browser storage only; not recommended as primary data store |
 | Cloud backup | Not available | Not implemented |
 

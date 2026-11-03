@@ -51,7 +51,7 @@ review and commercial support model to be fully operational.
 | --- | --- | --- |
 | UI/business logic | React/TypeScript, usable | Automated regression suite missing |
 | Persistence | sql.js + IndexedDB in browser; native SQLCipher in Tauri with key in Windows Credential Manager | Browser encryption, key export/import and clean-machine restore remain future work |
-| Desktop packaging | Tauri v2 native build succeeds; NSIS and MSI installers produced locally | Installer signing, clean-machine acceptance, updater and distribution |
+| Desktop packaging | Tauri v2 native build succeeds; NSIS/MSI locally signed with a self-signed root | Public-CA signing, clean-machine acceptance, updater and distribution |
 | Encryption | SQLCipher 4.20 desktop database; random key in Windows Credential Manager; plaintext migration | Key export/import, rotation, recovery and clean-machine tests |
 | Backup/restore | Encrypted local daily snapshots, 7/4/12 retention, optional USB/OneDrive copy, manual backup and validated restore | Key recovery, unattended scheduling, clean-machine restore test and retention monitoring |
 | Cloud/monitor | Append-only queue, 30-second desktop push, Next.js receiver/dashboard and PostgreSQL schema code exist | Hosting, TLS, per-device auth, conflict/replay handling, backups and tenant operations |
