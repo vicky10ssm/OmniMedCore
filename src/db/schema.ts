@@ -44,6 +44,7 @@ export function splitSqlStatements(sql: string): string[] {
   const out: string[] = [];
   let current = "";
   let i = 0;
+  let triggerBody = false;
   while (i < sql.length) {
     const ch = sql[i];
     const next = sql[i + 1];
@@ -81,6 +82,20 @@ export function splitSqlStatements(sql: string): string[] {
       continue;
     }
     if (ch === ";") {
+      if (!triggerBody && /^\s*create\s+(?:temp\s+)?trigger\b/i.test(current)) {
+        triggerBody = true;
+      }
+      if (triggerBody) {
+        // Trigger bodies contain semicolons; only the END before the closing
+        // semicolon terminates the CREATE TRIGGER statement.
+        const trimmed = current.trimEnd();
+        if (!/(?:^|\s)END$/i.test(trimmed)) {
+          current += ";";
+          i += 1;
+          continue;
+        }
+        triggerBody = false;
+      }
       if (current.trim()) out.push(current.trim());
       current = "";
       i += 1;
@@ -1193,6 +1208,231 @@ export const MIGRATIONS: Migration[] = [
       );
       CREATE INDEX IF NOT EXISTS idx_hospital_payments_admission
         ON hospital_bill_payments(tenant_id, admission_id);
+    `,
+  },
+  {
+    version: 17,
+    name: "append-only cloud sync queue",
+    sql: `
+      CREATE TABLE IF NOT EXISTS sync_queue (
+        id TEXT PRIMARY KEY,
+        tenant_id TEXT NOT NULL,
+        device_id TEXT NOT NULL DEFAULT '',
+        entity_type TEXT NOT NULL
+          CHECK (entity_type IN ('invoice','report','admission')),
+        entity_id TEXT NOT NULL,
+        operation TEXT NOT NULL
+          CHECK (operation IN ('upsert','cancel')),
+        payload_json TEXT NOT NULL,
+        created_at INTEGER NOT NULL
+      );
+      CREATE INDEX IF NOT EXISTS idx_sync_queue_pending
+        ON sync_queue(tenant_id, created_at);
+
+      CREATE TABLE IF NOT EXISTS sync_ack (
+        queue_id TEXT PRIMARY KEY,
+        tenant_id TEXT NOT NULL,
+        ack_id TEXT NOT NULL,
+        synced_at INTEGER NOT NULL
+      );
+      CREATE INDEX IF NOT EXISTS idx_sync_ack_synced
+        ON sync_ack(tenant_id, synced_at);
+
+      -- Existing local records are appended once so the first push catches up.
+      INSERT OR IGNORE INTO sync_queue
+        (id, tenant_id, device_id, entity_type, entity_id, operation, payload_json, created_at)
+      SELECT lower(hex(randomblob(16))), i.tenant_id, i.device_id, 'invoice', i.id,
+             CASE WHEN i.deleted = 1 OR i.status = 'cancelled' THEN 'cancel' ELSE 'upsert' END,
+             json_object(
+               'id', i.id, 'invoice_no', i.invoice_no, 'invoice_date', i.invoice_date,
+               'patient_id', i.patient_id, 'patient_name', i.patient_name,
+               'doctor_id', i.doctor_id, 'subtotal_paise', i.subtotal_paise,
+               'discount_paise', i.discount_paise, 'taxable_paise', i.taxable_paise,
+               'cgst_paise', i.cgst_paise, 'sgst_paise', i.sgst_paise,
+               'round_off_paise', i.round_off_paise, 'total_paise', i.total_paise,
+               'status', i.status, 'cancel_reason', i.cancel_reason,
+               'created_at', i.created_at, 'updated_at', i.updated_at,
+               'device_id', i.device_id, 'deleted', i.deleted
+             ),
+             CAST(strftime('%s','now') AS INTEGER) * 1000
+      FROM invoices i
+      WHERE i.dirty = 1;
+
+      INSERT OR IGNORE INTO sync_queue
+        (id, tenant_id, device_id, entity_type, entity_id, operation, payload_json, created_at)
+      SELECT lower(hex(randomblob(16))), ro.tenant_id, ro.device_id, 'report', ro.id,
+             CASE WHEN ro.deleted = 1 OR ro.status = 'rejected' THEN 'cancel' ELSE 'upsert' END,
+             json_object(
+               'id', ro.id, 'invoice_id', ro.invoice_id, 'patient_id', ro.patient_id,
+               'test_id', ro.test_id, 'test_name', ro.test_name, 'status', ro.status,
+               'result_text', ro.result_text, 'result_value', ro.result_value,
+               'unit', ro.unit, 'ref_range', ro.ref_range, 'abnormal', ro.abnormal,
+               'critical_flag', ro.critical_flag, 'verified_by', ro.verified_by,
+               'reported_at', ro.reported_at, 'sample_id', ro.sample_id,
+               'analysis_completed_at', ro.analysis_completed_at,
+               'created_at', ro.created_at, 'updated_at', ro.updated_at,
+               'device_id', ro.device_id, 'deleted', ro.deleted,
+               'parameters', COALESCE((
+                 SELECT json_group_array(json_object(
+                   'name', rp.parameter_name, 'result', rp.result_text,
+                   'unit', rp.unit, 'ref_range', rp.ref_range, 'abnormal', rp.abnormal
+                 ))
+                 FROM report_parameters rp
+                 WHERE rp.report_order_id = ro.id AND rp.deleted = 0
+                   AND rp.tenant_id = ro.tenant_id
+               ), '[]')
+             ),
+             CAST(strftime('%s','now') AS INTEGER) * 1000
+      FROM report_orders ro
+      WHERE ro.dirty = 1;
+
+      INSERT OR IGNORE INTO sync_queue
+        (id, tenant_id, device_id, entity_type, entity_id, operation, payload_json, created_at)
+      SELECT lower(hex(randomblob(16))), a.tenant_id, a.device_id, 'admission', a.id,
+             CASE WHEN a.deleted = 1 OR a.status = 'cancelled' THEN 'cancel' ELSE 'upsert' END,
+             json_object(
+               'id', a.id, 'admission_no', a.admission_no, 'patient_id', a.patient_id,
+               'doctor_id', a.doctor_id, 'status', a.status, 'ward', a.ward, 'bed', a.bed,
+               'reason', a.reason, 'diagnosis', a.diagnosis, 'admitted_at', a.admitted_at,
+               'discharged_at', a.discharged_at, 'discharge_summary', a.discharge_summary,
+               'created_at', a.created_at, 'updated_at', a.updated_at,
+               'device_id', a.device_id, 'deleted', a.deleted
+             ),
+             CAST(strftime('%s','now') AS INTEGER) * 1000
+      FROM admissions a
+      WHERE a.dirty = 1;
+
+      CREATE TRIGGER IF NOT EXISTS sync_queue_invoice_insert
+      AFTER INSERT ON invoices
+      BEGIN
+        INSERT INTO sync_queue (id, tenant_id, device_id, entity_type, entity_id, operation, payload_json, created_at)
+        VALUES (lower(hex(randomblob(16))), NEW.tenant_id, NEW.device_id, 'invoice', NEW.id,
+          CASE WHEN NEW.deleted = 1 OR NEW.status = 'cancelled' THEN 'cancel' ELSE 'upsert' END,
+          json_object(
+            'id', NEW.id, 'invoice_no', NEW.invoice_no, 'invoice_date', NEW.invoice_date,
+            'patient_id', NEW.patient_id, 'patient_name', NEW.patient_name,
+            'doctor_id', NEW.doctor_id, 'subtotal_paise', NEW.subtotal_paise,
+            'discount_paise', NEW.discount_paise, 'taxable_paise', NEW.taxable_paise,
+            'cgst_paise', NEW.cgst_paise, 'sgst_paise', NEW.sgst_paise,
+            'round_off_paise', NEW.round_off_paise, 'total_paise', NEW.total_paise,
+            'status', NEW.status, 'cancel_reason', NEW.cancel_reason,
+            'created_at', NEW.created_at, 'updated_at', NEW.updated_at,
+            'device_id', NEW.device_id, 'deleted', NEW.deleted
+          ),
+          CAST(strftime('%s','now') AS INTEGER) * 1000);
+      END;
+
+      CREATE TRIGGER IF NOT EXISTS sync_queue_invoice_update
+      AFTER UPDATE ON invoices
+      BEGIN
+        INSERT INTO sync_queue (id, tenant_id, device_id, entity_type, entity_id, operation, payload_json, created_at)
+        VALUES (lower(hex(randomblob(16))), NEW.tenant_id, NEW.device_id, 'invoice', NEW.id,
+          CASE WHEN NEW.deleted = 1 OR NEW.status = 'cancelled' THEN 'cancel' ELSE 'upsert' END,
+          json_object(
+            'id', NEW.id, 'invoice_no', NEW.invoice_no, 'invoice_date', NEW.invoice_date,
+            'patient_id', NEW.patient_id, 'patient_name', NEW.patient_name,
+            'doctor_id', NEW.doctor_id, 'subtotal_paise', NEW.subtotal_paise,
+            'discount_paise', NEW.discount_paise, 'taxable_paise', NEW.taxable_paise,
+            'cgst_paise', NEW.cgst_paise, 'sgst_paise', NEW.sgst_paise,
+            'round_off_paise', NEW.round_off_paise, 'total_paise', NEW.total_paise,
+            'status', NEW.status, 'cancel_reason', NEW.cancel_reason,
+            'created_at', NEW.created_at, 'updated_at', NEW.updated_at,
+            'device_id', NEW.device_id, 'deleted', NEW.deleted
+          ),
+          CAST(strftime('%s','now') AS INTEGER) * 1000);
+      END;
+
+      CREATE TRIGGER IF NOT EXISTS sync_queue_report_insert
+      AFTER INSERT ON report_orders
+      BEGIN
+        INSERT INTO sync_queue (id, tenant_id, device_id, entity_type, entity_id, operation, payload_json, created_at)
+        VALUES (lower(hex(randomblob(16))), NEW.tenant_id, NEW.device_id, 'report', NEW.id,
+          CASE WHEN NEW.deleted = 1 OR NEW.status = 'rejected' THEN 'cancel' ELSE 'upsert' END,
+          json_object(
+            'id', NEW.id, 'invoice_id', NEW.invoice_id, 'patient_id', NEW.patient_id,
+            'test_id', NEW.test_id, 'test_name', NEW.test_name, 'status', NEW.status,
+            'result_text', NEW.result_text, 'result_value', NEW.result_value,
+            'unit', NEW.unit, 'ref_range', NEW.ref_range, 'abnormal', NEW.abnormal,
+            'critical_flag', NEW.critical_flag, 'verified_by', NEW.verified_by,
+            'reported_at', NEW.reported_at, 'sample_id', NEW.sample_id,
+            'analysis_completed_at', NEW.analysis_completed_at,
+            'created_at', NEW.created_at, 'updated_at', NEW.updated_at,
+            'device_id', NEW.device_id, 'deleted', NEW.deleted,
+            'parameters', COALESCE((
+              SELECT json_group_array(json_object(
+                'name', rp.parameter_name, 'result', rp.result_text,
+                'unit', rp.unit, 'ref_range', rp.ref_range, 'abnormal', rp.abnormal
+              ))
+              FROM report_parameters rp
+              WHERE rp.report_order_id = NEW.id AND rp.deleted = 0
+                AND rp.tenant_id = NEW.tenant_id
+            ), '[]')
+          ),
+          CAST(strftime('%s','now') AS INTEGER) * 1000);
+      END;
+
+      CREATE TRIGGER IF NOT EXISTS sync_queue_report_update
+      AFTER UPDATE ON report_orders
+      BEGIN
+        INSERT INTO sync_queue (id, tenant_id, device_id, entity_type, entity_id, operation, payload_json, created_at)
+        VALUES (lower(hex(randomblob(16))), NEW.tenant_id, NEW.device_id, 'report', NEW.id,
+          CASE WHEN NEW.deleted = 1 OR NEW.status = 'rejected' THEN 'cancel' ELSE 'upsert' END,
+          json_object(
+            'id', NEW.id, 'invoice_id', NEW.invoice_id, 'patient_id', NEW.patient_id,
+            'test_id', NEW.test_id, 'test_name', NEW.test_name, 'status', NEW.status,
+            'result_text', NEW.result_text, 'result_value', NEW.result_value,
+            'unit', NEW.unit, 'ref_range', NEW.ref_range, 'abnormal', NEW.abnormal,
+            'critical_flag', NEW.critical_flag, 'verified_by', NEW.verified_by,
+            'reported_at', NEW.reported_at, 'sample_id', NEW.sample_id,
+            'analysis_completed_at', NEW.analysis_completed_at,
+            'created_at', NEW.created_at, 'updated_at', NEW.updated_at,
+            'device_id', NEW.device_id, 'deleted', NEW.deleted,
+            'parameters', COALESCE((
+              SELECT json_group_array(json_object(
+                'name', rp.parameter_name, 'result', rp.result_text,
+                'unit', rp.unit, 'ref_range', rp.ref_range, 'abnormal', rp.abnormal
+              ))
+              FROM report_parameters rp
+              WHERE rp.report_order_id = NEW.id AND rp.deleted = 0
+                AND rp.tenant_id = NEW.tenant_id
+            ), '[]')
+          ),
+          CAST(strftime('%s','now') AS INTEGER) * 1000);
+      END;
+
+      CREATE TRIGGER IF NOT EXISTS sync_queue_admission_insert
+      AFTER INSERT ON admissions
+      BEGIN
+        INSERT INTO sync_queue (id, tenant_id, device_id, entity_type, entity_id, operation, payload_json, created_at)
+        VALUES (lower(hex(randomblob(16))), NEW.tenant_id, NEW.device_id, 'admission', NEW.id,
+          CASE WHEN NEW.deleted = 1 OR NEW.status = 'cancelled' THEN 'cancel' ELSE 'upsert' END,
+          json_object(
+            'id', NEW.id, 'admission_no', NEW.admission_no, 'patient_id', NEW.patient_id,
+            'doctor_id', NEW.doctor_id, 'status', NEW.status, 'ward', NEW.ward, 'bed', NEW.bed,
+            'reason', NEW.reason, 'diagnosis', NEW.diagnosis, 'admitted_at', NEW.admitted_at,
+            'discharged_at', NEW.discharged_at, 'discharge_summary', NEW.discharge_summary,
+            'created_at', NEW.created_at, 'updated_at', NEW.updated_at,
+            'device_id', NEW.device_id, 'deleted', NEW.deleted
+          ),
+          CAST(strftime('%s','now') AS INTEGER) * 1000);
+      END;
+
+      CREATE TRIGGER IF NOT EXISTS sync_queue_admission_update
+      AFTER UPDATE ON admissions
+      BEGIN
+        INSERT INTO sync_queue (id, tenant_id, device_id, entity_type, entity_id, operation, payload_json, created_at)
+        VALUES (lower(hex(randomblob(16))), NEW.tenant_id, NEW.device_id, 'admission', NEW.id,
+          CASE WHEN NEW.deleted = 1 OR NEW.status = 'cancelled' THEN 'cancel' ELSE 'upsert' END,
+          json_object(
+            'id', NEW.id, 'admission_no', NEW.admission_no, 'patient_id', NEW.patient_id,
+            'doctor_id', NEW.doctor_id, 'status', NEW.status, 'ward', NEW.ward, 'bed', NEW.bed,
+            'reason', NEW.reason, 'diagnosis', NEW.diagnosis, 'admitted_at', NEW.admitted_at,
+            'discharged_at', NEW.discharged_at, 'discharge_summary', NEW.discharge_summary,
+            'created_at', NEW.created_at, 'updated_at', NEW.updated_at,
+            'device_id', NEW.device_id, 'deleted', NEW.deleted
+          ),
+          CAST(strftime('%s','now') AS INTEGER) * 1000);
+      END;
     `,
   },
 ];

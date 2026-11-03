@@ -178,6 +178,8 @@ export const TENANT_TABLES = [
   "hospital_services",
   "hospital_charges",
   "hospital_bill_payments",
+  "sync_queue",
+  "sync_ack",
   "medicines",
   "pharmacy_batches",
   "pharmacy_sales",

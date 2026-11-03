@@ -4,8 +4,13 @@ import "./index.css";
 import App from "./App";
 import { setModeOverride } from "./app/mode";
 import { installDesktopLifecycle } from "./app/desktopLifecycle";
+import { isTauriRuntime } from "./db/tauriStorage";
+import { startBackgroundSync } from "./sync/syncEngine";
 
 installDesktopLifecycle();
+if (isTauriRuntime()) {
+  startBackgroundSync();
+}
 
 // Dev-only: switch between the editing terminal and the read-only monitoring
 // view without rebuilding.

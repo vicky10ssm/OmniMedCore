@@ -1,8 +1,8 @@
-# Productionization plan
+﻿# Productionization plan
 
-Last updated: 2 November 2026  
+Last updated: 3 November 2026  
 Current product version: `0.1.0`  
-Current schema: `16`  
+Current schema: `17`  
 Current deployment: development web app with `sql.js` + IndexedDB
 
 ## 1. Purpose
@@ -34,7 +34,7 @@ MediCore is production-ready for a paid pilot only when all of the following are
 3. Encryption can be enabled, unlocked, recovered and relocked through tested workflows.
 4. An encrypted backup can be restored successfully on a clean machine.
 5. Upgrades migrate real prior databases without losing rows or changing financial totals.
-6. The buyer’s users, printers, data and workflows pass written acceptance tests.
+6. The buyerâ€™s users, printers, data and workflows pass written acceptance tests.
 7. Tenant/device licence activation, renewal, grace/read-only mode, OS-secure licence storage and backend
    entitlement enforcement pass on the packaged build.
 8. Role and clinical-control tests pass: operators can enter expenses but cannot see Dashboard/profit
@@ -54,7 +54,7 @@ review and commercial support model to be fully operational.
 | Desktop packaging | Tauri v2 native build succeeds; NSIS and MSI installers produced locally | Installer signing, clean-machine acceptance, updater and distribution |
 | Encryption | Envelope/key foundation | User workflow, SQLCipher/local-file integration, recovery tests |
 | Backup/restore | Not implemented | Scheduled/manual backup, off-device copy, restore test |
-| Cloud/monitor | Read-only bundle only | API, sync, cloud DB, tenant operations |
+| Cloud/monitor | Append-only queue, 30-second desktop push, Next.js receiver/dashboard and PostgreSQL schema code exist | Hosting, TLS, per-device auth, conflict/replay handling, backups and tenant operations |
 | Authentication | Password + optional TOTP; admin/operator roles | Lockout/rate limits, session policy, device tokens |
 | Roles | Operator: Expenses only, no Dashboard or profit tile; admin retains full view | Granular permissions and packaged backend enforcement |
 | Licensing | Offline ECDSA P-256 tenant/device licences, editions, 30-day grace/read-only; vendor portal code | OS-secure storage, backend entitlement enforcement, hosted/hardened portal |
@@ -70,27 +70,27 @@ review and commercial support model to be fully operational.
 ## 4. Target production architecture
 
 ```text
-┌──────────────────────── Windows terminal ────────────────────────┐
-│ Tauri application                                                │
-│  ├── React UI (terminal bundle)                                  │
-│  ├── Local SQLite file (encrypted; WAL)                          │
-│  ├── Migration + backup before upgrade                           │
-│  ├── Device identity + sync outbox                               │
-│  └── Local print / CSV / PDF                                     │
-└───────────────┬──────────────────────────────────────────────────┘
-                │ HTTPS, device token, idempotent push/pull
-                ▼
-┌──────────────────────── Cloud accumulator ───────────────────────┐
-│ API: ingest, tenant isolation, cursor pull, health                │
-│ PostgreSQL: accumulated tenant data + audit/ops metadata          │
-│ Object storage: encrypted backups/support artifacts (optional)    │
-└───────────────┬──────────────────────────────────────────────────┘
-                │ authenticated read-only API
-                ▼
-┌──────────────────── Hosted monitor ──────────────────────────────┐
-│ Static read-only bundle + strict read API                        │
-│ No write endpoints, no billing, no recovery-code use             │
-└──────────────────────────────────────────────────────────────────┘
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Windows terminal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚ Tauri application                                                â”‚
+â”‚  â”œâ”€â”€ React UI (terminal bundle)                                  â”‚
+â”‚  â”œâ”€â”€ Local SQLite file (encrypted; WAL)                          â”‚
+â”‚  â”œâ”€â”€ Migration + backup before upgrade                           â”‚
+â”‚  â”œâ”€â”€ Device identity + sync outbox                               â”‚
+â”‚  â””â”€â”€ Local print / CSV / PDF                                     â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+                â”‚ HTTPS, device token, idempotent push/pull
+                â–¼
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Cloud accumulator â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚ API: ingest, tenant isolation, cursor pull, health                â”‚
+â”‚ PostgreSQL: accumulated tenant data + audit/ops metadata          â”‚
+â”‚ Object storage: encrypted backups/support artifacts (optional)    â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+                â”‚ authenticated read-only API
+                â–¼
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Hosted monitor â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚ Static read-only bundle + strict read API                        â”‚
+â”‚ No write endpoints, no billing, no recovery-code use             â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
 ```
 
 ### Key architectural decisions to confirm
@@ -110,7 +110,7 @@ The detailed protocol, conflict rules and sequence diagrams are in
 
 ## 5. Workstreams
 
-### WS1 — Source control and release engineering
+### WS1 â€” Source control and release engineering
 
 Tasks:
 
@@ -131,7 +131,7 @@ Tasks:
 
 Exit gate: a clean machine/runner can reproduce a signed build from a tagged commit.
 
-### WS2 — Desktop application and local data
+### WS2 â€” Desktop application and local data
 
 Use [DESKTOP_BUILD.md](../DESKTOP_BUILD.md) for the Windows prerequisites, data-path checks, failure tests
 and installer verification.
@@ -151,9 +151,9 @@ Tasks:
 - Validate A4 and 80 mm printing on supported printers.
 - Test OS sleep, power loss, disk-full and abrupt termination.
 
-Exit gate: install → create bill/report → close → reopen → upgrade → data intact, all offline.
+Exit gate: install â†’ create bill/report â†’ close â†’ reopen â†’ upgrade â†’ data intact, all offline.
 
-### WS3 — Encryption, recovery and backups
+### WS3 â€” Encryption, recovery and backups
 
 Tasks:
 
@@ -164,17 +164,20 @@ Tasks:
 - Implement manual backup now and scheduled backup later.
 - Define retention: e.g. 7 daily, 4 weekly, 12 monthly plus pre-migration snapshots.
 - Add restore UI/runbook that works on a clean terminal.
-- Test backup/restore with the buyer’s real volume before go-live.
-- Define RPO/RTO. Proposed pilot targets: RPO ≤ 1 hour, RTO ≤ 4 hours; confirm with buyer.
+- Test backup/restore with the buyerâ€™s real volume before go-live.
+- Define RPO/RTO. Proposed pilot targets: RPO â‰¤ 1 hour, RTO â‰¤ 4 hours; confirm with buyer.
 - Record restore evidence: date, operator, backup ID, record counts, checksum.
 
 Exit gate: encrypted backup restored on a clean machine with exact invoice/payment counts.
 
-### WS4 — Cloud sync and monitoring
+### WS4 â€” Cloud sync and monitoring
 
-Tasks:
+A simple pilot module is implemented: append-only `sync_queue`/`sync_ack`, a 30-second in-app push
+loop, a Next.js sync receiver and a read-only dashboard. It is not a production sync service.
 
-- Define cloud schema and tenant isolation.
+Production tasks:
+
+- Define the hosted central schema, migrations and tenant isolation.
 - Implement device registration and revocation with one-time enrolment.
 - Add device-bound credentials stored in Windows Credential Manager/OS keystore.
 - Implement push/pull APIs with:
@@ -193,7 +196,7 @@ Tasks:
 Exit gate: two terminals create offline records, reconnect, sync, and the hosted monitor shows the
 same totals without duplicate invoices or cross-tenant leakage.
 
-### WS5 — Security and privacy hardening
+### WS5 â€” Security and privacy hardening
 
 Tasks:
 
@@ -213,7 +216,7 @@ Tasks:
 
 Exit gate: no unresolved critical/high findings; security evidence pack approved.
 
-### WS6 — Testing and validation
+### WS6 â€” Testing and validation
 
 Tasks:
 
@@ -222,7 +225,7 @@ Tasks:
 - Add tests for licence editions/grace/read-only, operator role restrictions, commission absence and the
   sample disposal result gate.
 - Add Playwright E2E on a packaged Tauri build or its production web equivalent.
-- Add migration fixtures from versions 1→current and supported installed releases.
+- Add migration fixtures from versions 1â†’current and supported installed releases.
 - Add tests for:
   - invoice number blocks
   - partial payments and dues
@@ -244,7 +247,7 @@ Tasks:
 
 Exit gate: release candidate passes scripted acceptance on buyer-like data and hardware.
 
-### WS7 — Operations, observability and support
+### WS7 â€” Operations, observability and support
 
 Tasks:
 
@@ -270,7 +273,7 @@ Tasks:
 
 Exit gate: support can diagnose and restore a simulated terminal failure using written runbooks.
 
-### WS8 — Legal and commercial operations
+### WS8 â€” Legal and commercial operations
 
 Tasks:
 
@@ -321,13 +324,13 @@ must be re-estimated after the Tauri/SQLCipher spikes.
 
 | Phase | Indicative effort |
 | --- | --- |
-| A | 1–2 weeks |
-| B | 2–4 weeks |
-| C | 2–3 weeks |
-| D | 4–8 weeks |
-| E | 3–6 weeks |
-| F | 4–6 weeks elapsed (pilot, not full-time build) |
-| G | 1–2 weeks |
+| A | 1â€“2 weeks |
+| B | 2â€“4 weeks |
+| C | 2â€“3 weeks |
+| D | 4â€“8 weeks |
+| E | 3â€“6 weeks |
+| F | 4â€“6 weeks elapsed (pilot, not full-time build) |
+| G | 1â€“2 weeks |
 
 ABDM production, full QMS, analyzer/PACS and multi-branch are separate programmes and are not included.
 
@@ -409,7 +412,7 @@ Proposed pilot service objectives:
 - Terminal billing available offline by design; no internet dependency.
 - Cloud monitor availability target: 99.5% monthly during supported pilot.
 - API sync success within 15 minutes of connectivity restoration for normal volumes.
-- Backup success ≥99% with alert on failure.
+- Backup success â‰¥99% with alert on failure.
 - S1 acknowledgement within agreed support hours.
 - No unresolved critical security findings at release.
 
@@ -426,7 +429,7 @@ Do not publish an SLA until monitoring and staffing can measure it.
 - Encrypted backups: buyer drive + optional object storage
 - Error tracking/uptime: entry-level hosted plans
 
-Indicative infrastructure: **₹500–2,000/month** excluding domain, support labour and incident costs. Free
+Indicative infrastructure: **â‚¹500â€“2,000/month** excluding domain, support labour and incident costs. Free
 tiers may be used for development but not as an SLA-bearing production dependency.
 
 ### Larger deployment
@@ -490,7 +493,7 @@ Do not call MediCore generally available until:
 | Support and rollback ready? | | |
 | Claims and limitations acknowledged? | | |
 
-A single “No” against data protection, recovery, tenant isolation or security is a no-go for real patient
+A single â€œNoâ€ against data protection, recovery, tenant isolation or security is a no-go for real patient
 data.
 
 ## 17. Operating cadence after launch
@@ -501,3 +504,4 @@ data.
 - Quarterly: dependency/security review, DR exercise, roadmap review, portal key-custody/backup check
 - Annually: penetration test, contract/DPA review, pricing review, claims audit
 - On every release: migration test, rollback artifact, release notes, support briefing
+

@@ -43,6 +43,9 @@ Dashboard or the Expenses profitability card.
 - Signed Diagnostics/Pharmacy/Hospital/Complete/Custom licences with tenant/device binding,
   30-day grace and read-only mode after grace
 - Vendor licence portal for issue, download, renewal and revocation
+- Optional append-only sync queue for offline invoices, reports and admissions
+- 30-second desktop background sync loop with ACK tracking and a read-only Next.js cloud dashboard
+  (requires a deployed PostgreSQL/Next service)
 
 Referral commissions are intentionally not offered. They are removed from navigation, doctor forms and
 new invoice accrual because commission/inducement visibility can create compliance and ethics risk.
@@ -131,6 +134,7 @@ src/
   ui/           layout, navigation, route guards and UI kit
 docs/           buyer, product, architecture, deployment and licensing documentation
 src-tauri/      Tauri v2 shell, native SQLite commands and Windows bundle config
+cloud-dashboard/ Next.js central sync receiver and read-only dashboard
 license-portal/ vendor licence administration portal
 scripts/        migration, tenant-scope and build support checks
 .opencode/      project-local agent skills and workflows
@@ -162,6 +166,7 @@ See [SECURITY.md](SECURITY.md).
 - [docs/licensing-process.md](docs/licensing-process.md) — sales-to-renewal operating procedure
 - [docs/deployment-and-readiness.md](docs/deployment-and-readiness.md) — deployment gates
 - [docs/productionization-plan.md](docs/productionization-plan.md) — production workstreams
+- [cloud-dashboard/README.md](cloud-dashboard/README.md) — sync receiver and read-only central dashboard
 - [COMPLIANCE.md](COMPLIANCE.md) — compliance evidence and gaps
 
 ## Contributing
@@ -175,7 +180,9 @@ Read [CONTRIBUTING.md](CONTRIBUTING.md) before changing code or data rules.
 - No automated backup/restore
 - No OS-secure licence storage or backend entitlement enforcement
 - No hosted/hardened vendor portal
-- No cloud sync or hosted read-only monitoring
+- Optional sync receiver/dashboard code exists but is not deployed, hardened or covered by per-device
+  token provisioning
+- Background sync runs only while the desktop app is open; it is not an OS service
 - No live ABDM/ABHA exchange
 - No full HIS, insurance/TPA, nursing chart, pharmacy procurement or controlled-drug workflow
 - No referral commissions

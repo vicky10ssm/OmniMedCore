@@ -44,16 +44,17 @@ Verified on 3 November 2026:
 | NSIS installer | `MediCore_0.1.0_x64-setup.exe` — 3.31 MiB, unsigned |
 | MSI installer | `MediCore_0.1.0_x64_en-US.msi` — 4.57 MiB, unsigned |
 | Runtime database | `%APPDATA%\in.medicore.desktop\medicore.db` |
-| Schema/integrity | `schema_version=16`, `PRAGMA quick_check=ok` |
+| Schema/integrity | `schema_version=17`, `PRAGMA quick_check=ok` |
 | Single instance | Second process exited; original stayed running |
 | Close flush | WAL checkpointed; database readable after close |
-| Pre-migration backup | `pre-migration-v15-<timestamp>.db` created |
+| Pre-migration backup | `pre-migration-v15-<timestamp>.db` and `pre-migration-v16-<timestamp>.db` created |
+| Sync schema | Migration 17 created `sync_queue`, `sync_ack` and six entity triggers |
 
 Checksums from that build:
 
 ```text
-NSIS SHA256: 65753289C647CCA560E20685106C404929B2E9C8CB9D0A71A89598B35685376A
-MSI  SHA256: D39B7FC12708161A45FECA6F1BF1CA510C05126CA3549864127E790CFEDE7686
+NSIS SHA256: B8B45F3367EED89FD1C181CD53A0C3B6E014319D3DA8044C4327A8468D38F13E
+MSI  SHA256: C3F72C41E799455B0E75BE084144E8325A1666483F1A9BE1FE9050965ACC754A
 ```
 
 These hashes change on every rebuild. Recompute them before publishing.

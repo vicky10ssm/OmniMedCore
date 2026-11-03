@@ -1,31 +1,31 @@
-# Deployment, architecture and commercial readiness
+﻿# Deployment, architecture and commercial readiness
 
-Last updated: 2 November 2026  
-Current schema: `16`
+Last updated: 3 November 2026  
+Current schema: `17`
 
 ## Current architecture
 
 ```text
 React/TypeScript single codebase
-├── Terminal build
-│   ├── browser: sql.js SQLite persisted to IndexedDB
-│   ├── desktop: sql.js SQLite persisted to app-data file
-│   ├── all billing/clinical data entry
-│   └── local print layouts (A4 and 80 mm)
-└── Monitor build
-    ├── same read-only-capable pages
-    ├── DataSource rejects writes
-    └── currently reads local data only; no cloud backend
+â”œâ”€â”€ Terminal build
+â”‚   â”œâ”€â”€ browser: sql.js SQLite persisted to IndexedDB
+â”‚   â”œâ”€â”€ desktop: sql.js SQLite persisted to app-data file
+â”‚   â”œâ”€â”€ all billing/clinical data entry
+â”‚   â””â”€â”€ local print layouts (A4 and 80 mm)
+â””â”€â”€ Monitor build
+    â”œâ”€â”€ same read-only-capable pages
+    â”œâ”€â”€ DataSource rejects writes
+    â””â”€â”€ currently reads local data only; no cloud backend
 ```
 
 Target production architecture:
 
 ```text
 Windows terminal (Tauri + SQLite file, encrypted)
-        │
-        ├── offline billing/reporting/sample workflow
-        │
-        └── future sync/outbox ──▶ cloud accumulator ──▶ hosted read-only monitor
+        â”‚
+        â”œâ”€â”€ offline billing/reporting/sample workflow
+        â”‚
+        â””â”€â”€ future sync/outbox â”€â”€â–¶ cloud accumulator â”€â”€â–¶ hosted read-only monitor
 ```
 
 The target architecture is **not the same as the current deployment**. Be explicit in buyer meetings.
@@ -59,7 +59,7 @@ The target architecture is **not the same as the current deployment**. Be explic
 | Installer unsigned/unaccepted | NSIS/MSI builds exist but are not code-signed or accepted on clean buyer hardware |
 | Browser build uses IndexedDB | Development/browser data can be cleared; packaged desktop uses SQLite, but backup/restore is still absent |
 | Backup/restore absent | A disk/browser loss can destroy financial and clinical records |
-| No cloud accumulator | “Monitor from anywhere” has no remote data path |
+| Sync/dashboard not deployed | Next.js/PostgreSQL sync receiver and dashboard code exist locally; hosting, TLS, per-device tokens and operations are pending |
 | No update mechanism | Security/bug fixes cannot be rolled out reliably |
 | No installer signing | Windows SmartScreen friction and weaker provenance |
 | Encryption not user-configurable | At-rest theft protection cannot be turned on through a finished workflow |
@@ -90,11 +90,13 @@ Recommended minimum before installing at a buyer site:
 
 ## Release gates before marketing hosted monitoring
 
-- Cloud database and authenticated read-only API
-- Secure terminal push queue with retry/idempotency
+- Cloud database and authenticated sync/receiver API
+- Per-device sync tokens with rotation and revocation
+- Append-only queue delivery tests with retry/idempotency and duplicate ACKs
 - Tenant isolation tests with at least two real tenants
-- Hosted monitor deployment and uptime/error monitoring
-- Consent/access controls for financial visibility
+- Hosted dashboard deployment, HTTPS, SSO/MFA and uptime/error monitoring
+- Consent/access controls for financial and clinical visibility
+- Central database backup, retention, deletion and replay procedures
 - Data protection agreement covering processing/retention
 - Incident and deletion procedures
 
@@ -116,7 +118,7 @@ Recommended minimum before installing at a buyer site:
 | Runtime | WebView2 (normally present or installed by installer) |
 | Memory | 4 GB recommended; 2 GB minimum for pilot |
 | Disk | At least 2 GB free plus backup capacity |
-| Display | 1366×768 minimum |
+| Display | 1366Ã—768 minimum |
 | Printer | A4 laser/inkjet and optional 80 mm thermal |
 | Network | Not required for terminal billing; needed only for future sync/ABDM |
 | Antivirus | Buyer-managed; installer must be excluded only with written IT approval |
@@ -162,3 +164,4 @@ hosted production access. Do not use real patient data in demos, screenshots or 
 
 The detailed engineering, cloud, backup, security and release plan is in
 [productionization-plan.md](productionization-plan.md).
+

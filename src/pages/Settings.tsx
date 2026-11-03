@@ -9,7 +9,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { useAuth } from "../auth/AuthContext";
 import { getDb } from "../db";
 import { writeAudit } from "../db/audit";
-import { formatDateTime, getDeviceId, now, uuid } from "../db/helpers";
+import { getDeviceId, now, uuid } from "../db/helpers";
 import { getSetting, getSettings, setSetting } from "../db/settings";
 import { getCurrentTenantId, tenantAnd } from "../db/tenant";
 import { hashPassword, passwordPolicyOk } from "../auth/crypto";
@@ -25,6 +25,7 @@ import { readLogoFile, validateLogoFile } from "../ui/logo";
 import { useLicense } from "../licensing/LicenseContext";
 import { LicenseSettingsPanel } from "./License";
 import { databaseInfo, isTauriRuntime, type DatabaseInfo } from "../db/tauriStorage";
+import SyncSettings from "./SyncSettings";
 import type { UserRow } from "../db/types";
 import {
   generateRecoveryCodes,
@@ -1197,6 +1198,8 @@ export default function Settings() {
             <h2 className="mb-3 text-sm font-semibold">Pending sync queue</h2>
             <SyncQueue />
           </Card>
+
+          <SyncSettings isAdmin={isAdmin} />
         </div>
       )}
 
@@ -1293,42 +1296,25 @@ export default function Settings() {
   );
 }
 
-/** Counts rows waiting to be pushed, per table — a preview of the sync engine. */
+/** Counts append-only cloud queue events that do not have an ACK yet. */
 function SyncQueue() {
-  const [rows, setRows] = useState<{ table: string; count: number }[]>([]);
+  const [rows, setRows] = useState<{ entity_type: string; count: number }[]>([]);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     void (async () => {
       const db = await getDb();
-      const tables = [
-        "patients",
-        "tests",
-        "packages",
-        "doctors",
-        "invoices",
-        "invoice_items",
-        "payments",
-        "commission_entries",
-        "report_orders",
-        "expenses",
-        "payouts",
-        "users",
-        "samples",
-        "report_result_revisions",
-        "abdm_consents",
-        "abdm_outbox",
-      ];
-      const out: { table: string; count: number }[] = [];
-      const [tenantClause, tenantParams] = tenantAnd();
-      for (const t of tables) {
-        const r = await db.get<{ n: number }>(
-          `SELECT COUNT(*) AS n FROM ${t} WHERE dirty = 1 ${tenantClause}`,
-          tenantParams
-        );
-        if ((r?.n ?? 0) > 0) out.push({ table: t, count: r?.n ?? 0 });
-      }
-      setRows(out.sort((a, b) => b.count - a.count));
+      setRows(
+        await db.all<{ entity_type: string; count: number }>(
+          `SELECT q.entity_type, COUNT(*) AS count
+           FROM sync_queue q
+           LEFT JOIN sync_ack a ON a.queue_id = q.id AND a.tenant_id = q.tenant_id
+           WHERE a.queue_id IS NULL AND q.tenant_id = ?
+           GROUP BY q.entity_type
+           ORDER BY q.entity_type`,
+          [getCurrentTenantId()]
+        )
+      );
       setLoaded(true);
     })();
   }, []);
@@ -1345,16 +1331,15 @@ function SyncQueue() {
     <>
       <ul className="divide-y divide-slate-100 text-sm">
         {rows.map((r) => (
-          <li key={r.table} className="flex justify-between py-2">
-            <span className="text-slate-600">{r.table.replace(/_/g, " ")}</span>
+          <li key={r.entity_type} className="flex justify-between py-2">
+            <span className="capitalize text-slate-600">{r.entity_type}</span>
             <span className="num font-medium">{r.count}</span>
           </li>
         ))}
       </ul>
       <p className="mt-3 text-xs text-slate-400">
-        These rows carry <span className="num">dirty = 1</span> and will be pushed the
-        first time the cloud connection is configured. Last checked{" "}
-        {formatDateTime(Date.now())}.
+        Events are appended by local triggers. Synced rows are acknowledged in a separate
+        table; queue rows are never deleted.
       </p>
     </>
   );

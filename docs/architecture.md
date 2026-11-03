@@ -1,16 +1,16 @@
-# MediCore architecture and offline/online sync design
+﻿# MediCore architecture and offline/online sync design
 
-Last updated: 2 November 2026  
+Last updated: 3 November 2026  
 Current product version: `0.1.0`  
-Current schema: `16`
+Current schema: `17`
 
 ## 1. Status and scope
 
 This document separates:
 
-- **Implemented today** — the local-first terminal build and read-only monitor build.
-- **Target production architecture** — planned Tauri desktop and cloud accumulator.
-- **Sync protocol** — the intended design; **not implemented yet**.
+- **Implemented today** â€” the local-first terminal build and read-only monitor build.
+- **Target production architecture** â€” planned Tauri desktop and cloud accumulator.
+- **Sync protocol** â€” the intended design; **not implemented yet**.
 
 Today there is **no cloud sync backend**. The monitor build reads the same local browser database when
 opened on that machine; it cannot see another terminal or a phone outside that browser profile.
@@ -36,18 +36,18 @@ opened on that machine; it cannot see another terminal or a phone outside that b
 ## 3. Current implementation
 
 ```text
-┌──────────────────── One React/TypeScript codebase ────────────────────┐
-│                                                                        │
-│  Terminal mode                         Monitor mode                    │
-│  ├── Layout + all terminal routes       ├── MonitorLayout               │
-│  ├── billing/reporting/samples         ├── read-only routes            │
-│  ├── client-side calculations          └── no write controls            │
-│  └── SQL reads/writes                                                  │
-│                                                                        │
-│  DataSource interface                                                  │
-│  ├── SqlJsSource (DEV/terminal)  ── sql.js WASM → IndexedDB            │
-│  └── ReadOnlySource (monitor)    ── rejects run()/tx()                 │
-└────────────────────────────────────────────────────────────────────────┘
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ One React/TypeScript codebase â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚                                                                        â”‚
+â”‚  Terminal mode                         Monitor mode                    â”‚
+â”‚  â”œâ”€â”€ Layout + all terminal routes       â”œâ”€â”€ MonitorLayout               â”‚
+â”‚  â”œâ”€â”€ billing/reporting/samples         â”œâ”€â”€ read-only routes            â”‚
+â”‚  â”œâ”€â”€ client-side calculations          â””â”€â”€ no write controls            â”‚
+â”‚  â””â”€â”€ SQL reads/writes                                                  â”‚
+â”‚                                                                        â”‚
+â”‚  DataSource interface                                                  â”‚
+â”‚  â”œâ”€â”€ SqlJsSource (DEV/terminal)  â”€â”€ sql.js WASM â†’ IndexedDB            â”‚
+â”‚  â””â”€â”€ ReadOnlySource (monitor)    â”€â”€ rejects run()/tx()                 â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
 ```
 
 ### Current runtime characteristics
@@ -85,7 +85,7 @@ opened on that machine; it cannot see another terminal or a phone outside that b
    the licensed module set. A development build falls back to a complete development licence only when
    no real licence is stored.
 7. Auth restores a session or shows login/unlock.
-8. Effective modules and routes are `licensed modules ∩ clinic-enabled modules`; read-only mode applies
+8. Effective modules and routes are `licensed modules âˆ© clinic-enabled modules`; read-only mode applies
    after grace expiry.
 
 ### Module composition
@@ -110,14 +110,14 @@ historical `diagbill` identifier.
 
 ```text
 Vendor portal (private key, vendor-controlled)
-   └── signs licence JSON for tenantIds + deviceIds
-                 │ file / renewal download
-                 ▼
+   â””â”€â”€ signs licence JSON for tenantIds + deviceIds
+                 â”‚ file / renewal download
+                 â–¼
 Terminal (public key only)
-   ├── verifies ECDSA P-256 signature offline
-   ├── checks tenant + device + status + expiry/grace
-   ├── derives edition/module entitlements
-   └── gates navigation/routes and write controls
+   â”œâ”€â”€ verifies ECDSA P-256 signature offline
+   â”œâ”€â”€ checks tenant + device + status + expiry/grace
+   â”œâ”€â”€ derives edition/module entitlements
+   â””â”€â”€ gates navigation/routes and write controls
 ```
 
 The private key must never be embedded in the application or exposed to the browser. The portal's
@@ -125,11 +125,37 @@ current JSON store and shared bearer token are a development baseline, not a hos
 plane. Public hosting, TLS, per-user admin auth/MFA, rate limits, backups and audit are deployment gates.
 See [licensing-and-editions.md](licensing-and-editions.md).
 
+### Current sync boundary
+
+The first sync module is intentionally append-only:
+
+```text
+Terminal SQLite
+  â”œâ”€â”€ sync_queue (insert-only snapshots: invoice/report/admission)
+  â””â”€â”€ sync_ack   (append ACK rows, never delete queue rows)
+          â”‚ 30-second loop while the Tauri app is open
+          â–¼
+POST {cloud endpoint}/sync/push
+          â”‚
+          â–¼
+Next.js sync receiver â†’ PostgreSQL sync_events â†’ /dashboard (read-only)
+```
+
+- Queue rows are created by SQLite triggers on the three entity tables.
+- The desktop loop checks `GET /health`, pushes batches of up to 100, and inserts ACKs locally.
+- The loop stops when the app closes. It is not an OS service.
+- The sync token is currently device-local and must move to OS-protected storage.
+- The Next.js dashboard is read-only and protected by HTTP Basic auth. Per-device token provisioning,
+  SSO, conflict repair, deletion propagation, TLS deployment and backups remain production work.
+- The central store is not a replacement for terminal backups.
+
+See [cloud-dashboard/README.md](../cloud-dashboard/README.md).
+
 ### Data ownership in current build
 
 - The local database is the system of record.
 - Browser storage is per origin/profile; `localhost` and `127.0.0.1` are separate stores.
-- There is no cross-device sharing. “Monitor from anywhere” is **not delivered** until the cloud tier
+- There is no cross-device sharing. â€œMonitor from anywhereâ€ is **not delivered** until the cloud tier
   exists.
 
 ## 4. Current data model and sync-ready metadata
@@ -150,34 +176,37 @@ Core relationships:
 
 ```text
 tenant
-├── users / settings / audit
-├── patients
-│    ├── invoices ── invoice_items
-│    │    ├── payments
-│    │    ├── samples
-│    │    └── report_orders
-│    │         ├── report_parameters
-│    │         └── report_result_revisions
-│    ├── admissions ── doctors
-│    │    ├── hospital_charges
-│    │    └── hospital_bill_payments
-│    ├── pharmacy_sales ── pharmacy_sale_items
-│    └── abdm_consents ── abdm_outbox
-├── hospital_services
-├── tests ── test_parameters
-├── packages ── package_items
-├── medicines ── pharmacy_batches
-├── doctors
-└── expense_categories ── expenses
+â”œâ”€â”€ users / settings / audit
+â”œâ”€â”€ patients
+â”‚    â”œâ”€â”€ invoices â”€â”€ invoice_items
+â”‚    â”‚    â”œâ”€â”€ payments
+â”‚    â”‚    â”œâ”€â”€ samples
+â”‚    â”‚    â””â”€â”€ report_orders
+â”‚    â”‚         â”œâ”€â”€ report_parameters
+â”‚    â”‚         â””â”€â”€ report_result_revisions
+â”‚    â”œâ”€â”€ admissions â”€â”€ doctors
+â”‚    â”‚    â”œâ”€â”€ hospital_charges
+â”‚    â”‚    â””â”€â”€ hospital_bill_payments
+â”‚    â”œâ”€â”€ pharmacy_sales â”€â”€ pharmacy_sale_items
+â”‚    â””â”€â”€ abdm_consents â”€â”€ abdm_outbox
+â”œâ”€â”€ hospital_services
+â”œâ”€â”€ tests â”€â”€ test_parameters
+â”œâ”€â”€ packages â”€â”€ package_items
+â”œâ”€â”€ medicines â”€â”€ pharmacy_batches
+â”œâ”€â”€ doctors
+â””â”€â”€ expense_categories â”€â”€ expenses
 ```
 
 Legacy `commission_entries`, `payouts` and doctor commission columns may remain in historical databases
 for data integrity, but the current product does not expose or accrue referral commissions.
 
+Sync tables are separate from business tables: `sync_queue` is insert-only and `sync_ack` appends ACK
+records. Queue triggers snapshot invoices, reports and admissions; no queue row is deleted after sync.
+
 ### Important limitation of the current sync foundation
 
 The `dirty` flag is enough for a simple prototype but **not enough for production sync**, because it
-stores only “this row changed”, not the operation, base version or retry state. The production design
+stores only â€œthis row changedâ€, not the operation, base version or retry state. The production design
 below adds a durable outbox and server change sequence rather than relying only on `dirty`.
 
 ## 5. Current offline workflow
@@ -199,42 +228,42 @@ exists. This is why Tauri/local SQLite and backup/restore are P0 release gates.
 ## 6. Target production architecture
 
 ```text
-┌──────────────────────── Windows terminal ────────────────────────┐
-│ Tauri application                                                │
-│  ├── React terminal bundle                                       │
-│  ├── Local SQLite file (encrypted, WAL)                          │
-│  ├── durable sync outbox + pull cursor                           │
-│  ├── device identity / OS credential-store token                 │
-│  ├── migration + pre-upgrade backup                              │
-│  └── print / PDF / CSV                                           │
-└───────────────┬──────────────────────────────────────────────────┘
-                │ HTTPS
-                │ device-authenticated push/pull, idempotency keys
-                ▼
-┌──────────────────────── Cloud accumulator ───────────────────────┐
-│ API / sync service                                               │
-│  ├── authenticate tenant + device                                │
-│  ├── validate schema/version and references                      │
-│  ├── deduplicate operation IDs                                   │
-│  ├── append change log with server sequence                      │
-│  ├── conflict queue for clinical/version mismatches              │
-│  └── read-only monitor query API                                 │
-│                                                                  │
-│ PostgreSQL                                                       │
-│  ├── tenant data accumulated from terminals                      │
-│  ├── server change sequence / row versions                       │
-│  ├── sync operation deduplication + cursors                      │
-│  └── audit/ops metadata                                          │
-└───────────────┬──────────────────────────────────────────────────┘
-                │ authenticated read-only API
-                ▼
-┌──────────────────── Hosted monitor ──────────────────────────────┐
-│ Static read-only bundle                                          │
-│  ├── tenant-scoped read API                                      │
-│  ├── no invoice/payment/sample/report write endpoints            │
-│  ├── no recovery-code or secret access                           │
-│  └── minimum-necessary role-based views                          │
-└──────────────────────────────────────────────────────────────────┘
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Windows terminal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚ Tauri application                                                â”‚
+â”‚  â”œâ”€â”€ React terminal bundle                                       â”‚
+â”‚  â”œâ”€â”€ Local SQLite file (encrypted, WAL)                          â”‚
+â”‚  â”œâ”€â”€ durable sync outbox + pull cursor                           â”‚
+â”‚  â”œâ”€â”€ device identity / OS credential-store token                 â”‚
+â”‚  â”œâ”€â”€ migration + pre-upgrade backup                              â”‚
+â”‚  â””â”€â”€ print / PDF / CSV                                           â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+                â”‚ HTTPS
+                â”‚ device-authenticated push/pull, idempotency keys
+                â–¼
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Cloud accumulator â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚ API / sync service                                               â”‚
+â”‚  â”œâ”€â”€ authenticate tenant + device                                â”‚
+â”‚  â”œâ”€â”€ validate schema/version and references                      â”‚
+â”‚  â”œâ”€â”€ deduplicate operation IDs                                   â”‚
+â”‚  â”œâ”€â”€ append change log with server sequence                      â”‚
+â”‚  â”œâ”€â”€ conflict queue for clinical/version mismatches              â”‚
+â”‚  â””â”€â”€ read-only monitor query API                                 â”‚
+â”‚                                                                  â”‚
+â”‚ PostgreSQL                                                       â”‚
+â”‚  â”œâ”€â”€ tenant data accumulated from terminals                      â”‚
+â”‚  â”œâ”€â”€ server change sequence / row versions                       â”‚
+â”‚  â”œâ”€â”€ sync operation deduplication + cursors                      â”‚
+â”‚  â””â”€â”€ audit/ops metadata                                          â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+                â”‚ authenticated read-only API
+                â–¼
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Hosted monitor â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚ Static read-only bundle                                          â”‚
+â”‚  â”œâ”€â”€ tenant-scoped read API                                      â”‚
+â”‚  â”œâ”€â”€ no invoice/payment/sample/report write endpoints            â”‚
+â”‚  â”œâ”€â”€ no recovery-code or secret access                           â”‚
+â”‚  â””â”€â”€ minimum-necessary role-based views                          â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
 ```
 
 ### Trust boundaries
@@ -258,7 +287,7 @@ This section is the target protocol. It is not active in the current build.
 5. Credential is stored in Windows Credential Manager/OS keystore, not in plain settings.
 6. Server can revoke a lost/stolen device immediately.
 
-Device code suggestions must be unique per tenant. Never rely on “A/B/C” being manually typed correctly
+Device code suggestions must be unique per tenant. Never rely on â€œA/B/Câ€ being manually typed correctly
 for production numbering safety.
 
 ### 7.2 Terminal sync state
@@ -323,7 +352,7 @@ POST /v1/sync/push
 Authorization: Device <token>
 Idempotency-Key: <batch UUID>
 {
-  "schemaVersion": 16,
+  "schemaVersion": 17,
   "deviceId": "...",
   "operations": [
     {
@@ -437,12 +466,12 @@ the final multi-terminal allocation protocol.
 
 - Every operation has a UUID idempotency key.
 - Server stores operation results for at least the maximum retry horizon.
-- Terminal retry: exponential backoff (e.g. 2s, 4s, 8s… capped at 5 minutes) with jitter.
+- Terminal retry: exponential backoff (e.g. 2s, 4s, 8sâ€¦ capped at 5 minutes) with jitter.
 - Sync is bounded and resumable.
 - Parent masters should be sent before dependent rows in a batch.
 - The server should accept valid subsets even if another operation conflicts; terminal handles the
   conflict queue.
-- A device upgrade incompatibility returns a clear “update required” response; terminal continues local
+- A device upgrade incompatibility returns a clear â€œupdate requiredâ€ response; terminal continues local
   billing and retries after upgrade.
 - Network failure never rolls back a completed local bill.
 
@@ -481,10 +510,10 @@ the final multi-terminal allocation protocol.
 - Sync on app start, network reconnect, after important writes (debounced), and periodically.
 - Manual **Sync now** action.
 - UI status examples:
-  - “All changes synced · 2 min ago”
-  - “Offline — 14 changes waiting”
-  - “Conflict: report amendment needs review”
-  - “Update required before cloud sync”
+  - â€œAll changes synced Â· 2 min agoâ€
+  - â€œOffline â€” 14 changes waitingâ€
+  - â€œConflict: report amendment needs reviewâ€
+  - â€œUpdate required before cloud syncâ€
 - Never show a generic success when only local persistence succeeded.
 - Conflict resolution must name the affected patient/report or invoice and require an authorised user.
 
@@ -498,7 +527,7 @@ The monitor is not a second terminal:
 - Admin-only money views.
 - Data minimisation: no TOTP secrets, encryption keys, raw audit payloads or unnecessary identifiers.
 - Optional freshness timestamp from the last accepted terminal sequence.
-- If cloud is stale/offline, show “Last updated…” rather than pretending live.
+- If cloud is stale/offline, show â€œLast updatedâ€¦â€ rather than pretending live.
 
 ## 8. Sync sequence diagrams
 
@@ -506,45 +535,45 @@ The monitor is not a second terminal:
 
 ```text
 Terminal UI       Local SQLite          Sync worker          Cloud
-    │                  │                    │                 │
-    │ create bill      │                    │                 │
-    ├─────────────────▶│                    │                 │
-    │                  │ write rows+outbox  │                 │
-    │◀─────────────────┤ commit             │                 │
-    │ print invoice    │                    │                 │
-    │                  │                    │ network returns │
-    │                  │◀───────────────────┤                 │
-    │                  ├───────────────────▶│ push operations │
-    │                  │                    ├────────────────▶│
-    │                  │                    │                 │ validate/seq
-    │                  │                    │◀────────────────┤
-    │                  │ ack/clear outbox   │                 │
-    │                  │◀───────────────────┤                 │
+    â”‚                  â”‚                    â”‚                 â”‚
+    â”‚ create bill      â”‚                    â”‚                 â”‚
+    â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â–¶â”‚                    â”‚                 â”‚
+    â”‚                  â”‚ write rows+outbox  â”‚                 â”‚
+    â”‚â—€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤ commit             â”‚                 â”‚
+    â”‚ print invoice    â”‚                    â”‚                 â”‚
+    â”‚                  â”‚                    â”‚ network returns â”‚
+    â”‚                  â”‚â—€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤                 â”‚
+    â”‚                  â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â–¶â”‚ push operations â”‚
+    â”‚                  â”‚                    â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â–¶â”‚
+    â”‚                  â”‚                    â”‚                 â”‚ validate/seq
+    â”‚                  â”‚                    â”‚â—€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+    â”‚                  â”‚ ack/clear outbox   â”‚                 â”‚
+    â”‚                  â”‚â—€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤                 â”‚
 ```
 
 ### Second terminal pulls changes
 
 ```text
 Terminal B       Local SQLite         Cloud
-    │                 │                  │
-    │ sync now        │                  │
-    ├────────────────▶│ GET pull(cursor) │
-    │                 ├─────────────────▶│
-    │                 │◀─────────────────┤ changes + seq
-    │                 │ apply transaction│
-    │                 │ save new cursor  │
-    │◀────────────────┤                  │
+    â”‚                 â”‚                  â”‚
+    â”‚ sync now        â”‚                  â”‚
+    â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â–¶â”‚ GET pull(cursor) â”‚
+    â”‚                 â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â–¶â”‚
+    â”‚                 â”‚â—€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤ changes + seq
+    â”‚                 â”‚ apply transactionâ”‚
+    â”‚                 â”‚ save new cursor  â”‚
+    â”‚â—€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤                  â”‚
 ```
 
 ### Monitor
 
 ```text
 Phone browser     Monitor API        Cloud DB
-    │                 │                  │
-    ├────────────────▶│ read-only query  │
-    │                 ├─────────────────▶│
-    │                 │◀─────────────────┤
-    │◀────────────────┤ tenant/role data │
+    â”‚                 â”‚                  â”‚
+    â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â–¶â”‚ read-only query  â”‚
+    â”‚                 â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â–¶â”‚
+    â”‚                 â”‚â—€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+    â”‚â—€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤ tenant/role data â”‚
 ```
 
 ## 9. Conflict examples
@@ -629,7 +658,7 @@ At minimum automate:
 
 ### One centre, many terminals
 
-- 2–5 Tauri terminals
+- 2â€“5 Tauri terminals
 - Cloud sync accumulator
 - Exclusive number blocks
 - Hosted read-only monitor
@@ -685,3 +714,4 @@ interfaces and a separate integration validation programme.
 - [Product capabilities](product-capabilities.md)
 - Source: `src/db/index.ts`, `src/db/schema.ts`, `src/db/tenant.ts`, `src/db/invoiceNo.ts`,
   `src/app/modules.ts`, `src/app/mode.ts`
+

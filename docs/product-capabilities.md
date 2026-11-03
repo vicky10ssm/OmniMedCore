@@ -123,7 +123,7 @@ Status meanings: **Ready**, **Pilot**, **Partial**, **Not available**, **Externa
 | Clinic logo | Ready | PNG/JPG/WebP up to 500 KB; shown in sidebar and printed invoice/report/pharmacy letterheads |
 | Multi-vertical branding | Ready | MediCore umbrella brand with tenant name/logo overrides |
 | Shared patient identity | Ready | Same patient used for OPD, diagnostics, pharmacy and admissions |
-| Read-only monitoring build | Pilot | Separate bundle and read-only `DataSource`; no cloud sync yet |
+| Read-only monitoring build | Pilot | Separate bundle and read-only `DataSource`; central dashboard code exists but is not deployed |
 | Encrypted database | Partial | AES-GCM envelope code exists; end-user enable/change/recovery setup is not exposed |
 | Automated backup/restore | Not available | **Release blocker** |
 | Retention/legal hold | Not available | No configurable retention enforcement |
@@ -148,8 +148,10 @@ Status meanings: **Ready**, **Pilot**, **Partial**, **Not available**, **Externa
 | --- | --- | --- |
 | Tenant-scoped schema | Ready | Tenant ID and static scope checks across business tables |
 | Tenant management UI | Not available | No onboarding/switching/support console |
-| Multi-terminal offline billing | Partial | Data model ready; cloud coordination/sync not implemented |
-| Read-only “monitor from anywhere” | Partial | Monitor build exists, but there is no hosted data pipeline |
+| Multi-terminal offline billing | Partial | Data model ready; a simple append-only sync queue and push loop exist, but multi-terminal conflict coordination is not implemented |
+| Append-only sync queue | Pilot | Local `sync_queue` captures invoice/report/admission snapshots; `sync_ack` records central ACKs |
+| Desktop background sync | Pilot | Polls endpoint every 30 seconds while the Tauri app is open; not a Windows service when closed |
+| Read-only "monitor from anywhere" | Pilot | Next.js/PostgreSQL dashboard and sync receiver code exist; hosting, per-device tokens, SSO and operational hardening are pending |
 | Tauri Windows installer | Partial | Native SQLite, single-instance guard and NSIS/MSI installers build successfully; installer signing, clean-machine acceptance and distribution are still pending |
 | Browser/PWA install | Pilot | Development/local browser storage only; not recommended as primary data store |
 | Cloud backup | Not available | Not implemented |
@@ -162,10 +164,11 @@ hospital service/IPD billing, pharmacy batch inventory/dispensing/receipts, audi
 printing, configurable verticals and signed edition gating.
 
 **Pilot today:** local monitor build, ABHA/consent, ABDM JSON draft, compliance evidence dashboard,
-hospital/pharmacy read-only monitoring, tenant/device-bound licence activation, grace/read-only mode and
-the vendor licence portal.
+hospital/pharmacy read-only monitoring, tenant/device-bound licence activation, grace/read-only mode,
+the vendor licence portal, the local append-only sync queue and the Next.js central dashboard code.
 
-**Not ready:** Windows installer, cloud sync/hosted monitoring, public hosted licence portal/customer
-self-service, OS-secure licence storage, backups, live ABDM, QMS/QC/equipment/personnel modules,
-analyzer/PACS integration, critical-value workflow, full HIS features (insurance/TPA, nursing,
-medication charts, package/advance billing), advanced pharmacy procurement/controlled-drug workflows.
+**Not ready:** signed/distributed Windows installer, deployed and hardened cloud sync/hosted monitoring,
+per-device sync tokens, public hosted licence portal/customer self-service, OS-secure licence storage,
+backups, live ABDM, QMS/QC/equipment/personnel modules, analyzer/PACS integration, critical-value
+workflow, full HIS features (insurance/TPA, nursing, medication charts, package/advance billing),
+advanced pharmacy procurement/controlled-drug workflows.
