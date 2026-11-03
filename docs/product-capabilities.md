@@ -124,8 +124,8 @@ Status meanings: **Ready**, **Pilot**, **Partial**, **Not available**, **Externa
 | Multi-vertical branding | Ready | MediCore umbrella brand with tenant name/logo overrides |
 | Shared patient identity | Ready | Same patient used for OPD, diagnostics, pharmacy and admissions |
 | Read-only monitoring build | Pilot | Separate bundle and read-only `DataSource`; central dashboard code exists but is not deployed |
-| Encrypted database | Partial | AES-GCM envelope code exists; end-user enable/change/recovery setup is not exposed |
-| Local backup/restore | Pilot | Daily in-app snapshots with 7 daily/4 weekly/12 monthly retention, optional USB/OneDrive copy, manual backup, schema/integrity validation and safe restore. Unencrypted and only scheduled while the app is open |
+| Encrypted database | Pilot | Desktop database uses SQLCipher 4.20 (AES-256); key is stored in Windows Credential Manager. Key export/import and cross-machine recovery are not yet exposed |
+| Local backup/restore | Pilot | Daily in-app SQLCipher-encrypted snapshots with 7 daily/4 weekly/12 monthly retention, optional USB/OneDrive copy, manual backup, schema/integrity validation and safe restore. Only scheduled while the app is open |
 | Retention/legal hold | Not available | No configurable retention enforcement |
 | Digital signature | Not available | Do not call a signature image a digital signature |
 
@@ -152,7 +152,7 @@ Status meanings: **Ready**, **Pilot**, **Partial**, **Not available**, **Externa
 | Append-only sync queue | Pilot | Local `sync_queue` captures invoice/report/admission snapshots; `sync_ack` records central ACKs |
 | Desktop background sync | Pilot | Polls endpoint every 30 seconds while the Tauri app is open; not a Windows service when closed |
 | Read-only "monitor from anywhere" | Pilot | Next.js/PostgreSQL dashboard and sync receiver code exist; hosting, per-device tokens, SSO and operational hardening are pending |
-| Tauri Windows installer | Partial | Native SQLite, single-instance guard and NSIS/MSI installers build successfully; installer signing, clean-machine acceptance and distribution are still pending |
+| Tauri Windows installer | Partial | Native SQLCipher database, single-instance guard and NSIS/MSI installers build successfully; installer signing, clean-machine acceptance and distribution are still pending |
 | Browser/PWA install | Pilot | Development/local browser storage only; not recommended as primary data store |
 | Cloud backup | Not available | Not implemented |
 
@@ -169,6 +169,6 @@ the vendor licence portal, the local append-only sync queue and the Next.js cent
 
 **Not ready:** signed/distributed Windows installer, deployed and hardened cloud sync/hosted monitoring,
 per-device sync tokens, public hosted licence portal/customer self-service, OS-secure licence storage,
-encrypted/offsite/unattended backups, live ABDM, QMS/QC/equipment/personnel modules, analyzer/PACS integration, critical-value
+key export/import for cross-machine recovery, offsite/unattended backups, live ABDM, QMS/QC/equipment/personnel modules, analyzer/PACS integration, critical-value
 workflow, full HIS features (insurance/TPA, nursing, medication charts, package/advance billing),
 advanced pharmacy procurement/controlled-drug workflows.

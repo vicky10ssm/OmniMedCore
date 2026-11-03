@@ -1,7 +1,7 @@
 # Backup and restore
 
 Last updated: 3 November 2026  
-Applies to: Tauri Windows desktop app (`0.2.2+`)
+Applies to: Tauri Windows desktop app (`0.3.0+` for SQLCipher-encrypted backups)
 
 ## What is implemented
 
@@ -12,9 +12,11 @@ Applies to: Tauri Windows desktop app (`0.2.2+`)
   - 7 daily snapshots
   - 4 weekly snapshots
   - 12 monthly snapshots
+- SQLCipher-encrypted snapshot files (the desktop database key is in Windows Credential Manager)
 - Schema + integrity validation before restore
 - Automatic pre-restore safety copy
-- Safe replacement of the active SQLite database, followed by app reload
+- Safe replacement of the active SQLCipher database, followed by app reload
+- Legacy plaintext backups are re-encrypted before they become active
 
 ## Local backup location
 
@@ -48,8 +50,8 @@ folder error. Retention is applied independently in each folder.
 
 1. Open **Settings → Device & sync → Backup & restore**.
 2. Select a `.db` backup file.
-3. The app validates:
-   - SQLite file header
+3. The Rust backend validates the SQLCipher (or legacy plaintext) file:
+   - SQLCipher key / SQLite open check
    - `PRAGMA quick_check`
    - MediCore schema version
    - required core tables
@@ -80,18 +82,21 @@ folder. Retention only deletes files beginning with `MediCore-daily-`, `MediCore
 ## Verification performed
 
 - Daily scheduler produced `MediCore-daily`, `MediCore-weekly` and `MediCore-monthly` files.
-- Snapshot opened successfully with `schema_version=17` and `PRAGMA quick_check=ok`.
-- Manual **Backup Now** created local files and files in a selected secondary folder.
+- Encrypted snapshot opened successfully with SQLCipher 4.20, `schema_version=17` and
+  `PRAGMA quick_check=ok`.
+- Manual **Backup Now** created encrypted local files and files in a selected secondary folder.
 - Restore through Settings created `pre-restore-<epoch>.db`, reloaded the application, and left the
-  active database at schema 17 with `PRAGMA quick_check=ok` and matching invoice counts.
+  active database encrypted at schema 17 with `PRAGMA quick_check=ok` and matching invoice counts.
+- Restoring an older plaintext backup re-encrypted it before activation.
 - Rust unit tests confirmed 7 daily / 4 weekly / 12 monthly retention, preservation of pre-migration
-  backups, safe replacement and the pre-restore safety copy.
+  backups, SQLCipher export and backup validation.
 - `npm run tauri build` produced NSIS and MSI installers.
 
 ## Limitations
 
-- Snapshots are not encrypted. Enable Windows disk encryption/controlled backup media until WS3 encryption
-  is complete.
+- Snapshots are SQLCipher-encrypted with the same Windows Credential Manager key as the database. Key
+  export/import and cross-machine recovery are not yet implemented; keep a controlled Windows-profile
+  backup until that is added.
 - The daily schedule runs only while the desktop app is open.
 - The optional folder is not monitored automatically; a disconnected drive is reported on the next backup.
 - There is no cloud backup service.

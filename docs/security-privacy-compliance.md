@@ -31,12 +31,16 @@
 
 ## Data location and retention today
 
-- Development data resides in browser IndexedDB as a SQLite image.
-- Production target is a Tauri-managed SQLite file.
-- There is currently no automated off-device copy, retention scheduler or deletion certificate.
+- Development data resides in browser IndexedDB as a SQLite image and is not covered by desktop SQLCipher.
+- The packaged desktop app uses a Tauri-managed SQLCipher file; the key is held in Windows Credential
+  Manager.
+- Encrypted local snapshots and optional USB/OneDrive copies exist, but key export/import and unattended
+  scheduling are not complete.
+- There is no cloud backup, central retention scheduler or deletion certificate.
 - CSV exports and printed PDFs create uncontrolled copies outside the app; buyers must have a policy
   for those copies.
-- Encryption is not yet a complete user-facing feature; do not say “all data is encrypted” in sales.
+- Say “desktop database and local backups are SQLCipher-encrypted; browser/development storage is not”
+  rather than “all data is encrypted”.
 
 ## Hospital and pharmacy extensions
 

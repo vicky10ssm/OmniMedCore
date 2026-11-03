@@ -129,10 +129,10 @@ licence portal is implemented as a vendor admin portal, not a hosted public subs
 
 | Limitation | Buyer impact | Mitigation before sale |
 | --- | --- | --- |
-| No Windows installer | Cannot deploy normally | P0 Tauri release |
-| Browser-storage data today | Clearing cache risks data | P0 local SQLite + backups |
-| No backup/restore | Unacceptable data-loss exposure | P0 |
-| Encryption not user-enableable | Theft protection incomplete | P0 |
+| Unsigned Windows installer | Cannot deploy as trusted production build | P0 code signing/acceptance |
+| Browser-storage data today | Clearing cache risks data | P0 packaged SQLCipher release |
+| Encrypted backup key recovery | Off-device restore depends on the Windows profile key | P0 key export/import + clean-machine test |
+| No unattended backup schedule | Backups run only while the app is open | P0 Windows task/service |
 | Monitor not cloud-connected | No remote viewing | P2 |
 | No live ABDM | Cannot meet ABDM exchange requirement | P3 |
 | No QMS/IQC/EQA | Not a complete NABL quality system | P1/partner |

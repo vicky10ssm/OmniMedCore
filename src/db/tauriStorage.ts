@@ -1,12 +1,7 @@
-// Desktop database diagnostics and pre-migration backup commands.
-//
-// The SQLite connection itself is handled by @tauri-apps/plugin-sql. These
-// commands only expose the resolved app-data path, writability and backup
-// location, and copy the live SQLite file before an existing schema migrates.
+// Desktop database diagnostics, encryption status and pre-migration backup
+// commands. The native SQLCipher connection itself is owned by Rust.
 
 import { invoke } from "@tauri-apps/api/core";
-
-export const NATIVE_DB_URL = "sqlite:medicore.db";
 
 export interface DatabaseInfo {
   dataDir: string;
@@ -15,6 +10,14 @@ export interface DatabaseInfo {
   databaseExists: boolean;
   databaseBytes: number;
   writable: boolean;
+}
+
+export interface DatabaseEncryptionInfo {
+  keyPresent: boolean;
+  keyBackend: string;
+  fileEncrypted: boolean;
+  cipherVersion: string;
+  databasePath: string;
 }
 
 export function isTauriRuntime(): boolean {
@@ -40,6 +43,23 @@ export async function databaseInfo(): Promise<DatabaseInfo> {
     databaseExists: info.database_exists,
     databaseBytes: info.database_bytes,
     writable: info.writable,
+  };
+}
+
+export async function databaseEncryptionInfo(): Promise<DatabaseEncryptionInfo> {
+  const info = await invoke<{
+    key_present: boolean;
+    key_backend: string;
+    file_encrypted: boolean;
+    cipher_version: string;
+    database_path: string;
+  }>("db_encryption_info");
+  return {
+    keyPresent: info.key_present,
+    keyBackend: info.key_backend,
+    fileEncrypted: info.file_encrypted,
+    cipherVersion: info.cipher_version,
+    databasePath: info.database_path,
   };
 }
 

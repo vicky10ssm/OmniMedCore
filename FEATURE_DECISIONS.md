@@ -463,18 +463,21 @@ The second deployment exists. `npm run build` makes the terminal (editing) app; 
 - Rust/MSVC are not installed on this machine, so native compilation, installer execution and failure
   tests remain manual WS2 steps documented in `DESKTOP_BUILD.md`.
 
-## Native SQLite via plugin-sql - supersedes file-backed desktop persistence
+## Native SQLCipher via Rust - supersedes plugin-sql and file-backed desktop persistence
 
-- The Tauri desktop now uses `@tauri-apps/plugin-sql` for a native SQLite connection. The browser
-  continues to use sql.js/IndexedDB.
-- The plugin crate is vendored only to set the SQLite pool `max_connections(1)`. This guarantees the
-  existing BEGIN/COMMIT transaction blocks remain on one connection.
-- Plugin SQL uses `$1` placeholders; the DataSource adapter rewrites the app's existing positional `?`
-  placeholders safely outside quoted strings and comments.
+- The Tauri desktop uses a native Rust SQLCipher 4.20 connection. The browser continues to use
+  sql.js/IndexedDB without desktop SQLCipher coverage.
+- A random 256-bit database key is generated on first use and stored in Windows Credential Manager.
+  No plaintext key is written to configuration or source control.
+- Existing plaintext databases are exported into SQLCipher on first launch. The plaintext file is
+  replaced only after the encrypted copy passes integrity and schema checks.
+- Rust owns one connection; the DataSource adapter rewrites the app's existing positional `?`
+  placeholders safely and routes queries through custom Tauri commands.
 - Existing migrations, seed, tenant repair, compliance column repair, admin bootstrap and device ID
   logic run through the native source.
-- A `wal_checkpoint(FULL)` plus timestamped pre-migration backup is taken before upgrading an existing
-  schema. `PRAGMA quick_check` runs before migrations.
+- A `wal_checkpoint(FULL)` plus timestamped encrypted pre-migration backup is taken before upgrading an
+  existing schema. `PRAGMA quick_check` runs before migrations.
+- Key export/import for cross-machine recovery remains a production gate.
 
 ## Append-only sync queue and central dashboard - built (pilot)
 

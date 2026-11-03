@@ -9,7 +9,7 @@ Current schema: `17`
 React/TypeScript single codebase
 â”œâ”€â”€ Terminal build
 â”‚   â”œâ”€â”€ browser: sql.js SQLite persisted to IndexedDB
-â”‚   â”œâ”€â”€ desktop: sql.js SQLite persisted to app-data file
+â”‚   â”œâ”€â”€ desktop: native SQLCipher file; key in Windows Credential Manager
 â”‚   â”œâ”€â”€ all billing/clinical data entry
 â”‚   â””â”€â”€ local print layouts (A4 and 80 mm)
 â””â”€â”€ Monitor build
@@ -47,25 +47,25 @@ The target architecture is **not the same as the current deployment**. Be explic
 - Referral commissions are intentionally removed from navigation, doctor forms and new invoice accrual.
 - Pathology samples can be disposed only after every linked test has complete entered results; the
   action handler re-checks the gate.
-- Tauri v2 desktop build, single-instance guard and native SQLite persistence via
-  `@tauri-apps/plugin-sql` work locally; unsigned NSIS and MSI installers were produced.
+- Tauri v2 desktop build, single-instance guard and native SQLCipher persistence with the database key
+  in Windows Credential Manager work locally; unsigned NSIS and MSI installers were produced.
 - Installer signing, clean-machine installation/upgrade/uninstall acceptance and distribution are still
   outstanding.
-- Local daily snapshots, optional USB/OneDrive copy and validated restore are implemented. Backups are
-  unencrypted and the daily schedule runs only while the desktop app is open. No auto-update, deployed
-  cloud sync or remote support agent.
+- Local daily encrypted snapshots, optional USB/OneDrive copy and validated restore are implemented.
+  The daily schedule runs only while the desktop app is open, and key export/import for cross-machine
+  recovery is still pending. No auto-update, deployed cloud sync or remote support agent.
 
 ## What is not yet deployable
 
 | Gap | Why it matters to a buyer |
 | --- | --- |
 | Installer unsigned/unaccepted | NSIS/MSI builds exist but are not code-signed or accepted on clean buyer hardware |
-| Browser build uses IndexedDB | Development/browser data can be cleared; packaged desktop uses SQLite |
-| Backups unencrypted / app-open only | Local snapshots reduce disk-loss risk, but encryption, unattended scheduling and offsite verification remain release gates |
+| Browser build uses IndexedDB | Development/browser data can be cleared; packaged desktop uses SQLCipher |
+| Encrypted backups / key recovery | Local SQLCipher snapshots reduce disk-loss risk, but key export/import, unattended scheduling, offsite verification and a clean-machine restore remain release gates |
 | Sync/dashboard not deployed | Next.js/PostgreSQL sync receiver and dashboard code exist locally; hosting, TLS, per-device tokens and operations are pending |
 | No update mechanism | Security/bug fixes cannot be rolled out reliably |
 | No installer signing | Windows SmartScreen friction and weaker provenance |
-| Encryption not user-configurable | At-rest theft protection cannot be turned on through a finished workflow |
+| Encryption key recovery not exposed | SQLCipher protects the file, but a lost Windows profile/key currently makes encrypted backups unreadable |
 | Licence stored in browser storage | Not OS-protected; packaged Tauri must use secure config and enforce entitlements outside the UI |
 | Licence portal not hosted/hardened | The portal runs locally but has no public deployment, TLS, per-user auth/MFA, backups or uptime support |
 | No validation pack | Buyers needing formal computer-system validation must have one prepared |
@@ -74,10 +74,11 @@ The target architecture is **not the same as the current deployment**. Be explic
 
 Recommended minimum before installing at a buyer site:
 
-1. **Tauri production build** using local SQLite file, not IndexedDB.
-2. **Backup and restore**: local daily snapshots and validated restore exist; add encryption,
-   unattended Windows scheduling, offsite verification and a clean-machine restore test.
-3. **Recovery-key flow**: enable/change DB passphrase, recovery code, relock behavior validated.
+1. **Tauri production build** using local SQLCipher, not IndexedDB.
+2. **Backup and restore**: local encrypted daily snapshots and validated restore exist; add key
+   export/import, unattended Windows scheduling, offsite verification and a clean-machine restore test.
+3. **Recovery-key flow**: export/import the SQLCipher key, rotate it, and prove restore on a new Windows
+   profile or machine.
 4. **Installer/upgrade path**: versioning, rollback, database migration test on real prior versions.
 5. **Pilot acceptance pack**: test script, known-defect log, rollback procedure.
 6. **Support boundary**: named contact, hours, response targets, remote-access method.

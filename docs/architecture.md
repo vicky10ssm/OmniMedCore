@@ -1,7 +1,7 @@
 ﻿# MediCore architecture and offline/online sync design
 
 Last updated: 3 November 2026  
-Current product version: `0.2.2`  
+Current product version: `0.3.0`  
 Current schema: `17`
 
 ## 1. Status and scope
@@ -55,7 +55,7 @@ opened on that machine; it cannot see another terminal or a phone outside that b
 | Area | Current state |
 | --- | --- |
 | Language/UI | React 19, TypeScript, React Router, Tailwind |
-| Local store | Browser: `sql.js` SQLite image in IndexedDB. Desktop: native SQLite via `@tauri-apps/plugin-sql` |
+| Local store | Browser: `sql.js` SQLite image in IndexedDB. Desktop: native SQLCipher with the key in Windows Credential Manager |
 | Desktop packaging | Tauri v2 native build succeeds; unsigned NSIS/MSI installers produced locally |
 | Online data | No server database/API |
 | Monitor | Separate bundle, same local source, write methods throw |
@@ -68,15 +68,16 @@ opened on that machine; it cannot see another terminal or a phone outside that b
 | Licence expiry | 30-day grace; after grace UI enters read-only mode, existing data/print/export remain available |
 | Licence storage | Browser `localStorage` in development; OS-secure packaged storage and backend enforcement still required |
 | Vendor portal | Separate Node admin portal signs issuances/renewals/revocations with the private key; not publicly deployed |
-| Encryption | AES-GCM/envelope foundation; production SQLCipher/file integration not complete |
-| Backups | Not implemented |
+| Encryption | Desktop SQLCipher 4.20/AES-256, key in Windows Credential Manager; browser AES-GCM envelope remains separate |
+| Backups | Encrypted local daily/monthly/weekly snapshots, optional USB/OneDrive copy, validated restore |
 
 ### Application boot
 
 1. `getDb()` uses the Rust single-instance guard in Tauri, a browser single-writer lock in the web
    build, or opens read-only for the monitor.
-2. The browser loads the `SqlJsSource` SQLite image from IndexedDB. The desktop loads a native SQLite
-   connection through `@tauri-apps/plugin-sql` from the app-config directory, or creates a new DB.
+2. The browser loads the `SqlJsSource` SQLite image from IndexedDB. The desktop opens a native
+   SQLCipher connection from the app-config directory; an existing plaintext file is exported into
+   SQLCipher before use.
 3. Before an existing desktop database migrates, Tauri checkpoints WAL, creates a timestamped
    pre-migration backup and runs `PRAGMA quick_check`.
 4. Migrations run in ascending version order with tenant/compliance repair.
@@ -222,8 +223,9 @@ A terminal can operate without internet:
 6. A4/thermal invoices, hospital service bills and A4 reports print from local data.
 7. A draft ABDM FHIR document can be generated locally, but it is not transmitted.
 
-Current risk: browser storage is not a production-grade durable database, and no automated backup
-exists. This is why Tauri/local SQLite and backup/restore are P0 release gates.
+Current risk: browser storage is not a production-grade durable database and remains plaintext.
+Desktop SQLCipher and encrypted backup/restore exist, but key export/import and clean-machine restore
+are still P0 release gates.
 
 ## 6. Target production architecture
 
@@ -693,7 +695,7 @@ interfaces and a separate integration validation programme.
 ### Decisions still required
 
 1. Cloud provider and India data-residency approach.
-2. SQLCipher vs other local encryption approach.
+2. SQLCipher key export/import and rotation workflow.
 3. Server framework/language and queue/change-log implementation.
 4. Device keypair vs device secret + token rotation.
 5. Whether audit rows sync in full or only hashes/metadata.

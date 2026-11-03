@@ -3,32 +3,34 @@
 Last updated: 2 November 2026
 
 This is the manual follow-through for WS2. The repository now contains the Tauri shell and a native
-SQLite data source.
+SQLCipher data source.
 
 On 3 November 2026 the local Windows build succeeded with Rust 1.99.1 and Visual Studio 2026 MSVC:
-NSIS and MSI installers were produced. The app was launched, the plugin-sql database was created, a
-second instance was rejected/focused, close-flush completed, and a simulated schema upgrade created a
-pre-migration backup. See “Local build evidence” below.
+NSIS and MSI installers were produced. The app was launched, the plaintext database was migrated to
+SQLCipher, a second instance was rejected/focused, close-flush completed, and a simulated schema upgrade
+created a pre-migration backup. See "Local build evidence" below.
 
 ## What is already implemented
 
 - Tauri v2 shell (`src-tauri/`)
 - Single-instance plugin: a second launch focuses the existing window
-- `@tauri-apps/plugin-sql` native SQLite connection
-- Vendored plugin-sql build configured with a single SQLite connection so the existing
-  BEGIN/COMMIT transactions stay on one connection
-- SQLite database file under the Windows app-config/app-data directory
+- Native Rust SQLCipher 4.20 connection using bundled SQLCipher + libtomcrypt
+- 256-bit database key generated once and stored in Windows Credential Manager
+- Plaintext-to-SQLCipher migration with a verified encrypted pre-encryption copy
+- Encrypted database file under the Windows app-config/app-data directory
 - WAL mode, foreign keys and busy timeout
-- Pre-migration `wal_checkpoint(FULL)` plus timestamped backup into `backups/`
-- SQLite `quick_check` before migrations
+- Pre-migration `wal_checkpoint(FULL)` plus timestamped encrypted backup into `Backups/`
+- `quick_check` before migrations
 - Flush-before-window-close handler
-- Desktop storage path/writability in **Settings → Device & sync**
+- Encryption status, key backend and storage path in **Settings → Device & sync**
 - NSIS + MSI bundle configuration
 - Generated Windows application icons
 - Manual-update strategy for the pilot; no auto-updater is configured yet
 
-Current storage note: the browser build keeps using sql.js/IndexedDB. The Tauri build uses
-`@tauri-apps/plugin-sql` with a real SQLite file and the same migrations and DataSource interface.
+Current storage note: the browser build keeps using sql.js/IndexedDB. The Tauri build uses native
+SQLCipher with the key in Windows Credential Manager and the same migrations and DataSource interface.
+SQLCipher is compiled from the bundled `sqlcipher-src` crate with libtomcrypt; no OpenSSL, Perl or
+NASM installation is needed.
 
 ## Local build evidence
 
@@ -41,23 +43,27 @@ Verified on 3 November 2026:
 | `npm run build` | Passed |
 | `npm run build:monitor` | Passed |
 | `npm run tauri build` | Passed |
-| NSIS installer | `MediCore_0.2.2_x64-setup.exe` — 3.41 MiB, unsigned |
-| MSI installer | `MediCore_0.2.2_x64_en-US.msi` — 4.71 MiB, unsigned |
+| NSIS installer | `MediCore_0.3.0_x64-setup.exe` — 3.19 MiB, unsigned |
+| MSI installer | `MediCore_0.3.0_x64_en-US.msi` — 4.36 MiB, unsigned |
 | Runtime database | `%APPDATA%\in.medicore.desktop\medicore.db` |
 | Schema/integrity | `schema_version=17`, `PRAGMA quick_check=ok` |
 | Single instance | Second process exited; original stayed running |
 | Close flush | WAL checkpointed; database readable after close |
 | Pre-migration backup | `pre-migration-v15-<timestamp>.db` and `pre-migration-v16-<timestamp>.db` created |
-| Scheduled backup | `MediCore-daily-2026-11-03.db`, `MediCore-weekly-2026-W45.db`, `MediCore-monthly-2026-11.db` |
-| Manual/secondary backup | Local and selected-folder copies created; 3 files each |
+| Scheduled backup | Encrypted `MediCore-daily-2026-11-03.db`, `MediCore-weekly-2026-W45.db`, `MediCore-monthly-2026-11.db` |
+| Manual/secondary backup | Encrypted local and selected-folder copies created; 3 files each |
 | Restore | Pre-restore safety copy created; app reloaded with schema 17 and matching invoice counts |
+| Encryption | SQLCipher 4.20; `PRAGMA quick_check=ok`; invoice counts preserved |
+| Key storage | Windows Credential Manager target `sqlcipher-database-key-v1.in.medicore.desktop` present |
+| Plaintext migration | Existing 585,728-byte plaintext database encrypted; `pre-encryption-<epoch>.db` created |
+| Legacy backup restore | Plaintext backup accepted, re-encrypted and activated |
 | Sync schema | Migration 17 created `sync_queue`, `sync_ack` and six entity triggers |
 
 Checksums from that build:
 
 ```text
-NSIS SHA256: 19C228744E8656E4BBA2978F153B11A424EDD191E2C095708428D0548CC811C5
-MSI  SHA256: CD554CF07057E9CEE26A2C6E25AC87E31B2517B6044F2DF2EC57ED9582E2C819
+NSIS SHA256: 83036ECD2AD87E118464B576493069C9FDAD0DF44A632C703DBA609BA2E86883
+MSI  SHA256: 536373732050EE0DE05450A9005AD93F57AAF8A6C24A5CE6A5E562E8E2F4BEB2
 ```
 
 These hashes change on every rebuild. Recompute them before publishing.
@@ -149,6 +155,9 @@ The app-data location should be:
 Confirm the exact path in **Settings → Device & sync**. The card should show:
 
 - Storage: `SQLite file (desktop app-data)`
+- Encryption: `SQLCipher (AES-256)`
+- Key storage: `Windows Credential Manager`
+- Cipher engine: `4.20.0 community`
 - Database file path
 - File writable: `Yes`
 - Pre-migration backups path
@@ -226,8 +235,8 @@ Get-ChildItem src-tauri\target\release\bundle\msi
 Typical output:
 
 ```text
-MediCore_0.2.2_x64-setup.exe
-MediCore_0.2.2_x64_en-US.msi
+MediCore_0.3.0_x64-setup.exe
+MediCore_0.3.0_x64_en-US.msi
 ```
 
 The installer is **unsigned** until a Windows code-signing certificate is configured. Do not distribute
@@ -349,7 +358,7 @@ Do not commit:
 After signing:
 
 ```powershell
-Get-AuthenticodeSignature .\src-tauri\target\release\bundle\nsis\MediCore_0.2.2_x64-setup.exe
+Get-AuthenticodeSignature .\src-tauri\target\release\bundle\nsis\MediCore_0.3.0_x64-setup.exe
 ```
 
 Expected status: `Valid`.
@@ -357,7 +366,7 @@ Expected status: `Valid`.
 Generate checksums:
 
 ```powershell
-Get-FileHash .\src-tauri\target\release\bundle\nsis\MediCore_0.2.2_x64-setup.exe `
+Get-FileHash .\src-tauri\target\release\bundle\nsis\MediCore_0.3.0_x64-setup.exe `
   -Algorithm SHA256
 ```
 
@@ -381,12 +390,13 @@ Get-FileHash .\src-tauri\target\release\bundle\nsis\MediCore_0.2.2_x64-setup.exe
 - [ ] A4/thermal printing accepted on Windows
 - [ ] Installer signing configured and verified
 - [ ] Previous installer and checksum retained for rollback
-- [ ] WS3 encryption/backup work remains separate
+- [ ] SQLCipher migration and Credential Manager key verified
+- [ ] Encrypted backup and restore verified
 
 ## 12. What remains blocked
 
 - OS-secure licence storage and backend entitlement enforcement
-- Encryption-at-rest integration for the desktop file
-- Automated backup/restore and scheduled retention
+- SQLCipher key export/import and key rotation for cross-machine recovery
+- Unattended Windows scheduled backup and clean-machine restore acceptance
 - Auto-updater signing/endpoints
 - Public installer distribution and support process

@@ -24,7 +24,13 @@ import {
 import { readLogoFile, validateLogoFile } from "../ui/logo";
 import { useLicense } from "../licensing/LicenseContext";
 import { LicenseSettingsPanel } from "./License";
-import { databaseInfo, isTauriRuntime, type DatabaseInfo } from "../db/tauriStorage";
+import {
+  databaseEncryptionInfo,
+  databaseInfo,
+  isTauriRuntime,
+  type DatabaseEncryptionInfo,
+  type DatabaseInfo,
+} from "../db/tauriStorage";
 import SyncSettings from "./SyncSettings";
 import BackupSettings from "./BackupSettings";
 import type { UserRow } from "../db/types";
@@ -109,6 +115,7 @@ export default function Settings() {
 
   const [tab, setTab] = useState<"lab" | "modules" | "license" | "users" | "device">("lab");
   const [desktopInfo, setDesktopInfo] = useState<DatabaseInfo | null>(null);
+  const [encryptionInfo, setEncryptionInfo] = useState<DatabaseEncryptionInfo | null>(null);
   const [form, setForm] = useState<ProfileForm>(EMPTY);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState("");
@@ -192,6 +199,9 @@ export default function Settings() {
     void databaseInfo()
       .then(setDesktopInfo)
       .catch((e) => console.warn("Could not read desktop database diagnostics", e));
+    void databaseEncryptionInfo()
+      .then(setEncryptionInfo)
+      .catch((e) => console.warn("Could not read desktop encryption diagnostics", e));
   }, []);
 
   const saveProfile = async (e: FormEvent) => {
@@ -1158,7 +1168,7 @@ export default function Settings() {
                 <dt className="shrink-0 text-slate-500">Storage</dt>
                 <dd className="text-right">
                   {isTauriRuntime()
-                    ? "SQLite file (desktop app-data)"
+                    ? "SQLCipher file (desktop app-data)"
                     : "SQLite via IndexedDB (browser)"}
                 </dd>
               </div>
@@ -1170,6 +1180,36 @@ export default function Settings() {
                       {desktopInfo.databasePath}
                     </dd>
                   </div>
+                  {encryptionInfo && (
+                    <>
+                      <div className="flex justify-between gap-4">
+                        <dt className="shrink-0 text-slate-500">Encryption</dt>
+                        <dd
+                          className={
+                            encryptionInfo.fileEncrypted ? "text-emerald-700" : "text-rose-700"
+                          }
+                        >
+                          {encryptionInfo.fileEncrypted ? "SQLCipher (AES-256)" : "Not encrypted"}
+                        </dd>
+                      </div>
+                      <div className="flex justify-between gap-4">
+                        <dt className="shrink-0 text-slate-500">Key storage</dt>
+                        <dd
+                          className={
+                            encryptionInfo.keyPresent ? "text-emerald-700" : "text-rose-700"
+                          }
+                        >
+                          {encryptionInfo.keyPresent
+                            ? encryptionInfo.keyBackend
+                            : "Key missing"}
+                        </dd>
+                      </div>
+                      <div className="flex justify-between gap-4">
+                        <dt className="shrink-0 text-slate-500">Cipher engine</dt>
+                        <dd className="num text-right text-xs">{encryptionInfo.cipherVersion}</dd>
+                      </div>
+                    </>
+                  )}
                   <div className="flex justify-between gap-4">
                     <dt className="shrink-0 text-slate-500">File writable</dt>
                     <dd className={desktopInfo.writable ? "text-emerald-700" : "text-rose-700"}>
@@ -1193,6 +1233,13 @@ export default function Settings() {
               Every terminal keeps its own database and its own invoice number block,
               so billing never waits for the internet.
             </p>
+            {encryptionInfo?.fileEncrypted && (
+              <p className="mt-2 text-xs text-amber-700">
+                The SQLCipher key belongs to this Windows user. Encrypted backups need the
+                same credential, so plan Windows-profile recovery before relying on off-device
+                restores.
+              </p>
+            )}
           </Card>
 
           <Card className="p-4">

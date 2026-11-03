@@ -1,19 +1,24 @@
 # Vendored Rust dependencies
 
-## tauri-plugin-sql 2.6.0
+## libsqlite3-sys 0.30.1 (SQLCipher/libtomcrypt build)
 
-The upstream crate is vendored only to change the SQLite pool from the SQLx default to
-`max_connections(1)` in `src/wrapper.rs`.
+`libsqlite3-sys` is vendored to compile the bundled `sqlcipher-src` amalgamation with the
+libtomcrypt crypto provider. This avoids a system OpenSSL, Perl or NASM dependency on Windows while
+still exposing the standard SQLite API to `rusqlite`.
 
-MediCore's existing transaction callbacks issue `BEGIN IMMEDIATE`, multiple awaited statements and
-`COMMIT` through separate plugin calls. With more than one pooled SQLite connection those statements
-could be assigned to different connections, breaking transaction atomicity. A single connection keeps
-every statement inside the transaction on the same connection.
+Files changed from the crates.io release:
 
-When upgrading `tauri-plugin-sql`:
+- `build.rs` compiles SQLCipher and libtomcrypt, copies the bundled SQLite bindings into `OUT_DIR`,
+  and links `bcrypt` for Windows entropy.
+- `sqlcipher_native.h` is the shared libtomcrypt configuration used by SQLCipher and every
+  libtomcrypt translation unit.
+- `sqlcipher_rng.c` implements `rng_get_bytes` with `BCryptGenRandom` instead of libtomcrypt's
+  platform entropy probes.
+- The large upstream SQLite C sources are removed; only the generated bindings remain.
 
-1. Download the new crate source.
-2. Reapply the `max_connections(1)` change.
-3. Update `src-tauri/Cargo.toml` and the `@tauri-apps/plugin-sql` npm version together.
-4. Test transaction-heavy flows: invoice creation/payment/cancellation, pharmacy dispensing, sample
-   transitions, report save/verify and demo seeding.
+When upgrading `libsqlite3-sys` or `rusqlite`:
+
+1. Keep `libsqlite3-sys` at the version required by the selected `rusqlite` release.
+2. Reapply the build-script, header and RNG changes against the new crate.
+3. Verify `PRAGMA cipher_version`, `PRAGMA key`, plaintext export and encrypted reopen.
+4. Re-run `cargo test`, the encrypted migration and backup/restore smoke tests.

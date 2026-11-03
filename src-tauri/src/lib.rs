@@ -1,4 +1,5 @@
-use base64::Engine as _;
+mod db;
+
 use serde::Serialize;
 use std::fs::{self, File};
 use std::io::{copy, Write};
@@ -238,56 +239,6 @@ fn create_snapshot(
     })
 }
 
-fn restore_database_bytes(
-    target: &Path,
-    data_dir: &Path,
-    safety_dir: &Path,
-    bytes: &[u8],
-) -> Result<(), String> {
-    fs::create_dir_all(data_dir)
-        .map_err(|e| format!("Could not create the application-data directory: {e}"))?;
-
-    if target.exists() {
-        fs::create_dir_all(safety_dir)
-            .map_err(|e| format!("Could not create the backup directory: {e}"))?;
-        let safety = safety_dir.join(format!("pre-restore-{}.db", timestamp()));
-        atomic_copy_file(target, &safety)?;
-        copy_sidecar(target, &safety);
-    }
-
-    let mut temp = tempfile::NamedTempFile::new_in(data_dir)
-        .map_err(|e| format!("Could not create a temporary restore file: {e}"))?;
-    temp.write_all(bytes)
-        .map_err(|e| format!("Could not write the restore file: {e}"))?;
-    temp.as_file()
-        .sync_all()
-        .map_err(|e| format!("Could not flush the restore file: {e}"))?;
-    temp.persist(target)
-        .map_err(|e| format!("Could not replace the active database: {e}"))?;
-
-    let target_name = target
-        .file_name()
-        .map(|name| name.to_string_lossy().to_string())
-        .unwrap_or_else(|| DB_FILE_NAME.to_string());
-    let _ = fs::remove_file(target.with_file_name(format!("{target_name}-wal")));
-    let _ = fs::remove_file(target.with_file_name(format!("{target_name}-shm")));
-    Ok(())
-}
-
-#[tauri::command]
-fn restore_database(app: tauri::AppHandle, bytes_base64: String) -> Result<String, String> {
-    let bytes = base64::engine::general_purpose::STANDARD
-        .decode(bytes_base64.as_bytes())
-        .map_err(|e| format!("Backup payload is not valid base64: {e}"))?;
-    if !bytes.starts_with(b"SQLite format 3\0") {
-        return Err("Selected file is not a SQLite database.".into());
-    }
-
-    let target = database_path(&app)?;
-    restore_database_bytes(&target, &app_data_dir(&app)?, &backup_dir(&app)?, &bytes)?;
-    Ok(target.to_string_lossy().to_string())
-}
-
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -298,8 +249,8 @@ pub fn run() {
                 let _ = window.set_focus();
             }
         }))
-        .plugin(tauri_plugin_sql::Builder::default().build())
         .plugin(tauri_plugin_dialog::init())
+        .manage(db::DbState::default())
         .setup(|app| {
             let dir = app
                 .path()
@@ -313,7 +264,14 @@ pub fn run() {
             database_info,
             backup_database,
             create_snapshot,
-            restore_database
+            db::db_open,
+            db::db_close,
+            db::db_checkpoint,
+            db::db_select,
+            db::db_execute,
+            db::db_encryption_info,
+            db::validate_backup,
+            db::restore_database
         ])
         .run(tauri::generate_context!())
         .expect("error while running MediCore");
@@ -361,47 +319,4 @@ mod tests {
         assert!(dir.join("pre-migration-v16-1.db").exists());
     }
 
-    #[test]
-    fn restore_replaces_database_and_keeps_pre_restore_copy() {
-        let root = tempfile::tempdir().expect("temp dir");
-        let data_dir = root.path().join("data");
-        let safety_dir = root.path().join("Backups");
-        fs::create_dir_all(&data_dir).expect("data dir");
-
-        let target = data_dir.join("medicore.db");
-        fs::write(&target, b"old database").expect("old database");
-        fs::write(data_dir.join("medicore.db-wal"), b"old wal").expect("old wal");
-        fs::write(data_dir.join("medicore.db-shm"), b"old shm").expect("old shm");
-
-        restore_database_bytes(
-            &target,
-            &data_dir,
-            &safety_dir,
-            b"SQLite format 3\0new database",
-        )
-        .expect("restore");
-
-        assert_eq!(fs::read(&target).expect("restored file"), b"SQLite format 3\0new database");
-        assert!(!data_dir.join("medicore.db-wal").exists());
-        assert!(!data_dir.join("medicore.db-shm").exists());
-
-        let safety_files: Vec<PathBuf> = fs::read_dir(&safety_dir)
-            .expect("safety dir")
-            .filter_map(Result::ok)
-            .map(|entry| entry.path())
-            .filter(|path| {
-                path.file_name()
-                    .map(|name| {
-                        let name = name.to_string_lossy();
-                        name.starts_with("pre-restore-") && name.ends_with(".db")
-                    })
-                    .unwrap_or(false)
-            })
-            .collect();
-        assert_eq!(safety_files.len(), 1);
-        assert_eq!(
-            fs::read(&safety_files[0]).expect("safety file"),
-            b"old database"
-        );
-    }
 }

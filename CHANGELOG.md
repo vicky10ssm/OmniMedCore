@@ -5,7 +5,26 @@ production releases begin.
 
 ## [Unreleased]
 
-No changes yet.
+### Added
+
+- SQLCipher 4.20 (AES-256) encryption for the Tauri desktop database.
+- Automatic plaintext-to-SQLCipher migration with an encrypted `pre-encryption` copy.
+- Database key generation and storage in Windows Credential Manager using the native keyring API.
+- Encryption status, key backend and SQLCipher version in Settings → Device & sync.
+- SQLCipher-aware backup validation and restore; legacy plaintext backups are re-encrypted before
+  activation.
+
+### Security
+
+- The database key is never written to configuration files, localStorage, logs or source control.
+- The desktop app fails closed if an encrypted database exists but its Credential Manager key is missing.
+- Backups produced from the encrypted database are encrypted.
+- Browser/development IndexedDB remains separate and is not covered by desktop SQLCipher.
+
+### Remaining
+
+- Key export/import and rotation for cross-machine disaster recovery.
+- Clean-machine restore acceptance with the SQLCipher key.
 
 ## [0.2.2] - 2026-11-03
 
