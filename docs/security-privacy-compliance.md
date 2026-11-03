@@ -16,7 +16,7 @@
 | Automated backup | None | **Not available** |
 | Retention/legal hold | None | **Not available** |
 | Remote access/support | None built | Must be arranged per pilot |
-| Code signing | None | Future cost/friction |
+| Code signing | Local self-signed certificate; public root must be installed on clients | Public-CA/HSM signing for general distribution |
 | Penetration test | Not performed | Do not claim |
 | ISO 27001/SOC 2 | Not held | Do not claim |
 

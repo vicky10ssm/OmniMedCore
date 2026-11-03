@@ -129,7 +129,7 @@ licence portal is implemented as a vendor admin portal, not a hosted public subs
 
 | Limitation | Buyer impact | Mitigation before sale |
 | --- | --- | --- |
-| Unsigned Windows installer | Cannot deploy as trusted production build | P0 code signing/acceptance |
+| Local self-signed installer only | Client must install the local root; public CA trust pending | P0 public signing/acceptance |
 | Browser-storage data today | Clearing cache risks data | P0 packaged SQLCipher release |
 | Encrypted backup key recovery | Off-device restore depends on the Windows profile key | P0 key export/import + clean-machine test |
 | No unattended backup schedule | Backups run only while the app is open | P0 Windows task/service |
@@ -142,7 +142,7 @@ licence portal is implemented as a vendor admin portal, not a hosted public subs
 | No barcode labels | Manual accession handling | P1 |
 | Two primary roles plus release permission | Limited role granularity | P1 |
 | Static checks not a penetration test | Unknown security defects may exist | Independent review |
-| No code signing | SmartScreen trust friction | P0/optional |
+| No public-CA code signing | SmartScreen reputation still limited | P0/optional |
 | No formal validation pack | Regulated buyers may reject | P0/P1 |
 | Admission module is not a full HIS | Generic IPD service billing exists, but no nursing charts, orders, package/advance billing or insurance/TPA | P4/partner |
 | Licence portal is not publicly hosted/hardened | No public self-service, online revocation or guaranteed activation uptime | P0 licence ops |

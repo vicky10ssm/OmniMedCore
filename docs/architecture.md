@@ -56,7 +56,7 @@ opened on that machine; it cannot see another terminal or a phone outside that b
 | --- | --- |
 | Language/UI | React 19, TypeScript, React Router, Tailwind |
 | Local store | Browser: `sql.js` SQLite image in IndexedDB. Desktop: native SQLCipher with the key in Windows Credential Manager |
-| Desktop packaging | Tauri v2 native build succeeds; unsigned NSIS/MSI installers produced locally |
+| Desktop packaging | Tauri v2 native build succeeds; NSIS/MSI installers locally signed with a self-signed root |
 | Online data | No server database/API |
 | Monitor | Separate bundle, same local source, write methods throw |
 | Mode selection | Build-time mode plus DEV override; production build cannot be flipped by URL |

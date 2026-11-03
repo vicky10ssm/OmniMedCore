@@ -239,8 +239,9 @@ MediCore_0.3.0_x64-setup.exe
 MediCore_0.3.0_x64_en-US.msi
 ```
 
-The installer is **unsigned** until a Windows code-signing certificate is configured. Do not distribute
-it as a trusted production installer before signing.
+The local installers are signed with the self-signed MediCore certificate, but they are not publicly
+trusted until the client installs `code-signing\MediCore-CodeSigning.cer`. Do not describe the local
+certificate as equivalent to a public CA certificate.
 
 After the first Rust build, commit the generated dependency lockfile:
 
@@ -437,7 +438,8 @@ Get-FileHash .\src-tauri\target\release\bundle\nsis\MediCore_0.3.0_x64-setup.exe
 - [ ] Read-only disk test produces a clear error
 - [ ] Disk-full and abrupt-termination tests recorded
 - [ ] A4/thermal printing accepted on Windows
-- [ ] Installer signing configured and verified
+- [x] Local self-signed app/installer signing configured and verified
+- [ ] Public-CA signing and clean-machine acceptance
 - [ ] Previous installer and checksum retained for rollback
 - [ ] SQLCipher migration and Credential Manager key verified
 - [ ] Encrypted backup and restore verified

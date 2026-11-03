@@ -48,9 +48,10 @@ The target architecture is **not the same as the current deployment**. Be explic
 - Pathology samples can be disposed only after every linked test has complete entered results; the
   action handler re-checks the gate.
 - Tauri v2 desktop build, single-instance guard and native SQLCipher persistence with the database key
-  in Windows Credential Manager work locally; unsigned NSIS and MSI installers were produced.
-- Installer signing, clean-machine installation/upgrade/uninstall acceptance and distribution are still
-  outstanding.
+  in Windows Credential Manager work locally; NSIS and MSI installers were signed and timestamped with
+  a local self-signed certificate.
+- Publicly trusted code signing, clean-machine installation/upgrade/uninstall acceptance and distribution
+  are still outstanding.
 - Local daily encrypted snapshots, optional USB/OneDrive copy and validated restore are implemented.
   The daily schedule runs only while the desktop app is open, and key export/import for cross-machine
   recovery is still pending. No auto-update, deployed cloud sync or remote support agent.
@@ -59,12 +60,12 @@ The target architecture is **not the same as the current deployment**. Be explic
 
 | Gap | Why it matters to a buyer |
 | --- | --- |
-| Installer unsigned/unaccepted | NSIS/MSI builds exist but are not code-signed or accepted on clean buyer hardware |
+| Installer trust/unaccepted | Signed with a local self-signed root; buyers must install that root, and clean-hardware acceptance is pending |
 | Browser build uses IndexedDB | Development/browser data can be cleared; packaged desktop uses SQLCipher |
 | Encrypted backups / key recovery | Local SQLCipher snapshots reduce disk-loss risk, but key export/import, unattended scheduling, offsite verification and a clean-machine restore remain release gates |
 | Sync/dashboard not deployed | Next.js/PostgreSQL sync receiver and dashboard code exist locally; hosting, TLS, per-device tokens and operations are pending |
 | No update mechanism | Security/bug fixes cannot be rolled out reliably |
-| No installer signing | Windows SmartScreen friction and weaker provenance |
+| Local signing only | Public-CA trust and SmartScreen reputation still pending |
 | Encryption key recovery not exposed | SQLCipher protects the file, but a lost Windows profile/key currently makes encrypted backups unreadable |
 | Licence stored in browser storage | Not OS-protected; packaged Tauri must use secure config and enforce entitlements outside the UI |
 | Licence portal not hosted/hardened | The portal runs locally but has no public deployment, TLS, per-user auth/MFA, backups or uptime support |

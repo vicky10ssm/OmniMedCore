@@ -159,7 +159,7 @@ Five rules keep full multi-writer sync affordable:
 
 ### Cost & risk notes
 
-- Tauri = ₹0. Windows may show a SmartScreen warning until the app is signed — skip paid code-signing at first (click "More info → Run anyway" on your own PC); optional cert later (~₹2,000–8,000/yr).
+- Tauri = ₹0. Local builds now use a self-signed code-signing certificate; client machines must install the local root. Public-CA/HSM signing and SmartScreen reputation remain optional later (~₹2,000–8,000/yr).
 - Multi-terminal sync (terminal ↔ cloud ↔ terminal) is the **riskiest and biggest single cost driver** — roughly +30–40% over a cloud-only app. **Much of the earlier risk is now gone with online entry restricted:** browsers can't create records, so there is no online-vs-offline merge class and no billing endpoint on the internet. Mitigations baked into the design: UUID keys + `updated_at` + sync flags on every table from day 1, append-only money records, derived totals. **Revised v1 timeline: ~5 weeks of dev.**
 - The online version exposes financial monitoring to the internet → **TOTP 2FA stays in v1** (free, no SMS), plus HTTPS and rate-limited login. Billing itself is never internet-exposed.
 - **Backups:** daily local DB backup file on every centre PC **plus** the cloud copy after sync → N+1 copies, survives any single PC failure.
@@ -212,7 +212,7 @@ Five rules keep full multi-writer sync affordable:
 | Option B: single VPS (DigitalOcean Bangalore / Hetzner / Vultr) with Docker | ~₹400–600/month, everything on one box |
 | Domain | ~₹800/year |
 | Desktop app (Tauri) + local SQLite | ₹0 (open-source) |
-| Windows code-signing cert | ₹0 for now (optional later, ~₹2,000–8,000/yr) |
+| Windows code-signing cert | Local self-signed for now; public CA optional later (~₹2,000–8,000/yr) |
 | WhatsApp API / SMS OTP | ₹0 (excluded from v1) |
 
 ## Remaining open question
