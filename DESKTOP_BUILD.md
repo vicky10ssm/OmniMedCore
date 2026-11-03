@@ -43,8 +43,8 @@ Verified on 3 November 2026:
 | `npm run build` | Passed |
 | `npm run build:monitor` | Passed |
 | `npm run tauri build` | Passed |
-| NSIS installer | `MediCore_0.3.0_x64-setup.exe` — 3.19 MiB, unsigned |
-| MSI installer | `MediCore_0.3.0_x64_en-US.msi` — 4.36 MiB, unsigned |
+| NSIS installer | `MediCore_0.3.0_x64-setup.exe` — 3.20 MiB, signed |
+| MSI installer | `MediCore_0.3.0_x64_en-US.msi` — 4.37 MiB, signed |
 | Runtime database | `%APPDATA%\in.medicore.desktop\medicore.db` |
 | Schema/integrity | `schema_version=17`, `PRAGMA quick_check=ok` |
 | Single instance | Second process exited; original stayed running |
@@ -62,8 +62,8 @@ Verified on 3 November 2026:
 Checksums from that build:
 
 ```text
-NSIS SHA256: 83036ECD2AD87E118464B576493069C9FDAD0DF44A632C703DBA609BA2E86883
-MSI  SHA256: 536373732050EE0DE05450A9005AD93F57AAF8A6C24A5CE6A5E562E8E2F4BEB2
+NSIS SHA256: EA654DF2A931014D6BD5D46B824899F593BD14136E623B7AD0B149BBD133DC05
+MSI  SHA256: 67B8A739280158CA12B25971593D2EC47DC374A3BF103F1C717A3A32A002F368
 ```
 
 These hashes change on every rebuild. Recompute them before publishing.
@@ -340,28 +340,77 @@ The workflow:
 - uploads the NSIS `.exe` and MSI `.msi` as workflow artifacts
 - publishes both installers to the GitHub Release for the tag
 
-The installers are unsigned unless code signing is configured. Do not describe an unsigned build as a
-trusted production release.
+CI builds are unsigned unless a certificate is configured in the workflow. A local self-signed build is
+not a substitute for a publicly trusted CA if the buyer will not install the local root certificate.
 
-## 10. Code signing
+## 10. Local self-signed code signing
 
-Obtain a Windows code-signing certificate from the organisation’s approved CA. Configure signing in
-`src-tauri/tauri.conf.json` or the build environment, depending on the certificate type.
+The local build is signed with a dedicated self-signed code-signing certificate:
+
+```text
+Subject:    CN=MediCore Local Code Signing, O=MediCore, C=IN
+Thumbprint: 1180CA1A9509C9E968DED5E4274C89410AC52584
+Valid to:   2031-11-03
+Root file:  code-signing\MediCore-CodeSigning.cer
+```
+
+The public `.cer` is committed so client machines can trust the root. The private key and PFX are kept
+outside the repository at `%LOCALAPPDATA%\MediCore\CodeSigning\`.
 
 Do not commit:
 
-- `.pfx` files
+- `.pfx` or `.p12` files
 - certificate passwords
 - private signing keys
 - timestamp credentials
 
-After signing:
+Client machines must install the local root certificate once, then the signed app/installers are trusted:
 
 ```powershell
+certutil -addstore -f Root .\MediCore-CodeSigning.cer
+certutil -addstore -f TrustedPublisher .\MediCore-CodeSigning.cer
+```
+
+For a single Windows user without administrator rights:
+
+```powershell
+certutil -user -addstore -f Root .\MediCore-CodeSigning.cer
+certutil -user -addstore -f TrustedPublisher .\MediCore-CodeSigning.cer
+```
+
+The repeatable local flow is also in `scripts\sign-windows.ps1`. It signs the app, regenerates the
+installers with `--no-binary-patching`, signs both installers and verifies all three signatures.
+
+Local signing flow used for `0.3.0`:
+
+```powershell
+$signtool = "C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\x64\signtool.exe"
+$thumb = "1180CA1A9509C9E968DED5E4274C89410AC52584"
+
+& $signtool sign /fd SHA256 /sha1 $thumb `
+  /tr http://timestamp.digicert.com /td SHA256 `
+  .\src-tauri\target\release\medicore.exe
+
+# Preserve the signed executable while regenerating installers.
+npx tauri bundle --no-binary-patching
+
+& $signtool sign /fd SHA256 /sha1 $thumb `
+  /tr http://timestamp.digicert.com /td SHA256 `
+  .\src-tauri\target\release\bundle\nsis\MediCore_0.3.0_x64-setup.exe
+& $signtool sign /fd SHA256 /sha1 $thumb `
+  /tr http://timestamp.digicert.com /td SHA256 `
+  .\src-tauri\target\release\bundle\msi\MediCore_0.3.0_x64_en-US.msi
+```
+
+Verify the app embedded in the MSI, not only the installer shell:
+
+```powershell
+msiexec /a .\src-tauri\target\release\bundle\msi\MediCore_0.3.0_x64_en-US.msi /qn TARGETDIR=$env:TEMP\medicore-msi
+Get-AuthenticodeSignature "$env:TEMP\medicore-msi\PFiles\MediCore\medicore.exe"
 Get-AuthenticodeSignature .\src-tauri\target\release\bundle\nsis\MediCore_0.3.0_x64-setup.exe
 ```
 
-Expected status: `Valid`.
+Expected status: `Valid` and the same MediCore thumbprint.
 
 Generate checksums:
 

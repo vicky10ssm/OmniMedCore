@@ -28,6 +28,9 @@ test-results/
 *.log
 *.pem
 *.key
+*.pfx
+*.p12
+*.pvk
 
 license-portal/keys/
 license-portal/data/

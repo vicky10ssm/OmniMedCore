@@ -171,6 +171,7 @@ See [SECURITY.md](SECURITY.md).
 - [docs/productionization-plan.md](docs/productionization-plan.md) — production workstreams
 - [BACKUP_RESTORE.md](BACKUP_RESTORE.md) - local snapshots, retention, optional USB/OneDrive copy and restore
 - [ENCRYPTION.md](ENCRYPTION.md) - SQLCipher, Windows Credential Manager key storage and migration
+- [code-signing/README.md](code-signing/README.md) - local self-signed certificate and client trust setup
 - [cloud-dashboard/README.md](cloud-dashboard/README.md) - sync receiver and read-only central dashboard
 - [COMPLIANCE.md](COMPLIANCE.md) — compliance evidence and gaps
 
