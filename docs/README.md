@@ -1,7 +1,7 @@
 ﻿# MediCore buyer documentation
 
 Last updated: 3 November 2026  
-Product version: `0.1.0`  
+Product version: `0.2.1`  
 Database schema: `17`
 
 **MediCore** is the umbrella product name. The internal package/browser storage keys retain the
