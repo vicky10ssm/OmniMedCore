@@ -1,14 +1,15 @@
 // Data access layer.
 //
-// One interface, three implementations (only the first exists today):
-//   1. SqlJsSource — SQLite compiled to WASM, persisted to IndexedDB.
-//      Used in development in the browser AND inside the packaged desktop app
-//      until the Tauri SQLite backend lands (same SQL, same migrations).
-//   2. TauriSqlSource — real file-backed SQLite (planned, Phase 1 item 11/12).
-//   3. CloudApiSource — read-only queries against the cloud (planned, web version).
+// One interface, three implementations:
+//   1. SqlJsSource — SQLite compiled to WASM. In the browser it persists to
+//      IndexedDB; in the Tauri desktop shell it persists to a real SQLite file
+//      under the OS user's app-data directory (same SQL, migrations and
+//      transactions in both cases).
+//   2. ReadOnlySource — read-only IndexedDB snapshot for hosted monitoring.
+//   3. CloudApiSource — read-only cloud queries, planned.
 //
-// The interface is async on purpose: Tauri's plugin-sql and HTTP APIs are async,
-// so no UI code changes when the backend swaps.
+// The interface is async so a future native SQLite/HTTP backend can replace the
+// storage layer without changing UI code.
 
 import initSqlJs, { type Database } from "sql.js";
 import { MIGRATIONS, SEED_SQL, splitSqlStatements } from "./schema";
@@ -16,6 +17,8 @@ import { getDeviceId, now, setDeviceId } from "./helpers";
 import { hashPassword } from "../auth/crypto";
 import { isMonitor } from "../app/mode";
 import { ensureDefaultTenant, getCurrentTenantId } from "./tenant";
+import { isTauriRuntime } from "./tauriStorage";
+import { TauriSqlSource } from "./tauriSqlSource";
 import {
   decryptBytes,
   encryptBytes,
@@ -598,14 +601,20 @@ export function getDb(): Promise<DataSource> {
       dbPromise = ReadOnlySource.create();
       return dbPromise;
     }
-    if (!claimLock()) {
-      return Promise.reject(
-        new Error(
-          "This app is already open in another tab. Close it there first — two tabs would overwrite each other's data."
-        )
-      );
+    if (isTauriRuntime()) {
+      // The desktop shell enforces a single application instance in Rust and
+      // uses @tauri-apps/plugin-sql for a real SQLite connection.
+      dbPromise = TauriSqlSource.create();
+    } else {
+      if (!claimLock()) {
+        return Promise.reject(
+          new Error(
+            "This app is already open in another tab. Close it there first — two tabs would overwrite each other's data."
+          )
+        );
+      }
+      dbPromise = SqlJsSource.create();
     }
-    dbPromise = SqlJsSource.create();
   }
   return dbPromise;
 }

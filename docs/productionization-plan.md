@@ -50,8 +50,8 @@ review and commercial support model to be fully operational.
 | Area | Current state | Production gap |
 | --- | --- | --- |
 | UI/business logic | React/TypeScript, usable | Automated regression suite missing |
-| Persistence | sql.js + IndexedDB | Durable local SQLite file via Tauri |
-| Desktop packaging | Not built | Installer, updater, signing |
+| Persistence | sql.js + IndexedDB in browser; native SQLite via plugin-sql in Tauri | Encrypted desktop file and backup/restore workflow remain future work |
+| Desktop packaging | Tauri v2 native build succeeds; NSIS and MSI installers produced locally | Installer signing, clean-machine acceptance, updater and distribution |
 | Encryption | Envelope/key foundation | User workflow, SQLCipher/local-file integration, recovery tests |
 | Backup/restore | Not implemented | Scheduled/manual backup, off-device copy, restore test |
 | Cloud/monitor | Read-only bundle only | API, sync, cloud DB, tenant operations |
@@ -132,6 +132,9 @@ Tasks:
 Exit gate: a clean machine/runner can reproduce a signed build from a tagged commit.
 
 ### WS2 — Desktop application and local data
+
+Use [DESKTOP_BUILD.md](../DESKTOP_BUILD.md) for the Windows prerequisites, data-path checks, failure tests
+and installer verification.
 
 Tasks:
 

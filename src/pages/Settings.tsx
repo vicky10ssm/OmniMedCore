@@ -24,6 +24,7 @@ import {
 import { readLogoFile, validateLogoFile } from "../ui/logo";
 import { useLicense } from "../licensing/LicenseContext";
 import { LicenseSettingsPanel } from "./License";
+import { databaseInfo, isTauriRuntime, type DatabaseInfo } from "../db/tauriStorage";
 import type { UserRow } from "../db/types";
 import {
   generateRecoveryCodes,
@@ -105,6 +106,7 @@ export default function Settings() {
   const isAdmin = user?.role === "admin";
 
   const [tab, setTab] = useState<"lab" | "modules" | "license" | "users" | "device">("lab");
+  const [desktopInfo, setDesktopInfo] = useState<DatabaseInfo | null>(null);
   const [form, setForm] = useState<ProfileForm>(EMPTY);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState("");
@@ -181,6 +183,13 @@ export default function Settings() {
 
   useEffect(() => {
     void load();
+  }, []);
+
+  useEffect(() => {
+    if (!isTauriRuntime()) return;
+    void databaseInfo()
+      .then(setDesktopInfo)
+      .catch((e) => console.warn("Could not read desktop database diagnostics", e));
   }, []);
 
   const saveProfile = async (e: FormEvent) => {
@@ -1143,10 +1152,36 @@ export default function Settings() {
                   {getDeviceId() || "—"}
                 </dd>
               </div>
-              <div className="flex justify-between">
-                <dt className="text-slate-500">Storage</dt>
-                <dd>Local SQLite (offline-capable)</dd>
+              <div className="flex justify-between gap-4">
+                <dt className="shrink-0 text-slate-500">Storage</dt>
+                <dd className="text-right">
+                  {isTauriRuntime()
+                    ? "SQLite file (desktop app-data)"
+                    : "SQLite via IndexedDB (browser)"}
+                </dd>
               </div>
+              {desktopInfo && (
+                <>
+                  <div className="flex justify-between gap-4">
+                    <dt className="shrink-0 text-slate-500">Database file</dt>
+                    <dd className="num max-w-[65%] break-all text-right text-xs">
+                      {desktopInfo.databasePath}
+                    </dd>
+                  </div>
+                  <div className="flex justify-between gap-4">
+                    <dt className="shrink-0 text-slate-500">File writable</dt>
+                    <dd className={desktopInfo.writable ? "text-emerald-700" : "text-rose-700"}>
+                      {desktopInfo.writable ? "Yes" : "No"}
+                    </dd>
+                  </div>
+                  <div className="flex justify-between gap-4">
+                    <dt className="shrink-0 text-slate-500">Pre-migration backups</dt>
+                    <dd className="num max-w-[65%] break-all text-right text-xs">
+                      {desktopInfo.backupDir}
+                    </dd>
+                  </div>
+                </>
+              )}
               <div className="flex justify-between">
                 <dt className="text-slate-500">Sync</dt>
                 <dd className="text-slate-400">Not connected yet</dd>

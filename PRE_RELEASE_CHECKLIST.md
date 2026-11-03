@@ -1,0 +1,293 @@
+# Pre-release verification checklist
+
+Last updated: 2 November 2026  
+Use for: pilot, hotfix and production release candidates  
+Related: [HOTFIX_ROLLBACK_PROCESS.md](HOTFIX_ROLLBACK_PROCESS.md)
+
+This checklist is evidence-based. Tick an item only after running the verification, not because the code
+“should” work. Record the commit SHA, tag, version and schema version on every release.
+
+## Release identity
+
+- [ ] Version selected (`package.json`)
+- [ ] Annotated tag created, e.g. `v0.1.0`
+- [ ] Commit SHA recorded
+- [ ] Database schema version recorded
+- [ ] Build date and builder recorded
+- [ ] Release notes prepared
+- [ ] Customer-facing changelog prepared
+- [ ] Known issues/limitations list updated
+- [ ] Support briefed
+- [ ] Rollback artifact and procedure ready
+
+Record:
+
+```text
+Version:
+Tag:
+Commit:
+Schema:
+Build date:
+Builder:
+Release owner:
+```
+
+## Source and repository verification
+
+- [ ] Working tree is clean before tagging
+- [ ] Build is from a tagged commit, not a local dirty folder
+- [ ] `main` protection is active
+- [ ] CI required checks passed on the tagged commit
+- [ ] No force-pushed or moved release tag
+- [ ] Release tag and commit are identical in the artifact metadata
+
+Commands:
+
+```powershell
+git status --porcelain
+git describe --tags --exact-match
+git rev-parse HEAD
+git show --stat --oneline HEAD
+```
+
+## Clean-runner reproducibility
+
+Run from a fresh clone on a clean machine/runner:
+
+```powershell
+git clone <repository-url> C:\build\medicore-release
+cd C:\build\medicore-release
+git checkout v0.1.0
+npm ci
+npm run check
+npm run build
+npm run build:monitor
+```
+
+Verification:
+
+- [ ] `npm ci` completes from `package-lock.json`
+- [ ] `npm run check` passes
+- [ ] `npm run build` produces terminal `dist/`
+- [ ] `npm run build:monitor` produces `dist-monitor/`
+- [ ] No untracked source changes are required to build
+- [ ] Node version matches `.node-version`
+- [ ] No local `.env` or licence portal data is required
+
+## TypeScript, migrations and tenant scope
+
+- [ ] TypeScript check passes
+- [ ] Migration suite passes fresh, upgrade, partial and repeat paths
+- [ ] Schema version is correct
+- [ ] Tenant-scope check passes
+- [ ] New tenant-owned tables appear in all required lists
+- [ ] No unscoped business query introduced
+
+Commands:
+
+```powershell
+npm run typecheck
+npm run check:migrations
+npm run check:scope
+```
+
+Evidence:
+
+```text
+Typecheck:
+Migration scenarios:
+Tenant-scope calls checked:
+Unscoped:
+```
+
+## Money and billing verification
+
+- [ ] GST invoice with multiple lines
+- [ ] Line discount and round-off reconcile
+- [ ] Partial payment followed by balance collection
+- [ ] Dues/ageing view correct
+- [ ] Paid invoice cancellation preserves history
+- [ ] No new referral commission entry or payout created
+- [ ] A4 and 80 mm invoice print checked
+- [ ] CSV export UTF-8/BOM and formula-injection guard checked
+- [ ] No score/commission tab or doctor commission field visible
+
+Record invoice/payment IDs and totals used for acceptance.
+
+## Clinical and sample verification
+
+- [ ] Pathology order creates expected sample
+- [ ] Collection, receipt and acceptance transitions
+- [ ] Rejection reason and linked pending-order behavior
+- [ ] Report release blocked for unaccepted/missing sample
+- [ ] Report draft save/reopen preserves selected parameters
+- [ ] Verification requires all selected results
+- [ ] Amendment requires reason and preserves previous revision
+- [ ] Report print shows accession, authorizer and version
+- [ ] **Dispose disabled before any linked result is entered**
+- [ ] **Dispose disabled for partial/multi-parameter results**
+- [ ] **Dispose enabled after all linked tests have complete results or are verified**
+- [ ] Disposal action-handler bypass attempt is rejected
+- [ ] Disposal writes method/user/timestamp and audit evidence
+
+Record accession/sample IDs for both blocked and allowed disposal cases.
+
+## Roles and privacy verification
+
+- [ ] Admin sees Dashboard and Expenses profitability summary
+- [ ] Operator can add/view Expenses
+- [ ] Operator cannot see Dashboard navigation
+- [ ] Operator direct `#/` redirects to Expenses
+- [ ] Operator cannot see “This month at a glance” collected/profit card
+- [ ] Operator cannot edit/delete expenses
+- [ ] Operator direct restricted URL is blocked
+- [ ] Monitor operator cannot see admin-only expense/commission screens
+- [ ] Monitor build rejects writes at the data-source boundary
+
+## Licensing verification
+
+If the release changes licensing or starts a new edition:
+
+- [ ] Issue a licence for the test tenant/device
+- [ ] Import succeeds with correct signature
+- [ ] Wrong-tenant licence rejected
+- [ ] Wrong-device licence rejected
+- [ ] Tampered payload rejected
+- [ ] Revoked/expired status handled
+- [ ] Active licence exposes only licensed modules
+- [ ] Clinic-disabled module remains hidden
+- [ ] 30-day grace warning appears
+- [ ] Beyond-grace read-only mode permits view/print/export and blocks new writes
+- [ ] Renewal file updates expiry
+- [ ] Old legacy licence modules are ignored safely
+- [ ] Production bundle contains no DEV licence fallback or private key
+
+Record licence ID, edition, tenant ID, device ID and expiry.
+
+## Security verification
+
+- [ ] No `.env`, private keys, portal tokens or local databases tracked
+- [ ] Portal private key excluded from source and installer
+- [ ] Portal admin token supplied only through environment/secret manager
+- [ ] Production bundles scanned for forbidden DEV/seed/token/private-key strings
+- [ ] Authentication/TOTP/recovery tests pass if changed
+- [ ] Tenant isolation checked
+- [ ] Monitor read-only enforcement checked
+- [ ] No real patient data in screenshots, logs, fixtures or release notes
+- [ ] `npm audit` reviewed
+- [ ] SBOM/checksums prepared where required
+
+Bundle scan example:
+
+```powershell
+$patterns = @(
+  'DEV-LICENSE',
+  '__diagbillSeedDemo',
+  'MEDICORE_PORTAL_ADMIN_TOKEN',
+  'PRIVATE KEY'
+)
+
+foreach ($p in $patterns) {
+  $matches = Select-String -Path dist\assets\*.js,dist-monitor\assets\*.js -SimpleMatch -Pattern $p
+  if ($matches) { Write-Output "FOUND: $p" }
+}
+```
+
+## Database and backup verification
+
+- [ ] Pre-migration database backup created
+- [ ] Backup hash recorded
+- [ ] Restore tested on a clean machine/profile
+- [ ] Restored invoice/payment/report/sample counts match
+- [ ] Restore does not expose real data in test logs
+- [ ] Downgrade/schema compatibility decision documented
+- [ ] Rollback artifact matches the previous release
+
+## Desktop/installer verification
+
+Blocked until Tauri packaging exists:
+
+- [ ] Signed Windows x64 installer built
+- [ ] Signature verified with `signtool`
+- [ ] Clean Windows 10/11 install tested
+- [ ] WebView2/runtime behavior tested
+- [ ] Upgrade from previous release tested
+- [ ] Uninstall preserves user data as documented
+- [ ] Local SQLite durability tested
+- [ ] OS-secure licence storage tested
+- [ ] Backend entitlement enforcement tested outside React
+- [ ] Printer/hardware acceptance tested
+
+Do not mark the release production-ready while these are unresolved.
+
+## Portal verification
+
+If the vendor licence portal changes:
+
+- [ ] Issue, list, download, renew and revoke tested
+- [ ] Private key path and permissions checked
+- [ ] Admin token required for all API routes
+- [ ] Portal bound to localhost/private network
+- [ ] Hosting posture documented; no unsupported “public portal” claim
+- [ ] Backups of portal data configured
+- [ ] Audit/rotation process documented
+
+## Release artifacts and checksums
+
+- [ ] Terminal bundle retained
+- [ ] Monitor bundle retained
+- [ ] Windows installer retained when available
+- [ ] SHA-256 checksums generated
+- [ ] Release notes/changelog published
+- [ ] Signing evidence retained
+- [ ] Known limitations delivered to buyer
+- [ ] Artifact storage access controlled
+
+```powershell
+Get-FileHash .\release\MediCore-Setup.exe -Algorithm SHA256
+Get-FileHash .\dist\assets\*.js -Algorithm SHA256
+```
+
+## Deployment and smoke test
+
+- [ ] Maintenance window communicated
+- [ ] Current backup confirmed
+- [ ] Installer/bundle deployed
+- [ ] Migrations completed
+- [ ] Login and permissions checked
+- [ ] Billing/payment smoke test
+- [ ] Sample/result/disposal smoke test
+- [ ] Licence/edition/read-only smoke test
+- [ ] Print/export smoke test
+- [ ] Monitor read-only smoke test
+- [ ] New deployment evidence recorded
+
+## WS1 exit-gate verification
+
+WS1 is complete only when a clean machine/runner can reproduce a **signed build** from a tagged commit.
+
+- [ ] Repository is under source control
+- [ ] `main` is protected
+- [ ] CI runs on every push/PR
+- [ ] Release workflow runs from an annotated tag
+- [ ] Clean runner can build from the tag
+- [ ] Artifact metadata identifies tag/commit/version/schema
+- [ ] Installer is signed when Tauri packaging exists
+- [ ] Signature is verified
+- [ ] Checksums published
+- [ ] Release notes and known limitations published
+- [ ] Rollback artifact and process tested
+
+**Current status:** web bundles are reproducible, but the signed Windows installer and OS-secure packaged
+runtime are not implemented. WS1 exit gate remains **blocked** until those are delivered.
+
+## Final approval
+
+- [ ] Engineering lead
+- [ ] Clinical/compliance owner where relevant
+- [ ] Security owner where relevant
+- [ ] Support owner
+- [ ] Commercial/buyer approval where required
+
+A single unresolved “No” against data protection, tenant isolation, recovery, licence enforcement or
+security is a no-go for real patient data.

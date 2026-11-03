@@ -55,8 +55,8 @@ opened on that machine; it cannot see another terminal or a phone outside that b
 | Area | Current state |
 | --- | --- |
 | Language/UI | React 19, TypeScript, React Router, Tailwind |
-| Local store | `sql.js` SQLite image persisted to IndexedDB |
-| Desktop packaging | Tauri target; not built |
+| Local store | Browser: `sql.js` SQLite image in IndexedDB. Desktop: native SQLite via `@tauri-apps/plugin-sql` |
+| Desktop packaging | Tauri v2 native build succeeds; unsigned NSIS/MSI installers produced locally |
 | Online data | No server database/API |
 | Monitor | Separate bundle, same local source, write methods throw |
 | Mode selection | Build-time mode plus DEV override; production build cannot be flipped by URL |
@@ -73,15 +73,19 @@ opened on that machine; it cannot see another terminal or a phone outside that b
 
 ### Application boot
 
-1. `getDb()` claims a single-writer lock (terminal) or opens read-only (monitor).
-2. `SqlJsSource` loads the SQLite image from IndexedDB, or creates a new DB.
-3. Migrations run in ascending version order with tenant/compliance repair.
-4. Default tenant and initial admin are ensured.
-5. The licence verifier loads the stored signed file, checks signature/tenant/device/expiry and derives
+1. `getDb()` uses the Rust single-instance guard in Tauri, a browser single-writer lock in the web
+   build, or opens read-only for the monitor.
+2. The browser loads the `SqlJsSource` SQLite image from IndexedDB. The desktop loads a native SQLite
+   connection through `@tauri-apps/plugin-sql` from the app-config directory, or creates a new DB.
+3. Before an existing desktop database migrates, Tauri checkpoints WAL, creates a timestamped
+   pre-migration backup and runs `PRAGMA quick_check`.
+4. Migrations run in ascending version order with tenant/compliance repair.
+5. Default tenant and initial admin are ensured.
+6. The licence verifier loads the stored signed file, checks signature/tenant/device/expiry and derives
    the licensed module set. A development build falls back to a complete development licence only when
    no real licence is stored.
-6. Auth restores a session or shows login/unlock.
-7. Effective modules and routes are `licensed modules ∩ clinic-enabled modules`; read-only mode applies
+7. Auth restores a session or shows login/unlock.
+8. Effective modules and routes are `licensed modules ∩ clinic-enabled modules`; read-only mode applies
    after grace expiry.
 
 ### Module composition
