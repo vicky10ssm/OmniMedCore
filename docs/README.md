@@ -1,8 +1,8 @@
-# MediCore buyer documentation
+﻿# MediCore buyer documentation
 
-Last updated: 2 November 2026  
+Last updated: 3 November 2026  
 Product version: `0.1.0`  
-Database schema: `16`
+Database schema: `17`
 
 **MediCore** is the umbrella product name. The internal package/browser storage keys retain the
 historical `diagbill` identifier; this does not affect buyer branding.
@@ -33,6 +33,7 @@ LIS, a NABL-certified system, a live ABDM product or a cloud monitoring service 
 | [deployment-and-readiness.md](deployment-and-readiness.md) | What can be installed now, release gates and IT requirements |
 | [productionization-plan.md](productionization-plan.md) | Full engineering, packaging, backup, cloud, security and operations plan to reach production |
 | [../DESKTOP_BUILD.md](../DESKTOP_BUILD.md) | Windows/Tauri prerequisites, WS2 verification, installer and desktop failure tests |
+| [../cloud-dashboard/README.md](../cloud-dashboard/README.md) | Optional Next.js sync receiver, PostgreSQL schema and read-only central dashboard |
 | [security-privacy-compliance.md](security-privacy-compliance.md) | Security posture, NABL/ISO/ABDM evidence, data protection and claims policy |
 | [commercial-model-and-pricing.md](commercial-model-and-pricing.md) | Pricing structures, cost drivers, ROI method and proposal terms |
 | [india-payment-proposal.md](india-payment-proposal.md) | India-specific milestone billing, GST, TDS, INR payment methods, renewals and proposal template |
@@ -46,11 +47,11 @@ Compliance source detail remains in [`../COMPLIANCE.md`](../COMPLIANCE.md).
 
 ## Status vocabulary used throughout
 
-- **Ready** — implemented and exercised in the current application.
-- **Pilot** — implemented but requires supervised deployment, configuration or acceptance testing.
-- **Partial** — foundation exists; important workflow/evidence is still missing.
-- **Not available** — do not demonstrate or promise as a current feature.
-- **External** — depends on the buyer, NABL assessment, ABDM credentials, Windows signing or another third party.
+- **Ready** â€” implemented and exercised in the current application.
+- **Pilot** â€” implemented but requires supervised deployment, configuration or acceptance testing.
+- **Partial** â€” foundation exists; important workflow/evidence is still missing.
+- **Not available** â€” do not demonstrate or promise as a current feature.
+- **External** â€” depends on the buyer, NABL assessment, ABDM credentials, Windows signing or another third party.
 
 ## Quick facts for a buyer call
 
@@ -58,7 +59,7 @@ Compliance source detail remains in [`../COMPLIANCE.md`](../COMPLIANCE.md).
 | --- | --- |
 | Product type | Modular offline-first billing and care operations for diagnostics, pharmacy and hospital inpatients |
 | Market | Independent diagnostic centres, standalone pharmacies, small hospitals and multi-service clinics in India |
-| Verticals | Diagnostics · Pharmacy · Hospital; licensed edition plus per-tenant module visibility |
+| Verticals | Diagnostics Â· Pharmacy Â· Hospital; licensed edition plus per-tenant module visibility |
 | Hospital | Admission/ward/bed/discharge plus generic IPD service charges, payments, balance and bill print |
 | Pharmacy | Medicine master, batch/expiry inventory, stock receipt, dispensing, GST pharmacy receipt |
 | Licensing | Signed offline licence bound to tenant + device; Diagnostics/Pharmacy/Hospital/Complete/Custom editions; 30-day grace and read-only after grace |
@@ -74,12 +75,13 @@ Compliance source detail remains in [`../COMPLIANCE.md`](../COMPLIANCE.md).
 | NABL/ISO | Evidence foundations and gap matrix; **not certified/accredited software** |
 | Desktop `.exe` | Tauri target defined; **installer not yet built** |
 | Cloud monitoring | Monitor build exists; **cloud sync backend not implemented** |
-| Backups | **Automated backup/restore is not yet implemented — release blocker** |
-| Recommended launch price | ₹20,000 paid pilot; ₹24,000/year for 1 centre/2 terminals, excluding GST — see [commercial-model-and-pricing.md](commercial-model-and-pricing.md#recommended-launch-prices-for-india) |
+| Backups | **Automated backup/restore is not yet implemented â€” release blocker** |
+| Recommended launch price | â‚¹20,000 paid pilot; â‚¹24,000/year for 1 centre/2 terminals, excluding GST â€” see [commercial-model-and-pricing.md](commercial-model-and-pricing.md#recommended-launch-prices-for-india) |
 | Default demo login | First-run bootstrap `admin / admin123`, forcing a password change |
 
 ## Golden rule for buyer conversations
 
-Say **“currently available”**, **“pilot”** or **“roadmap”** explicitly. Never convert a roadmap item
+Say **â€œcurrently availableâ€**, **â€œpilotâ€** or **â€œroadmapâ€** explicitly. Never convert a roadmap item
 into a present-tense feature claim. The claims table in
 [sales-playbook.md](sales-playbook.md#claims-you-may-and-may-not-make) is the reference.
+

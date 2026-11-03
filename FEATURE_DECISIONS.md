@@ -475,3 +475,15 @@ The second deployment exists. `npm run build` makes the terminal (editing) app; 
   logic run through the native source.
 - A `wal_checkpoint(FULL)` plus timestamped pre-migration backup is taken before upgrading an existing
   schema. `PRAGMA quick_check` runs before migrations.
+
+## Append-only sync queue and central dashboard - built (pilot)
+
+- Schema 17 adds `sync_queue` and `sync_ack`. Entity triggers snapshot invoices, reports and admissions
+  into an insert-only queue; ACKs are appended separately and queue rows are never deleted.
+- The Tauri app runs a 30-second background loop while open: health check, batch POST of up to 100
+  events, and tenant-scoped ACK persistence. It is not an OS service when the app is closed.
+- Device & sync includes endpoint/token configuration and pending/last-sync/error status. The token is
+  currently device-local and must move to OS-protected storage.
+- `cloud-dashboard/` is a standalone Next.js/PostgreSQL sync receiver and read-only `/dashboard` route.
+  Ingest requires a bearer token; dashboard requires HTTP Basic auth. Hosting, per-device tokens, SSO,
+  TLS, central backups and conflict/deletion handling are production work, not delivered.

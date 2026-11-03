@@ -1,7 +1,7 @@
 # MediCore licensing process
 
 Last updated: 30 October 2026  
-Database schema: `16`  
+Database schema: `17`  
 Audience: sales, support, finance and vendor licence administrators
 
 ## 1. Purpose and scope

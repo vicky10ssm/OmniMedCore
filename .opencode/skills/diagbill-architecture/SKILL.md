@@ -13,6 +13,7 @@ Use this skill for structural work on the diagnostic-centre application. Read th
 - Development currently uses sql.js/SQLite WASM persisted in IndexedDB. Tauri desktop packaging and the cloud accumulator/sync backend are planned, not completed.
 - The same app supports Diagnostics, Pharmacy, Hospital, Complete and Custom editions. Effective modules are the signed licence's modules ∩ the clinic's enabled modules. Licence verification is offline ECDSA P-256 with tenant/device binding; see the `diagbill-licensing` skill.
 - Browser monitoring must remain read-only. Billing belongs on trusted offline terminals, including when several terminals work without connectivity.
+- The optional sync tier is append-only: `sync_queue` snapshots invoices/reports/admissions, `sync_ack` records ACKs, and a 30-second in-app loop pushes to the cloud. It is not a conflict-resolving multi-master sync service and does not run while the app is closed. See `diagbill-sync`.
 - Every independent centre/hospital is a tenant. Never mix tenant records, settings, invoice numbers, or monitoring data.
 - Records use UUIDs, `created_at`, `updated_at`, `device_id`, `dirty`, `deleted`, and `tenant_id` where applicable. Deletion is normally a syncable tombstone.
 

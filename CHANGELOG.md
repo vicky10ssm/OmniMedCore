@@ -18,6 +18,11 @@ production releases begin.
   them to GitHub Releases.
 - Native Windows build verified locally: unsigned NSIS and MSI installers, plugin-sql database creation,
   single-instance handling, close-flush and pre-migration backup.
+- Append-only `sync_queue`/`sync_ack` tables and triggers for invoices, diagnostic reports and admissions.
+- 30-second desktop sync loop with endpoint health check, batched POST push, ACK persistence and a
+  Device & sync configuration panel.
+- Standalone Next.js sync receiver and read-only `/dashboard` route backed by PostgreSQL, including
+  ingest authentication, dashboard Basic auth and central schema.
 - Sample disposal gate: accepted samples cannot be disposed until every linked test has complete
   entered results, with server-side action enforcement.
 - Operator role restrictions: terminal operators can enter expenses but cannot see Dashboard or the
@@ -28,7 +33,7 @@ production releases begin.
 ### Changed
 
 - Project moved from the OneDrive workspace to `C:\dev\medicore`.
-- Productionization and architecture documentation updated to database schema `16`.
+- Productionization and architecture documentation updated to database schema `17`.
 
 ## [0.1.0] - 2026-11-02
 
@@ -47,7 +52,7 @@ production releases begin.
 - Vendor licence portal for issuing, downloading, renewing and revoking signed licences.
 - Licence and edition documentation and operating procedure.
 - Clinic module visibility, branding and logo configuration.
-- Read-only monitoring build and tenant-scoped schema through migration 16.
+- Read-only monitoring build and tenant-scoped schema through migration 17.
 - Project-local implementation skills under `.opencode/skills/`.
 
 ### Changed
@@ -75,7 +80,8 @@ production releases begin.
 - No automated backup/restore
 - No OS-secure licence storage or backend entitlement enforcement
 - No hosted/hardened vendor licence portal
-- No cloud sync or hosted monitoring
+- Cloud sync/dashboard code exists but is not deployed or hardened; per-device tokens, conflict repair
+  and OS background sync remain future work
 - No live ABDM exchange
 - Not a NABL/ISO-certified product
 - No full HIS, insurance/TPA, nursing chart, pharmacy procurement or controlled-drug workflow
