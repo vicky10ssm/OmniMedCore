@@ -5,6 +5,10 @@ production releases begin.
 
 ## [Unreleased]
 
+No changes yet.
+
+## [0.2.1] - 2026-11-03
+
 ### Added
 
 - Repository documentation set: root README, security policy, contribution guide, changelog, PR

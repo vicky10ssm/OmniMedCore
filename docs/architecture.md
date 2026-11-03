@@ -1,7 +1,7 @@
 ﻿# MediCore architecture and offline/online sync design
 
 Last updated: 3 November 2026  
-Current product version: `0.1.0`  
+Current product version: `0.2.1`  
 Current schema: `17`
 
 ## 1. Status and scope

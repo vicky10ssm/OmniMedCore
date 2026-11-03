@@ -1,4 +1,3 @@
-$ci = @'
 name: CI
 
 on:
@@ -29,10 +28,3 @@ jobs:
       - run: npm run check
       - run: npm run build
       - run: npm run build:monitor
-'@
-
-[System.IO.File]::WriteAllText(
-  "$PWD\.github\workflows\ci.yml",
-  $ci,
-  (New-Object System.Text.UTF8Encoding($false))
-)

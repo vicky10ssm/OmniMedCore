@@ -1,7 +1,7 @@
 ﻿# Productionization plan
 
 Last updated: 3 November 2026  
-Current product version: `0.1.0`  
+Current product version: `0.2.1`  
 Current schema: `17`  
 Current deployment: development web app with `sql.js` + IndexedDB
 
