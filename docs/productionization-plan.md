@@ -1,7 +1,7 @@
 ﻿# Productionization plan
 
 Last updated: 3 November 2026  
-Current product version: `0.2.2`  
+Current product version: `0.3.0`  
 Current schema: `17`  
 Current deployment: development web app with `sql.js` + IndexedDB
 
@@ -50,10 +50,10 @@ review and commercial support model to be fully operational.
 | Area | Current state | Production gap |
 | --- | --- | --- |
 | UI/business logic | React/TypeScript, usable | Automated regression suite missing |
-| Persistence | sql.js + IndexedDB in browser; native SQLite via plugin-sql in Tauri | Encrypted desktop file and backup/restore workflow remain future work |
+| Persistence | sql.js + IndexedDB in browser; native SQLCipher in Tauri with key in Windows Credential Manager | Browser encryption, key export/import and clean-machine restore remain future work |
 | Desktop packaging | Tauri v2 native build succeeds; NSIS and MSI installers produced locally | Installer signing, clean-machine acceptance, updater and distribution |
-| Encryption | Envelope/key foundation | User workflow, SQLCipher/local-file integration, recovery tests |
-| Backup/restore | Local daily snapshots, 7/4/12 retention, optional USB/OneDrive copy, manual backup and validated restore | Encryption, unattended scheduling, clean-machine restore test and retention monitoring |
+| Encryption | SQLCipher 4.20 desktop database; random key in Windows Credential Manager; plaintext migration | Key export/import, rotation, recovery and clean-machine tests |
+| Backup/restore | Encrypted local daily snapshots, 7/4/12 retention, optional USB/OneDrive copy, manual backup and validated restore | Key recovery, unattended scheduling, clean-machine restore test and retention monitoring |
 | Cloud/monitor | Append-only queue, 30-second desktop push, Next.js receiver/dashboard and PostgreSQL schema code exist | Hosting, TLS, per-device auth, conflict/replay handling, backups and tenant operations |
 | Authentication | Password + optional TOTP; admin/operator roles | Lockout/rate limits, session policy, device tokens |
 | Roles | Operator: Expenses only, no Dashboard or profit tile; admin retains full view | Granular permissions and packaged backend enforcement |
@@ -96,10 +96,9 @@ review and commercial support model to be fully operational.
 ### Key architectural decisions to confirm
 
 - **Desktop runtime:** Tauri v2 on Windows 10/11 with WebView2.
-- **Local DB:** real SQLite through Tauri/Rust, not IndexedDB.
-- **Encryption:** SQLCipher or equivalent page-level SQLite encryption, with the key wrapped by the
-  existing passphrase/recovery envelope. Run a technical spike before committing; full-file AES export
-  on every save will not scale.
+- **Local DB:** real SQLCipher through Rust, not IndexedDB or plugin-sql.
+- **Encryption:** SQLCipher 4.20 page-level encryption with a random key stored in Windows Credential
+  Manager. Key export/import and rotation remain to be added for cross-machine recovery.
 - **Cloud provider:** choose after data-residency and budget review. Viable patterns are a small VPS +
   managed PostgreSQL, or a serverless PostgreSQL/API platform. Do not rely on free tier for an SLA.
 - **Static monitor hosting:** Cloudflare Pages/Vercel/Netlify or the same VPS with a CDN.
@@ -157,19 +156,19 @@ Exit gate: install â†’ create bill/report â†’ close â†’ reopen â
 
 Implemented pilot foundation:
 
-- Local daily snapshots with 7 daily / 4 weekly / 12 monthly retention.
+- SQLCipher 4.20 database encryption with the key in Windows Credential Manager.
+- Automatic plaintext-to-SQLCipher migration with an encrypted pre-encryption copy.
+- Encrypted daily snapshots with 7 daily / 4 weekly / 12 monthly retention.
 - Manual **Backup Now** and optional USB/OneDrive second folder.
 - Schema/integrity validation, pre-restore safety copy and restore/reload UI.
+- Legacy plaintext backup restore is re-encrypted before activation.
 - Pre-migration snapshots retained separately.
 
 Remaining tasks:
 
-- Finish admin workflows for enabling encryption and changing the passphrase.
-- Generate recovery code exactly once and force acknowledgement.
-- Validate wrong passphrase, recovery, relock, restart and key rotation.
-- Encrypt backup files; never store the passphrase beside them.
+- Add encrypted key export/import and key rotation for cross-machine recovery.
+- Prove encrypted backup restore on a clean Windows profile/machine.
 - Add unattended Windows scheduled backup outside the app.
-- Prove restore on a clean terminal with a realistic dataset and recorded evidence.
 - Test backup/restore with the buyerâ€™s real volume before go-live.
 - Define RPO/RTO. Proposed pilot targets: RPO â‰¤ 1 hour, RTO â‰¤ 4 hours; confirm with buyer.
 - Record restore evidence: date, operator, backup ID, record counts, checksum.

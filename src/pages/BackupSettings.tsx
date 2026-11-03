@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import initSqlJs from "sql.js";
 import { invoke } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-dialog";
 import { formatDateTime } from "../db/helpers";
@@ -25,47 +24,41 @@ function bytesToBase64(bytes: Uint8Array): string {
   return btoa(binary);
 }
 
-async function validateBackup(file: File): Promise<Uint8Array> {
+interface BackupValidation {
+  encrypted: boolean;
+  schemaVersion: number;
+  tableCount: number;
+  integrity: string;
+}
+
+async function validateBackup(
+  file: File
+): Promise<{ bytes: Uint8Array; validation: BackupValidation }> {
   const bytes = new Uint8Array(await file.arrayBuffer());
   if (bytes.length === 0) throw new Error("The selected backup is empty.");
-  if (
-    bytes.length < 16 ||
-    String.fromCharCode(...bytes.subarray(0, 16)) !== "SQLite format 3\u0000"
-  ) {
-    throw new Error("The selected file is not a SQLite database.");
-  }
 
-  const SQL = await initSqlJs({ locateFile: (name: string) => `/${name}` });
-  const db = new SQL.Database(bytes);
-  try {
-    const quick = db.exec("PRAGMA quick_check")[0]?.values?.[0]?.[0];
-    if (String(quick ?? "").toLowerCase() !== "ok") {
-      throw new Error("The backup failed SQLite integrity checking.");
-    }
-    const schema = Number(
-      db.exec("SELECT value FROM meta WHERE key = 'schema_version'")[0]?.values?.[0]?.[0]
-    );
-    const latest = MIGRATIONS[MIGRATIONS.length - 1]?.version ?? 0;
-    if (!Number.isFinite(schema) || schema < 1) {
-      throw new Error("The backup has no valid MediCore schema version.");
-    }
-    if (schema > latest) {
-      throw new Error(
-        `This backup uses schema ${schema}; this app supports up to ${latest}. Update MediCore before restoring.`
-      );
-    }
-    const tables = new Set(
-      (db.exec("SELECT name FROM sqlite_master WHERE type = 'table'")[0]?.values ?? []).map(
-        (row) => String(row[0])
-      )
-    );
-    for (const table of ["meta", "tenants", "users", "patients", "invoices", "settings"]) {
-      if (!tables.has(table)) throw new Error(`Backup is missing the required ${table} table.`);
-    }
-  } finally {
-    db.close();
+  const raw = await invoke<{
+    encrypted: boolean;
+    schema_version: number;
+    table_count: number;
+    integrity: string;
+  }>("validate_backup", { bytesBase64: bytesToBase64(bytes) });
+  const validation: BackupValidation = {
+    encrypted: raw.encrypted,
+    schemaVersion: raw.schema_version,
+    tableCount: raw.table_count,
+    integrity: raw.integrity,
+  };
+  const latest = MIGRATIONS[MIGRATIONS.length - 1]?.version ?? 0;
+  if (!Number.isFinite(validation.schemaVersion) || validation.schemaVersion < 1) {
+    throw new Error("The backup has no valid MediCore schema version.");
   }
-  return bytes;
+  if (validation.schemaVersion > latest) {
+    throw new Error(
+      `This backup uses schema ${validation.schemaVersion}; this app supports up to ${latest}. Update MediCore before restoring.`
+    );
+  }
+  return { bytes, validation };
 }
 
 export default function BackupSettings() {
@@ -136,9 +129,10 @@ export default function BackupSettings() {
     setRestoring(true);
     let closed = false;
     try {
-      const bytes = await validateBackup(file);
+      const { bytes, validation } = await validateBackup(file);
       const confirmed = window.confirm(
-        "Restore this backup and replace the current MediCore database?\n\n" +
+        `Restore this ${validation.encrypted ? "encrypted " : "legacy plaintext "}backup ` +
+          `(schema ${validation.schemaVersion}) and replace the current MediCore database?\n\n` +
           "A pre-restore safety copy will be created in the local Backups folder. " +
           "The application will reload. Data created after this backup will no longer be visible."
       );

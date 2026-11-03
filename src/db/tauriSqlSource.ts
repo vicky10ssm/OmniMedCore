@@ -1,17 +1,15 @@
-// Native SQLite data source for the Tauri desktop build.
+// Native SQLCipher data source for the Tauri desktop build.
 //
-// @tauri-apps/plugin-sql uses SQLx with `$1`, `$2`, ... placeholders. The
-// existing application SQL uses `?`, so this adapter rewrites positional
-// placeholders outside quoted strings/comments. The vendored plugin build is
-// configured with a single SQLite connection, making the BEGIN/COMMIT
-// transaction flow safe for the app's awaited transaction callbacks.
+// Rust owns one SQLCipher connection and the database key lives in Windows
+// Credential Manager. The application SQL uses `?` placeholders, so this adapter
+// rewrites them to SQLite `$1`, `$2`, ... placeholders before invoking Rust.
 
-import Database from "@tauri-apps/plugin-sql";
+import { invoke } from "@tauri-apps/api/core";
 import { hashPassword } from "../auth/crypto";
 import { getDeviceId, now, setDeviceId } from "./helpers";
 import { MIGRATIONS, SEED_SQL, splitSqlStatements } from "./schema";
 import { ensureDefaultTenant, getCurrentTenantId } from "./tenant";
-import { backupDatabase, databaseInfo, NATIVE_DB_URL } from "./tauriStorage";
+import { backupDatabase, databaseInfo } from "./tauriStorage";
 import type { DataSource } from "./index";
 
 function rewritePositionalPlaceholders(sql: string): string {
@@ -91,12 +89,9 @@ function normalizeParams(params: unknown[] = []): unknown[] {
 }
 
 export class TauriSqlSource implements DataSource {
-  private db: Database;
   private inTx = false;
 
-  private constructor(db: Database) {
-    this.db = db;
-  }
+  private constructor() {}
 
   static async create(): Promise<TauriSqlSource> {
     const info = await databaseInfo();
@@ -106,17 +101,16 @@ export class TauriSqlSource implements DataSource {
       );
     }
 
-    let db: Database;
     try {
-      db = await Database.load(NATIVE_DB_URL);
+      await invoke("db_open");
     } catch (e) {
       const message = e instanceof Error ? e.message : String(e);
       throw new Error(
-        `Could not open the local SQLite database at ${info.databasePath}. The file may be locked, read-only or corrupt. ${message}`
+        `Could not open the local SQLCipher database at ${info.databasePath}. ${message}`
       );
     }
 
-    const source = new TauriSqlSource(db);
+    const source = new TauriSqlSource();
     await source.prepare();
     await source.migrate();
     await source.ensureAdmin();
@@ -125,20 +119,20 @@ export class TauriSqlSource implements DataSource {
   }
 
   private async prepare(): Promise<void> {
-    await this.db.execute("PRAGMA foreign_keys = ON");
-    await this.db.execute("PRAGMA busy_timeout = 5000");
-    await this.db.select("PRAGMA journal_mode = WAL");
+    await this.run("PRAGMA foreign_keys = ON");
+    await this.run("PRAGMA busy_timeout = 5000");
+    await this.all("PRAGMA journal_mode = WAL");
 
-    const check = await this.db.select<Record<string, unknown>[]>("PRAGMA quick_check");
+    const check = await this.all<Record<string, unknown>>("PRAGMA quick_check");
     const result = check[0] ? Object.values(check[0])[0] : "unknown";
     if (String(result ?? "").toLowerCase() !== "ok") {
-      throw new Error(`The local SQLite database failed its integrity check: ${String(result)}`);
+      throw new Error(`The local SQLCipher database failed its integrity check: ${String(result)}`);
     }
   }
 
   private async schemaVersion(): Promise<number> {
     try {
-      const rows = await this.db.select<{ value: string }[]>(
+      const rows = await this.all<{ value: string }>(
         "SELECT value FROM meta WHERE key = 'schema_version'"
       );
       return rows.length ? Number(rows[0].value) : 0;
@@ -212,12 +206,12 @@ export class TauriSqlSource implements DataSource {
 
     for (const table of tables) {
       try {
-        const info = await this.db.select<Array<Record<string, unknown>>>(
+        const info = await this.all<Record<string, unknown>>(
           `PRAGMA table_info(${table})`
         );
         if (!info.length) continue;
         if (!info.some((row) => row.name === "tenant_id")) {
-          await this.db.execute(`ALTER TABLE ${table} ADD COLUMN tenant_id TEXT NOT NULL DEFAULT ''`);
+          await this.run(`ALTER TABLE ${table} ADD COLUMN tenant_id TEXT NOT NULL DEFAULT ''`);
         }
       } catch {
         // A table that cannot be inspected will be handled by the migration.
@@ -265,13 +259,13 @@ export class TauriSqlSource implements DataSource {
 
     for (const [table, definition] of repairs) {
       try {
-        const info = await this.db.select<Array<Record<string, unknown>>>(
+        const info = await this.all<Record<string, unknown>>(
           `PRAGMA table_info(${table})`
         );
         if (!info.length) continue;
         const column = definition.split(/\s+/)[0];
         if (!info.some((row) => row.name === column)) {
-          await this.db.execute(`ALTER TABLE ${table} ADD COLUMN ${definition}`);
+          await this.run(`ALTER TABLE ${table} ADD COLUMN ${definition}`);
         }
       } catch {
         // Retry on the next boot.
@@ -284,7 +278,7 @@ export class TauriSqlSource implements DataSource {
       const trimmed = statement.trim();
       if (!trimmed) continue;
       try {
-        await this.db.execute(trimmed);
+        await this.run(trimmed);
       } catch (e) {
         const message = e instanceof Error ? e.message : String(e);
         const benign =
@@ -306,7 +300,7 @@ export class TauriSqlSource implements DataSource {
     if (current > 0 && current < latest) {
       // Consolidate WAL before copying so the backup is a single consistent file.
       try {
-        await this.db.execute("PRAGMA wal_checkpoint(FULL)");
+        await this.run("PRAGMA wal_checkpoint(FULL)");
       } catch {
         // Older SQLite/journal modes still produce a usable file copy.
       }
@@ -319,7 +313,7 @@ export class TauriSqlSource implements DataSource {
       if (migration.version <= current) continue;
       await this.executeScript(migration.sql, Boolean(migration.tolerant));
       await this.ensureTenantColumns();
-      await this.db.execute(
+      await this.run(
         "INSERT INTO meta (key, value) VALUES ('schema_version', $1) " +
           "ON CONFLICT(key) DO UPDATE SET value = excluded.value",
         [String(migration.version)]
@@ -330,7 +324,7 @@ export class TauriSqlSource implements DataSource {
     if (wasFresh) {
       await this.executeScript(SEED_SQL, false);
     } else {
-      const bootstrapped = await this.db.select<Array<Record<string, unknown>>>(
+      const bootstrapped = await this.all<Record<string, unknown>>(
         "SELECT value FROM meta WHERE key = 'bootstrapped_at'"
       );
       if (!bootstrapped.length) await this.executeScript(SEED_SQL, false);
@@ -339,23 +333,23 @@ export class TauriSqlSource implements DataSource {
     await this.ensureTenantColumns();
     await this.ensureComplianceColumns();
 
-    const device = await this.db.select<{ value: string }[]>(
+    const device = await this.all<{ value: string }>(
       "SELECT value FROM meta WHERE key = 'device_id'"
     );
     if (device.length) {
       setDeviceId(device[0].value);
     } else {
       const id = crypto.randomUUID();
-      await this.db.execute("INSERT INTO meta (key, value) VALUES ('device_id', $1)", [id]);
+      await this.run("INSERT INTO meta (key, value) VALUES ('device_id', $1)", [id]);
       setDeviceId(id);
     }
   }
 
   async all<T>(sql: string, params: unknown[] = []): Promise<T[]> {
-    return this.db.select<T[]>(
-      rewritePositionalPlaceholders(sql),
-      normalizeParams(params)
-    );
+    return invoke<T[]>("db_select", {
+      sql: rewritePositionalPlaceholders(sql),
+      values: normalizeParams(params),
+    });
   }
 
   async get<T>(sql: string, params: unknown[] = []): Promise<T | undefined> {
@@ -364,19 +358,22 @@ export class TauriSqlSource implements DataSource {
   }
 
   async run(sql: string, params: unknown[] = []): Promise<void> {
-    await this.db.execute(rewritePositionalPlaceholders(sql), normalizeParams(params));
+    await invoke("db_execute", {
+      sql: rewritePositionalPlaceholders(sql),
+      values: normalizeParams(params),
+    });
   }
 
   async tx<T>(fn: () => Promise<T>): Promise<T> {
     if (this.inTx) throw new Error("Nested SQLite transactions are not supported");
-    await this.db.execute("BEGIN IMMEDIATE");
+    await this.run("BEGIN IMMEDIATE");
     this.inTx = true;
     try {
       const result = await fn();
-      await this.db.execute("COMMIT");
+      await this.run("COMMIT");
       return result;
     } catch (e) {
-      await this.db.execute("ROLLBACK");
+      await this.run("ROLLBACK");
       throw e;
     } finally {
       this.inTx = false;
@@ -386,15 +383,15 @@ export class TauriSqlSource implements DataSource {
   async flush(): Promise<void> {
     if (this.inTx) return;
     try {
-      await this.db.execute("PRAGMA wal_checkpoint(PASSIVE)");
+      await invoke("db_checkpoint");
     } catch {
       // WAL may not be enabled; SQLite still persists committed data.
     }
   }
 
-  /** Closes the SQLite pool before a restore replaces the file. */
+  /** Closes the SQLCipher connection before a restore replaces the file. */
   async close(): Promise<void> {
     if (this.inTx) throw new Error("Cannot close the database inside a transaction");
-    await this.db.close();
+    await invoke("db_close");
   }
 }

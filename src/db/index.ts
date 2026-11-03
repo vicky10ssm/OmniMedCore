@@ -609,7 +609,8 @@ export function getDb(): Promise<DataSource> {
     }
     if (isTauriRuntime()) {
       // The desktop shell enforces a single application instance in Rust and
-      // uses @tauri-apps/plugin-sql for a real SQLite connection.
+      // uses an SQLCipher connection whose key is kept in Windows Credential
+      // Manager.
       dbPromise = TauriSqlSource.create();
     } else {
       if (!claimLock()) {
