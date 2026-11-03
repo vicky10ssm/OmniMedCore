@@ -7,6 +7,32 @@ production releases begin.
 
 No changes yet.
 
+## [0.2.2] - 2026-11-03
+
+### Added
+
+- Daily automatic SQLite snapshots while the desktop app is open.
+- Retention of 7 daily, 4 weekly and 12 monthly snapshots per backup folder.
+- Manual **Backup Now** in Settings → Device & sync.
+- Optional second backup folder for USB drives or OneDrive, selected through the native folder picker.
+- Restore from `.db` backup with SQLite integrity check, MediCore schema validation, required-table
+  checks, automatic pre-restore safety copy and application reload.
+- Rust unit tests for snapshot retention and safe database replacement.
+
+### Changed
+
+- Pre-migration backups, restore safety copies and scheduled snapshots share the app-data `Backups`
+  folder without retention deleting migration/restore files.
+- Restore is available to a signed-in operator for this release; tighten to an administrator permission
+  before multi-role production rollout.
+
+### Verified
+
+- Scheduler created daily, weekly and monthly snapshots.
+- Manual backup wrote local and selected secondary-folder copies.
+- End-to-end restore through Settings created a pre-restore safety copy and reloaded into a valid
+  schema 17 database with matching invoice counts.
+
 ## [0.2.1] - 2026-11-03
 
 ### Added

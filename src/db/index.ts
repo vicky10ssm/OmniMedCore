@@ -567,6 +567,7 @@ class ReadOnlySource implements DataSource {
 }
 
 let dbPromise: Promise<DataSource> | null = null;
+let restoreInProgress = false;
 
 /**
  * True when another tab of this app already owns the database.
@@ -596,6 +597,9 @@ function claimLock(): boolean {
 }
 
 export function getDb(): Promise<DataSource> {
+  if (restoreInProgress) {
+    return Promise.reject(new Error("The database is being restored. Please wait for reload."));
+  }
   if (!dbPromise) {
     if (isMonitor()) {
       // Monitoring never takes the writer lock: several people may watch at
@@ -632,6 +636,18 @@ export function reopenAfterUnlock(): Promise<DataSource> {
   dbPromise = null;
   releaseLock();
   return getDb();
+}
+
+/** Flushes and closes the active database so a restore can replace the file. */
+export async function closeDatabaseForRestore(): Promise<void> {
+  restoreInProgress = true;
+  const current = dbPromise;
+  dbPromise = null;
+  releaseLock();
+  if (!current) return;
+  const db = await current;
+  await db.flush();
+  if (db instanceof TauriSqlSource) await db.close();
 }
 
 // Re-exported so pages deal with one module for storage concerns.

@@ -125,7 +125,7 @@ Status meanings: **Ready**, **Pilot**, **Partial**, **Not available**, **Externa
 | Shared patient identity | Ready | Same patient used for OPD, diagnostics, pharmacy and admissions |
 | Read-only monitoring build | Pilot | Separate bundle and read-only `DataSource`; central dashboard code exists but is not deployed |
 | Encrypted database | Partial | AES-GCM envelope code exists; end-user enable/change/recovery setup is not exposed |
-| Automated backup/restore | Not available | **Release blocker** |
+| Local backup/restore | Pilot | Daily in-app snapshots with 7 daily/4 weekly/12 monthly retention, optional USB/OneDrive copy, manual backup, schema/integrity validation and safe restore. Unencrypted and only scheduled while the app is open |
 | Retention/legal hold | Not available | No configurable retention enforcement |
 | Digital signature | Not available | Do not call a signature image a digital signature |
 
@@ -169,6 +169,6 @@ the vendor licence portal, the local append-only sync queue and the Next.js cent
 
 **Not ready:** signed/distributed Windows installer, deployed and hardened cloud sync/hosted monitoring,
 per-device sync tokens, public hosted licence portal/customer self-service, OS-secure licence storage,
-backups, live ABDM, QMS/QC/equipment/personnel modules, analyzer/PACS integration, critical-value
+encrypted/offsite/unattended backups, live ABDM, QMS/QC/equipment/personnel modules, analyzer/PACS integration, critical-value
 workflow, full HIS features (insurance/TPA, nursing, medication charts, package/advance billing),
 advanced pharmacy procurement/controlled-drug workflows.

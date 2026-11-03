@@ -1,7 +1,7 @@
 {
   "name": "diagbill",
   "private": true,
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "MediCore — modular billing and care operations for diagnostic centres, pharmacies and small hospitals",
   "type": "module",
   "scripts": {
@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@tauri-apps/api": "^2.12.4",
+    "@tauri-apps/plugin-dialog": "^2.8.4",
     "@tauri-apps/plugin-sql": "^2.6.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
