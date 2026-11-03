@@ -169,6 +169,7 @@ See [SECURITY.md](SECURITY.md).
 - [docs/licensing-process.md](docs/licensing-process.md) — sales-to-renewal operating procedure
 - [docs/deployment-and-readiness.md](docs/deployment-and-readiness.md) — deployment gates
 - [docs/productionization-plan.md](docs/productionization-plan.md) — production workstreams
+- [PRODUCTION_COMMERCIAL_READINESS.md](PRODUCTION_COMMERCIAL_READINESS.md) - current done/pending status and commercial release gates
 - [CLIENT_INSTALLATION_RUNBOOK.md](CLIENT_INSTALLATION_RUNBOOK.md) - end-to-end offline and optional online client installation, acceptance and rollback
 - [BACKUP_RESTORE.md](BACKUP_RESTORE.md) - local snapshots, retention, optional USB/OneDrive copy and restore
 - [ENCRYPTION.md](ENCRYPTION.md) - SQLCipher, Windows Credential Manager key storage and migration

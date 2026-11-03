@@ -3,7 +3,11 @@
 Last updated: 3 November 2026  
 Current product version: `0.3.0`  
 Current schema: `17`  
-Current deployment: development web app with `sql.js` + IndexedDB
+Current deployment: development web app with `sql.js` + IndexedDB; packaged Windows desktop with
+SQLCipher for supervised pilots
+
+For the current one-page done/pending snapshot and commercial release decision, see
+[PRODUCTION_COMMERCIAL_READINESS.md](../PRODUCTION_COMMERCIAL_READINESS.md).
 
 ## 1. Purpose
 

@@ -21,6 +21,9 @@ The safest current offer is a **paid, tightly scoped design-partner pilot** afte
 [deployment-and-readiness.md](deployment-and-readiness.md) are completed. Do not sell it as a complete
 LIS, a NABL-certified system, a live ABDM product or a cloud monitoring service yet.
 
+For the current done/pending and commercial release decision, use
+[PRODUCTION_COMMERCIAL_READINESS.md](../PRODUCTION_COMMERCIAL_READINESS.md).
+
 ## Documentation map
 
 | Document | Use it for |
@@ -30,6 +33,7 @@ LIS, a NABL-certified system, a live ABDM product or a cloud monitoring service 
 | [architecture.md](architecture.md) | Detailed current/target architecture and the proposed offline/online sync protocol |
 | [licensing-and-editions.md](licensing-and-editions.md) | Editions, signed activation, tenant/device binding, grace/read-only rules, vendor portal and licence QA |
 | [licensing-process.md](licensing-process.md) | End-to-end operating procedure from quote and order through issuance, activation, renewal, upgrades, replacement, revocation and records |
+| [../PRODUCTION_COMMERCIAL_READINESS.md](../PRODUCTION_COMMERCIAL_READINESS.md) | Current done/pending status and commercial release gates |
 | [../CLIENT_INSTALLATION_RUNBOOK.md](../CLIENT_INSTALLATION_RUNBOOK.md) | End-to-end offline terminal and optional online-monitoring installation, acceptance and rollback |
 | [deployment-and-readiness.md](deployment-and-readiness.md) | What can be installed now, release gates and IT requirements |
 | [productionization-plan.md](productionization-plan.md) | Full engineering, packaging, backup, cloud, security and operations plan to reach production |
