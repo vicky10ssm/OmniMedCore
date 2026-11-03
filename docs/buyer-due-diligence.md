@@ -48,17 +48,19 @@ Do not invent certifications, references or insurance.
 **Authentication:** per-user credentials; PBKDF2-SHA256 hashes; optional TOTP 2FA; admin/operator roles
 plus report-release permission.
 
-**Encryption:** AES-GCM envelope with PBKDF2-derived wrapping and recovery slot exists in code. The
-end-user enable, passphrase change and recovery workflow is incomplete. Do not mark as generally
-available until tested in the packaged app.
+**Encryption:** the packaged desktop database uses SQLCipher 4.20 with the key in Windows Credential
+Manager. Key export/import, rotation and cross-machine recovery are incomplete. Browser IndexedDB is
+not covered by desktop SQLCipher.
 
 **Audit:** application-level actor/action/entity/timestamp for login, patient, consent, sample, report,
 invoice, payment, settings and ABDM draft actions. No tamper-evident external log service yet.
 
-**Backups:** not implemented. A mandatory design and restore-test procedure must be agreed before data
-processing.
+**Backups:** encrypted local daily/weekly/monthly snapshots, optional USB/OneDrive copy, manual backup
+and validated restore are implemented. Key recovery, unattended scheduling and clean-machine restore
+acceptance remain mandatory before production use.
 
-**Monitoring:** separate read-only build is designed; no remote data path exists yet.
+**Monitoring:** a read-only sync receiver/dashboard codebase exists, but it is not hosted or hardened;
+per-device tokens, SSO/MFA and operational backups are pending.
 
 **Data location:** local at the terminal today. Future cloud region/subprocessors must be documented
 before hosting.
