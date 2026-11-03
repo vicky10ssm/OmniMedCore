@@ -150,7 +150,7 @@ Status meanings: **Ready**, **Pilot**, **Partial**, **Not available**, **Externa
 | Tenant management UI | Not available | No onboarding/switching/support console |
 | Multi-terminal offline billing | Partial | Data model ready; cloud coordination/sync not implemented |
 | Read-only “monitor from anywhere” | Partial | Monitor build exists, but there is no hosted data pipeline |
-| Tauri Windows installer | Not available | Target architecture defined; not built |
+| Tauri Windows installer | Partial | Native SQLite, single-instance guard and NSIS/MSI installers build successfully; installer signing, clean-machine acceptance and distribution are still pending |
 | Browser/PWA install | Pilot | Development/local browser storage only; not recommended as primary data store |
 | Cloud backup | Not available | Not implemented |
 

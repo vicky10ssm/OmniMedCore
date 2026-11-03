@@ -9,6 +9,15 @@ production releases begin.
 
 - Repository documentation set: root README, security policy, contribution guide, changelog, PR
   template, Node version pins and environment templates.
+- Tauri v2 desktop shell with single-instance handling, NSIS configuration and generated Windows icons.
+- Native SQLite persistence through `@tauri-apps/plugin-sql`, pre-migration backups, integrity checks
+  and flush-before-close handling.
+- Desktop database path, writability and backup-folder diagnostics in Settings → Device & sync.
+- `DESKTOP_BUILD.md` for Rust/MSVC setup, WS2 verification, installer testing and manual updates.
+- GitHub Actions release workflow for `v*` tags that builds NSIS/MSI Windows installers and publishes
+  them to GitHub Releases.
+- Native Windows build verified locally: unsigned NSIS and MSI installers, plugin-sql database creation,
+  single-instance handling, close-flush and pre-migration backup.
 - Sample disposal gate: accepted samples cannot be disposed until every linked test has complete
   entered results, with server-side action enforcement.
 - Operator role restrictions: terminal operators can enter expenses but cannot see Dashboard or the

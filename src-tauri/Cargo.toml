@@ -1,0 +1,26 @@
+[package]
+name = "medicore"
+version = "0.1.0"
+description = "MediCore offline billing and care operations"
+authors = ["MediCore"]
+edition = "2021"
+rust-version = "1.90"
+
+[lib]
+name = "medicore_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-single-instance = "2"
+tauri-plugin-sql = { version = "2.6.0", features = ["sqlite"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+[patch.crates-io]
+# Single-connection SQLite pool so BEGIN/COMMIT and all statements inside a
+# transaction use the same connection. The only source change is max_connections(1).
+tauri-plugin-sql = { path = "vendor/tauri-plugin-sql" }

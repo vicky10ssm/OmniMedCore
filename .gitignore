@@ -1,6 +1,8 @@
 node_modules/
 dist/
 dist-monitor/
+src-tauri/target/
+src-tauri/gen/schemas/
 release/
 coverage/
 playwright-report/

@@ -3,6 +3,9 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App";
 import { setModeOverride } from "./app/mode";
+import { installDesktopLifecycle } from "./app/desktopLifecycle";
+
+installDesktopLifecycle();
 
 // Dev-only: switch between the editing terminal and the read-only monitoring
 // view without rebuilding.

@@ -53,7 +53,8 @@ new invoice accrual because commission/inducement visibility can create complian
 - Node.js **24.22.0** for development
 - npm
 - A modern browser for the development build
-- WebView2 for the future Tauri desktop build
+- WebView2 for the Tauri desktop build
+- Rust stable MSVC and Visual Studio Build Tools for desktop compilation (see `DESKTOP_BUILD.md`)
 
 Node versions are pinned in `.node-version` and `.nvmrc`.
 
@@ -91,6 +92,20 @@ npm run build:monitor
 
 `npm run check` covers TypeScript, migration scenarios and static tenant-scope checks.
 
+### Windows desktop build
+
+The Tauri v2 desktop shell and native SQLite persistence via `@tauri-apps/plugin-sql` are scaffolded.
+Rust/MSVC are required to build the native app/installer. Follow [DESKTOP_BUILD.md](DESKTOP_BUILD.md)
+for prerequisites, verification and installer steps.
+
+```powershell
+npm run desktop:dev
+npm run tauri build
+```
+
+Pushing a tag such as `v0.1.0` triggers `.github/workflows/release.yml`, which builds the Windows
+installers and publishes them to GitHub Releases.
+
 ## Licence portal
 
 ```powershell
@@ -115,6 +130,7 @@ src/
   pages/        terminal and shared application screens
   ui/           layout, navigation, route guards and UI kit
 docs/           buyer, product, architecture, deployment and licensing documentation
+src-tauri/      Tauri v2 shell, native SQLite commands and Windows bundle config
 license-portal/ vendor licence administration portal
 scripts/        migration, tenant-scope and build support checks
 .opencode/      project-local agent skills and workflows
@@ -154,7 +170,7 @@ Read [CONTRIBUTING.md](CONTRIBUTING.md) before changing code or data rules.
 
 ## Current limitations
 
-- No signed Windows/Tauri installer
+- Unsigned NSIS/MSI Windows installers have been built; code signing, clean-machine acceptance and distribution are still pending
 - Browser storage is still the current persistence layer
 - No automated backup/restore
 - No OS-secure licence storage or backend entitlement enforcement

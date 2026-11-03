@@ -8,7 +8,8 @@ Current schema: `16`
 ```text
 React/TypeScript single codebase
 ├── Terminal build
-│   ├── sql.js SQLite currently persisted to IndexedDB
+│   ├── browser: sql.js SQLite persisted to IndexedDB
+│   ├── desktop: sql.js SQLite persisted to app-data file
 │   ├── all billing/clinical data entry
 │   └── local print layouts (A4 and 80 mm)
 └── Monitor build
@@ -46,14 +47,17 @@ The target architecture is **not the same as the current deployment**. Be explic
 - Referral commissions are intentionally removed from navigation, doctor forms and new invoice accrual.
 - Pathology samples can be disposed only after every linked test has complete entered results; the
   action handler re-checks the gate.
-- No Windows installer, no auto-update, no cloud sync, no automated backup, no remote support agent.
+- Tauri v2 desktop build, single-instance guard and native SQLite persistence via
+  `@tauri-apps/plugin-sql` work locally; unsigned NSIS and MSI installers were produced.
+- Installer signing, clean-machine installation/upgrade/uninstall acceptance and distribution are still
+  outstanding. No auto-update, cloud sync, automated backup or remote support agent.
 
 ## What is not yet deployable
 
 | Gap | Why it matters to a buyer |
 | --- | --- |
-| Tauri `.exe` not built | A normal clinic cannot install/manage a browser development build safely |
-| Data currently in IndexedDB | Browser storage can be cleared; not acceptable as the sole production money store |
+| Installer unsigned/unaccepted | NSIS/MSI builds exist but are not code-signed or accepted on clean buyer hardware |
+| Browser build uses IndexedDB | Development/browser data can be cleared; packaged desktop uses SQLite, but backup/restore is still absent |
 | Backup/restore absent | A disk/browser loss can destroy financial and clinical records |
 | No cloud accumulator | “Monitor from anywhere” has no remote data path |
 | No update mechanism | Security/bug fixes cannot be rolled out reliably |
