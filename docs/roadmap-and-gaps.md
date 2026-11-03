@@ -3,39 +3,50 @@
 This roadmap is sequenced by commercial risk and buyer safety, not by what is easiest to demo. Dates
 must be estimated after the pilot requirements are known.
 
+For the current done/pending snapshot and commercial release decision, see
+[PRODUCTION_COMMERCIAL_READINESS.md](../PRODUCTION_COMMERCIAL_READINESS.md).
+
 ## P0 — Must complete before real patient data
 
-1. **Tauri Windows desktop build**
-   - Local SQLite file, WebView2, installer, versioning
-   - Installer signing decision
-   - Upgrade/rollback tests on prior schema versions
-2. **Backup and restore**
-   - Encrypted scheduled/manual backup
-   - Off-device target
-   - Restore test and evidence
-   - Retention policy
-3. **Encryption setup/recovery workflow**
-   - Enable encryption from Settings
-   - Store/print recovery code safely
-   - Change passphrase
-   - Test relock/restart and wrong/recovery paths
-4. **Production deployment runbook**
+### Completed pilot foundation
+
+- **Tauri Windows desktop build:** native SQLCipher, WebView2, NSIS/MSI installers, versioning,
+  single-instance handling and self-signed signing are implemented.
+- **Backup and restore:** encrypted daily/weekly/monthly snapshots, 7/4/12 retention, optional
+  USB/OneDrive copy, manual backup and validated restore are implemented.
+- **Encryption:** SQLCipher 4.20 with the key in Windows Credential Manager, automatic plaintext
+  migration and local pre-encryption copy are implemented.
+- **Deployment runbook:** `CLIENT_INSTALLATION_RUNBOOK.md` covers offline installation, optional online
+  monitoring, acceptance and rollback.
+
+### Still required before real patient data
+
+1. **Clean-machine acceptance**
+   - Install, upgrade, uninstall and encrypted restore on clean Windows hardware
+   - Upgrade/rollback tests from every supported released schema
+2. **Key recovery and unattended backup**
+   - Key export/import and rotation
+   - Restore on a new Windows profile/machine
+   - Windows scheduled backups with offsite verification and RPO/RTO evidence
+3. **Production support/operations**
    - Supported hardware/printers
-   - Remote support consent
-   - Log redaction
-   - Incident response
-5. **Pilot acceptance pack**
+   - Remote support consent, log redaction, incident response and status process
+4. **Pilot acceptance pack**
    - Test scripts, known defects, rollback criteria
    - Buyer limitations acknowledgement
-6. **Data migration toolkit**
+5. **Data migration toolkit**
    - Validated CSV importers/templates
    - Rejects/reconciliation report
    - Historical data scope decision
-7. **Production licence operations**
+6. **Production licence operations**
    - OS-secure licence storage in the packaged app and backend entitlement enforcement
    - Hosted/hardened portal with TLS, per-user admin auth/MFA, backups, rate limits and audit
    - Renewal, replacement, revocation and clock-tamper runbooks
    - Buyer EULA/device-transfer/renewal terms
+7. **Security and quality gates**
+   - Automated regression/E2E/load tests and security hardening
+   - Independent penetration test before commercial production
+   - Public-CA signing or a formally accepted local-root enterprise deployment
 
 ## Implemented vertical modules
 
