@@ -1,7 +1,7 @@
 ﻿# Productionization plan
 
 Last updated: 3 November 2026  
-Current product version: `0.2.1`  
+Current product version: `0.2.2`  
 Current schema: `17`  
 Current deployment: development web app with `sql.js` + IndexedDB
 
@@ -53,7 +53,7 @@ review and commercial support model to be fully operational.
 | Persistence | sql.js + IndexedDB in browser; native SQLite via plugin-sql in Tauri | Encrypted desktop file and backup/restore workflow remain future work |
 | Desktop packaging | Tauri v2 native build succeeds; NSIS and MSI installers produced locally | Installer signing, clean-machine acceptance, updater and distribution |
 | Encryption | Envelope/key foundation | User workflow, SQLCipher/local-file integration, recovery tests |
-| Backup/restore | Not implemented | Scheduled/manual backup, off-device copy, restore test |
+| Backup/restore | Local daily snapshots, 7/4/12 retention, optional USB/OneDrive copy, manual backup and validated restore | Encryption, unattended scheduling, clean-machine restore test and retention monitoring |
 | Cloud/monitor | Append-only queue, 30-second desktop push, Next.js receiver/dashboard and PostgreSQL schema code exist | Hosting, TLS, per-device auth, conflict/replay handling, backups and tenant operations |
 | Authentication | Password + optional TOTP; admin/operator roles | Lockout/rate limits, session policy, device tokens |
 | Roles | Operator: Expenses only, no Dashboard or profit tile; admin retains full view | Granular permissions and packaged backend enforcement |
@@ -155,15 +155,21 @@ Exit gate: install â†’ create bill/report â†’ close â†’ reopen â
 
 ### WS3 â€” Encryption, recovery and backups
 
-Tasks:
+Implemented pilot foundation:
+
+- Local daily snapshots with 7 daily / 4 weekly / 12 monthly retention.
+- Manual **Backup Now** and optional USB/OneDrive second folder.
+- Schema/integrity validation, pre-restore safety copy and restore/reload UI.
+- Pre-migration snapshots retained separately.
+
+Remaining tasks:
 
 - Finish admin workflows for enabling encryption and changing the passphrase.
 - Generate recovery code exactly once and force acknowledgement.
 - Validate wrong passphrase, recovery, relock, restart and key rotation.
-- Store backups encrypted; never store the passphrase beside them.
-- Implement manual backup now and scheduled backup later.
-- Define retention: e.g. 7 daily, 4 weekly, 12 monthly plus pre-migration snapshots.
-- Add restore UI/runbook that works on a clean terminal.
+- Encrypt backup files; never store the passphrase beside them.
+- Add unattended Windows scheduled backup outside the app.
+- Prove restore on a clean terminal with a realistic dataset and recorded evidence.
 - Test backup/restore with the buyerâ€™s real volume before go-live.
 - Define RPO/RTO. Proposed pilot targets: RPO â‰¤ 1 hour, RTO â‰¤ 4 hours; confirm with buyer.
 - Record restore evidence: date, operator, backup ID, record counts, checksum.

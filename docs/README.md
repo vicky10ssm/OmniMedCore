@@ -1,7 +1,7 @@
 ﻿# MediCore buyer documentation
 
 Last updated: 3 November 2026  
-Product version: `0.2.1`  
+Product version: `0.2.2`  
 Database schema: `17`
 
 **MediCore** is the umbrella product name. The internal package/browser storage keys retain the
@@ -33,6 +33,7 @@ LIS, a NABL-certified system, a live ABDM product or a cloud monitoring service 
 | [deployment-and-readiness.md](deployment-and-readiness.md) | What can be installed now, release gates and IT requirements |
 | [productionization-plan.md](productionization-plan.md) | Full engineering, packaging, backup, cloud, security and operations plan to reach production |
 | [../DESKTOP_BUILD.md](../DESKTOP_BUILD.md) | Windows/Tauri prerequisites, WS2 verification, installer and desktop failure tests |
+| [../BACKUP_RESTORE.md](../BACKUP_RESTORE.md) | Daily snapshots, 7/4/12 retention, USB/OneDrive copy, validation and restore |
 | [../cloud-dashboard/README.md](../cloud-dashboard/README.md) | Optional Next.js sync receiver, PostgreSQL schema and read-only central dashboard |
 | [security-privacy-compliance.md](security-privacy-compliance.md) | Security posture, NABL/ISO/ABDM evidence, data protection and claims policy |
 | [commercial-model-and-pricing.md](commercial-model-and-pricing.md) | Pricing structures, cost drivers, ROI method and proposal terms |

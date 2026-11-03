@@ -41,20 +41,23 @@ Verified on 3 November 2026:
 | `npm run build` | Passed |
 | `npm run build:monitor` | Passed |
 | `npm run tauri build` | Passed |
-| NSIS installer | `MediCore_0.2.1_x64-setup.exe` — 3.31 MiB, unsigned |
-| MSI installer | `MediCore_0.2.1_x64_en-US.msi` — 4.57 MiB, unsigned |
+| NSIS installer | `MediCore_0.2.2_x64-setup.exe` — 3.41 MiB, unsigned |
+| MSI installer | `MediCore_0.2.2_x64_en-US.msi` — 4.71 MiB, unsigned |
 | Runtime database | `%APPDATA%\in.medicore.desktop\medicore.db` |
 | Schema/integrity | `schema_version=17`, `PRAGMA quick_check=ok` |
 | Single instance | Second process exited; original stayed running |
 | Close flush | WAL checkpointed; database readable after close |
 | Pre-migration backup | `pre-migration-v15-<timestamp>.db` and `pre-migration-v16-<timestamp>.db` created |
+| Scheduled backup | `MediCore-daily-2026-11-03.db`, `MediCore-weekly-2026-W45.db`, `MediCore-monthly-2026-11.db` |
+| Manual/secondary backup | Local and selected-folder copies created; 3 files each |
+| Restore | Pre-restore safety copy created; app reloaded with schema 17 and matching invoice counts |
 | Sync schema | Migration 17 created `sync_queue`, `sync_ack` and six entity triggers |
 
 Checksums from that build:
 
 ```text
-NSIS SHA256: A845C5E147AC4ED8B7311891CCD650CC5CE162328AE517E3DA26F26815D5CC09
-MSI  SHA256: 0FE8285E95FC99F1F8A25186566726386F4F1238859A704AED5FBF27BC601E51
+NSIS SHA256: 19C228744E8656E4BBA2978F153B11A424EDD191E2C095708428D0548CC811C5
+MSI  SHA256: CD554CF07057E9CEE26A2C6E25AC87E31B2517B6044F2DF2EC57ED9582E2C819
 ```
 
 These hashes change on every rebuild. Recompute them before publishing.
@@ -223,8 +226,8 @@ Get-ChildItem src-tauri\target\release\bundle\msi
 Typical output:
 
 ```text
-MediCore_0.2.1_x64-setup.exe
-MediCore_0.2.1_x64_en-US.msi
+MediCore_0.2.2_x64-setup.exe
+MediCore_0.2.2_x64_en-US.msi
 ```
 
 The installer is **unsigned** until a Windows code-signing certificate is configured. Do not distribute
@@ -346,7 +349,7 @@ Do not commit:
 After signing:
 
 ```powershell
-Get-AuthenticodeSignature .\src-tauri\target\release\bundle\nsis\MediCore_0.2.1_x64-setup.exe
+Get-AuthenticodeSignature .\src-tauri\target\release\bundle\nsis\MediCore_0.2.2_x64-setup.exe
 ```
 
 Expected status: `Valid`.
@@ -354,7 +357,7 @@ Expected status: `Valid`.
 Generate checksums:
 
 ```powershell
-Get-FileHash .\src-tauri\target\release\bundle\nsis\MediCore_0.2.1_x64-setup.exe `
+Get-FileHash .\src-tauri\target\release\bundle\nsis\MediCore_0.2.2_x64-setup.exe `
   -Algorithm SHA256
 ```
 

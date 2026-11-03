@@ -6,10 +6,12 @@ import { setModeOverride } from "./app/mode";
 import { installDesktopLifecycle } from "./app/desktopLifecycle";
 import { isTauriRuntime } from "./db/tauriStorage";
 import { startBackgroundSync } from "./sync/syncEngine";
+import { startBackupScheduler } from "./backup/backupEngine";
 
 installDesktopLifecycle();
 if (isTauriRuntime()) {
   startBackgroundSync();
+  startBackupScheduler();
 }
 
 // Dev-only: switch between the editing terminal and the read-only monitoring

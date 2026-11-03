@@ -40,6 +40,7 @@ Dashboard or the Expenses profitability card.
 - Hospital admissions, ward/bed, discharge summary and generic IPD service charges/payments/printing
 - Pharmacy medicine, batch/expiry stock, receipt, dispensing, GST receipt and cancellation
 - Expenses, audit evidence and a read-only monitoring build
+- Daily SQLite snapshots with 7/4/12 retention, optional USB/OneDrive copy, manual backup and validated restore
 - Signed Diagnostics/Pharmacy/Hospital/Complete/Custom licences with tenant/device binding,
   30-day grace and read-only mode after grace
 - Vendor licence portal for issue, download, renewal and revocation
@@ -106,7 +107,7 @@ npm run desktop:dev
 npm run tauri build
 ```
 
-Pushing a tag such as `v0.2.1` triggers `.github/workflows/release.yml`, which builds the Windows
+Pushing a tag such as `v0.2.2` triggers `.github/workflows/release.yml`, which builds the Windows
 installers and publishes them to GitHub Releases.
 
 ## Licence portal
@@ -166,6 +167,7 @@ See [SECURITY.md](SECURITY.md).
 - [docs/licensing-process.md](docs/licensing-process.md) — sales-to-renewal operating procedure
 - [docs/deployment-and-readiness.md](docs/deployment-and-readiness.md) — deployment gates
 - [docs/productionization-plan.md](docs/productionization-plan.md) — production workstreams
+- [BACKUP_RESTORE.md](BACKUP_RESTORE.md) — local snapshots, retention, optional USB/OneDrive copy and restore
 - [cloud-dashboard/README.md](cloud-dashboard/README.md) — sync receiver and read-only central dashboard
 - [COMPLIANCE.md](COMPLIANCE.md) — compliance evidence and gaps
 
@@ -177,7 +179,9 @@ Read [CONTRIBUTING.md](CONTRIBUTING.md) before changing code or data rules.
 
 - Unsigned NSIS/MSI Windows installers have been built; code signing, clean-machine acceptance and distribution are still pending
 - Browser storage is still the current persistence layer
-- No automated backup/restore
+- Local SQLite snapshots and restore exist, but backups are unencrypted and the daily schedule runs only
+  while the desktop app is open
+- No cloud backup or unattended Windows scheduled backup task
 - No OS-secure licence storage or backend entitlement enforcement
 - No hosted/hardened vendor portal
 - Optional sync receiver/dashboard code exists but is not deployed, hardened or covered by per-device

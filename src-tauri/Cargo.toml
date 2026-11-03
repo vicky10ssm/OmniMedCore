@@ -1,6 +1,6 @@
 [package]
 name = "medicore"
-version = "0.2.1"
+version = "0.2.2"
 description = "MediCore offline billing and care operations"
 authors = ["MediCore"]
 edition = "2021"
@@ -17,8 +17,11 @@ tauri-build = { version = "2", features = [] }
 tauri = { version = "2", features = [] }
 tauri-plugin-single-instance = "2"
 tauri-plugin-sql = { version = "2.6.0", features = ["sqlite"] }
+tauri-plugin-dialog = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+base64 = "0.22"
+tempfile = "3"
 
 [patch.crates-io]
 # Single-connection SQLite pool so BEGIN/COMMIT and all statements inside a

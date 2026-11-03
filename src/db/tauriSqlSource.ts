@@ -391,4 +391,10 @@ export class TauriSqlSource implements DataSource {
       // WAL may not be enabled; SQLite still persists committed data.
     }
   }
+
+  /** Closes the SQLite pool before a restore replaces the file. */
+  async close(): Promise<void> {
+    if (this.inTx) throw new Error("Cannot close the database inside a transaction");
+    await this.db.close();
+  }
 }

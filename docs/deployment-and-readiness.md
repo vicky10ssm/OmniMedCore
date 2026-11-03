@@ -50,15 +50,18 @@ The target architecture is **not the same as the current deployment**. Be explic
 - Tauri v2 desktop build, single-instance guard and native SQLite persistence via
   `@tauri-apps/plugin-sql` work locally; unsigned NSIS and MSI installers were produced.
 - Installer signing, clean-machine installation/upgrade/uninstall acceptance and distribution are still
-  outstanding. No auto-update, cloud sync, automated backup or remote support agent.
+  outstanding.
+- Local daily snapshots, optional USB/OneDrive copy and validated restore are implemented. Backups are
+  unencrypted and the daily schedule runs only while the desktop app is open. No auto-update, deployed
+  cloud sync or remote support agent.
 
 ## What is not yet deployable
 
 | Gap | Why it matters to a buyer |
 | --- | --- |
 | Installer unsigned/unaccepted | NSIS/MSI builds exist but are not code-signed or accepted on clean buyer hardware |
-| Browser build uses IndexedDB | Development/browser data can be cleared; packaged desktop uses SQLite, but backup/restore is still absent |
-| Backup/restore absent | A disk/browser loss can destroy financial and clinical records |
+| Browser build uses IndexedDB | Development/browser data can be cleared; packaged desktop uses SQLite |
+| Backups unencrypted / app-open only | Local snapshots reduce disk-loss risk, but encryption, unattended scheduling and offsite verification remain release gates |
 | Sync/dashboard not deployed | Next.js/PostgreSQL sync receiver and dashboard code exist locally; hosting, TLS, per-device tokens and operations are pending |
 | No update mechanism | Security/bug fixes cannot be rolled out reliably |
 | No installer signing | Windows SmartScreen friction and weaker provenance |
@@ -72,7 +75,8 @@ The target architecture is **not the same as the current deployment**. Be explic
 Recommended minimum before installing at a buyer site:
 
 1. **Tauri production build** using local SQLite file, not IndexedDB.
-2. **Backup and restore**: scheduled/manual encrypted backup, documented restore test.
+2. **Backup and restore**: local daily snapshots and validated restore exist; add encryption,
+   unattended Windows scheduling, offsite verification and a clean-machine restore test.
 3. **Recovery-key flow**: enable/change DB passphrase, recovery code, relock behavior validated.
 4. **Installer/upgrade path**: versioning, rollback, database migration test on real prior versions.
 5. **Pilot acceptance pack**: test script, known-defect log, rollback procedure.

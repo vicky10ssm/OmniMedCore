@@ -26,6 +26,7 @@ import { useLicense } from "../licensing/LicenseContext";
 import { LicenseSettingsPanel } from "./License";
 import { databaseInfo, isTauriRuntime, type DatabaseInfo } from "../db/tauriStorage";
 import SyncSettings from "./SyncSettings";
+import BackupSettings from "./BackupSettings";
 import type { UserRow } from "../db/types";
 import {
   generateRecoveryCodes,
@@ -1200,6 +1201,7 @@ export default function Settings() {
           </Card>
 
           <SyncSettings isAdmin={isAdmin} />
+          <BackupSettings />
         </div>
       )}
 
