@@ -15,7 +15,7 @@ release limits so that a buyer conversation does not become an unsupported promi
 
 **Current commercial position:** MediCore is a functional offline billing/pathology-reporting product
 with strong foundations for NABL/ISO evidence and ABDM interoperability, but it is **not yet a
-general-availability hosted SaaS or finished desktop installer**.
+general-availability hosted SaaS or a publicly trusted, clean-machine-accepted desktop installer**.
 
 The safest current offer is a **paid, tightly scoped design-partner pilot** after the release gates in
 [deployment-and-readiness.md](deployment-and-readiness.md) are completed. Do not sell it as a complete
@@ -30,6 +30,7 @@ LIS, a NABL-certified system, a live ABDM product or a cloud monitoring service 
 | [architecture.md](architecture.md) | Detailed current/target architecture and the proposed offline/online sync protocol |
 | [licensing-and-editions.md](licensing-and-editions.md) | Editions, signed activation, tenant/device binding, grace/read-only rules, vendor portal and licence QA |
 | [licensing-process.md](licensing-process.md) | End-to-end operating procedure from quote and order through issuance, activation, renewal, upgrades, replacement, revocation and records |
+| [../CLIENT_INSTALLATION_RUNBOOK.md](../CLIENT_INSTALLATION_RUNBOOK.md) | End-to-end offline terminal and optional online-monitoring installation, acceptance and rollback |
 | [deployment-and-readiness.md](deployment-and-readiness.md) | What can be installed now, release gates and IT requirements |
 | [productionization-plan.md](productionization-plan.md) | Full engineering, packaging, backup, cloud, security and operations plan to reach production |
 | [../DESKTOP_BUILD.md](../DESKTOP_BUILD.md) | Windows/Tauri prerequisites, WS2 verification, installer and desktop failure tests |
@@ -72,12 +73,12 @@ Compliance source detail remains in [`../COMPLIANCE.md`](../COMPLIANCE.md).
 | Sample workflow | Accession, collection, receipt, acceptance/rejection, disposal, audit |
 | Roles | Admin/operator plus explicit clinical report-release authority |
 | Security | Password hashing, optional TOTP 2FA, read-only monitor enforcement |
-| At-rest encryption | Code foundation exists; **not currently exposed as a completed admin workflow** |
+| At-rest encryption | Desktop SQLCipher 4.20; key in Windows Credential Manager; browser IndexedDB is not covered |
 | ABDM | Offline FHIR R4 v6.5.0 draft generation; **no live API transmission** |
 | NABL/ISO | Evidence foundations and gap matrix; **not certified/accredited software** |
-| Desktop `.exe` | Tauri target defined; **installer not yet built** |
-| Cloud monitoring | Monitor build exists; **cloud sync backend not implemented** |
-| Backups | **Automated backup/restore is not yet implemented â€” release blocker** |
+| Desktop `.exe` | Locally self-signed NSIS/MSI installers built; public-CA signing and clean-machine acceptance pending |
+| Cloud monitoring | Sync receiver/dashboard code exists; **hosted deployment, hardening and per-device tokens are not complete** |
+| Backups | Encrypted local snapshots, 7/4/12 retention, optional USB/OneDrive copy and validated restore; key export/import and unattended scheduling pending |
 | Recommended launch price | â‚¹20,000 paid pilot; â‚¹24,000/year for 1 centre/2 terminals, excluding GST â€” see [commercial-model-and-pricing.md](commercial-model-and-pricing.md#recommended-launch-prices-for-india) |
 | Default demo login | First-run bootstrap `admin / admin123`, forcing a password change |
 

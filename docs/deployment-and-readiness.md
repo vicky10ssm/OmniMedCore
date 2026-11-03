@@ -73,6 +73,7 @@ The target architecture is **not the same as the current deployment**. Be explic
 
 ## Release gates before a paid pilot
 
+The end-to-end site procedure is in [CLIENT_INSTALLATION_RUNBOOK.md](../CLIENT_INSTALLATION_RUNBOOK.md).
 Recommended minimum before installing at a buyer site:
 
 1. **Tauri production build** using local SQLCipher, not IndexedDB.

@@ -278,8 +278,9 @@ WS1 is complete only when a clean machine/runner can reproduce a **signed build*
 - [ ] Release notes and known limitations published
 - [ ] Rollback artifact and process tested
 
-**Current status:** web bundles are reproducible, but the signed Windows installer and OS-secure packaged
-runtime are not implemented. WS1 exit gate remains **blocked** until those are delivered.
+**Current status:** the Windows app/installers are locally self-signed and the desktop SQLCipher runtime
+is implemented. Public-CA signing, clean-machine acceptance, OS-secure licence storage and the hosted
+cloud service remain release blockers.
 
 ## Final approval
 

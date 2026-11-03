@@ -34,6 +34,7 @@ Deliverable: signed configuration/data workbook and scope.
 
 - Release gates met for installer, backup/restore, encryption/recovery, migration and support.
 - Hardware/printers checked.
+- Follow the [client installation runbook](../CLIENT_INSTALLATION_RUNBOOK.md).
 - Test install on a non-production device.
 - Buyer signs data-migration plan and acceptance criteria.
 
@@ -174,20 +175,30 @@ only what is needed to operate. Any historical import requires a separate valida
 
 ## Backup and restore
 
-**Current build: not implemented.** A pilot must not start with real data until this is delivered.
+The current desktop build implements encrypted local snapshots and validated restore:
 
-Minimum production design:
+- Daily, weekly and monthly SQLCipher-encrypted snapshots (7/4/12 retention) while the app is open
+- Optional second folder on USB/OneDrive
+- Manual **Backup Now**
+- Schema/integrity validation and a pre-restore safety copy
+- Restore through **Settings → Device & sync → Backup & restore**
 
-- Encrypted automatic backup at an agreed frequency
-- At least one off-device copy
-- Retention schedule
-- Restore procedure tested by the buyer/vendor
-- Evidence of restore (time, operator, record counts)
+See [BACKUP_RESTORE.md](../BACKUP_RESTORE.md) and [ENCRYPTION.md](../ENCRYPTION.md).
+
+Still required before a production pilot:
+
+- Key export/import and rotation for cross-machine recovery
+- Unattended Windows scheduled backups
+- Clean-machine restore acceptance with real evidence
+- Documented RPO/RTO agreed with the buyer
 - Monthly restore test in the first pilot quarter
-- Documented RPO (maximum acceptable data loss) and RTO (time to restore)
+- Buyer/vendor ownership of backup media and evidence
 
-Buyer and vendor responsibilities must be explicit. A backup that has never been restored is not
-evidence of recoverability.
+The SQLCipher key is bound to the Windows Credential Manager profile. Encrypted backups cannot be
+opened on another Windows user/machine without the matching key, and this release does not yet expose
+key export/import. Protect the Windows profile and do not reset it as a troubleshooting step.
+
+A backup that has never been restored is not evidence of recoverability.
 
 ## Support model
 
@@ -256,12 +267,16 @@ On termination:
 - [ ] Discovery workbook completed
 - [ ] Limitations acknowledged
 - [ ] Release gates passed
+- [ ] Client installation runbook completed
+- [ ] Local root certificate installed and signed build verified
+- [ ] SQLCipher encryption and Windows Credential Manager key verified
 - [ ] Hardware/printers approved
 - [ ] Users/roles/report authority approved
 - [ ] Masters signed off
 - [ ] Opening balances reconciled
 - [ ] Training delivered and competency recorded
-- [ ] Backup and restore tested
+- [ ] Backup and restore tested; restore evidence recorded
+- [ ] Windows-profile/key recovery responsibility recorded
 - [ ] Parallel run accepted
 - [ ] Support contacts and hours confirmed
 - [ ] Go-live/rollback decision recorded
