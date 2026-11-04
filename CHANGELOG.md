@@ -7,6 +7,20 @@ production releases begin.
 
 No changes yet.
 
+## [0.4.1] - 2026-11-04
+
+### Security
+
+- Production builds now reject the special `"signature": "development"` licence path. A hand-written
+  development-licence JSON can no longer be imported as a valid production entitlement.
+- Added release verification for a hand-written development licence against the production build.
+
+### Documentation
+
+- Documented the licensing threat model: signatures prevent forgery, but local offline licensing is not
+  tamper-proof. Installation cloning, clock rollback, runtime terminal-count enforcement, offline
+  revocation and localStorage storage remain limitations.
+
 ## [0.4.0] - 2026-11-04
 
 ### Added

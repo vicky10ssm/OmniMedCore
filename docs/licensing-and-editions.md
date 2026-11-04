@@ -80,9 +80,31 @@ If a licence is for the wrong tenant or device, activation fails without replaci
 Tampered payloads fail signature verification. On an encrypted database, the boot unlock happens first;
 the licence check is retried automatically once tenant/device identity is readable.
 
+### Can a buyer self-create a licence?
+
+A buyer can create a JSON file with the right shape, but **cannot create a valid ECDSA signature without
+the vendor private key**. The app verifies the signature over canonical JSON before accepting the file,
+and production builds explicitly reject the special `"development"` signature used by DEV builds.
+
+This is still a local offline entitlement check, not tamper-proof DRM:
+
+- A buyer with administrator access can patch the application bundle or bypass the UI checks.
+- The device ID is stored in the local database; copying the whole installation and licence file may
+  clone the entitlement to another machine.
+- Expiry uses the local system clock, so clock rollback needs separate operational controls.
+- `maxTerminals` is checked at portal issuance, not enforced at runtime.
+- Revocation is offline: a device that never receives a revoked licence cannot learn about it.
+- The licence is currently stored in `localStorage`, not OS-secure storage.
+- Development builds contain a complete development licence; production builds must be checked to
+  ensure the development path is not accepted or bundled accidentally.
+
+Do not describe the current licensing as tamper-proof, hardware-locked, or online-revocable.
+
 Development builds receive a complete development licence when no real licence has been imported. This is
 for demos and automated checks only; it must not be used as a production entitlement bypass. Production
-builds require a valid signed licence.
+builds require a valid signed licence and explicitly reject the special `"development"` signature. The
+release check must attempt to import a hand-written development licence into the production build and
+confirm it is refused.
 
 ## Grace and read-only behavior
 

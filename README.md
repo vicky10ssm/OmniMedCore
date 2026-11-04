@@ -109,7 +109,7 @@ npm run desktop:dev
 npm run tauri build
 ```
 
-Pushing a tag such as `v0.4.0` triggers `.github/workflows/release.yml`, which builds the Windows
+Pushing a tag such as `v0.4.1` triggers `.github/workflows/release.yml`, which builds the Windows
 installers and publishes them to GitHub Releases.
 
 ## Licence portal

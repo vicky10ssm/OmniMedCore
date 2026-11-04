@@ -1,7 +1,7 @@
 # Client installation runbook
 
 Last updated: 4 November 2026  
-Applies to: MediCore `0.4.0` Windows desktop app  
+Applies to: MediCore `0.4.1` Windows desktop app  
 Status: supervised pilot only; offline-first terminal with local CSV export
 
 This runbook covers the offline desktop terminal and its optional local Google Drive outbox:
@@ -54,8 +54,8 @@ Optional second backup folder:
 Release files:
 
 ```text
-MediCore_0.4.0_x64-setup.exe        NSIS per-user installer
-MediCore_0.4.0_x64_en-US.msi        MSI installer (may require administrator)
+MediCore_0.4.1_x64-setup.exe        NSIS per-user installer
+MediCore_0.4.1_x64_en-US.msi        MSI installer (may require administrator)
 MediCore-CodeSigning.cer            Public local root certificate
 <licence>.json                      Signed tenant/device licence
 ```
@@ -100,7 +100,7 @@ Valid to:   2031-11-03
 ### 3.2 Verify the installer signature
 
 ```powershell
-Get-AuthenticodeSignature .\MediCore_0.4.0_x64-setup.exe
+Get-AuthenticodeSignature .\MediCore_0.4.1_x64-setup.exe
 ```
 
 Expected:
@@ -112,7 +112,7 @@ Status: Valid
 Also check the SHA-256 hash against the release notes or `DESKTOP_BUILD.md`:
 
 ```powershell
-Get-FileHash .\MediCore_0.4.0_x64-setup.exe -Algorithm SHA256
+Get-FileHash .\MediCore_0.4.1_x64-setup.exe -Algorithm SHA256
 ```
 
 Stop if the signature is not `Valid` or the hash does not match the published release. Do not install
@@ -137,8 +137,8 @@ For a new installation, no database exists yet.
 
 ### 4.2 Run the installer
 
-- NSIS (`MediCore_0.4.0_x64-setup.exe`) installs for the current Windows user.
-- MSI (`MediCore_0.4.0_x64_en-US.msi`) may require administrator rights.
+- NSIS (`MediCore_0.4.1_x64-setup.exe`) installs for the current Windows user.
+- MSI (`MediCore_0.4.1_x64_en-US.msi`) may require administrator rights.
 - Run the installer interactively. Do not use silent switches for a production upgrade until the
   clean-machine upgrade path has been accepted.
 - Do not uninstall the old version as part of a normal upgrade.
