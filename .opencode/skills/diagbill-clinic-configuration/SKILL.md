@@ -31,7 +31,8 @@ tenant-scoped configuration features, not security permissions.
 - `MODULE_DEFINITIONS` in `src/app/modules.ts` is the single source of truth.
 - Missing/empty/corrupt configuration means **all modules enabled**. This is intentional to avoid
   hiding clinical workflows after an upgrade/read failure.
-- Dashboard and Settings are always available and are not represented as toggleable modules.
+- Dashboard and Settings are administrator-only and are not represented as toggleable modules. Compliance
+  is administrator-only and is also a licensed/clinic-toggleable module.
 - A disabled module is removed from both terminal and monitor navigation.
 - Its direct routes are wrapped in `ModuleGate`; navigating directly redirects to the dashboard.
 - `ModuleGate` combines licence entitlement with clinic visibility. Unlicensed modules show **Not
@@ -72,7 +73,8 @@ Do not invent a second list of module names in another file or duplicate JSON pa
 - Both `enabled_modules` and `logo_data` are written with `setSetting()`, which is tenant-scoped.
 - Saving writes an audit event `settings.modules`; detail lists module IDs and whether a logo is set.
   Do not put the logo data URL in audit detail.
-- Only admins can edit clinic setup; operators see disabled controls.
+- Only admins can open or edit clinic setup; operators have no Settings or Compliance navigation entry and
+  direct URLs are blocked by the route guards.
 - The settings key is not a permission: a user who knows a URL must still pass the route and role guards.
 
 ## Verification
@@ -80,7 +82,8 @@ Do not invent a second list of module names in another file or duplicate JSON pa
 1. As admin, disable Patients and Reports.
 2. Confirm both disappear from the terminal sidebar.
 3. Open `#/patients` and `#/reports` directly → redirected to Dashboard.
-4. Confirm Settings remains reachable and can re-enable them.
+4. Confirm Settings remains reachable to an administrator and can re-enable them; as an operator, Settings
+   and Compliance are absent from navigation and direct URLs.
 5. Import a limited licence; confirm unlicensed modules are locked in Settings and absent from nav/routes.
 6. Build the monitor bundle and confirm the same licence/visibility filtering/redirect behavior.
 6. Upload PNG/JPEG/WebP under 500 KB; verify sidebar, invoice print and report print.

@@ -28,8 +28,8 @@ Effective modules are:
 licensed modules ∩ clinic-enabled modules
 ```
 
-Dashboard and Settings remain available. Terminal operators can access Expenses but do not see the
-Dashboard or the Expenses profitability card.
+Dashboard and Settings are administrator-only. Terminal operators work from Expenses and do not see the
+Dashboard, Settings, Compliance or the Expenses profitability card.
 
 ## Current capabilities
 

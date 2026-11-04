@@ -416,13 +416,14 @@ The second deployment exists. `npm run build` makes the terminal (editing) app; 
 
 ## Operator expense access and dashboard separation - built
 
-- Terminal operators can add and view expenses, but Dashboard is removed from their navigation and
-  `#/` redirects to Expenses. Admins retain the Dashboard.
+- Terminal operators can add and view expenses, but Dashboard, Settings and Compliance are admin-only
+  and removed from their navigation; `#/` redirects to Expenses. Admins retain the Dashboard, Settings
+  and Compliance.
 - The Expenses "This month at a glance" card (collected, expenses, profit) and the profit line in the
   page subtitle are admin-only. Operators still see the month expense total, expense list, filters,
   category-wise expense totals and CSV export.
-- Expenses routes use a `/settings` fallback when the expense module is unlicensed/disabled, avoiding a
-  redirect loop for operators whose home is Expenses.
+- Operators whose Expenses module is unlicensed/disabled land on a safe `/unavailable` page with a sign-out
+  action, avoiding a redirect loop now that Settings is administrator-only.
 - Monitor behavior is unchanged: operators retain the read-only monitor dashboard; Expenses/Commissions
   remain admin-only there.
 - Verified in the production preview with an operator account: Dashboard nav absent, `#/` redirected to

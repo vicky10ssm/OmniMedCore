@@ -12,9 +12,9 @@ effective modules = modules allowed by the signed licence
                     ∩ modules enabled by the clinic in Settings
 ```
 
-Dashboard and Settings remain available. A module that is not licensed is shown as **Not licensed** in
-Settings and cannot be enabled. A licensed module can still be hidden by the clinic for day-to-day
-operational simplicity.
+Dashboard and Settings are administrator-only. A module that is not licensed is shown as **Not licensed**
+in Settings and cannot be enabled. A licensed module can still be hidden by the clinic for day-to-day
+operational simplicity. Operators work from Expenses and do not see Settings or Compliance.
 
 | Edition | Licensed module set |
 | --- | --- |
@@ -207,8 +207,9 @@ See [license-portal/README.md](../license-portal/README.md) for key management, 
 1. Build the terminal and monitor bundles; `npm run check` must be green.
 2. With no stored real licence in DEV, confirm the development complete licence is used.
 3. Issue a Hospital licence for the current tenant/Hardware Device ID and import it.
-4. Confirm Diagnostics and Pharmacy are absent/locked; Patients, Admissions, Expenses, Compliance,
-   Settings and Dashboard remain.
+4. As an administrator, confirm Diagnostics and Pharmacy are absent/locked; Patients, Admissions,
+   Expenses, Compliance, Settings and Dashboard remain. As an operator, confirm Settings and Compliance
+   are absent and direct URLs do not open them.
 5. Open Admissions, add a service charge and a payment, verify totals/balance/audit and print.
 6. Issue a Diagnostics licence and confirm admissions/pharmacy lock in the same installation.
 7. Import a licence for a different tenant and a licence with a different hardware Device ID; both must

@@ -71,7 +71,8 @@ produce a financial transaction. They are not a full HIS or chain-pharmacy ERP. 
 - Module visibility and clinic logo are tenant-scoped settings, not permissions.
 - `src/app/modules.ts` is the single source of truth for module IDs/labels.
 - Disabled modules must be filtered from both terminal and monitor navigation and blocked by
-  `ModuleGate` on direct routes. Dashboard and Settings are always available.
+  `ModuleGate` on direct routes. Dashboard, Settings and Compliance are administrator-only; operators
+  work from Expenses.
 - Do not fail closed when configuration cannot be read; hiding care workflows due to a settings read
   failure is worse than showing an extra section.
 - Logo is a validated data URL in tenant settings and appears in the sidebar plus printed invoice/report

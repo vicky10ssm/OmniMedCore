@@ -1,8 +1,9 @@
 // Per-tenant clinic module visibility.
 //
-// Dashboard and Settings are always available. Everything else can be hidden
-// for a centre that does not use it. Visibility is presentation/configuration,
-// not a security boundary; route guards still enforce admin/report permissions.
+// Dashboard, Settings and Compliance are administrator-only. Everything else
+// can be hidden for a centre that does not use it. Visibility is
+// presentation/configuration, not a security boundary; route guards still
+// enforce admin/report permissions.
 
 import type { DataSource } from "../db";
 import { getSetting } from "../db/settings";

@@ -13,7 +13,7 @@ control.
 
 - One codebase/installer; editions: Diagnostics, Pharmacy, Hospital, Complete, Custom.
 - Effective modules = licensed modules ∩ clinic-enabled modules.
-- Dashboard and Settings always remain available.
+- Dashboard, Settings and Compliance are administrator-only; operators work from Expenses.
 - Hospital includes admissions and generic IPD service billing; it is not a full HIS.
 - Development builds use a complete development licence only when no real licence is stored. Never turn
   that fallback into a production bypass.

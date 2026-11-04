@@ -3,7 +3,16 @@
 All notable changes to MediCore are recorded here. This project follows semantic versioning once
 production releases begin.
 
-## [Unreleased]
+## [0.4.3] - 2026-11-04
+
+### Fixed
+
+- Settings is now administrator-only in both navigation and route guards; operators cannot open it by
+  direct URL.
+- Compliance is hidden from operator navigation. Clicking it no longer redirects an operator to Expenses;
+  the existing admin-only route remains enforced.
+- Operators whose Expenses module is unavailable now see a safe no-access page instead of entering a
+  redirect loop through the former Settings fallback.
 
 ### Tooling
 

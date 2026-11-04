@@ -1,7 +1,8 @@
 // Settings: lab profile (letterhead + GSTIN), pathologist signature, invoice
 // numbering, user accounts and device identity.
 //
-// Only admins may change anything; operators see a read-only view. Everything
+// Settings is administrator-only: the terminal navigation hides it from
+// operators and the route guard blocks direct URLs. Everything
 // here is local-first — these values live in the settings table and sync like
 // any other row.
 
@@ -796,8 +797,9 @@ export default function Settings() {
             <h2 className="text-sm font-semibold">Enabled sections</h2>
             <p className="mt-1 text-xs text-slate-500">
               Choose the workflows this clinic uses. Disabled sections disappear from
-              navigation and their direct URLs return to the dashboard. Dashboard and
-              Settings are always available.
+              navigation and their direct URLs return to the dashboard. Dashboard
+              and Settings are administrator-only and cannot be disabled; other
+              sections follow the clinic configuration and licence.
             </p>
             <div className="mt-3 grid gap-2 sm:grid-cols-2">
               {MODULE_DEFINITIONS.map((module) => {
@@ -841,8 +843,9 @@ export default function Settings() {
               })}
             </div>
             <div className="mt-3 rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-500">
-              Dashboard and Settings cannot be disabled. If all other sections are
-              switched off, the centre can still sign in and re-enable them here.
+              Dashboard and Settings are administrator-only and cannot be disabled.
+              If all other sections are switched off, an administrator can still sign
+              in and re-enable them here.
             </div>
           </Card>
 
