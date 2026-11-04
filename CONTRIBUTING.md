@@ -22,11 +22,19 @@ Do not use `npm install` for a reproducible checkout unless you intentionally ne
 
 ## Before changing code
 
-1. Read the relevant project skill under `.opencode/skills/`.
-2. Read `FEATURE_DECISIONS.md`, `docs/architecture.md` and `docs/product-capabilities.md`.
-3. Identify whether the change affects tenant scope, money, clinical evidence, licensing or release
+1. Read `.opencode/skills/diagbill-change-delivery/SKILL.md` for the end-to-end delivery workflow.
+2. Read the relevant domain skill under `.opencode/skills/`.
+3. Read `FEATURE_DECISIONS.md`, `docs/architecture.md` and `docs/product-capabilities.md`.
+4. Identify whether the change affects tenant scope, money, clinical evidence, licensing or release
    claims.
-4. Use synthetic data only.
+5. Use synthetic data only.
+
+## End-to-end delivery
+
+Unless the user explicitly exempts release or GitHub delivery, a change request is not complete until it
+is implemented, tested, documented, committed, pushed through a pull request, merged, released and the
+published release assets are verified. Product changes require a version bump and signed Windows
+installers. Process-only changes may be merged without a new binary release.
 
 ## Branches and commits
 
