@@ -28,6 +28,15 @@ pub struct DbState {
     conn: Arc<Mutex<Option<Connection>>>,
 }
 
+impl DbState {
+    /// Shared handle for background export work. The command must clone the
+    /// Arc before moving it into spawn_blocking; the mutex is never held across
+    /// an await point.
+    pub(crate) fn connection_handle(&self) -> Arc<Mutex<Option<Connection>>> {
+        Arc::clone(&self.conn)
+    }
+}
+
 #[derive(Serialize)]
 pub struct EncryptionInfo {
     key_present: bool,

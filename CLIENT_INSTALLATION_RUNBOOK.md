@@ -298,6 +298,23 @@ Sync_Timestamp,Transaction_ID,Module_Type,Masked_Patient_ID,Total_Amount
 6. Confirm **Pending transactions** returns to `0` after the export.
 7. Confirm Google Drive uploads the file (the app does not wait for or receive an upload ACK).
 
+### 5.3 Full all-module snapshot
+
+Full snapshots are separate from the masked transaction outbox. They contain one CSV per database table,
+including patients and clinical records, and therefore contain confidential data.
+
+1. Use **Settings → Device & sync → Export all modules now** for an immediate snapshot.
+2. A snapshot is also written automatically once per day while the app is open.
+3. Files appear under:
+
+```text
+<chosen sync folder>\full-export\snapshot_YYYYMMDD_HHMMSS_XXXXXX\
+```
+
+4. Confirm `patients.csv`, `invoices.csv`, `pharmacy_sales.csv` and `_manifest.json` exist.
+5. Confirm `users.csv` does **not** contain `password_hash`, `totp_secret` or `recovery_codes`.
+6. Protect the Google Drive account and folder. Do not treat this export as an encrypted backup.
+
 ### 5.3 Local export acceptance tests
 
 - [ ] Google Drive client is running and the folder is writable

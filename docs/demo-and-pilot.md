@@ -131,8 +131,9 @@ Ask:
 - Unattended backup scheduling or off-device upload acknowledgement
 - Promised custom reports or integration without a change order
 
-Working installer, SQLCipher, local backup/restore and local CSV export may be demonstrated as implemented,
-subject to the release-gate and signature limitations.
+Working installer, SQLCipher, local backup/restore, transaction CSV outbox and full all-module Google
+Drive snapshots may be demonstrated as implemented, subject to the release-gate, privacy and signature
+limitations.
 
 If asked, say the status and offer the roadmap, not a workaround that looks production-ready.
 

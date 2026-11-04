@@ -18,8 +18,9 @@ For the current done/pending snapshot and commercial release decision, see
   migration and local pre-encryption copy are implemented.
 - **Deployment runbook:** `CLIENT_INSTALLATION_RUNBOOK.md` covers offline installation, local CSV
   export, acceptance and rollback.
-- **Local export:** schema 18 `local_export_queue`, unique masked CSV files in a Google Drive folder and
-  retry-safe background writing are implemented.
+- **Local export:** schema 18 `local_export_queue`, unique masked transaction CSVs, retry-safe
+  background writing and full all-module Google Drive snapshots (including patients) are implemented.
+  Full snapshots contain confidential data and exclude authentication secrets.
 
 ### Still required before real patient data
 
@@ -141,7 +142,7 @@ CSV outbox. Future integrations must not become a write path or a substitute for
 | Browser-storage data today | Clearing cache risks data | P0 packaged SQLCipher release |
 | Encrypted backup key recovery | Off-device restore depends on the Windows profile key | P0 key export/import + clean-machine test |
 | No unattended backup schedule | Backups run only while the app is open | P0 Windows task/service |
-| No remote monitor | Google Drive CSV is a one-way outbox, not live viewing | Not in current scope |
+| No remote monitor | Google Drive exports are one-way and not live viewing | Not in current scope |
 | No live ABDM | Cannot meet ABDM exchange requirement | P3 |
 | No QMS/IQC/EQA | Not a complete NABL quality system | P1/partner |
 | No analyser/PACS | Manual interfaces | P4/partner |

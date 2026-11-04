@@ -1,6 +1,6 @@
 # Pre-release verification checklist
 
-Last updated: 4 November 2026<br>
+Last updated: 5 November 2026<br>
 Use for: pilot, hotfix and production release candidates  
 Related: [HOTFIX_ROLLBACK_PROCESS.md](HOTFIX_ROLLBACK_PROCESS.md)
 
@@ -270,6 +270,9 @@ Get-FileHash .\dist\assets\*.js -Algorithm SHA256
 - [ ] Print/export smoke test
 - [ ] Local Google Drive CSV export creates a unique masked file
 - [ ] CSV failure/retry leaves the batch pending and recovers
+- [ ] Full snapshot writes one CSV per table, including patients, with `_manifest.json`
+- [ ] Full snapshot is tenant-scoped and excludes authentication secrets
+- [ ] Full snapshot contains confidential-data warning and is not treated as a backup
 - [ ] Monitor read-only smoke test
 - [ ] New deployment evidence recorded
 

@@ -90,7 +90,9 @@ NABL quality system or ABDM integration.
 - Flat CSV rows with masked patient IDs and integer-derived amounts
 - Rust `spawn_blocking` writer with `create_new` no-overwrite protection
 - Pending/failed rows remain queued with local error evidence and retry
-- No API call, endpoint, token, ACK table or cloud dashboard in the export path
+- Full all-module snapshot once per day and on demand under `full-export\snapshot_...`
+- Full snapshot writes one CSV per table, including patients; authentication secrets are excluded
+- No API call, endpoint, token, ACK table or cloud dashboard in either export path
 
 The legacy `sync_queue`/`sync_ack` tables remain as historical data only; their triggers are dropped by
 migration 18.
@@ -123,7 +125,7 @@ migration 18.
 | Migration from every supported released schema | Some migration checks only | Upgrade support |
 | Security hardening: lockout/rate limits, session policy, export-folder security, SBOM, threat model, independent penetration test | Not complete | Commercial production |
 | Support operations: helpdesk, remote consent, incident response, status/maintenance process, spare-terminal plan | Model documented; staffing/tooling pending | Paid pilot / production |
-| Local CSV export acceptance | Unique-file/masking/retry verified locally; buyer Google Drive folder and downstream consumer not accepted | Paid pilot if export is in scope |
+| Local Google Drive export acceptance | Transaction outbox and full all-module snapshots verified locally; buyer folder, privacy approval and downstream consumer not accepted | Paid pilot if export is in scope |
 | Data-migration toolkit and validated CSV importers | Templates and manual/supervised migration only | First real data load |
 | Legal/commercial pack: EULA, DPA, SLA, limitation of liability, data residency/subprocessors, insurance | Draft guidance only; counsel sign-off pending | Signed contract |
 | GST/SAC/TDS/e-invoice/MSME review | Guidance exists; CA sign-off pending | Invoicing a buyer |
@@ -218,7 +220,8 @@ P0 gates are closed and the buyer accepts the written limitations.
 2. Add unattended/offsite backup evidence and RPO/RTO.
 3. Harden security/testing and complete the support/incident runbooks.
 4. Move licence storage/entitlement enforcement out of browser storage and harden the portal.
-5. Validate the local Google Drive outbox and downstream consumer with masked CSV data.
+5. Validate the local Google Drive transaction outbox and full all-module snapshot with the buyer's
+   folder, access policy and downstream consumer.
 6. Complete legal/commercial pack and pilot-to-production acceptance.
 
 Do not publish dates until each item has an owner, acceptance test and evidence.

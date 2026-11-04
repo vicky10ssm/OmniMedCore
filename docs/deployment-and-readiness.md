@@ -54,7 +54,7 @@ The target architecture is **not the same as the current deployment**. Be explic
   are still outstanding.
 - Local daily encrypted snapshots, optional USB/OneDrive copy and validated restore are implemented.
   The daily schedule runs only while the desktop app is open, and key export/import for cross-machine
-  recovery is still pending. Local Google Drive CSV export replaces online API sync. No auto-update or
+  recovery is still pending. Local Google Drive transaction exports and full all-module snapshots replace online API sync. No auto-update or
   remote support agent.
 
 ## What is not yet deployable
@@ -102,9 +102,11 @@ Recommended minimum before installing at a buyer site:
 - Dedicated controlled sync folder with appropriate sharing/access policy
 - CSV write failure/retry evidence
 - Unique-file/no-overwrite verification
-- Masked patient-ID review and data-protection sign-off
+- Masked patient-ID review and data-protection sign-off for the transaction outbox
+- Full-snapshot review and written approval for exporting patient/clinical data to Google Drive
+- Authentication-secret exclusion verified in `users.csv`
 - Downstream consumer validation for duplicate transaction snapshots
-- Clear statement that the CSV is not a backup or live remote-monitor service
+- Clear statement that neither export is a backup or live remote-monitor service
 
 ## Release gates before ABDM production claims
 
@@ -144,7 +146,7 @@ Recommended minimum before installing at a buyer site:
 
 - Packaged terminal(s), local server or per-terminal SQLite
 - Buyer-managed backups and hardware
-- Optional local Google Drive CSV export
+- Optional local Google Drive transaction export and full all-module snapshots
 - Annual support/licence
 
 ### C. Hosted multi-tenant SaaS

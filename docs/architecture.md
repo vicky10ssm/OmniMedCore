@@ -149,7 +149,22 @@ Terminal SQLite
   path.
 - The legacy `sync_queue`/`sync_ack` tables are historical; migration 18 drops their triggers and the
   app no longer reads them.
-- The CSV is a summary outbox, not a backup and not a terminal-to-terminal sync service.
+- The transaction CSV is a summary outbox, not a backup and not a terminal-to-terminal sync service.
+
+A second, explicitly separate full-data path writes all business tables:
+
+```text
+Terminal SQLite
+  -> full snapshot: once per day or "Export all modules now"
+  -> one CSV per table + _manifest.json
+  -> GOOGLE_DRIVE_SYNC_PATH\full-export\snapshot_...
+  -> Google Drive desktop client uploads independently
+```
+
+The full snapshot is tenant-scoped and includes soft-deleted rows and clinical data. It omits only
+authentication secrets (`users.password_hash`, `users.totp_secret`, `users.recovery_codes`,
+`users.totp_last_step`) and non-table runtime state. It is not a backup and does not provide import,
+merge or online revocation.
 
 See [LOCAL_CSV_EXPORT.md](../LOCAL_CSV_EXPORT.md).
 

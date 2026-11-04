@@ -275,6 +275,7 @@ pub fn run() {
             db::validate_backup,
             db::restore_database,
             export::export_sync_csv,
+            export::export_full_snapshot,
             license_security::get_machine_fingerprint,
             license_security::license_secure_store,
             license_security::license_secure_load,

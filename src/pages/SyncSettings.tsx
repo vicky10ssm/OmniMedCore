@@ -14,21 +14,34 @@ import {
   subscribeSyncStatus,
   type SyncStatus,
 } from "../sync/syncEngine";
+import {
+  exportFullSnapshotNow,
+  getFullExportStatus,
+  subscribeFullExportStatus,
+  type FullExportStatus,
+} from "../sync/fullExport";
 import { formatDateTime } from "../db/helpers";
 import { Btn, Card, ErrorNote, Labeled, TextInput } from "../ui/kit";
 
 export default function SyncSettings({ isAdmin }: { isAdmin: boolean }) {
   const [path, setPath] = useState(getGoogleDriveSyncPath());
   const [status, setStatus] = useState<SyncStatus>(getSyncStatus());
+  const [fullStatus, setFullStatus] = useState<FullExportStatus>(getFullExportStatus());
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [fullBusy, setFullBusy] = useState(false);
 
   useEffect(() => {
     void pendingSyncCount()
       .then((pending) => setStatus((current) => ({ ...current, pending })))
       .catch(() => undefined);
-    return subscribeSyncStatus(setStatus);
+    const unsubscribeSync = subscribeSyncStatus(setStatus);
+    const unsubscribeFull = subscribeFullExportStatus(setFullStatus);
+    return () => {
+      unsubscribeSync();
+      unsubscribeFull();
+    };
   }, []);
 
   const chooseFolder = async () => {
@@ -80,6 +93,22 @@ export default function SyncSettings({ isAdmin }: { isAdmin: boolean }) {
       );
     } finally {
       setBusy(false);
+    }
+  };
+
+  const runFullExport = async () => {
+    setFullBusy(true);
+    setError("");
+    setMessage("");
+    try {
+      const result = await exportFullSnapshotNow();
+      setMessage(
+        `Full snapshot written: ${result.directory} (${result.files.length} files).`
+      );
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not export all modules");
+    } finally {
+      setFullBusy(false);
     }
   };
 
@@ -171,6 +200,51 @@ export default function SyncSettings({ isAdmin }: { isAdmin: boolean }) {
         the local queue and retries on the next interval. Keep the Google Drive desktop client
         running so it can upload completed files.
       </p>
+
+      <div className="mt-5 border-t border-slate-200 pt-4">
+        <h3 className="text-sm font-semibold">Full data snapshot (all modules)</h3>
+        <p className="mt-1 text-xs text-slate-500">
+          Writes one CSV per database table into
+          <span className="num"> &lt;sync folder&gt;\full-export\snapshot_...</span>. This includes
+          patients, clinical records, billing, pharmacy, hospital and audit data.
+        </p>
+        <p className="mt-1 text-[11px] text-amber-700">
+          Full snapshots contain confidential patient data. Authentication secrets and internal
+          runtime state are never exported. Protect the Google Drive folder accordingly.
+        </p>
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          <Btn
+            variant="primary"
+            onClick={() => void runFullExport()}
+            disabled={!isAdmin || fullBusy || !isTauriRuntime()}
+          >
+            {fullBusy ? "Exporting all modules..." : "Export all modules now"}
+          </Btn>
+          <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium capitalize text-slate-600">
+            {fullStatus.phase}
+          </span>
+        </div>
+        <dl className="mt-3 grid gap-2 text-xs text-slate-600 sm:grid-cols-2">
+          <div>
+            <dt className="text-slate-400">Last full snapshot</dt>
+            <dd>{fullStatus.lastAt ? formatDateTime(fullStatus.lastAt) : "Never"}</dd>
+          </div>
+          <div>
+            <dt className="text-slate-400">Schedule</dt>
+            <dd>Automatic once per day while the desktop app is open</dd>
+          </div>
+        </dl>
+        {fullStatus.lastPath && (
+          <p className="num mt-2 break-all text-[11px] text-slate-400">
+            Last snapshot: {fullStatus.lastPath}
+          </p>
+        )}
+        {fullStatus.lastError && (
+          <p className="mt-2 rounded-lg bg-rose-50 px-3 py-2 text-xs text-rose-700">
+            {fullStatus.lastError}
+          </p>
+        )}
+      </div>
     </Card>
   );
 }

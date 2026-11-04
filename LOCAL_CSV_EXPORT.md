@@ -1,14 +1,20 @@
 # Local Google Drive CSV export
 
-Last updated: 4 November 2026  
-Applies to: MediCore desktop `0.4.0+`, schema `18+`
+Last updated: 5 November 2026<br>
+Applies to: MediCore desktop `0.5.0+`, schema `18+`
 
 ## What it does
 
-MediCore no longer sends sync rows to an API, endpoint or cloud dashboard. It writes a new CSV file
-into a local Google Drive sync folder. The Google Drive desktop client uploads that file independently.
+MediCore no longer sends sync rows to an API, endpoint or cloud dashboard. It writes CSV files into a
+local Google Drive sync folder. The Google Drive desktop client uploads those files independently.
 
-The terminal remains completely offline-capable. There is no network request in the export path.
+The terminal remains completely offline-capable. There is no network request in either export path.
+
+Two exports are implemented:
+
+1. **Transaction outbox** — a minimal five-column summary for new invoices, pharmacy sales, admissions
+   and hospital charges.
+2. **Full data snapshot** — one CSV per database table, including patients and all business modules.
 
 ## Configuration
 
@@ -69,6 +75,50 @@ financial or clinical record.
 The existing `sync_queue`/`sync_ack` tables are historical. Migration 18 drops their triggers and the
 new exporter never reads them.
 
+## Full data snapshots (all modules)
+
+The transaction outbox is deliberately minimal. The separate full-data export writes one CSV per
+database table into:
+
+```text
+<configured Google Drive folder>\full-export\snapshot_YYYYMMDD_HHMMSS_XXXXXX\
+```
+
+It runs:
+
+- automatically once per day while the desktop app is open, and
+- on demand from **Settings → Device & sync → Export all modules now**.
+
+The snapshot is tenant-scoped and includes all business tables, including:
+
+- patients and doctors
+- tests, parameters, packages and package items
+- invoices, invoice items, payments, dues and invoice blocks
+- samples, report orders, report parameters and report result revisions
+- admissions, hospital services, hospital charges and hospital bill payments
+- medicines, pharmacy batches, pharmacy sales and sale items
+- expenses, expense categories, payouts and commission history
+- settings, users, audit log, ABDM consents/drafts, export queues
+- the current tenant record and local metadata
+
+Each table is a separate file (`patients.csv`, `invoices.csv`, `pharmacy_sales.csv`, etc.). Deleted
+rows are included because the database uses soft-delete tombstones. The snapshot also contains
+`_manifest.json` describing row counts, exported columns, skipped tables and excluded columns.
+
+### Sensitive columns that are never exported
+
+Authentication secrets are excluded even from the full snapshot:
+
+- `users.password_hash`
+- `users.totp_secret`
+- `users.recovery_codes`
+- `users.totp_last_step`
+
+Internal runtime secrets and licence DPAPI blobs are not database tables and are never part of the
+Google Drive export. The full snapshot does contain patient-identifying and clinical data; protect the
+Google Drive folder and sharing permissions accordingly. It is still **not a backup**: use the
+SQLCipher backup in [BACKUP_RESTORE.md](BACKUP_RESTORE.md).
+
 ## Queue, retry and failure handling
 
 - The scheduler runs every 30 seconds while the app is open.
@@ -104,8 +154,11 @@ No queue rows are deleted, so export history remains auditable.
 
 ## Limitations
 
-- One-way summary export only; no import, merge or terminal-to-terminal sync.
+- One-way exports only; no import, merge or terminal-to-terminal sync.
 - No ACK from Google Drive; success means "file written locally", not "uploaded and processed".
 - Plain CSV in the sync folder is not encrypted; use a controlled Google Drive account/folder.
-- The scheduler runs only while the desktop app is open.
-- Historical `sync_queue`/`sync_ack` rows are retained but are no longer exported.
+- The transaction scheduler and daily full-snapshot scheduler run only while the desktop app is open.
+- Full snapshots contain patient identifiers and clinical data and must be protected accordingly.
+- Full snapshots are not a substitute for encrypted SQLCipher backups or restore testing.
+- Historical `sync_queue`/`sync_ack` rows are retained and may appear in full snapshots, but are no
+  longer used by the transaction exporter.

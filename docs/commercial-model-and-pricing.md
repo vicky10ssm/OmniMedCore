@@ -243,7 +243,7 @@ AMC should not include unlimited custom development. Define included support hou
 - Printer/network setup
 - Onsite training beyond included days
 - Custom CSV/accounting export
-- Optional local Google Drive CSV export setup
+- Optional local Google Drive export setup, including full all-module snapshots
 - ABDM onboarding and sandbox certification (only after integration exists)
 - Compliance/QMS configuration consultancy (partner with a qualified consultant)
 - Priority/24×7 support

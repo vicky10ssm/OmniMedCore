@@ -149,8 +149,9 @@ Status meanings: **Ready**, **Pilot**, **Partial**, **Not available**, **Externa
 | Tenant-scoped schema | Ready | Tenant ID and static scope checks across business tables |
 | Tenant management UI | Not available | No onboarding/switching/support console |
 | Multi-terminal data sharing | Partial | Data model ready for multiple terminals; local CSV export is one-way and does not merge terminals |
-| Local CSV export | Pilot | Unique `tx_YYYYMMDD_HHMMSS_XXXXXX.csv` files in a Google Drive sync folder; masked patient IDs; local retry queue; no API calls |
-| Local export scheduler | Pilot | Runs every 30 seconds while the Tauri app is open; not a Windows service when closed |
+| Local CSV export | Pilot | Unique `tx_YYYYMMDD_HHMMSS_XXXXXX.csv` transaction files in a Google Drive sync folder; masked patient IDs; local retry queue; no API calls |
+| Full Google Drive snapshot | Pilot | One CSV per database table including patients and all business modules; daily plus manual; authentication secrets excluded; contains confidential data |
+| Local export scheduler | Pilot | Transaction outbox every 30 seconds and a full snapshot once per day while the Tauri app is open; not a Windows service when closed |
 | Read-only "monitor from anywhere" | Not available | Cloud sync/dashboard removed; the local read-only monitor build remains |
 | Tauri Windows installer | Partial | Native SQLCipher database, single-instance guard and locally self-signed NSIS/MSI installers build successfully; public-CA signing, clean-machine acceptance and distribution are still pending |
 | Browser/PWA install | Pilot | Development/local browser storage only; not recommended as primary data store |
@@ -167,7 +168,7 @@ printing, configurable verticals and signed edition gating.
 **Pilot today:** local monitor build, ABHA/consent, ABDM JSON draft, compliance evidence dashboard,
 hospital/pharmacy read-only monitoring, tenant/hardware-bound licence activation, DPAPI storage, clock
 rollback checks, grace/read-only mode,
-the vendor licence portal and the local Google Drive CSV export queue.
+the vendor licence portal, the transaction CSV outbox and full all-module Google Drive snapshots.
 
 **Not ready:** public-CA signed/distributed Windows installer, public hosted licence portal/customer
 self-service, backend entitlement enforcement,

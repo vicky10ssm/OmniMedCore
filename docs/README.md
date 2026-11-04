@@ -38,7 +38,7 @@ For the current done/pending and commercial release decision, use
 | [deployment-and-readiness.md](deployment-and-readiness.md) | What can be installed now, release gates and IT requirements |
 | [productionization-plan.md](productionization-plan.md) | Full engineering, packaging, backup, security and operations plan to reach production |
 | [../DESKTOP_BUILD.md](../DESKTOP_BUILD.md) | Windows/Tauri prerequisites, WS2 verification, installer and desktop failure tests |
-| [../LOCAL_CSV_EXPORT.md](../LOCAL_CSV_EXPORT.md) | Google Drive outbox, unique CSV files, masking, retry queue and limitations |
+| [../LOCAL_CSV_EXPORT.md](../LOCAL_CSV_EXPORT.md) | Google Drive transaction outbox, full all-module snapshots, masking, secret exclusions and limitations |
 | [../BACKUP_RESTORE.md](../BACKUP_RESTORE.md) | Daily snapshots, 7/4/12 retention, USB/OneDrive copy, validation and restore |
 | [../ENCRYPTION.md](../ENCRYPTION.md) | SQLCipher, Windows Credential Manager key storage, migration and key-recovery limits |
 | [security-privacy-compliance.md](security-privacy-compliance.md) | Security posture, NABL/ISO/ABDM evidence, data protection and claims policy |
