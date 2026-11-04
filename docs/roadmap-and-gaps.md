@@ -41,7 +41,7 @@ For the current done/pending snapshot and commercial release decision, see
    - Rejects/reconciliation report
    - Historical data scope decision
 6. **Production licence operations**
-   - OS-secure licence storage in the packaged app and backend entitlement enforcement
+   - Backend entitlement enforcement outside the UI; DPAPI storage and hardware binding are implemented
    - Hosted/hardened portal with TLS, per-user admin auth/MFA, backups, rate limits and audit
    - Renewal, replacement, revocation and clock-tamper runbooks
    - Buyer EULA/device-transfer/renewal terms
@@ -55,8 +55,8 @@ For the current done/pending snapshot and commercial release decision, see
 The current build now includes:
 
 - Configurable Diagnostics, Pharmacy and Hospital modules per tenant
-- Signed Diagnostics, Pharmacy, Hospital, Complete and Custom editions with tenant/device binding,
-  30-day grace and read-only after grace
+- Signed Diagnostics, Pharmacy, Hospital, Complete and Custom editions with tenant/hardware binding,
+  DPAPI storage, clock high-water checks, 30-day grace and read-only after grace
 - Hospital admission, ward/bed, treating doctor, discharge diagnosis and summary
 - Generic hospital service catalogue, IPD service charges, payments/balance, audit and A4 bill print
 - Pharmacy medicine master, batch/expiry inventory, stock receipt, dispensing, GST receipt and
@@ -154,7 +154,7 @@ CSV outbox. Future integrations must not become a write path or a substitute for
 | No formal validation pack | Regulated buyers may reject | P0/P1 |
 | Admission module is not a full HIS | Generic IPD service billing exists, but no nursing charts, orders, package/advance billing or insurance/TPA | P4/partner |
 | Licence portal is not publicly hosted/hardened | No public self-service, online revocation or guaranteed activation uptime | P0 licence ops |
-| Licence storage is browser-local today | Not OS-protected and UI gating is not a backend security boundary | P0 packaged enforcement |
+| Licence entitlement is UI-gated | DPAPI storage and hardware binding are implemented, but backend entitlement enforcement outside the UI is still incomplete | P0 packaged enforcement |
 | Pharmacy lacks procurement/controlled-drug/chain workflows | Not suitable for chain or regulated high-complexity pharmacy | P4/partner |
 | Pharmacy stock is batch-level, not full inventory accounting | No purchase ledger or supplier payables | P4 |
 | Admissions are free-text ward/bed | No bed board or occupancy control | P4 |

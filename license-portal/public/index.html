@@ -64,7 +64,7 @@
 
   <section class="card">
     <h2>Issue licence</h2>
-    <p class="hint">One licence may cover multiple tenant IDs and devices. Device binding is enforced by the app.</p>
+    <p class="hint">One licence may cover multiple tenant IDs and hardware devices. The app enforces the tenant and SHA-256 hardware fingerprint.</p>
     <div class="grid2">
       <div><label for="customer">Customer name *</label><input id="customer" placeholder="Example Diagnostics" /></div>
       <div><label for="edition">Edition</label><select id="edition" onchange="syncEdition()">
@@ -77,8 +77,8 @@
     </div>
     <label for="tenants">Tenant IDs * <span style="font-weight:400;color:#94a3b8">(comma separated)</span></label>
     <textarea id="tenants" rows="2" placeholder="tenant-default"></textarea>
-    <label for="devices">Device IDs * <span style="font-weight:400;color:#94a3b8">(comma separated)</span></label>
-    <textarea id="devices" rows="2" placeholder="terminal device id"></textarea>
+    <label for="devices">Hardware Device IDs * <span style="font-weight:400;color:#94a3b8">(comma separated SHA-256 values)</span></label>
+    <textarea id="devices" rows="2" placeholder="64-character hardware fingerprint"></textarea>
     <div class="grid2">
       <div><label for="maxTerminals">Max terminals</label><input id="maxTerminals" type="number" min="1" value="1" /></div>
       <div><label for="expiresAt">Expiry date</label><input id="expiresAt" type="date" /></div>
@@ -101,7 +101,7 @@
     <div id="listMsg" class="msg"></div>
     <div style="overflow:auto">
       <table>
-        <thead><tr><th>Licence</th><th>Customer / edition</th><th>Tenant / device</th><th>Expiry</th><th>Status</th><th>Actions</th></tr></thead>
+        <thead><tr><th>Licence</th><th>Customer / edition</th><th>Tenant / hardware</th><th>Expiry</th><th>Status</th><th>Actions</th></tr></thead>
         <tbody id="licences"><tr><td colspan="6" style="color:#94a3b8;text-align:center;padding:24px">Enter token and refresh.</td></tr></tbody>
       </table>
     </div>

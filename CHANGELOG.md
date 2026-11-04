@@ -3,9 +3,35 @@
 All notable changes to MediCore are recorded here. This project follows semantic versioning once
 production releases begin.
 
-## [Unreleased]
+## [0.4.2] - 2026-11-04
 
-No changes yet.
+### Security
+
+- Added a Windows hardware fingerprint (`True_Device_ID`) derived from motherboard serial and CPU
+  Processor ID, with primary-volume-serial fallback when WMI/CIM is restricted.
+- Licences are now hardware-bound: a licence issued for another machine fails with a hardware mismatch
+  instead of accepting a copied database UUID.
+- Signed licences are stored through Windows DPAPI (`license.dpapi`) at current-user scope; legacy
+  `localStorage` licences are migrated once and removed. A copied DPAPI blob fails to decrypt.
+- Added `UpdateExecutionTimestamp()` with a DPAPI + SQLCipher high-water mark. Startup, invoice/report
+  printing, report creation and a 60-second in-session check reject clock rollback with
+  **System Clock Manipulation Detected**.
+- Existing licences containing UUID `deviceIds` must be reissued with the new Hardware Device ID.
+
+### Documentation
+
+- Updated licensing, vendor-portal and pre-release guidance for hardware binding, DPAPI storage, clock
+  rollback handling and the one-time licence reissue.
+
+### Verified
+
+- `npm run check`, terminal build and monitor build pass.
+- Rust tests cover fingerprint normalization/hash stability, DPAPI round-trip and tamper rejection,
+  volume-serial fallback and clock-rollback rejection.
+- Windows release smoke test loaded a DPAPI-protected hardware-bound licence, showed the matching
+  Device ID, wrote `last_known_execution_time` to both stores and removed the legacy localStorage entry.
+- A simulated future high-water mark returned **System Clock Manipulation Detected**.
+- The vendor portal rejects UUID device IDs for new/renewed hardware-bound licences.
 
 ## [0.4.1] - 2026-11-04
 

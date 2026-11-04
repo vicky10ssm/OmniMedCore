@@ -37,8 +37,8 @@ The target architecture is **not the same as the current deployment**. Be explic
 - Tenant scope is enforced in queries and by a static verification script.
 - A read-only monitor source rejects `run()` and `tx()`.
 - Local print CSS supports invoice A4/thermal, hospital service bills and report letterhead.
-- Tenant/device-bound ECDSA P-256 licence verification, edition gating, 30-day grace and read-only mode
-  are implemented in the application.
+- Tenant/hardware-bound ECDSA P-256 licence verification, DPAPI storage, clock high-water checks,
+  edition gating, 30-day grace and read-only mode are implemented in the application.
 - A separate vendor licence portal (`npm run license:portal`) issues, renews and revokes signed files;
   it has not been publicly deployed or hardened for internet exposure.
 - Generic hospital/IPD service charges, payments, balance and bill print are implemented inside the
@@ -88,9 +88,9 @@ Recommended minimum before installing at a buyer site:
 7. **Data migration procedure** and a sample of migrated masters/balances validated by the buyer.
 8. **Printer/browser/hardware acceptance** at the buyer site.
 9. **Encryption and tenant checks re-run** against the packaged artifact.
-10. **Licence release path**: signed activation on a clean packaged install, OS-secure licence storage,
-    tenant/device mismatch rejection, grace and read-only tests, and a vendor process for renewals,
-    replacements and revocations.
+10. **Licence release path**: signed activation on a clean packaged install, DPAPI storage, hardware
+    fingerprint and clock-rollback tests, tenant/device mismatch rejection, grace and read-only tests,
+    and a vendor process for renewals, replacements and revocations.
 11. **Role and clinical-control acceptance**: operator expense access without Dashboard/profit
     visibility, no referral-commission UI/accrual, and sample disposal blocked until all linked test
     results are entered.

@@ -1,5 +1,6 @@
 mod db;
 mod export;
+mod license_security;
 
 use serde::Serialize;
 use std::fs::{self, File};
@@ -273,7 +274,12 @@ pub fn run() {
             db::db_encryption_info,
             db::validate_backup,
             db::restore_database,
-            export::export_sync_csv
+            export::export_sync_csv,
+            license_security::get_machine_fingerprint,
+            license_security::license_secure_store,
+            license_security::license_secure_load,
+            license_security::license_secure_clear,
+            license_security::license_update_execution_timestamp
         ])
         .run(tauri::generate_context!())
         .expect("error while running MediCore");

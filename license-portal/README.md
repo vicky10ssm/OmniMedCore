@@ -1,8 +1,8 @@
 # MediCore licence portal
 
 Vendor-only web portal for issuing, downloading, renewing and revoking signed MediCore offline
-licences. The application verifies the ECDSA P-256 signature and both tenant and device binding without
-network access.
+licences. The application verifies the ECDSA P-256 signature, tenant binding and hardware fingerprint
+without network access.
 
 ## What is implemented
 
@@ -64,19 +64,23 @@ controls in front of it for hosted use; do not bind it directly to the public in
 ## Issue and activate a licence
 
 1. In the app, open **Settings → Licence** (or the activation screen) and copy the **Tenant ID** and
-   **Device ID**.
-2. In the portal, issue a licence for that tenant/device pair, or add each terminal's device ID.
+   **Hardware Device ID**.
+2. In the portal, issue a licence for that tenant/device pair, or add each terminal's hardware Device ID.
+   Hardware Device IDs are 64-character lowercase SHA-256 values, not database UUIDs.
 3. Download the `.medicore-license.json` file and import it in **Settings → Licence**.
 4. Confirm the edition/module list and that unsupported modules disappear from navigation.
 5. Store the issued licence record and support reference in the commercial register.
 
-The app stores the imported licence in browser `localStorage` in the current development build. This is
-not production-grade secret storage. The packaged Tauri release must move it to an OS-protected
-configuration file/secure store and enforce the same entitlement check in the backend.
+The packaged Windows app stores the signed licence through DPAPI in
+`%APPDATA%\in.medicore.desktop\license.dpapi`; a copied protected file fails on another machine/account.
+Browser builds use a localStorage fallback because they have no DPAPI. Existing licences that contain UUID device IDs
+must be reissued with hardware fingerprints when upgrading to the hardware-bound release.
 
 ## Renew, revoke and move a terminal
 
 - **Renew:** open the issued licence and set a new expiry; import the downloaded file on the device.
+  Legacy UUID-based licences must be reissued with the current Hardware Device ID before renewal; the
+  portal rejects UUID device IDs for new/renewed hardware-bound files.
 - **Revoke:** download the revoked file and import it, or use an online validation service when one
   exists. Offline devices that never receive the revocation file cannot know about it.
 - **Move/replace:** issue a replacement licence with the new device ID. Removing or replacing hardware

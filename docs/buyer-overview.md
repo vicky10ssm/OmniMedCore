@@ -88,8 +88,8 @@ Do not position the current build as suitable for:
 8. **Compliance-aware design.** NABL 112A, ISO 15189:2022 and ABDM FHIR v6.5.0 requirements have been
    mapped, with current gaps documented rather than hidden.
 9. **Edition licensing without a cloud dependency.** One installer can sell Diagnostics, Pharmacy,
-   Hospital, Complete or Custom, with signed tenant/device activation and 30-day grace. Hosted portal
-   hardening and OS-secure licence storage remain production gates.
+   Hospital, Complete or Custom, with signed tenant/hardware activation, DPAPI storage and 30-day grace.
+   Hosted portal hardening and backend entitlement enforcement remain production gates.
 10. **Low target running cost.** The architecture targets local SQLCipher/Tauri and an optional local
    Google Drive CSV outbox, with no mandatory hosted service or per-message fee.
 

@@ -1,6 +1,6 @@
 # Pre-release verification checklist
 
-Last updated: 2 November 2026  
+Last updated: 4 November 2026<br>
 Use for: pilot, hotfix and production release candidates  
 Related: [HOTFIX_ROLLBACK_PROCESS.md](HOTFIX_ROLLBACK_PROCESS.md)
 
@@ -148,10 +148,10 @@ Record accession/sample IDs for both blocked and allowed disposal cases.
 
 If the release changes licensing or starts a new edition:
 
-- [ ] Issue a licence for the test tenant/device
+- [ ] Issue a licence for the test tenant/hardware Device ID
 - [ ] Import succeeds with correct signature
 - [ ] Wrong-tenant licence rejected
-- [ ] Wrong-device licence rejected
+- [ ] Different hardware fingerprint rejected with a hardware-mismatch error
 - [ ] Tampered payload rejected
 - [ ] Revoked/expired status handled
 - [ ] Active licence exposes only licensed modules
@@ -159,11 +159,16 @@ If the release changes licensing or starts a new edition:
 - [ ] 30-day grace warning appears
 - [ ] Beyond-grace read-only mode permits view/print/export and blocks new writes
 - [ ] Renewal file updates expiry
-- [ ] Old legacy licence modules are ignored safely
+- [ ] Old UUID-based licences fail closed and are reissued for hardware
+- [ ] `license.dpapi` is a DPAPI blob, not plain JSON; copying it to another profile/machine fails
+- [ ] Legacy `medicore.license.v1` localStorage entry is removed after migration
+- [ ] Clock rollback fails at startup, after printing, after report creation and during the in-session check
+- [ ] WMI/PowerShell restriction uses the volume-serial fallback; total hardware-access failure fails cleanly
 - [ ] Production bundle contains no DEV licence fallback or private key
 - [ ] Hand-written `"signature": "development"` licence is rejected by the production build
 
-Record licence ID, edition, tenant ID, device ID and expiry.
+Record licence ID, edition, tenant ID, Hardware Device ID, fingerprint source (`wmi`/`volume-serial`) and
+expiry.
 
 ## Security verification
 
@@ -215,7 +220,8 @@ Blocked until Tauri packaging exists:
 - [ ] Upgrade from previous release tested
 - [ ] Uninstall preserves user data as documented
 - [ ] Local SQLite durability tested
-- [ ] OS-secure licence storage tested
+- [ ] DPAPI licence storage and hardware fingerprint tested
+- [ ] Clock high-water mark / rollback behavior tested
 - [ ] Backend entitlement enforcement tested outside React
 - [ ] Printer/hardware acceptance tested
 
@@ -281,9 +287,10 @@ WS1 is complete only when a clean machine/runner can reproduce a **signed build*
 - [ ] Release notes and known limitations published
 - [ ] Rollback artifact and process tested
 
-**Current status:** the Windows app/installers are locally self-signed and the desktop SQLCipher runtime
-is implemented. Public-CA signing, clean-machine acceptance, OS-secure licence storage and the hosted
-cloud service remain release blockers.
+**Current status:** the Windows app/installers are locally self-signed and the desktop SQLCipher runtime,
+DPAPI licence storage, hardware fingerprinting and clock high-water checks are implemented. Public-CA
+signing, clean-machine acceptance, backend entitlement enforcement and the hosted cloud service remain
+release blockers.
 
 ## Final approval
 

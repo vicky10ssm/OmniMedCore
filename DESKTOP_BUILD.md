@@ -447,7 +447,7 @@ Get-FileHash .\src-tauri\target\release\bundle\nsis\MediCore_0.4.1_x64-setup.exe
 
 ## 12. What remains blocked
 
-- OS-secure licence storage and backend entitlement enforcement
+- Backend entitlement enforcement outside the UI; Windows DPAPI storage and hardware binding are implemented
 - SQLCipher key export/import and key rotation for cross-machine recovery
 - Unattended Windows scheduled backup and clean-machine restore acceptance
 - Auto-updater signing/endpoints

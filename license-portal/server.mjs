@@ -97,6 +97,17 @@ function readBody(req) {
   });
 }
 
+function hardwareDeviceIds(value) {
+  const deviceIds = (value ?? []).map(String).map((id) => id.trim().toLowerCase()).filter(Boolean);
+  const invalid = deviceIds.filter((id) => !/^[a-f0-9]{64}$/.test(id));
+  if (invalid.length) {
+    throw new Error(
+      "Hardware Device IDs must be 64-character lowercase SHA-256 fingerprints. Reissue legacy UUID licences with the current Hardware Device ID."
+    );
+  }
+  return deviceIds;
+}
+
 function normalise(body) {
   const edition = editionModules[body.edition] ? body.edition : "custom";
   const modules = edition === "custom"
@@ -106,7 +117,7 @@ function normalise(body) {
   const unknown = modules.filter((m) => !knownModules.has(m));
   if (unknown.length) throw new Error(`Unknown modules: ${unknown.join(", ")}`);
   const tenantIds = (body.tenantIds ?? []).map(String).filter(Boolean);
-  const deviceIds = (body.deviceIds ?? []).map(String).filter(Boolean);
+  const deviceIds = hardwareDeviceIds(body.deviceIds);
   if (tenantIds.length === 0) throw new Error("At least one tenant ID is required");
   if (deviceIds.length === 0) throw new Error("At least one device ID is required");
   const maxTerminals = Math.max(1, Number(body.maxTerminals) || deviceIds.length);
@@ -192,6 +203,7 @@ const server = createServer(async (req, res) => {
         const body = await readBody(req);
         const expiresAt = new Date(body.expiresAt).getTime();
         if (!Number.isFinite(expiresAt)) throw new Error("Invalid expiry date");
+        hardwareDeviceIds(record.payload.deviceIds);
         record.payload = {
           ...record.payload,
           expiresAt,

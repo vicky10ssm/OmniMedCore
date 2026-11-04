@@ -30,7 +30,8 @@ Reports are especially important for:
 
 - Authentication, session handling, TOTP/recovery bypass
 - Tenant isolation or cross-tenant data exposure
-- Licence signature verification, tenant/device binding, grace/read-only bypass
+- Licence signature verification, hardware fingerprint/DPAPI binding, clock high-water checks and
+  grace/read-only bypass
 - Exposure of the vendor signing private key or portal admin token
 - Database persistence, encryption, relock or recovery flaws
 - Sample/report release or disposal-gate bypass

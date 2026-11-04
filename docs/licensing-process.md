@@ -1,7 +1,7 @@
 # MediCore licensing process
 
-Last updated: 30 October 2026  
-Database schema: `18`  
+Last updated: 4 November 2026<br>
+Database schema: `18`<br>
 Audience: sales, support, finance and vendor licence administrators
 
 ## 1. Purpose and scope
@@ -13,11 +13,12 @@ the portal instructions in [license-portal/README.md](../license-portal/README.m
 Current scope:
 
 - One application codebase with Diagnostics, Pharmacy, Hospital, Complete and Custom editions.
-- Signed offline licence files bound to tenant and device.
+- Signed offline licence files bound to tenant and a Windows hardware fingerprint.
 - Vendor-operated licence administration portal.
 - 30-day grace, then read-only access to existing data, print and export.
-- No public customer self-service portal, automated payment collection, guaranteed online revocation or
-  OS-secure packaged licence storage yet.
+- Windows DPAPI licence storage and a local execution-time high-water mark in the packaged desktop app.
+- No public customer self-service portal, automated payment collection or guaranteed online revocation
+  yet.
 
 ## 2. Roles and authority
 
@@ -92,11 +93,13 @@ On the customer machine:
 2. Go to **Settings → Licence**.
 3. Copy:
    - **Tenant ID** (usually `tenant-default` for a single-centre installation)
-   - **Device ID** (one per terminal)
-4. For multiple terminals, collect every device ID in the initial order.
-5. Verify the customer did not copy an ID from a different browser/profile or test machine.
+   - **Hardware Device ID** (one per terminal; a 64-character SHA-256 fingerprint)
+4. For multiple terminals, collect every hardware device ID in the initial order.
+5. Verify the customer did not copy an ID from a different browser/profile or test machine. A hardware
+   Device ID changes if the motherboard/CPU identity changes, or if the volume-serial fallback changes.
 
-IDs are installation identifiers, not patient data. They can be sent by email or support ticket.
+IDs are hardware/installation identifiers, not patient data. They can be sent by email or support ticket.
+Do not advise the customer to edit, shorten or reuse a Device ID.
 
 ## 7. Stage 4 — issue the licence
 
@@ -125,7 +128,7 @@ On the vendor machine:
    - customer name
    - edition
    - tenant ID(s), comma separated
-   - device ID(s), comma separated
+   - hardware device ID(s), comma separated (64-character lowercase SHA-256 values)
    - max terminals
    - expiry date
    - grace days (`30` by default)
@@ -166,9 +169,24 @@ If activation fails:
 | --- | --- |
 | Signature could not be verified | Re-download the original file; do not edit it |
 | Not issued for tenant | Check the actual tenant ID and reissue if needed |
-| Not activated for device | Confirm the device ID; add it to a replacement licence if legitimate |
+| Hardware mismatch | Confirm the current Hardware Device ID; issue a replacement for that fingerprint |
+| Licence storage could not be decrypted | The protected file was copied to another machine/account or damaged; re-import on this device |
+| System Clock Manipulation Detected | Check the Windows clock/date and timezone; correct it, restart, and investigate as a security event |
 | Licence expired | Check date/clock and issue a renewal if commercially approved |
 | Unknown/malformed file | Re-download; never hand-edit a signed payload |
+
+### Upgrading a pre-hardware-binding licence
+
+Licences issued before hardware fingerprinting contain a random database UUID in `deviceIds`. The
+hardware-bound desktop build rejects those files with a hardware mismatch. Before rolling the release to
+an existing customer:
+
+1. Collect the current **Hardware Device ID** for every terminal.
+2. Reissue the same edition, modules, expiry and support reference with the new hardware Device ID.
+3. Import the replacement on each terminal before or immediately after the upgrade.
+4. Keep the old licence ID in the register as superseded.
+5. Do not hand-edit the signed JSON, and do not ask the customer to copy a database UUID into the new
+   field.
 
 ## 9. Stage 6 — renewal
 
@@ -212,11 +230,13 @@ signed licence or use a future online registration service.
 
 ### Replace a failed/replaced computer
 
-1. Collect the new device ID.
+1. Collect the new **Hardware Device ID**.
 2. Confirm commercial/device-transfer approval.
-3. Issue a replacement licence including the new device ID.
+3. Issue a replacement licence including the new hardware Device ID.
 4. Import it on the replacement device.
 5. Mark the old device ID as retired in the register.
+6. If only a hard disk was replaced, the volume-serial fallback may also change the fingerprint; treat it
+   as a new device and reissue.
 
 ### Revoke a licence
 
@@ -250,7 +270,7 @@ Keep a controlled register with at least:
 | Customer legal name | Example Diagnostics Pvt Ltd |
 | Edition/modules | `hospital` / listed module IDs |
 | Tenant IDs | `tenant-default` |
-| Device IDs | one row per terminal |
+| Hardware Device IDs | one SHA-256 fingerprint row per terminal |
 | Max terminals | `2` |
 | Issued at | ISO date/time |
 | Expiry | ISO date |
@@ -303,8 +323,11 @@ Do not store portal tokens or private keys in the customer register.
 | Situation | Action |
 | --- | --- |
 | Wrong customer/device ID | Reissue; do not hand-edit the signed file |
-| Customer moved to a new computer | Verify approval, issue replacement, record transfer |
+| Customer moved to a new computer | Verify approval, issue replacement with the new hardware Device ID, record transfer |
 | Clock appears wrong | Correct system time; investigate clock tampering as a security issue |
+| Clock rollback detected after correction | Restart MediCore; if the high-water time is ahead of a corrected clock, escalate rather than deleting state files |
+| DPAPI licence cannot be decrypted | Re-import the signed file on the current Windows user/machine; confirm whether the profile or hardware changed |
+| WMI restricted / fingerprint fallback used | Confirm the displayed Hardware Device ID is stable; document the volume-serial source in support notes |
 | Lost licence file | Re-download from the portal by licence ID |
 | Lost private key | Escalate to security owner; existing licences remain valid until expiry |
 | Suspected leaked portal token | Rotate the token, restrict network access, review portal records |
@@ -316,7 +339,7 @@ Do not store portal tokens or private keys in the customer register.
 
 - [ ] Approved order, edition, modules, term, terminal count and support reference
 - [ ] Tenant ID(s) verified
-- [ ] Device ID(s) verified
+- [ ] Hardware Device ID(s) verified
 - [ ] Licence issued and downloaded from the portal
 - [ ] File imported successfully on the target device
 - [ ] Edition/modules/expiry verified in Settings → Licence
@@ -331,12 +354,15 @@ Do not store portal tokens or private keys in the customer register.
 Do not claim the following until implemented and tested in the packaged release:
 
 - public hosted licence self-service or payment portal
-- OS-secure licence storage
 - backend entitlement enforcement outside the UI
 - guaranteed online revocation
 - runtime terminal-count enforcement
-- tamper-proof clock handling
+- impossible-to-clone or tamper-proof DRM
 - Tauri installer, automated backup/restore or local CSV export
+
+Windows DPAPI storage, hardware fingerprinting and the local clock high-water mark are implemented in the
+packaged desktop code, but they are local controls, not a hosted DRM service. They must still be tested on
+clean Windows installs and covered by the release checklist.
 
 For product rules, see [licensing-and-editions.md](licensing-and-editions.md). For portal setup and API,
 see [license-portal/README.md](../license-portal/README.md).

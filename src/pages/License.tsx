@@ -73,9 +73,11 @@ function ActivationScreen() {
 
         <div className="mb-3 rounded-lg bg-slate-50 p-3 text-xs text-slate-600">
           <p><b>Tenant ID:</b> <span className="num break-all">{tenantId}</span></p>
-          <p className="mt-1"><b>Device ID:</b> <span className="num break-all">{deviceId || "Loading…"}</span></p>
+          <p className="mt-1"><b>Hardware Device ID:</b> <span className="num break-all">{deviceId || "Loading…"}</span></p>
           <p className="mt-2 text-slate-400">
             Send both IDs to MediCore support when purchasing or moving this installation.
+            This Device ID is a hardware fingerprint for this machine; the licence file is protected by
+            this Windows account.
           </p>
         </div>
 
@@ -166,7 +168,7 @@ export function LicenseSettingsPanel() {
           <div><dt className="text-xs text-slate-500">Remaining</dt><dd>{daysRemaining === null ? "—" : `${daysRemaining} days`}</dd></div>
           <div className="sm:col-span-2"><dt className="text-xs text-slate-500">Licensed modules</dt><dd className="mt-1 flex flex-wrap gap-1">{modules.size > 0 ? [...modules].map((m) => <span key={m} className="rounded-full bg-teal-50 px-2 py-0.5 text-xs text-teal-700">{m}</span>) : "—"}</dd></div>
           <div><dt className="text-xs text-slate-500">Tenant ID</dt><dd className="num break-all text-xs">{tenantId}</dd></div>
-          <div><dt className="text-xs text-slate-500">Device ID</dt><dd className="num break-all text-xs">{deviceId}</dd></div>
+          <div><dt className="text-xs text-slate-500">Hardware Device ID</dt><dd className="num break-all text-xs">{deviceId}</dd></div>
         </dl>
         {readOnly && (
           <p className="mt-3 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">
@@ -183,7 +185,7 @@ export function LicenseSettingsPanel() {
           <Btn onClick={() => window.location.reload()}>
             <Icon name="check" className="h-4 w-4" /> Reload licence
           </Btn>
-          <Btn variant="ghost" onClick={removeLicense}>Remove stored licence</Btn>
+          <Btn variant="ghost" onClick={() => void removeLicense()}>Remove stored licence</Btn>
         </div>
       </Card>
 

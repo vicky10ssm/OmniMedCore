@@ -126,7 +126,7 @@ Score 0–2 each; proceed with caution below 12/20.
 | Encryption | “Desktop database and local backups are SQLCipher-encrypted with the key in Windows Credential Manager; key recovery is still a gate.” | “All data is encrypted” or “key recovery is complete.” |
 | Backups | “Encrypted local backup and validated restore exist; unattended/offsite scheduling and key recovery are still gates.” | “Backups are fully unattended and disaster-proof.” |
 | Desktop | “Signed Windows installers are available with a local root certificate; public-CA trust and clean-machine acceptance are pending.” | “Publicly trusted installer with SmartScreen reputation.” |
-| Licensing | “Diagnostics, Pharmacy, Hospital, Complete and Custom editions are enforced by a signed tenant/device licence, with 30-day grace and read-only access after expiry.” | “Perpetual public cloud subscription is live” or “the licence portal is hosted and hardened for public use.” |
+| Licensing | “Diagnostics, Pharmacy, Hospital, Complete and Custom editions are enforced by a signed tenant/hardware licence with DPAPI storage and clock-rollback checks, plus 30-day grace and read-only access after expiry.” | “Perpetual public cloud subscription is live” or “the licence portal is hosted and hardened for public use.” |
 | Referral commissions | “MediCore keeps a doctor directory but does not track or pay referral commissions.” | “Tracks doctor commissions/payouts.” Commission visibility can create compliance and ethics issues. |
 | Hospital IPD | “Generic hospital service/IPD charges, payments and bill print are included; full HIS, insurance/TPA, nursing and package/advance billing are not.” | “Full IPD/HIS or insurance claims.” |
 | Analyzer/PACS | “Not available.” | “Integrates with any analyser.” |
@@ -144,8 +144,8 @@ Score 0–2 each; proceed with caution below 12/20.
 > Yes in the commercial model. One installer supports Diagnostics, Pharmacy, Hospital, Complete and
 > Custom editions. A signed licence activates the edition and terminal; the clinic can then hide any
 > licensed module it does not use. The current portal is a vendor-run admin portal, not a public
-> self-service store. Public-CA installer trust, clean-machine acceptance and OS-secure licence storage
-> remain release gates.
+> self-service store. Public-CA installer trust, clean-machine acceptance and backend entitlement
+> enforcement remain release gates; Windows DPAPI storage and hardware binding are implemented.
 
 ### “Can it run a full hospital or pharmacy chain?”
 > Not as a full HIS or chain ERP. It covers small-hospital admission/discharge and generic inpatient

@@ -38,10 +38,10 @@ Do not invent certifications, references or insurance.
 | Does it support hospital inpatients? | Yes, basic admission/ward/bed/discharge and generic IPD service charges/payments/bill print; not a full HIS, insurance/TPA, nursing or package/advance billing |
 | Does it support pharmacy? | Yes, medicine/batch/expiry stock and local dispensing/receipts; not chain procurement or controlled-drug registers |
 | Are modules configurable? | Yes: signed edition first, then per-tenant visibility in Settings → Modules & logo |
-| How is the software licensed? | Diagnostics/Pharmacy/Hospital/Complete/Custom editions, signed offline ECDSA P-256 licence bound to tenant and device |
+| How is the software licensed? | Diagnostics/Pharmacy/Hospital/Complete/Custom editions, signed offline ECDSA P-256 licence bound to tenant and Windows hardware fingerprint |
 | What happens when the licence expires? | 30-day grace remains fully usable; after grace existing records remain readable/printable/exportable while new writes are blocked |
 | Is the licence portal hosted? | No. A vendor admin portal is implemented and can run locally/self-hosted; public hosting, TLS, per-user auth/MFA and hardening remain release gates |
-| Where is the licence stored now? | Browser `localStorage` in development; OS-secure storage and backend enforcement are required for the packaged release |
+| Where is the licence stored now? | Windows DPAPI current-user storage in the packaged desktop app; browser builds use a localStorage fallback because they have no DPAPI. Backend entitlement enforcement outside the UI remains required |
 
 ## C. Security questionnaire starter answers
 

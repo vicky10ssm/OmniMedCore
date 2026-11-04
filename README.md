@@ -7,9 +7,10 @@ centres, standalone pharmacies and small hospitals. It is one codebase with lice
 tenant-scoped configuration.
 
 > **Status: pilot / pre-production.** A Tauri Windows installer, SQLCipher encryption at rest,
-> encrypted backup/restore and local CSV export are implemented for the pilot release. OS-secure licence
-> storage, hosted licence portal and live ABDM exchange are not yet released. See the deployment and
-> productionization documents before promising production availability.
+> encrypted backup/restore and local CSV export are implemented for the pilot release. Windows hardware
+> fingerprinting, DPAPI licence storage and clock-rollback high-water checks are implemented; the hosted
+> licence portal and live ABDM exchange are not yet released. See the deployment and productionization
+> documents before promising production availability.
 
 ## Editions
 
@@ -43,8 +44,8 @@ Dashboard or the Expenses profitability card.
 - Expenses, audit evidence and a read-only monitoring build
 - SQLCipher-encrypted desktop database with the key held in Windows Credential Manager
 - Daily encrypted snapshots with 7/4/12 retention, optional USB/OneDrive copy, manual backup and validated restore
-- Signed Diagnostics/Pharmacy/Hospital/Complete/Custom licences with tenant/device binding,
-  30-day grace and read-only mode after grace
+- Signed Diagnostics/Pharmacy/Hospital/Complete/Custom licences with tenant/hardware fingerprint binding,
+  DPAPI storage, clock high-water checks, 30-day grace and read-only mode after grace
 - Vendor licence portal for issue, download, renewal and revocation
 - Decoupled local CSV export into a Google Drive sync folder
 - Unique `tx_YYYYMMDD_HHMMSS_XXXXXX.csv` files with masked patient IDs, local retry queue and no
@@ -187,7 +188,8 @@ Read [CONTRIBUTING.md](CONTRIBUTING.md) before changing code or data rules.
 - Desktop snapshots are SQLCipher-encrypted, but key export/import and cross-machine restore are not yet
   implemented; the daily schedule runs only while the desktop app is open
 - No cloud backup or unattended Windows scheduled backup task
-- No OS-secure licence storage or backend entitlement enforcement
+- Licence storage is DPAPI-protected and hardware-bound on Windows; backend entitlement enforcement
+  outside the desktop UI is still pending
 - No hosted/hardened vendor portal
 - Local CSV export is a one-way summary outbox; it is not a live sync, import, remote monitor or backup
 - The CSV export scheduler runs only while the desktop app is open; it is not an OS service

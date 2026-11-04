@@ -116,10 +116,10 @@ Status meanings: **Ready**, **Pilot**, **Partial**, **Not available**, **Externa
 | Compliance evidence page | Ready | Admin-only recent evidence and control summary |
 | Clinic module visibility | Ready | Enable Diagnostics, Pharmacy and/or Hospital sections per clinic; hidden routes redirect to Dashboard |
 | Licensed editions | Ready | Diagnostics, Pharmacy, Hospital, Complete or Custom; effective modules are licensed ∩ clinic-enabled |
-| Offline licence activation | Pilot | ECDSA P-256 signed file bound to tenant and device; validation is local and requires no network |
+| Offline licence activation | Pilot | ECDSA P-256 signed file bound to tenant and Windows hardware fingerprint; validation is local and requires no network |
 | Licence grace/read-only | Pilot | 30-day grace after expiry; after grace existing records, print and export remain available while new writes are blocked in the UI |
 | Vendor licence portal | Pilot | Local/self-hosted admin portal issues, downloads, renews and revokes signed licence files; public hosting and customer self-service are not deployed |
-| OS-secure licence storage | Not available | Current development build uses `localStorage`; packaged Tauri must use protected storage and backend enforcement |
+| OS-secure licence storage | Pilot | Windows DPAPI current-user storage in the packaged Tauri app; copied blobs fail on another machine/account. Browser builds use a localStorage fallback because they have no DPAPI |
 | Clinic logo | Ready | PNG/JPG/WebP up to 500 KB; shown in sidebar and printed invoice/report/pharmacy letterheads |
 | Multi-vertical branding | Ready | MediCore umbrella brand with tenant name/logo overrides |
 | Shared patient identity | Ready | Same patient used for OPD, diagnostics, pharmacy and admissions |
@@ -165,11 +165,12 @@ hospital service/IPD billing, pharmacy batch inventory/dispensing/receipts, audi
 printing, configurable verticals and signed edition gating.
 
 **Pilot today:** local monitor build, ABHA/consent, ABDM JSON draft, compliance evidence dashboard,
-hospital/pharmacy read-only monitoring, tenant/device-bound licence activation, grace/read-only mode,
+hospital/pharmacy read-only monitoring, tenant/hardware-bound licence activation, DPAPI storage, clock
+rollback checks, grace/read-only mode,
 the vendor licence portal and the local Google Drive CSV export queue.
 
 **Not ready:** public-CA signed/distributed Windows installer, public hosted licence portal/customer
-self-service, OS-secure licence storage,
+self-service, backend entitlement enforcement,
 key export/import for cross-machine recovery, offsite/unattended backups, live ABDM, QMS/QC/equipment/personnel modules, analyzer/PACS integration, critical-value
 workflow, full HIS features (insurance/TPA, nursing, medication charts, package/advance billing),
 advanced pharmacy procurement/controlled-drug workflows.
