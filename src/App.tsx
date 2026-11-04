@@ -84,6 +84,44 @@ function TerminalHome() {
 }
 
 /**
+ * Safe destination for an operator whose Expenses module is unavailable.
+ * Settings is administrator-only, so it cannot be the fallback any more.
+ */
+function NoAccessibleSections() {
+  const { user, logout } = useAuth();
+  if (user?.role === "admin") return <Navigate to="/" replace />;
+  return (
+    <div className="flex min-h-full items-center justify-center px-4 py-10">
+      <div className="max-w-md rounded-xl border border-slate-200 bg-white p-6 text-center shadow-sm">
+        <h1 className="text-lg font-semibold">Expenses is unavailable</h1>
+        <p className="mt-2 text-sm text-slate-600">
+          The Expenses section is not licensed or enabled for {user?.full_name || user?.username}. Ask
+          an administrator to enable it or use another section from the sidebar.
+        </p>
+        <button
+          onClick={logout}
+          className="mt-4 rounded-lg bg-teal-700 px-4 py-2 text-sm font-medium text-white hover:bg-teal-800"
+        >
+          Sign out
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function ExpensesRoute() {
+  const { user } = useAuth();
+  return (
+    <ModuleGate
+      moduleId="expenses"
+      fallback={user?.role === "admin" ? "/" : "/unavailable"}
+    >
+      <Expenses />
+    </ModuleGate>
+  );
+}
+
+/**
  * Route elements shared by both products.
  *
  * These are arrays, not components: React Router inspects `<Routes>`' direct
@@ -128,15 +166,7 @@ const sharedRoutes = [
       </ModuleGate>
     }
   />,
-  <Route
-    key="expenses"
-    path="/expenses"
-    element={
-      <ModuleGate moduleId="expenses" fallback="/settings">
-        <Expenses />
-      </ModuleGate>
-    }
-  />,
+  <Route key="expenses" path="/expenses" element={<ExpensesRoute />} />,
   <Route
     key="admissions"
     path="/admissions"
@@ -237,7 +267,16 @@ const terminalRoutes = [
       </ModuleGate>
     }
   />,
-  <Route key="settings" path="/settings" element={<Settings />} />,
+  <Route key="unavailable" path="/unavailable" element={<NoAccessibleSections />} />,
+  <Route
+    key="settings"
+    path="/settings"
+    element={
+      <AdminOnly>
+        <Settings />
+      </AdminOnly>
+    }
+  />,
 ];
 
 export default function App() {

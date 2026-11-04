@@ -100,7 +100,8 @@ MediCore is a multi-vertical product; a tenant enables only the modules it opera
 - Pharmacy: medicine master, batch/expiry inventory, stock receipt, dispensing, GST receipt and
   transactional stock deduction.
 - Compliance: sample/report/consent evidence, audit page, offline ABDM draft.
-- Settings: centre identity, branding/logo, vertical/module visibility, users, numbering, terminal.
+- Settings: administrator-only centre identity, branding/logo, vertical/module visibility, users,
+  numbering and terminal configuration.
 - Monitor: read-only dashboards, invoices, dues, reports, admissions, pharmacy and money views.
 
 The umbrella brand is **MediCore** (`src/app/brand.ts`). Internal package/storage names retain the

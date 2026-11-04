@@ -134,12 +134,14 @@ Record accession/sample IDs for both blocked and allowed disposal cases.
 
 ## Roles and privacy verification
 
-- [ ] Admin sees Dashboard and Expenses profitability summary
+- [ ] Admin sees Dashboard, Settings, Compliance and Expenses profitability summary
 - [ ] Operator can add/view Expenses
-- [ ] Operator cannot see Dashboard navigation
+- [ ] Operator cannot see Dashboard, Settings or Compliance navigation
 - [ ] Operator direct `#/` redirects to Expenses
-- [ ] Operator cannot see “This month at a glance” collected/profit card
+- [ ] Operator direct `#/settings` and `#/compliance` cannot open those pages
+- [ ] Operator cannot see "This month at a glance" collected/profit card
 - [ ] Operator cannot edit/delete expenses
+- [ ] Operator with Expenses unavailable sees the safe no-access page, not a redirect loop
 - [ ] Operator direct restricted URL is blocked
 - [ ] Monitor operator cannot see admin-only expense/commission screens
 - [ ] Monitor build rejects writes at the data-source boundary

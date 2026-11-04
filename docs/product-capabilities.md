@@ -108,7 +108,7 @@ Status meanings: **Ready**, **Pilot**, **Partial**, **Not available**, **Externa
 
 | Capability | Status | Description |
 | --- | --- | --- |
-| Admin/operator roles | Ready | Admins see Dashboard and profitability summaries; terminal operators can add/view expenses, land on Expenses, and cannot access Dashboard or the Expenses “This month at a glance” profit card |
+| Admin/operator roles | Ready | Admins see Dashboard, Settings, Compliance and profitability summaries; terminal operators can add/view expenses, land on Expenses, and cannot access Dashboard, Settings, Compliance or the Expenses "This month at a glance" profit card |
 | Report-release authority | Ready | Separate `can_authorize_reports` user permission |
 | Password hashing | Ready | PBKDF2-SHA256 |
 | TOTP 2FA | Ready | RFC 6238 with replay protection and hashed recovery codes |

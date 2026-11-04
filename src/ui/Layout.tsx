@@ -56,8 +56,15 @@ const NAV: NavItem[] = [
   { to: "/doctors", label: "Doctors", icon: "stethoscope", moduleId: "doctors" },
   { to: "/pharmacy", label: "Pharmacy", icon: "flask", section: "Pharmacy", moduleId: "pharmacy" },
   { to: "/expenses", label: "Expenses", icon: "wallet", section: "Money", moduleId: "expenses" },
-  { to: "/compliance", label: "Compliance", icon: "check", section: "System", moduleId: "compliance" },
-  { to: "/settings", label: "Settings", icon: "settings" },
+  {
+    to: "/compliance",
+    label: "Compliance",
+    icon: "check",
+    section: "System",
+    moduleId: "compliance",
+    adminOnly: true,
+  },
+  { to: "/settings", label: "Settings", icon: "settings", adminOnly: true },
 ];
 
 export default function Layout() {

@@ -129,8 +129,8 @@ After seeding, verify:
 3. Confirm Expenses allows adding/viewing an expense but does not show the admin-only "This month at a
    glance" collected/profit card.
 4. Sign back in as admin; confirm Dashboard and the at-a-glance card return.
-5. Disable/unlicense Expenses and confirm the operator lands on Settings rather than entering a redirect
-   loop.
+5. Disable/unlicense Expenses and confirm the operator lands on `/unavailable` rather than entering a
+   redirect loop; Settings and Compliance are absent from operator navigation and direct URLs.
 
 ## Licensing acceptance scenario
 

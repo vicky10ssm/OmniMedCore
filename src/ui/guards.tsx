@@ -16,7 +16,7 @@ import {
 import { useLicense } from "../licensing/LicenseContext";
 import { READ_ONLY_MODULES } from "../licensing/types";
 
-/** Renders children only for admins; anyone else is sent to the dashboard. */
+/** Renders children only for admins; anyone else is sent to their role home. */
 export function AdminOnly({ children }: { children: ReactNode }) {
   const { user } = useAuth();
   if (user?.role !== "admin") return <Navigate to="/" replace />;
