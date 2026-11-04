@@ -16,8 +16,10 @@ For the current done/pending snapshot and commercial release decision, see
   USB/OneDrive copy, manual backup and validated restore are implemented.
 - **Encryption:** SQLCipher 4.20 with the key in Windows Credential Manager, automatic plaintext
   migration and local pre-encryption copy are implemented.
-- **Deployment runbook:** `CLIENT_INSTALLATION_RUNBOOK.md` covers offline installation, optional online
-  monitoring, acceptance and rollback.
+- **Deployment runbook:** `CLIENT_INSTALLATION_RUNBOOK.md` covers offline installation, local CSV
+  export, acceptance and rollback.
+- **Local export:** schema 18 `local_export_queue`, unique masked CSV files in a Google Drive folder and
+  retry-safe background writing are implemented.
 
 ### Still required before real patient data
 
@@ -83,15 +85,10 @@ licence portal is implemented as a vendor admin portal, not a hosted public subs
 13. Full report template and accreditation-scope controls
 14. Tamper-evident audit export and periodic review evidence
 
-## P2 — Hosted monitoring and sync
+## P2 — Future integrations (not in current scope)
 
-1. Cloud data model, migrations and tenant isolation
-2. Terminal push outbox, idempotency, retries and conflict handling
-3. Read-only monitor API with authenticated, minimum-necessary access
-4. Hosted monitor deployment, monitoring, backups and deletion
-5. Multi-terminal coordination and support tooling
-6. Subscription/tenant administration if operating SaaS
-7. Data-processing/subprocessor documentation and region strategy
+Hosted monitoring and online sync were removed. The current product uses a one-way local Google Drive
+CSV outbox. Future integrations must not become a write path or a substitute for terminal backups.
 
 ## P3 — ABDM production
 
@@ -144,7 +141,7 @@ licence portal is implemented as a vendor admin portal, not a hosted public subs
 | Browser-storage data today | Clearing cache risks data | P0 packaged SQLCipher release |
 | Encrypted backup key recovery | Off-device restore depends on the Windows profile key | P0 key export/import + clean-machine test |
 | No unattended backup schedule | Backups run only while the app is open | P0 Windows task/service |
-| Monitor not cloud-connected | No remote viewing | P2 |
+| No remote monitor | Google Drive CSV is a one-way outbox, not live viewing | Not in current scope |
 | No live ABDM | Cannot meet ABDM exchange requirement | P3 |
 | No QMS/IQC/EQA | Not a complete NABL quality system | P1/partner |
 | No analyser/PACS | Manual interfaces | P4/partner |
@@ -176,8 +173,7 @@ A **supervised pilot** can be sold only after P0 and with:
 
 Give sequence and dependencies, not optimistic dates. Example:
 
-> The next release gate is the installed desktop application with tested backup/restore. Hosted
-> monitoring follows only after terminal sync and tenant-isolated cloud storage are delivered. ABDM
-> transport follows sandbox certification and HFR/HIP onboarding.
+> The next release gate is the installed desktop application with tested backup/restore and a validated
+> local Google Drive CSV outbox. ABDM transport follows sandbox certification and HFR/HIP onboarding.
 
 Never publish a date for a feature that has no owner, acceptance test and release gate.

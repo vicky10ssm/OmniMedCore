@@ -7,6 +7,34 @@ production releases begin.
 
 No changes yet.
 
+## [0.4.0] - 2026-11-04
+
+### Added
+
+- Local Google Drive CSV export queue (schema 18) with triggers for Diagnostics invoices, Pharmacy
+  sales, Hospital admissions and hospital charges.
+- Unique `tx_YYYYMMDD_HHMMSS_XXXXXX.csv` files with five flat columns.
+- SHA-256-masked patient IDs and rupee totals formatted from integer paise.
+- `GOOGLE_DRIVE_SYNC_PATH` configuration and native folder picker.
+- Rust `spawn_blocking` CSV writer using `create_new` to prevent append/overwrite.
+- Pending/retry status, local error evidence and 30-second export scheduler.
+
+### Changed
+
+- Removed live API/cloud sync, endpoint/token configuration, ACK handling, the Next.js sync receiver and
+  the cloud dashboard from the product.
+- Legacy `sync_queue`/`sync_ack` tables remain historical; migration 18 drops their triggers.
+- Client runbook and documentation now cover the local Google Drive outbox.
+
+### Verified
+
+- Existing encrypted database migrated to schema 18.
+- Two existing invoices exported to a masked CSV and queue rows marked exported.
+- A subsequent invoice update created a new queue row and a new unique CSV.
+- A forced invalid-folder failure left the batch pending; restoring the folder retried successfully.
+- Rust unit tests cover unique-file writing, no-overwrite behavior, path traversal rejection and
+  SQLCipher/backup helpers.
+
 ## [0.3.0] - 2026-11-03
 
 ### Added

@@ -1,8 +1,8 @@
 ﻿# MediCore buyer documentation
 
 Last updated: 3 November 2026  
-Product version: `0.3.0`  
-Database schema: `17`
+Product version: `0.4.0`  
+Database schema: `18`
 
 **MediCore** is the umbrella product name. The internal package/browser storage keys retain the
 historical `diagbill` identifier; this does not affect buyer branding.
@@ -30,17 +30,17 @@ For the current done/pending and commercial release decision, use
 | --- | --- |
 | [buyer-overview.md](buyer-overview.md) | One-page commercial story, ideal customer and differentiators |
 | [product-capabilities.md](product-capabilities.md) | Feature-by-feature status: ready, partial or unavailable |
-| [architecture.md](architecture.md) | Detailed current/target architecture and the proposed offline/online sync protocol |
+| [architecture.md](architecture.md) | Detailed current architecture, local data boundary and CSV export flow |
 | [licensing-and-editions.md](licensing-and-editions.md) | Editions, signed activation, tenant/device binding, grace/read-only rules, vendor portal and licence QA |
 | [licensing-process.md](licensing-process.md) | End-to-end operating procedure from quote and order through issuance, activation, renewal, upgrades, replacement, revocation and records |
 | [../PRODUCTION_COMMERCIAL_READINESS.md](../PRODUCTION_COMMERCIAL_READINESS.md) | Current done/pending status and commercial release gates |
-| [../CLIENT_INSTALLATION_RUNBOOK.md](../CLIENT_INSTALLATION_RUNBOOK.md) | End-to-end offline terminal and optional online-monitoring installation, acceptance and rollback |
+| [../CLIENT_INSTALLATION_RUNBOOK.md](../CLIENT_INSTALLATION_RUNBOOK.md) | End-to-end offline terminal installation, backup, local CSV export, acceptance and rollback |
 | [deployment-and-readiness.md](deployment-and-readiness.md) | What can be installed now, release gates and IT requirements |
-| [productionization-plan.md](productionization-plan.md) | Full engineering, packaging, backup, cloud, security and operations plan to reach production |
+| [productionization-plan.md](productionization-plan.md) | Full engineering, packaging, backup, security and operations plan to reach production |
 | [../DESKTOP_BUILD.md](../DESKTOP_BUILD.md) | Windows/Tauri prerequisites, WS2 verification, installer and desktop failure tests |
+| [../LOCAL_CSV_EXPORT.md](../LOCAL_CSV_EXPORT.md) | Google Drive outbox, unique CSV files, masking, retry queue and limitations |
 | [../BACKUP_RESTORE.md](../BACKUP_RESTORE.md) | Daily snapshots, 7/4/12 retention, USB/OneDrive copy, validation and restore |
 | [../ENCRYPTION.md](../ENCRYPTION.md) | SQLCipher, Windows Credential Manager key storage, migration and key-recovery limits |
-| [../cloud-dashboard/README.md](../cloud-dashboard/README.md) | Optional Next.js sync receiver, PostgreSQL schema and read-only central dashboard |
 | [security-privacy-compliance.md](security-privacy-compliance.md) | Security posture, NABL/ISO/ABDM evidence, data protection and claims policy |
 | [commercial-model-and-pricing.md](commercial-model-and-pricing.md) | Pricing structures, cost drivers, ROI method and proposal terms |
 | [india-payment-proposal.md](india-payment-proposal.md) | India-specific milestone billing, GST, TDS, INR payment methods, renewals and proposal template |
@@ -81,7 +81,7 @@ Compliance source detail remains in [`../COMPLIANCE.md`](../COMPLIANCE.md).
 | ABDM | Offline FHIR R4 v6.5.0 draft generation; **no live API transmission** |
 | NABL/ISO | Evidence foundations and gap matrix; **not certified/accredited software** |
 | Desktop `.exe` | Locally self-signed NSIS/MSI installers built; public-CA signing and clean-machine acceptance pending |
-| Cloud monitoring | Sync receiver/dashboard code exists; **hosted deployment, hardening and per-device tokens are not complete** |
+| Cloud monitoring | **Not available**; removed in favour of local Google Drive CSV export |
 | Backups | Encrypted local snapshots, 7/4/12 retention, optional USB/OneDrive copy and validated restore; key export/import and unattended scheduling pending |
 | Recommended launch price | â‚¹20,000 paid pilot; â‚¹24,000/year for 1 centre/2 terminals, excluding GST â€” see [commercial-model-and-pricing.md](commercial-model-and-pricing.md#recommended-launch-prices-for-india) |
 | Default demo login | First-run bootstrap `admin / admin123`, forcing a password change |

@@ -34,7 +34,7 @@ NASM installation is needed.
 
 ## Local build evidence
 
-Verified on 3 November 2026:
+Verified on 4 November 2026:
 
 | Check | Result |
 | --- | --- |
@@ -43,27 +43,28 @@ Verified on 3 November 2026:
 | `npm run build` | Passed |
 | `npm run build:monitor` | Passed |
 | `npm run tauri build` | Passed |
-| NSIS installer | `MediCore_0.3.0_x64-setup.exe` — 3.20 MiB, signed |
-| MSI installer | `MediCore_0.3.0_x64_en-US.msi` — 4.37 MiB, signed |
+| NSIS installer | `MediCore_0.4.0_x64-setup.exe` - 3.23 MiB, signed |
+| MSI installer | `MediCore_0.4.0_x64_en-US.msi` - 4.41 MiB, signed |
 | Runtime database | `%APPDATA%\in.medicore.desktop\medicore.db` |
-| Schema/integrity | `schema_version=17`, `PRAGMA quick_check=ok` |
+| Schema/integrity | `schema_version=18`, `PRAGMA quick_check=ok` |
 | Single instance | Second process exited; original stayed running |
 | Close flush | WAL checkpointed; database readable after close |
 | Pre-migration backup | `pre-migration-v15-<timestamp>.db` and `pre-migration-v16-<timestamp>.db` created |
 | Scheduled backup | Encrypted `MediCore-daily-2026-11-03.db`, `MediCore-weekly-2026-W45.db`, `MediCore-monthly-2026-11.db` |
 | Manual/secondary backup | Encrypted local and selected-folder copies created; 3 files each |
-| Restore | Pre-restore safety copy created; app reloaded with schema 17 and matching invoice counts |
+| Restore | Pre-restore safety copy created; app reloaded with schema 18 and matching invoice counts |
 | Encryption | SQLCipher 4.20; `PRAGMA quick_check=ok`; invoice counts preserved |
 | Key storage | Windows Credential Manager target `sqlcipher-database-key-v1.in.medicore.desktop` present |
 | Plaintext migration | Existing 585,728-byte plaintext database encrypted; `pre-encryption-<epoch>.db` created |
 | Legacy backup restore | Plaintext backup accepted, re-encrypted and activated |
-| Sync schema | Migration 17 created `sync_queue`, `sync_ack` and six entity triggers |
+| Local export | Migration 18 created `local_export_queue`; unique masked CSV written to `C:\Users\Public\MedicalApp_Sync` |
+| Export retry | Invalid folder left batch pending with error; restoring folder cleared pending on next interval |
 
 Checksums from that build:
 
 ```text
-NSIS SHA256: EA654DF2A931014D6BD5D46B824899F593BD14136E623B7AD0B149BBD133DC05
-MSI  SHA256: 67B8A739280158CA12B25971593D2EC47DC374A3BF103F1C717A3A32A002F368
+NSIS SHA256: 6FB66D6A47EE9ED342618EADF464E775BA527EC781F4E164A88E9D194FF5A108
+MSI  SHA256: 73935D7D6469B0292A01D1E41D0029D7C61474B7AC56B2C873C742AA1FBA3144
 ```
 
 These hashes change on every rebuild. Recompute them before publishing.
@@ -235,8 +236,8 @@ Get-ChildItem src-tauri\target\release\bundle\msi
 Typical output:
 
 ```text
-MediCore_0.3.0_x64-setup.exe
-MediCore_0.3.0_x64_en-US.msi
+MediCore_0.4.0_x64-setup.exe
+MediCore_0.4.0_x64_en-US.msi
 ```
 
 The local installers are signed with the self-signed MediCore certificate, but they are not publicly
@@ -382,7 +383,7 @@ certutil -user -addstore -f TrustedPublisher .\MediCore-CodeSigning.cer
 The repeatable local flow is also in `scripts\sign-windows.ps1`. It signs the app, regenerates the
 installers with `--no-binary-patching`, signs both installers and verifies all three signatures.
 
-Local signing flow used for `0.3.0`:
+Local signing flow used for `0.4.0`:
 
 ```powershell
 $signtool = "C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\x64\signtool.exe"
@@ -397,18 +398,18 @@ npx tauri bundle --no-binary-patching
 
 & $signtool sign /fd SHA256 /sha1 $thumb `
   /tr http://timestamp.digicert.com /td SHA256 `
-  .\src-tauri\target\release\bundle\nsis\MediCore_0.3.0_x64-setup.exe
+  .\src-tauri\target\release\bundle\nsis\MediCore_0.4.0_x64-setup.exe
 & $signtool sign /fd SHA256 /sha1 $thumb `
   /tr http://timestamp.digicert.com /td SHA256 `
-  .\src-tauri\target\release\bundle\msi\MediCore_0.3.0_x64_en-US.msi
+  .\src-tauri\target\release\bundle\msi\MediCore_0.4.0_x64_en-US.msi
 ```
 
 Verify the app embedded in the MSI, not only the installer shell:
 
 ```powershell
-msiexec /a .\src-tauri\target\release\bundle\msi\MediCore_0.3.0_x64_en-US.msi /qn TARGETDIR=$env:TEMP\medicore-msi
+msiexec /a .\src-tauri\target\release\bundle\msi\MediCore_0.4.0_x64_en-US.msi /qn TARGETDIR=$env:TEMP\medicore-msi
 Get-AuthenticodeSignature "$env:TEMP\medicore-msi\PFiles\MediCore\medicore.exe"
-Get-AuthenticodeSignature .\src-tauri\target\release\bundle\nsis\MediCore_0.3.0_x64-setup.exe
+Get-AuthenticodeSignature .\src-tauri\target\release\bundle\nsis\MediCore_0.4.0_x64-setup.exe
 ```
 
 Expected status: `Valid` and the same MediCore thumbprint.
@@ -416,7 +417,7 @@ Expected status: `Valid` and the same MediCore thumbprint.
 Generate checksums:
 
 ```powershell
-Get-FileHash .\src-tauri\target\release\bundle\nsis\MediCore_0.3.0_x64-setup.exe `
+Get-FileHash .\src-tauri\target\release\bundle\nsis\MediCore_0.4.0_x64-setup.exe `
   -Algorithm SHA256
 ```
 

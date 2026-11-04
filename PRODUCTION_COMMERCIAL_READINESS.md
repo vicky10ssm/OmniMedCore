@@ -1,8 +1,8 @@
 # Production and commercial readiness status
 
 Last updated: 4 November 2026  
-Product version: `0.3.0`  
-Database schema: `17`  
+Product version: `0.4.0`  
+Database schema: `18`  
 Current stage: supervised pilot / pre-production
 
 This is the single high-level status document for “what is done” and “what is still pending” from a
@@ -23,12 +23,12 @@ production and commercial perspective. It summarises, rather than replaces, the 
 | Can the offline desktop app be demonstrated? | **Yes** |
 | Can it be sold as a supervised design-partner pilot? | **Conditionally**, after the pilot P0 gates and written limitations acknowledgement |
 | Can it be sold as general-availability production software? | **No** |
-| Is the hosted monitoring/SaaS tier production-ready? | **No** — code exists, deployment and hardening do not |
+| Is a hosted monitoring/SaaS tier part of the product? | **No** — online sync was removed in favour of local Google Drive CSV export |
 | Is ABDM production exchange available? | **No** — offline FHIR draft only |
 | Is this NABL/ISO certified software? | **No** — evidence foundations only |
 
 The commercially safe offer today is a **paid, tightly scoped, supervised pilot**. Do not promise a
-general production SLA, hosted monitoring, live ABDM, key recovery or public-CA SmartScreen reputation
+general production SLA, a hosted monitor, live ABDM, key recovery or public-CA SmartScreen reputation
 until the relevant gates below are closed.
 
 ## 2. What is done
@@ -81,16 +81,19 @@ NABL quality system or ABDM integration.
 - Rust tests for SQLCipher export, backup validation and backup retention (3/3 passing locally)
 - Migration, tenant-scope and monitor build checks passing locally and in CI
 
-### 2.5 Sync and monitoring foundation
+### 2.5 Local CSV export foundation
 
-- Migration 17 append-only `sync_queue` and `sync_ack`
-- Entity triggers for invoices, reports and admissions
-- 30-second in-app push loop with ACK persistence
-- Next.js sync receiver + PostgreSQL central schema
-- Read-only dashboard code protected by Basic auth
-- Terminal endpoint/token configuration and sync status UI
+- Migration 18 `local_export_queue` with triggers for invoices, pharmacy sales, admissions and
+  hospital charges
+- 30-second local export scheduler while the app is open
+- Unique `tx_YYYYMMDD_HHMMSS_XXXXXX.csv` files in `GOOGLE_DRIVE_SYNC_PATH`
+- Flat CSV rows with masked patient IDs and integer-derived amounts
+- Rust `spawn_blocking` writer with `create_new` no-overwrite protection
+- Pending/failed rows remain queued with local error evidence and retry
+- No API call, endpoint, token, ACK table or cloud dashboard in the export path
 
-This is a pilot foundation, not a deployed or hardened multi-tenant service.
+The legacy `sync_queue`/`sync_ack` tables remain as historical data only; their triggers are dropped by
+migration 18.
 
 ### 2.6 Commercial documents
 
@@ -142,16 +145,11 @@ This is a pilot foundation, not a deployed or hardened multi-tenant service.
 - Tamper-evident audit export and periodic review
 - Computer-system-validation pack for regulated buyers
 
-### P2 — hosted monitoring and sync
+### P2 — Future integrations (not in current scope)
 
-- Hosted deployment, TLS automation, uptime and operational monitoring
-- Per-device token issuance, rotation and revocation
-- Owner SSO/MFA for the dashboard
-- Tenant isolation acceptance with two real tenants
-- Conflict/replay handling, dead-letter handling and load testing
-- Central database backups, retention and deletion procedures
-- Data-processing/subprocessor documentation and region strategy
-- Subscription/tenant administration if operated as SaaS
+Hosted monitoring and online sync were removed. Future work may add a controlled downstream CSV
+consumer, but it must not become a write path or a substitute for terminal backups. Current scope does
+not include a hosted dashboard, per-device sync tokens, cloud tenant administration or SaaS billing.
 
 ### P3 — ABDM production
 
@@ -183,7 +181,7 @@ appointments, advanced report templates and other roadmap items remain future wo
 | Licence operations and device transfer | Portal code exists | Hosted/hardened portal, OS-secure storage, backend enforcement |
 | Support and incident model | Documented | Staffing, tooling, response evidence and SLA approval |
 | Insurance | Not decided | Commercial decision |
-| Hosted monitoring commercial tier | Not sellable yet | Hosting, security, per-device tokens and operations |
+| Hosted monitoring commercial tier | Not in current product | Local Google Drive CSV export only |
 
 Do not present the current price card as a production GA price. It is effective only after the relevant
 P0 gates are closed and the buyer accepts the written limitations.
@@ -218,7 +216,7 @@ P0 gates are closed and the buyer accepts the written limitations.
 2. Add unattended/offsite backup evidence and RPO/RTO.
 3. Harden security/testing and complete the support/incident runbooks.
 4. Move licence storage/entitlement enforcement out of browser storage and harden the portal.
-5. Deploy and accept hosted monitoring only if it is being sold.
+5. Validate the local Google Drive outbox and downstream consumer with masked CSV data.
 6. Complete legal/commercial pack and pilot-to-production acceptance.
 
 Do not publish dates until each item has an owner, acceptance test and evidence.

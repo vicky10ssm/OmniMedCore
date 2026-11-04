@@ -1,13 +1,18 @@
 ﻿# Productionization plan
 
 Last updated: 3 November 2026  
-Current product version: `0.3.0`  
-Current schema: `17`  
-Current deployment: development web app with `sql.js` + IndexedDB; packaged Windows desktop with
-SQLCipher for supervised pilots
+Current product version: `0.4.0`  
+Current schema: `18`  
+Current deployment: packaged Windows desktop with SQLCipher, encrypted backups and local Google Drive
+CSV export for supervised pilots; browser build remains development-only
 
 For the current one-page done/pending snapshot and commercial release decision, see
 [PRODUCTION_COMMERCIAL_READINESS.md](../PRODUCTION_COMMERCIAL_READINESS.md).
+
+> **Scope note:** hosted cloud sync and the read-only cloud dashboard were removed in `0.4.0`. The
+> current integration path is the local Google Drive CSV outbox in
+> [LOCAL_CSV_EXPORT.md](../LOCAL_CSV_EXPORT.md). Cloud/monitor references later in this historical plan
+> are retained for context only.
 
 ## 1. Purpose
 
@@ -19,7 +24,7 @@ It covers:
 - Windows desktop packaging
 - Local production database
 - Encryption, backup and recovery
-- Cloud sync and read-only monitoring
+- Local Google Drive CSV export and retry safety
 - Security, testing, observability and support
 - Tenant/device licence activation, secure licence storage and vendor portal operations
 - Referral-commission policy, role restrictions and clinical sample-disposal controls
@@ -46,8 +51,8 @@ MediCore is production-ready for a paid pilot only when all of the following are
 9. Support, incident and rollback procedures are agreed.
 10. No contractual claim depends on an unreleased cloud, ABDM, hosted licence portal or QMS feature.
 
-General availability additionally requires the hosted monitoring service, tenant operations, security
-review and commercial support model to be fully operational.
+General availability additionally requires security review, validation evidence, support operations and
+the commercial/legal model to be fully operational. Hosted monitoring is not part of the current scope.
 
 ## 3. Current baseline
 
@@ -58,7 +63,7 @@ review and commercial support model to be fully operational.
 | Desktop packaging | Tauri v2 native build succeeds; NSIS/MSI locally signed with a self-signed root | Public-CA signing, clean-machine acceptance, updater and distribution |
 | Encryption | SQLCipher 4.20 desktop database; random key in Windows Credential Manager; plaintext migration | Key export/import, rotation, recovery and clean-machine tests |
 | Backup/restore | Encrypted local daily snapshots, 7/4/12 retention, optional USB/OneDrive copy, manual backup and validated restore | Key recovery, unattended scheduling, clean-machine restore test and retention monitoring |
-| Cloud/monitor | Append-only queue, 30-second desktop push, Next.js receiver/dashboard and PostgreSQL schema code exist | Hosting, TLS, per-device auth, conflict/replay handling, backups and tenant operations |
+| Local export | `local_export_queue`, 30-second scheduler, masked flat CSV and Rust background writer | Google Drive folder setup, downstream consumer validation, clean-machine acceptance and retry evidence |
 | Authentication | Password + optional TOTP; admin/operator roles | Lockout/rate limits, session policy, device tokens |
 | Roles | Operator: Expenses only, no Dashboard or profit tile; admin retains full view | Granular permissions and packaged backend enforcement |
 | Licensing | Offline ECDSA P-256 tenant/device licences, editions, 30-day grace/read-only; vendor portal code | OS-secure storage, backend entitlement enforcement, hosted/hardened portal |
@@ -74,28 +79,19 @@ review and commercial support model to be fully operational.
 ## 4. Target production architecture
 
 ```text
-â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Windows terminal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-â”‚ Tauri application                                                â”‚
-â”‚  â”œâ”€â”€ React UI (terminal bundle)                                  â”‚
-â”‚  â”œâ”€â”€ Local SQLite file (encrypted; WAL)                          â”‚
-â”‚  â”œâ”€â”€ Migration + backup before upgrade                           â”‚
-â”‚  â”œâ”€â”€ Device identity + sync outbox                               â”‚
-â”‚  â””â”€â”€ Local print / CSV / PDF                                     â”‚
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
-                â”‚ HTTPS, device token, idempotent push/pull
-                â–¼
-â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Cloud accumulator â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-â”‚ API: ingest, tenant isolation, cursor pull, health                â”‚
-â”‚ PostgreSQL: accumulated tenant data + audit/ops metadata          â”‚
-â”‚ Object storage: encrypted backups/support artifacts (optional)    â”‚
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
-                â”‚ authenticated read-only API
-                â–¼
-â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Hosted monitor â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-â”‚ Static read-only bundle + strict read API                        â”‚
-â”‚ No write endpoints, no billing, no recovery-code use             â”‚
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+Windows terminal
+  -> Tauri application
+  -> React UI (terminal bundle)
+  -> SQLCipher local database (system of record)
+  -> encrypted local backups
+  -> local_export_queue
+  -> Rust background writer
+  -> tx_YYYYMMDD_HHMMSS_XXXXXX.csv
+  -> Google Drive desktop client (external upload)
 ```
+
+There is no hosted write API, sync token, cloud accumulator or remote monitor in the target design.
+Google Drive is an outbox transport only; it is not a backup or conflict-resolution service.
 
 ### Key architectural decisions to confirm
 
@@ -109,7 +105,7 @@ review and commercial support model to be fully operational.
 - **Source control:** Git is mandatory; no production release from an uncommitted workspace.
 
 The detailed protocol, conflict rules and sequence diagrams are in
-[architecture.md](architecture.md#7-offlineonline-synchronization-design).
+[LOCAL_CSV_EXPORT.md](../LOCAL_CSV_EXPORT.md).
 
 ## 5. Workstreams
 
@@ -179,31 +175,30 @@ Remaining tasks:
 
 Exit gate: encrypted backup restored on a clean machine with exact invoice/payment counts.
 
-### WS4 â€” Cloud sync and monitoring
+### WS4 — Local Google Drive CSV export
 
-A simple pilot module is implemented: append-only `sync_queue`/`sync_ack`, a 30-second in-app push
-loop, a Next.js sync receiver and a read-only dashboard. It is not a production sync service.
+Implemented pilot foundation:
 
-Production tasks:
+- Migration 18 `local_export_queue` and triggers for diagnostics invoices, pharmacy sales, admissions
+  and hospital charges.
+- 30-second scheduler while the desktop app is open.
+- Unique `tx_YYYYMMDD_HHMMSS_XXXXXX.csv` files in `GOOGLE_DRIVE_SYNC_PATH`.
+- Flat CSV columns: `Sync_Timestamp, Transaction_ID, Module_Type, Masked_Patient_ID, Total_Amount`.
+- Rust `spawn_blocking` writer with `create_new` no-overwrite protection.
+- Failed writes leave rows pending with local error evidence; the next interval retries.
+- No API, endpoint, token, ACK table or hosted dashboard.
 
-- Define the hosted central schema, migrations and tenant isolation.
-- Implement device registration and revocation with one-time enrolment.
-- Add device-bound credentials stored in Windows Credential Manager/OS keystore.
-- Implement push/pull APIs with:
-  - idempotency keys
-  - cursor-based limits
-  - retry/backoff
-  - tombstones
-  - tenant/device authorisation
-- Keep money records append-only; last-write-wins only for approved editable tables.
-- Build tenant provisioning, suspension, deletion and support views.
-- Build hosted monitor with read-only API credentials and minimum-necessary data.
-- Add sync status, last success, pending count and actionable errors in the terminal.
-- Load test with realistic multi-terminal volumes.
-- Define conflict metrics and dead-letter handling.
+Remaining tasks:
 
-Exit gate: two terminals create offline records, reconnect, sync, and the hosted monitor shows the
-same totals without duplicate invoices or cross-tenant leakage.
+- Validate the local Google Drive outbox with the buyer's chosen folder and access policy.
+- Test failure/retry behavior with locked, full and permission-denied folders.
+- Validate downstream duplicate handling using transaction IDs.
+- Document that CSV success means file write, not Google Drive upload or processing.
+- Confirm no patient names, raw IDs, report results or clinical notes enter the CSV.
+- Prove the export scheduler and backup scheduler do not interfere under load.
+
+Exit gate: a controlled buyer test produces unique masked CSV files, retries safely after a forced
+failure, and the downstream consumer reconciles the expected transaction IDs and totals.
 
 ### WS5 â€” Security and privacy hardening
 
@@ -366,21 +361,18 @@ ABDM production, full QMS, analyzer/PACS and multi-branch are separate programme
 - [ ] Support briefed; known issues documented
 - [ ] Buyer change approval recorded
 
-## 9. Cloud release checklist
+## 9. Local CSV export checklist
 
-- [ ] Infrastructure as code or documented reproducible setup
-- [ ] Tenant isolation tests with two tenants
-- [ ] Device enrolment/revocation tested
-- [ ] API authz and rate limits tested
-- [ ] Backup/PITR configured and restored in test
-- [ ] TLS/security headers reviewed
-- [ ] Monitor read-only enforcement tested
-- [ ] No billing/write route exposed to monitor credentials
-- [ ] Error tracking and uptime alerts working
-- [ ] Load test at agreed pilot volume
-- [ ] Status page/incident contacts ready
-- [ ] DPA/subprocessor list updated
-- [ ] Rollback and maintenance plan tested
+- [ ] Google Drive client installed and signed in
+- [ ] Export folder exists, is writable and uses the approved access policy
+- [ ] Unique filenames verified
+- [ ] CSV header and five flat columns verified
+- [ ] Patient IDs masked; no names/results/notes
+- [ ] Diagnostics, Pharmacy and Hospital sources tested
+- [ ] Forced write failure leaves queue pending
+- [ ] Next interval retries and clears pending after folder restoration
+- [ ] Downstream duplicate handling documented
+- [ ] Backup/restore still independent of CSV export
 
 ## 10. Upgrade and rollback runbook
 

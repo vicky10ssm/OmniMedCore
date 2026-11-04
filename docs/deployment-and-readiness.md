@@ -1,7 +1,7 @@
 ﻿# Deployment, architecture and commercial readiness
 
 Last updated: 3 November 2026  
-Current schema: `17`
+Current schema: `18`
 
 ## Current architecture
 
@@ -25,7 +25,7 @@ Windows terminal (Tauri + SQLite file, encrypted)
         â”‚
         â”œâ”€â”€ offline billing/reporting/sample workflow
         â”‚
-        â””â”€â”€ future sync/outbox â”€â”€â–¶ cloud accumulator â”€â”€â–¶ hosted read-only monitor
+        â””â”€â”€ local_export_queue → Google Drive CSV outbox (no hosted monitor)
 ```
 
 The target architecture is **not the same as the current deployment**. Be explicit in buyer meetings.
@@ -54,7 +54,8 @@ The target architecture is **not the same as the current deployment**. Be explic
   are still outstanding.
 - Local daily encrypted snapshots, optional USB/OneDrive copy and validated restore are implemented.
   The daily schedule runs only while the desktop app is open, and key export/import for cross-machine
-  recovery is still pending. No auto-update, deployed cloud sync or remote support agent.
+  recovery is still pending. Local Google Drive CSV export replaces online API sync. No auto-update or
+  remote support agent.
 
 ## What is not yet deployable
 
@@ -63,7 +64,7 @@ The target architecture is **not the same as the current deployment**. Be explic
 | Installer trust/unaccepted | Signed with a local self-signed root; buyers must install that root, and clean-hardware acceptance is pending |
 | Browser build uses IndexedDB | Development/browser data can be cleared; packaged desktop uses SQLCipher |
 | Encrypted backups / key recovery | Local SQLCipher snapshots reduce disk-loss risk, but key export/import, unattended scheduling, offsite verification and a clean-machine restore remain release gates |
-| Sync/dashboard not deployed | Next.js/PostgreSQL sync receiver and dashboard code exist locally; hosting, TLS, per-device tokens and operations are pending |
+| Local CSV consumer not validated | The Google Drive outbox is generated locally, but buyer-specific downstream processing is not accepted yet |
 | No update mechanism | Security/bug fixes cannot be rolled out reliably |
 | Local signing only | Public-CA trust and SmartScreen reputation still pending |
 | Encryption key recovery not exposed | SQLCipher protects the file, but a lost Windows profile/key currently makes encrypted backups unreadable |
@@ -95,17 +96,15 @@ Recommended minimum before installing at a buyer site:
     results are entered.
 12. **Written limitations list** acknowledged by the buyer.
 
-## Release gates before marketing hosted monitoring
+## Release gates before marketing local CSV export
 
-- Cloud database and authenticated sync/receiver API
-- Per-device sync tokens with rotation and revocation
-- Append-only queue delivery tests with retry/idempotency and duplicate ACKs
-- Tenant isolation tests with at least two real tenants
-- Hosted dashboard deployment, HTTPS, SSO/MFA and uptime/error monitoring
-- Consent/access controls for financial and clinical visibility
-- Central database backup, retention, deletion and replay procedures
-- Data protection agreement covering processing/retention
-- Incident and deletion procedures
+- Google Drive desktop client installed and signed in per terminal
+- Dedicated controlled sync folder with appropriate sharing/access policy
+- CSV write failure/retry evidence
+- Unique-file/no-overwrite verification
+- Masked patient-ID review and data-protection sign-off
+- Downstream consumer validation for duplicate transaction snapshots
+- Clear statement that the CSV is not a backup or live remote-monitor service
 
 ## Release gates before ABDM production claims
 
@@ -127,7 +126,7 @@ Recommended minimum before installing at a buyer site:
 | Disk | At least 2 GB free plus backup capacity |
 | Display | 1366Ã—768 minimum |
 | Printer | A4 laser/inkjet and optional 80 mm thermal |
-| Network | Not required for terminal billing; needed only for future sync/ABDM |
+| Network | Not required for terminal billing; Google Drive client network is optional for CSV export; ABDM is future |
 | Antivirus | Buyer-managed; installer must be excluded only with written IT approval |
 | Backup target | External drive/NAS or approved cloud location |
 | Accounts | One Windows account per terminal; app users remain individually authenticated |
@@ -145,14 +144,12 @@ Recommended minimum before installing at a buyer site:
 
 - Packaged terminal(s), local server or per-terminal SQLite
 - Buyer-managed backups and hardware
-- Optional read-only cloud monitoring
+- Optional local Google Drive CSV export
 - Annual support/licence
 
-### C. Hosted multi-tenant SaaS (future)
+### C. Hosted multi-tenant SaaS
 
-Requires a cloud backend, tenant onboarding/offboarding, central monitoring, billing/subscription
-control, support tooling, data-processing agreements and stronger operational controls. The current
-schema is tenant-ready, but the service is not.
+Not part of the current product scope. Online sync/dashboard was removed in favour of local Google Drive CSV export.
 
 ## Support infrastructure needed before sale
 
@@ -169,6 +166,6 @@ schema is tenant-ready, but the service is not.
 The development URL (`http://127.0.0.1:5173/`) is for local demonstration only. Never represent it as
 hosted production access. Do not use real patient data in demos, screenshots or test backups.
 
-The detailed engineering, cloud, backup, security and release plan is in
+The detailed engineering, backup, security and release plan is in
 [productionization-plan.md](productionization-plan.md).
 

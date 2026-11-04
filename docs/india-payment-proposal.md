@@ -128,7 +128,8 @@ support model have passed release gates.
 
 - Year 1 subscription is payable in advance unless a written pilot conversion agreement says otherwise.
 - Renewal is payable **30 days before the renewal date**.
-- Non-payment may result in suspension of support/licence and, after written notice, hosted monitoring
+- Non-payment may result in suspension of support/licence and, after written notice, termination of the
+  licence
   suspension. Local clinical data must never be held hostage; export/continuity terms must be explicit.
 
 ## 5. Invoice and GST details

@@ -7,7 +7,7 @@ By the end of a 25-minute demo, the buyer should understand:
 1. How billing, GST, dues and expenses work.
 2. How a pathology order becomes a traceable sample and a released report.
 3. How amendments and audit evidence work.
-4. What is not yet available (hosted monitoring, installer, backups, ABDM transport, QMS).
+4. What is not yet available (clean-machine acceptance, key recovery, live ABDM transport, QMS).
 5. Whether a controlled pilot makes sense.
 
 Do not attempt to show every screen. Depth on the core workflow is more credible than a feature parade.

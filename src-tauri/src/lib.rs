@@ -1,4 +1,5 @@
 mod db;
+mod export;
 
 use serde::Serialize;
 use std::fs::{self, File};
@@ -271,7 +272,8 @@ pub fn run() {
             db::db_execute,
             db::db_encryption_info,
             db::validate_backup,
-            db::restore_database
+            db::restore_database,
+            export::export_sync_csv
         ])
         .run(tauri::generate_context!())
         .expect("error while running MediCore");

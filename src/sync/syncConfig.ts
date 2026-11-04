@@ -1,33 +1,50 @@
-// Device-local cloud sync configuration.
+// Local Google Drive sync-folder configuration.
 //
-// This is deliberately a small first module. The token is stored in local
-// storage for the desktop pilot; WS3 must move it to OS-protected storage.
+// The desktop app never sends these rows over the network. It writes a new CSV
+// into a Google Drive desktop-sync folder, and Google Drive performs the upload
+// independently. The path is stored locally so the app can remember it.
 
-const ENDPOINT_KEY = "medicore.sync.endpoint";
-const TOKEN_KEY = "medicore.sync.token";
+export const DEFAULT_GOOGLE_DRIVE_SYNC_PATH = "C:\\Users\\Public\\MedicalApp_Sync";
 
-export interface SyncConfig {
-  endpoint: string;
-  token: string;
+const SYNC_PATH_KEY = "medicore.sync.exportPath";
+
+// Remove credentials left by the retired network sync implementation.
+try {
+  localStorage.removeItem("medicore.sync.endpoint");
+  localStorage.removeItem("medicore.sync.token");
+} catch {
+  // Nothing to clean up when localStorage is unavailable.
 }
 
-export function readSyncConfig(): SyncConfig | null {
+function readStoredPath(): string {
   try {
-    const endpoint = (localStorage.getItem(ENDPOINT_KEY) || "").trim().replace(/\/+$/, "");
-    const token = (localStorage.getItem(TOKEN_KEY) || "").trim();
-    if (!endpoint || !token) return null;
-    return { endpoint, token };
+    const value = (localStorage.getItem(SYNC_PATH_KEY) || "").trim();
+    return value || DEFAULT_GOOGLE_DRIVE_SYNC_PATH;
   } catch {
-    return null;
+    return DEFAULT_GOOGLE_DRIVE_SYNC_PATH;
   }
 }
 
-export function saveSyncConfig(config: SyncConfig): void {
-  localStorage.setItem(ENDPOINT_KEY, config.endpoint.trim().replace(/\/+$/, ""));
-  localStorage.setItem(TOKEN_KEY, config.token.trim());
+/**
+ * Global local export path. The Rust exporter also creates the directory when
+ * it is missing, so a fresh machine can use the default without setup.
+ */
+export let GOOGLE_DRIVE_SYNC_PATH = readStoredPath();
+
+export function getGoogleDriveSyncPath(): string {
+  return GOOGLE_DRIVE_SYNC_PATH;
 }
 
-export function clearSyncConfig(): void {
-  localStorage.removeItem(ENDPOINT_KEY);
-  localStorage.removeItem(TOKEN_KEY);
+export function setGoogleDriveSyncPath(path: string): void {
+  const next = path.trim() || DEFAULT_GOOGLE_DRIVE_SYNC_PATH;
+  GOOGLE_DRIVE_SYNC_PATH = next;
+  try {
+    localStorage.setItem(SYNC_PATH_KEY, next);
+  } catch {
+    // The current session still uses the in-memory path.
+  }
+}
+
+export function resetGoogleDriveSyncPath(): void {
+  setGoogleDriveSyncPath(DEFAULT_GOOGLE_DRIVE_SYNC_PATH);
 }
