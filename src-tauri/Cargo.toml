@@ -1,6 +1,6 @@
 [package]
 name = "medicore"
-version = "0.4.1"
+version = "0.4.2"
 description = "MediCore offline billing and care operations"
 authors = ["MediCore"]
 edition = "2021"
@@ -26,6 +26,12 @@ keyring = { version = "3.6.3", default-features = false, features = ["windows-na
 getrandom = "0.2"
 zeroize = "1"
 hex = "0.4"
+sha2 = "0.10"
+windows-sys = { version = "0.60.2", features = [
+  "Win32_Foundation",
+  "Win32_Security_Cryptography",
+  "Win32_Storage_FileSystem",
+] }
 
 [patch.crates-io]
 # Bundled SQLCipher uses libtomcrypt on Windows, so the desktop build does not

@@ -2048,7 +2048,7 @@ dependencies = [
 
 [[package]]
 name = "medicore"
-version = "0.4.1"
+version = "0.4.2"
 dependencies = [
  "base64 0.22.1",
  "getrandom 0.2.17",
@@ -2057,11 +2057,13 @@ dependencies = [
  "rusqlite",
  "serde",
  "serde_json",
+ "sha2",
  "tauri",
  "tauri-build",
  "tauri-plugin-dialog",
  "tauri-plugin-single-instance",
  "tempfile",
+ "windows-sys 0.60.2",
  "zeroize",
 ]
 

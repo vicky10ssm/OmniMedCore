@@ -63,9 +63,9 @@ supported integration path is the local CSV export described in [LOCAL_CSV_EXPOR
 | Tenancy | `tenant_id` on business tables, `TENANT_TABLES` helpers, static scope check |
 | Auth | Local users, PBKDF2 password hashes, optional TOTP 2FA, sessionStorage session |
 | Report release | Separate `can_authorize_reports` authority |
-| Licensing | ECDSA P-256 signed offline licence, canonical JSON, tenant + device binding, edition/module entitlements |
+| Licensing | ECDSA P-256 signed offline licence, canonical JSON, tenant + hardware fingerprint binding, edition/module entitlements |
 | Licence expiry | 30-day grace; after grace UI enters read-only mode, existing data/print/export remain available |
-| Licence storage | Browser `localStorage` in development; OS-secure packaged storage and backend enforcement still required |
+| Licence storage | Windows DPAPI current-user file in Tauri, with legacy localStorage migration; backend enforcement outside the UI still required |
 | Vendor portal | Separate Node admin portal signs issuances/renewals/revocations with the private key; not publicly deployed |
 | Encryption | Desktop SQLCipher 4.20/AES-256, key in Windows Credential Manager; browser AES-GCM envelope remains separate |
 | Backups | Encrypted local daily/monthly/weekly snapshots, optional USB/OneDrive copy, validated restore |
@@ -81,9 +81,9 @@ supported integration path is the local CSV export described in [LOCAL_CSV_EXPOR
    pre-migration backup and runs `PRAGMA quick_check`.
 4. Migrations run in ascending version order with tenant/compliance repair.
 5. Default tenant and initial admin are ensured.
-6. The licence verifier loads the stored signed file, checks signature/tenant/device/expiry and derives
-   the licensed module set. A development build falls back to a complete development licence only when
-   no real licence is stored.
+6. The licence verifier loads the DPAPI-protected signed file, checks signature/tenant/hardware
+   fingerprint/expiry and the execution-time high-water mark, then derives the licensed module set. A
+   development build falls back to a complete development licence only when no real licence is stored.
 7. Auth restores a session or shows login/unlock.
 8. Effective modules and routes are `licensed modules âˆ© clinic-enabled modules`; read-only mode applies
    after grace expiry.
@@ -216,7 +216,8 @@ CSV itself is a plain-text summary and is not a backup.
 
 A terminal can operate without internet:
 
-1. The local licence file is verified offline and licenses are checked against the local tenant/device.
+1. The local DPAPI-protected licence is verified offline and checked against the local tenant hardware
+   fingerprint and clock high-water mark.
 2. User signs in against the local user database.
 3. Patient, bill, payment, hospital charge, sample and report operations run in local SQLite.
 4. Invoice numbers come from a locally held block of 1000. The current implementation extends locally

@@ -93,7 +93,8 @@ For browser/clinical workflows, run the seeded demonstration and exercise the af
 
 - The app contains only the public licence-verification key.
 - Never commit the portal private key.
-- Test signature, tenant/device mismatch, grace, read-only and edition gating for licensing changes.
+- Test signature, tenant/hardware mismatch, DPAPI storage, clock rollback, grace, read-only and edition
+  gating for licensing changes.
 - Keep the vendor portal and app edition/module lists synchronized.
 
 ### Roles and privacy

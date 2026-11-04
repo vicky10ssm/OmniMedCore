@@ -21,7 +21,9 @@ import type {
   TestParameterRow,
 } from "../db/types";
 import { getSettings } from "../db/settings";
+import { printA4 } from "../db/print";
 import { getCurrentTenantId, tenantAnd, tenantAndOn } from "../db/tenant";
+import { UpdateExecutionTimestamp } from "../licensing/executionClock";
 import AbdmExport from "./AbdmExport";
 import {
   Btn,
@@ -331,6 +333,13 @@ export default function Reports() {
 
   const saveResult = async (markDone: boolean) => {
     if (!entering || parametersLoading) return;
+    try {
+      // Creating or amending a clinical report is a critical licence action.
+      await UpdateExecutionTimestamp();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "System Clock Manipulation Detected.");
+      return;
+    }
     const hasParameters = entryParameters.length > 0;
     const selected = entryParameters.filter((p) => p.selected);
     const text = resultText.trim();
@@ -1132,7 +1141,7 @@ function ReportPrint({
 
   useEffect(() => {
     if (ready && orders.length > 0) {
-      const t = setTimeout(() => window.print(), 400);
+      const t = setTimeout(() => printA4(), 400);
       return () => clearTimeout(t);
     }
   }, [ready, orders.length]);
@@ -1151,7 +1160,7 @@ function ReportPrint({
           <span className="text-sm font-medium">Report preview</span>
           <div className="flex gap-2">
             <Btn onClick={onClose}>Close</Btn>
-            <Btn variant="primary" onClick={() => window.print()}>
+            <Btn variant="primary" onClick={printA4}>
               <Icon name="printer" className="h-4 w-4" /> Print
             </Btn>
           </div>

@@ -398,14 +398,15 @@ The second deployment exists. `npm run build` makes the terminal (editing) app; 
 - MediCore remains one codebase/installer. The signed licence activates Diagnostics, Pharmacy, Hospital,
   Complete or Custom modules; clinic Settings can then hide licensed modules. Effective modules are the
   intersection of the two.
-- Licences are ECDSA P-256/SHA-256 files over canonical JSON, bound to tenant IDs and device IDs. The app
-  verifies offline with the public key only. The vendor portal (`license-portal/`) issues/renews/revokes
+- Licences are ECDSA P-256/SHA-256 files over canonical JSON, bound to tenant IDs and Windows hardware
+  fingerprints. The app verifies offline with the public key only. The vendor portal (`license-portal/`) issues/renews/revokes
   with the private key and must never be shipped with the app.
 - Expiry has a 30-day grace. After grace the app is read-only: existing records remain viewable, printable
-  and exportable; new clinical/financial writes are blocked in the UI. Packaged backend enforcement and
-  OS-secure licence storage remain release gates.
-- DEV builds use a complete development licence when no real licence is stored; production requires
-  activation. Current development storage is localStorage, not an OS secure store.
+  and exportable; new clinical/financial writes are blocked in the UI. Packaged backend enforcement
+  outside the UI remains a release gate.
+- The Windows build binds licences to a hardware fingerprint and stores the signed file with DPAPI; a
+  clock high-water mark rejects rollback. DEV builds use a complete development licence when no real
+  licence is stored; production requires signed activation.
 - Hospital now includes a generic IPD service sheet: tenant-defined services, admission charges with
   quantity/GST, part payments, computed balance, audit and A4 print. It is not a full HIS; packages,
   advances, nursing charts, doctor orders and insurance/TPA remain out of scope.

@@ -21,8 +21,9 @@ terminals or provide a remote monitor. See [LOCAL_CSV_EXPORT.md](LOCAL_CSV_EXPOR
 Collect and confirm:
 
 - [ ] Buyer champion, clinical approver and IT contact named
-- [ ] Tenant ID and device ID for each terminal (shown on the licence activation screen)
-- [ ] Signed licence JSON for the correct tenant/device and edition
+- [ ] Tenant ID and Hardware Device ID for each terminal (shown on the licence activation screen)
+- [ ] Signed licence JSON for the correct tenant/hardware fingerprint and edition; reissue old UUID-based
+      licences before upgrading
 - [ ] Signed installer and public root certificate
 - [ ] Windows 10/11 64-bit, WebView2 available, 4 GB RAM recommended, at least 2 GB free disk
 - [ ] A4 and/or 80 mm printer installed and test page working
@@ -178,14 +179,16 @@ the Windows profile. Escalate to support with the exact error.
 
 ### 4.4 Activate the licence
 
-1. The activation screen shows the **Tenant ID** and **Device ID**.
-2. Confirm these match the licence issued for this client.
+1. The activation screen shows the **Tenant ID** and **Hardware Device ID**.
+2. Confirm these match the licence issued for this client. The Hardware Device ID is a 64-character
+   SHA-256 fingerprint, not a database UUID.
 3. Choose the signed licence `.json` file or paste its JSON.
 4. Select **Activate licence**.
-5. Confirm the edition, modules, expiry and status.
+5. Confirm the edition, modules, expiry and status. The signed file is stored through Windows DPAPI.
 
-Licence verification is offline and checks the vendor signature plus tenant/device binding. An expired
-licence enters a 30-day grace period and then read-only mode; it does not delete data.
+Licence verification is offline and checks the vendor signature plus tenant/hardware binding. Clock
+rollback fails with **System Clock Manipulation Detected**; correct the Windows clock and restart. An
+expired licence enters a 30-day grace period and then read-only mode; it does not delete data.
 
 ### 4.5 First login and users
 

@@ -26,7 +26,7 @@ It covers:
 - Encryption, backup and recovery
 - Local Google Drive CSV export and retry safety
 - Security, testing, observability and support
-- Tenant/device licence activation, secure licence storage and vendor portal operations
+- Tenant/hardware licence activation, DPAPI storage, clock high-water checks and vendor portal operations
 - Referral-commission policy, role restrictions and clinical sample-disposal controls
 - Release processes, migration and rollback
 - Pilot and general-availability gates
@@ -44,8 +44,8 @@ MediCore is production-ready for a paid pilot only when all of the following are
 4. An encrypted backup can be restored successfully on a clean machine.
 5. Upgrades migrate real prior databases without losing rows or changing financial totals.
 6. The buyerâ€™s users, printers, data and workflows pass written acceptance tests.
-7. Tenant/device licence activation, renewal, grace/read-only mode, OS-secure licence storage and backend
-   entitlement enforcement pass on the packaged build.
+7. Tenant/hardware licence activation, DPAPI storage, clock-rollback rejection, renewal, grace/read-only
+   mode and backend entitlement enforcement pass on the packaged build.
 8. Role and clinical-control tests pass: operators can enter expenses but cannot see Dashboard/profit
    summaries, and accepted samples cannot be disposed before all linked test results are entered.
 9. Support, incident and rollback procedures are agreed.
@@ -66,7 +66,7 @@ the commercial/legal model to be fully operational. Hosted monitoring is not par
 | Local export | `local_export_queue`, 30-second scheduler, masked flat CSV and Rust background writer | Google Drive folder setup, downstream consumer validation, clean-machine acceptance and retry evidence |
 | Authentication | Password + optional TOTP; admin/operator roles | Lockout/rate limits, session policy, device tokens |
 | Roles | Operator: Expenses only, no Dashboard or profit tile; admin retains full view | Granular permissions and packaged backend enforcement |
-| Licensing | Offline ECDSA P-256 tenant/device licences, editions, 30-day grace/read-only; vendor portal code | OS-secure storage, backend entitlement enforcement, hosted/hardened portal |
+| Licensing | Offline ECDSA P-256 tenant/hardware licences, DPAPI storage, clock high-water checks, editions, 30-day grace/read-only; vendor portal code | Backend entitlement enforcement, hosted/hardened portal, clean-machine acceptance |
 | Billing controls | Referral commissions removed; no commission tab, doctor rules or new accrual/payouts | Legal/compliance gate before any reintroduction |
 | Clinical controls | Accepted-sample disposal blocked until all linked results are complete | QMS/validation evidence and periodic review |
 | Audit | Application audit log | Tamper evidence/export, retention |
@@ -143,9 +143,10 @@ Tasks:
 - Add startup diagnostics for missing WebView2, read-only disk, corrupt DB and locked file.
 - Implement database migration with pre-migration backup and version check.
 - Add installer, uninstall behavior and user-data preservation rules.
-- Move licence storage out of browser `localStorage` into an OS-protected config/secure store and enforce
-  tenant/device entitlements in the Tauri backend, not only React.
-- Test activation, renewal, tenant/device mismatch, 30-day grace and read-only behavior on a clean install.
+- Windows DPAPI licence storage, hardware fingerprinting and clock high-water checks are implemented;
+  enforce tenant/device entitlements in the Tauri backend, not only React.
+- Test activation, renewal, hardware mismatch, DPAPI copy failure, clock rollback, 30-day grace and
+  read-only behavior on a clean install.
 - Add signed auto-update channel or an explicit manual update process for the pilot.
 - Validate A4 and 80 mm printing on supported printers.
 - Test OS sleep, power loss, disk-full and abrupt termination.

@@ -117,7 +117,7 @@ migration 18.
 | SQLCipher key export/import and rotation | Not implemented | Device replacement, Windows-profile loss, cross-machine disaster recovery |
 | Unattended and offsite backup | App-open daily schedule only | Commercial production |
 | Documented RPO/RTO and restore evidence | Proposal only | Paid pilot / support contract |
-| OS-secure licence storage and backend entitlement enforcement | Licence is still browser-local/UI-gated | Commercial production |
+| Backend entitlement enforcement | Windows DPAPI storage and hardware binding are implemented; entitlement remains UI-gated | Commercial production |
 | Hosted/hardened licence portal | Local vendor portal code only | Online activation/renewal/revocation |
 | Automated unit/component/E2E/load tests | Static checks, migration scripts and manual E2E | Release confidence |
 | Migration from every supported released schema | Some migration checks only | Upgrade support |
@@ -179,7 +179,7 @@ appointments, advanced report templates and other roadmap items remain future wo
 | EULA/DPA/SLA/limitation of liability | Not signed | Legal review and customer negotiation |
 | Data ownership, export and deletion terms | Draft guidance | Include in contract/DPA |
 | GST/SAC/TDS/e-invoice/MSME | Guidance | CA review and registration confirmation |
-| Licence operations and device transfer | Portal code exists | Hosted/hardened portal, OS-secure storage, backend enforcement |
+| Licence operations and device transfer | Portal code exists; DPAPI storage and hardware binding implemented | Hosted/hardened portal, backend enforcement, clean-machine acceptance |
 | Support and incident model | Documented | Staffing, tooling, response evidence and SLA approval |
 | Insurance | Not decided | Commercial decision |
 | Hosted monitoring commercial tier | Not in current product | Local Google Drive CSV export only |
@@ -205,7 +205,8 @@ P0 gates are closed and the buyer accepts the written limitations.
 3. Key export/import and rotation available; Windows-profile loss is survivable.
 4. Unattended offsite backups with alerting and documented RPO/RTO.
 5. Public-CA code signing or an explicitly accepted local-root enterprise deployment.
-6. OS-secure licence storage and backend entitlement enforcement.
+6. Backend entitlement enforcement outside the UI; DPAPI storage, hardware binding and clock checks are
+   implemented and clean-machine tested.
 7. Automated regression/E2E/load tests and migration coverage from supported releases.
 8. Security hardening and an independent penetration test with no unresolved critical/high findings.
 9. Support/incident/rollback operations staffed and tested.

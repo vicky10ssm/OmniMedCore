@@ -70,7 +70,9 @@ an administrator role in a future permission update.
 ### License/device warning
 
 A backup may come from another device or tenant. Its data can be restored, but the existing signed licence
-may no longer match the tenant/device. Reissue or re-import the correct licence after restore if needed.
+may no longer match the tenant or hardware fingerprint. Reissue or re-import the correct licence after
+restore if needed. A restore does not copy the DPAPI-protected licence or clock state; re-import on the
+target machine.
 
 ## Retention behavior
 

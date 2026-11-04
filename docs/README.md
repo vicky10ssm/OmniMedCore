@@ -31,7 +31,7 @@ For the current done/pending and commercial release decision, use
 | [buyer-overview.md](buyer-overview.md) | One-page commercial story, ideal customer and differentiators |
 | [product-capabilities.md](product-capabilities.md) | Feature-by-feature status: ready, partial or unavailable |
 | [architecture.md](architecture.md) | Detailed current architecture, local data boundary and CSV export flow |
-| [licensing-and-editions.md](licensing-and-editions.md) | Editions, signed activation, tenant/device binding, grace/read-only rules, vendor portal and licence QA |
+| [licensing-and-editions.md](licensing-and-editions.md) | Editions, signed activation, hardware fingerprint/DPAPI storage, clock high-water checks, grace/read-only rules, vendor portal and licence QA |
 | [licensing-process.md](licensing-process.md) | End-to-end operating procedure from quote and order through issuance, activation, renewal, upgrades, replacement, revocation and records |
 | [../PRODUCTION_COMMERCIAL_READINESS.md](../PRODUCTION_COMMERCIAL_READINESS.md) | Current done/pending status and commercial release gates |
 | [../CLIENT_INSTALLATION_RUNBOOK.md](../CLIENT_INSTALLATION_RUNBOOK.md) | End-to-end offline terminal installation, backup, local CSV export, acceptance and rollback |
@@ -69,7 +69,7 @@ Compliance source detail remains in [`../COMPLIANCE.md`](../COMPLIANCE.md).
 | Verticals | Diagnostics Â· Pharmacy Â· Hospital; licensed edition plus per-tenant module visibility |
 | Hospital | Admission/ward/bed/discharge plus generic IPD service charges, payments, balance and bill print |
 | Pharmacy | Medicine master, batch/expiry inventory, stock receipt, dispensing, GST pharmacy receipt |
-| Licensing | Signed offline licence bound to tenant + device; Diagnostics/Pharmacy/Hospital/Complete/Custom editions; 30-day grace and read-only after grace |
+| Licensing | Signed offline licence bound to tenant + Windows hardware fingerprint, DPAPI storage and clock-rollback checks; Diagnostics/Pharmacy/Hospital/Complete/Custom editions; 30-day grace and read-only after grace |
 | Module branding | MediCore umbrella brand; licensed modules then toggled per tenant in Settings |
 | Billing | GST invoices, packages, discounts, dues, payments, cancellations |
 | Money controls | Integer paise, CGST/SGST, invoice-number blocks, append-only corrections |
