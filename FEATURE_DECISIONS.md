@@ -122,7 +122,7 @@ How it works in billing:
 | Refer & Earn | ❌ | LabQuick's own referral program, not a lab feature. |
 | WhatsApp daily summary | ✅ via **free email** | You still get "yesterday's revenue, dues, reports" every morning — delivered by email at ₹0 instead of WhatsApp API fees. |
 
-## 8. Desktop + online versions (new requirement)
+## 8. Desktop + online versions (historical requirement — superseded by local CSV export)
 
 **Requirement:** desktop software at the centre that keeps running if internet is impacted, **and** an online version to monitor from anywhere.
 
