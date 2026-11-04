@@ -3,6 +3,13 @@
 All notable changes to MediCore are recorded here. This project follows semantic versioning once
 production releases begin.
 
+## [Unreleased]
+
+### Tooling
+
+- Added the `diagbill-change-delivery` skill and contributor guidance for end-to-end implementation,
+  documentation, GitHub PR/merge, signed release and release verification.
+
 ## [0.4.2] - 2026-11-04
 
 ### Security
