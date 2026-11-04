@@ -161,6 +161,7 @@ If the release changes licensing or starts a new edition:
 - [ ] Renewal file updates expiry
 - [ ] Old legacy licence modules are ignored safely
 - [ ] Production bundle contains no DEV licence fallback or private key
+- [ ] Hand-written `"signature": "development"` licence is rejected by the production build
 
 Record licence ID, edition, tenant ID, device ID and expiry.
 

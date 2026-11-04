@@ -43,8 +43,8 @@ Verified on 4 November 2026:
 | `npm run build` | Passed |
 | `npm run build:monitor` | Passed |
 | `npm run tauri build` | Passed |
-| NSIS installer | `MediCore_0.4.0_x64-setup.exe` - 3.23 MiB, signed |
-| MSI installer | `MediCore_0.4.0_x64_en-US.msi` - 4.41 MiB, signed |
+| NSIS installer | `MediCore_0.4.1_x64-setup.exe` - 3.23 MiB, signed |
+| MSI installer | `MediCore_0.4.1_x64_en-US.msi` - 4.41 MiB, signed |
 | Runtime database | `%APPDATA%\in.medicore.desktop\medicore.db` |
 | Schema/integrity | `schema_version=18`, `PRAGMA quick_check=ok` |
 | Single instance | Second process exited; original stayed running |
@@ -63,8 +63,8 @@ Verified on 4 November 2026:
 Checksums from that build:
 
 ```text
-NSIS SHA256: 6FB66D6A47EE9ED342618EADF464E775BA527EC781F4E164A88E9D194FF5A108
-MSI  SHA256: 73935D7D6469B0292A01D1E41D0029D7C61474B7AC56B2C873C742AA1FBA3144
+NSIS SHA256: 114DE90156895A50A78C4F73B0D82890DF713652183A3182E44009BD88B1F312
+MSI  SHA256: B6F4CB6DE56BF3047DB7C0B2F7D2CD38CDD048A0810DFD45779608515990BA98
 ```
 
 These hashes change on every rebuild. Recompute them before publishing.
@@ -236,8 +236,8 @@ Get-ChildItem src-tauri\target\release\bundle\msi
 Typical output:
 
 ```text
-MediCore_0.4.0_x64-setup.exe
-MediCore_0.4.0_x64_en-US.msi
+MediCore_0.4.1_x64-setup.exe
+MediCore_0.4.1_x64_en-US.msi
 ```
 
 The local installers are signed with the self-signed MediCore certificate, but they are not publicly
@@ -383,7 +383,7 @@ certutil -user -addstore -f TrustedPublisher .\MediCore-CodeSigning.cer
 The repeatable local flow is also in `scripts\sign-windows.ps1`. It signs the app, regenerates the
 installers with `--no-binary-patching`, signs both installers and verifies all three signatures.
 
-Local signing flow used for `0.4.0`:
+Local signing flow used for `0.4.1`:
 
 ```powershell
 $signtool = "C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\x64\signtool.exe"
@@ -398,18 +398,18 @@ npx tauri bundle --no-binary-patching
 
 & $signtool sign /fd SHA256 /sha1 $thumb `
   /tr http://timestamp.digicert.com /td SHA256 `
-  .\src-tauri\target\release\bundle\nsis\MediCore_0.4.0_x64-setup.exe
+  .\src-tauri\target\release\bundle\nsis\MediCore_0.4.1_x64-setup.exe
 & $signtool sign /fd SHA256 /sha1 $thumb `
   /tr http://timestamp.digicert.com /td SHA256 `
-  .\src-tauri\target\release\bundle\msi\MediCore_0.4.0_x64_en-US.msi
+  .\src-tauri\target\release\bundle\msi\MediCore_0.4.1_x64_en-US.msi
 ```
 
 Verify the app embedded in the MSI, not only the installer shell:
 
 ```powershell
-msiexec /a .\src-tauri\target\release\bundle\msi\MediCore_0.4.0_x64_en-US.msi /qn TARGETDIR=$env:TEMP\medicore-msi
+msiexec /a .\src-tauri\target\release\bundle\msi\MediCore_0.4.1_x64_en-US.msi /qn TARGETDIR=$env:TEMP\medicore-msi
 Get-AuthenticodeSignature "$env:TEMP\medicore-msi\PFiles\MediCore\medicore.exe"
-Get-AuthenticodeSignature .\src-tauri\target\release\bundle\nsis\MediCore_0.4.0_x64-setup.exe
+Get-AuthenticodeSignature .\src-tauri\target\release\bundle\nsis\MediCore_0.4.1_x64-setup.exe
 ```
 
 Expected status: `Valid` and the same MediCore thumbprint.
@@ -417,7 +417,7 @@ Expected status: `Valid` and the same MediCore thumbprint.
 Generate checksums:
 
 ```powershell
-Get-FileHash .\src-tauri\target\release\bundle\nsis\MediCore_0.4.0_x64-setup.exe `
+Get-FileHash .\src-tauri\target\release\bundle\nsis\MediCore_0.4.1_x64-setup.exe `
   -Algorithm SHA256
 ```
 

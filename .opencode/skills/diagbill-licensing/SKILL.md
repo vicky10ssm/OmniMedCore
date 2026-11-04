@@ -41,6 +41,7 @@ control.
 4. The app imports only the public SPKI. Signature failure, tenant mismatch, device mismatch, revoked
    status or malformed shape must fail closed and must not overwrite a valid stored licence.
 5. Do not change the signing payload fields or module IDs without a version strategy and migration plan.
+6. Production builds must reject the special `"development"` signature; test a hand-written dev-licence JSON against the production bundle.
 6. Rotating the vendor key requires updating `publicKey.ts`, rebuilding both bundles and re-issuing
    licences signed by the retired key.
 7. Licence loading depends on the database for tenant/device identity. On an encrypted database the first

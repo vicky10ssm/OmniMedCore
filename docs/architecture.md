@@ -1,7 +1,7 @@
 ﻿# MediCore architecture and local export design
 
 Last updated: 4 November 2026  
-Current product version: `0.4.0`  
+Current product version: `0.4.1`  
 Current schema: `18`
 
 ## 1. Status and scope

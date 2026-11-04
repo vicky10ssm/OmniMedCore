@@ -89,7 +89,13 @@ export function LicenseProvider({ children }: { children: ReactNode }) {
 
   const apply = useCallback(
     async (file: LicenseFile, tenant: string, device: string) => {
-      const verified = file.signature === "development" ? file.payload : await verifyLicenseFile(file);
+      if (file.signature === "development" && !import.meta.env.DEV) {
+        throw new Error(
+          "Development licences are not accepted by a production build. Import a vendor-signed licence file."
+        );
+      }
+      const verified =
+        file.signature === "development" ? file.payload : await verifyLicenseFile(file);
       if (!verified.tenantIds.includes(tenant)) {
         throw new Error(
           `This licence is not issued for tenant ${tenant}. Request a licence for this installation.`
