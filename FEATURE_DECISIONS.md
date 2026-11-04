@@ -4,17 +4,22 @@
 > verticals for diagnostic centres, standalone pharmacies and small hospitals. Added hospital admission
 > (ward/bed/discharge) and pharmacy batch/expiry inventory + dispensing modules. The earlier diagnostic
 > working decisions below remain the baseline for the diagnostics vertical.
+>
+> **Scope update (4 Nov 2026):** The hosted cloud sync and read-only cloud dashboard were removed.
+> The current integration path is the local Google Drive CSV outbox. Cloud/monitor statements below are
+> historical unless they explicitly refer to the local monitor or local CSV export.
 
-Scope for now: **billing software**, X-ray + pathology, accessible/monitorable from anywhere.
+Scope for now: **offline billing software**, diagnostics, pharmacy and small-hospital operations, with
+an optional local Google Drive CSV outbox.
 Reference: https://labquick.in/features
 
 ## Decision principles
 
 1. Billing core first, with basic reports inside v1 (confirmed) — richer reporting later.
-2. Web app (works in a phone browser) → "monitor from anywhere" without building an Android app.
+2. ~~Web app for “monitor from anywhere”~~ — superseded: monitoring is local/read-only; there is no hosted monitor.
 3. Zero per-message costs in v1 — WhatsApp Business API and SMS OTP charge per message and need Meta approval. Defer them.
 4. Target running cost: **₹0 – ₹500/month**.
-5. **Offline-first:** the centre must keep billing when the internet drops; online copy exists for monitoring from anywhere.
+5. **Offline-first:** the centre must keep billing when the internet drops; the optional outbox is a local Google Drive CSV export, not an online copy.
 
 Legend: ✅ build now (v1) · ⏳ build later (cheap, worth keeping on roadmap) · ❌ cut for now
 
@@ -23,7 +28,7 @@ Legend: ✅ build now (v1) · ⏳ build later (cheap, worth keeping on roadmap) 
 - **v1 scope:** Billing **+ basic reports** (result entry + printed report on your letterhead).
 - **GST:** Centre is GST-registered → full GST invoice (GSTIN, CGST/SGST split, SAC, tax summary), rate configurable per test (confirm rates with your CA).
 - **Ownership:** Multiple partners → **co-owner settlement moved from ❌ to ⏳ Phase 3** (not permanently cut).
-- **Desktop + online (new):** both versions required. Confirmed: **multiple terminals may bill while offline**; **all data entry happens on desktop terminals — the online version is read-only monitoring** fed by sync (no billing from the browser).
+- **Desktop + local export (revised):** desktop terminals are required; multiple terminals may bill offline. All data entry happens on desktop terminals. The optional integration is a local Google Drive CSV outbox, not an online monitoring copy.
 - **Doctors catalog (new):** added to **v1** — doctor master with attributes + commission tracking (moved from Phase 2).
 - **Expenses section (new):** added to **v1** — expense categories + entry + monthly report, so profit is real, not a guess.
 

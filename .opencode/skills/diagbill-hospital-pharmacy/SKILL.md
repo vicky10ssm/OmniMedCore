@@ -15,7 +15,7 @@ not a full HIS or chain-pharmacy ERP.
 - `../../../src/pages/HospitalBill.tsx`
 - `../../../src/pages/Pharmacy.tsx`
 - `../../../src/db/types.ts`
-- `../../../src/db/schema.ts` (current schema 16)
+- `../../../src/db/schema.ts` (current schema 18)
 - `../../../src/app/modules.ts`
 - `../../../src/app/brand.ts`
 - `../../../src/db/demoSeed.ts`
@@ -71,12 +71,13 @@ transfers or insurance claims.
 
 1. Always scope queries/inserts by `tenant_id`.
 2. A pharmacy sale, its items and batch deductions must be in one transaction.
-3. Never allow qty above the selected batch quantity. Validate again server-side when sync exists.
+3. Never allow qty above the selected batch quantity. Validate locally; the CSV outbox is read-only and
+   must not be used to accept remote stock writes.
 4. Stock is derived from `pharmacy_batches.quantity`; do not create a second untracked stock field.
 5. Cancelling a sale must return each item quantity to its batch exactly once.
 6. A cancelled sale remains visible with status cancelled and an audit reason.
-7. Admission/status changes are version-sensitive when offline sync is introduced; do not silently
-   last-write-wins a discharge or ward change.
+7. Admission/status changes are version-sensitive if terminal-to-terminal sync is introduced. The
+   current local CSV export has no merge path; do not silently last-write-wins a discharge or ward change.
 8. Invoice/admission/pharmacy block purposes must remain separate so number ranges don’t overlap.
 
 ## Branding and module configuration

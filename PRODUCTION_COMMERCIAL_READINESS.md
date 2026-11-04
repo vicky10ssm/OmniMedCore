@@ -121,8 +121,9 @@ migration 18.
 | Hosted/hardened licence portal | Local vendor portal code only | Online activation/renewal/revocation |
 | Automated unit/component/E2E/load tests | Static checks, migration scripts and manual E2E | Release confidence |
 | Migration from every supported released schema | Some migration checks only | Upgrade support |
-| Security hardening: lockout/rate limits, session policy, device tokens, SBOM, threat model, independent penetration test | Not complete | Commercial production |
+| Security hardening: lockout/rate limits, session policy, export-folder security, SBOM, threat model, independent penetration test | Not complete | Commercial production |
 | Support operations: helpdesk, remote consent, incident response, status/maintenance process, spare-terminal plan | Model documented; staffing/tooling pending | Paid pilot / production |
+| Local CSV export acceptance | Unique-file/masking/retry verified locally; buyer Google Drive folder and downstream consumer not accepted | Paid pilot if export is in scope |
 | Data-migration toolkit and validated CSV importers | Templates and manual/supervised migration only | First real data load |
 | Legal/commercial pack: EULA, DPA, SLA, limitation of liability, data residency/subprocessors, insurance | Draft guidance only; counsel sign-off pending | Signed contract |
 | GST/SAC/TDS/e-invoice/MSME review | Guidance exists; CA sign-off pending | Invoicing a buyer |

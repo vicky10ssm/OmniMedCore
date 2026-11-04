@@ -49,10 +49,10 @@ Use this skill for security-sensitive and boot/persistence work. Preserve the ex
 2. Never call `getDb()` recursively from inside database creation/boot; pass the current store to avoid deadlock.
 3. Never persist the unwrapped device key or weaken encryption merely to make development easier.
 4. Do not introduce a plaintext fallback after an encryption envelope exists.
-5. Preserve offline authentication and billing. Online monitoring must not become a write path.
+5. Preserve offline authentication and billing. The local monitor and CSV outbox must not become a write path.
 6. Test lock/unlock, wrong passphrase, recovery, relock, first boot, password change, TOTP replay, and monitor write refusal as applicable.
 7. Test licence signature/tenant/device mismatch, clock rollback, grace and beyond-grace read-only behavior; inspect production bundles for private keys, portal tokens and DEV fallback strings.
-8. Keep cloud sync and hosted-monitoring claims accurate: their backend is not completed by the existence of encryption or monitor UI alone.
+8. Keep data-sharing claims accurate: the CSV export is one-way, plain text, and not a cloud monitor or backup. Test a permission-denied export folder and confirm rows remain pending.
 
 ## NABL role and audit evidence
 

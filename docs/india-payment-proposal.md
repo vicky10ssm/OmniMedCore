@@ -46,7 +46,7 @@ and **[number]** terminal(s), as detailed in the agreed scope.
 
 ### Excluded unless separately quoted
 
-- Windows installer/backup/cloud monitoring features not yet released
+- Hosted monitoring, live ABDM, QMS and other unreleased features
 - Live ABDM/HIP/HFR integration
 - NABL/ISO consultancy or accreditation fees
 - Analyzer, PACS, DICOM, Tally or other integration
@@ -93,17 +93,6 @@ Select one and delete the others before sending.
 | Additional terminal | [₹____]/terminal/year | Prorated from activation |
 | Optional onboarding/onsite training | [₹____] | On delivery |
 | **Year-1 total** | **[₹____]** | |
-
-### Option D — Hosted read-only monitoring add-on (only when released)
-
-Do not include this option until the cloud backend, authentication, tenant isolation, backup and
-support model have passed release gates.
-
-| Commercial item | Amount (INR, excluding GST) | When invoiced |
-| --- | ---: | --- |
-| Monitoring setup | [₹____] | On activation |
-| Monitoring subscription | [₹____]/month or year | In advance |
-| Additional monitored centre | [₹____] | In advance |
 
 ## 4. Payment schedule
 
@@ -303,7 +292,7 @@ the limitations acknowledged in the buyer documentation pack.
 
 ## Annexure B — Internal notes (remove before sending)
 
-1. Do not issue this proposal with cloud monitoring, ABDM transmission or NABL certification as included.
+1. Do not issue this proposal with hosted monitoring, live ABDM transmission or NABL certification as included.
 2. Insert only prices you can support for the actual implementation and support burden.
 3. Confirm whether the sale is a licence, service, subscription or mixed supply with your CA.
 4. Confirm GSTIN, place of supply, SAC, e-invoice applicability, TDS and MSME status before sending.

@@ -6,7 +6,8 @@
 
 - Confirm fit against [buyer-overview.md](buyer-overview.md).
 - Provide capability/limitations and release gates.
-- Agree that live cloud, ABDM transport, QMS and backups are separate scopes.
+- Agree that hosted monitoring/online sync is not in scope; the local Google Drive CSV outbox, ABDM
+  transport, QMS and backups are separate scopes.
 - Identify the buyer champion, clinical approver and IT contact.
 
 ### Phase 1 — Discovery
@@ -32,7 +33,8 @@ Deliverable: signed configuration/data workbook and scope.
 
 ### Phase 2 — Readiness
 
-- Release gates met for installer, backup/restore, encryption/recovery, migration and support.
+- Release gates met for installer, backup/restore, encryption at rest, local CSV export, migration and
+  support. Key export/import and clean-machine recovery remain explicit gates.
 - Hardware/printers checked.
 - Follow the [client installation runbook](../CLIENT_INSTALLATION_RUNBOOK.md).
 - Test install on a non-production device.
@@ -46,6 +48,7 @@ Deliverable: signed configuration/data workbook and scope.
 - Users, roles, 2FA and report release authority
 - Sample accession format
 - Report header/footer and pathologist identity
+- Google Drive CSV export folder and access policy, if in scope
 
 ### Phase 4 — Migration
 
@@ -257,7 +260,7 @@ On termination:
 
 - Export agreed patient/billing/report data in a documented format.
 - Provide record counts and checksum/evidence.
-- Define a deletion date for hosted copies and confirm deletion.
+- Define a deletion date for any hosted copies (none by default) and the Google Drive outbox, and confirm deletion.
 - Return buyer-owned hardware/data.
 - License termination effects on locally installed software must be stated.
 - Buyer retains ownership of its patient data.
@@ -276,6 +279,7 @@ On termination:
 - [ ] Opening balances reconciled
 - [ ] Training delivered and competency recorded
 - [ ] Backup and restore tested; restore evidence recorded
+- [ ] Local Google Drive CSV export configured and tested, if in scope
 - [ ] Windows-profile/key recovery responsibility recorded
 - [ ] Parallel run accepted
 - [ ] Support contacts and hours confirmed
