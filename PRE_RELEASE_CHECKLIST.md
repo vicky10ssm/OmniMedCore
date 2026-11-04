@@ -259,6 +259,8 @@ Get-FileHash .\dist\assets\*.js -Algorithm SHA256
 - [ ] Sample/result/disposal smoke test
 - [ ] Licence/edition/read-only smoke test
 - [ ] Print/export smoke test
+- [ ] Local Google Drive CSV export creates a unique masked file
+- [ ] CSV failure/retry leaves the batch pending and recovers
 - [ ] Monitor read-only smoke test
 - [ ] New deployment evidence recorded
 

@@ -1225,8 +1225,8 @@ export default function Settings() {
                 </>
               )}
               <div className="flex justify-between">
-                <dt className="text-slate-500">Sync</dt>
-                <dd className="text-slate-400">Not connected yet</dd>
+                <dt className="text-slate-500">Data sharing</dt>
+                <dd className="text-slate-400">Local CSV export only</dd>
               </div>
             </dl>
             <p className="mt-3 text-xs text-slate-400">
@@ -1243,7 +1243,7 @@ export default function Settings() {
           </Card>
 
           <Card className="p-4">
-            <h2 className="mb-3 text-sm font-semibold">Pending sync queue</h2>
+            <h2 className="mb-3 text-sm font-semibold">Pending local export queue</h2>
             <SyncQueue />
           </Card>
 
@@ -1345,22 +1345,21 @@ export default function Settings() {
   );
 }
 
-/** Counts append-only cloud queue events that do not have an ACK yet. */
+/** Counts transactions waiting for a local CSV export. */
 function SyncQueue() {
-  const [rows, setRows] = useState<{ entity_type: string; count: number }[]>([]);
+  const [rows, setRows] = useState<{ module_type: string; count: number }[]>([]);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     void (async () => {
       const db = await getDb();
       setRows(
-        await db.all<{ entity_type: string; count: number }>(
-          `SELECT q.entity_type, COUNT(*) AS count
-           FROM sync_queue q
-           LEFT JOIN sync_ack a ON a.queue_id = q.id AND a.tenant_id = q.tenant_id
-           WHERE a.queue_id IS NULL AND q.tenant_id = ?
-           GROUP BY q.entity_type
-           ORDER BY q.entity_type`,
+        await db.all<{ module_type: string; count: number }>(
+          `SELECT module_type, COUNT(*) AS count
+           FROM local_export_queue
+           WHERE tenant_id = ? AND exported_at IS NULL
+           GROUP BY module_type
+           ORDER BY module_type`,
           [getCurrentTenantId()]
         )
       );
@@ -1380,15 +1379,15 @@ function SyncQueue() {
     <>
       <ul className="divide-y divide-slate-100 text-sm">
         {rows.map((r) => (
-          <li key={r.entity_type} className="flex justify-between py-2">
-            <span className="capitalize text-slate-600">{r.entity_type}</span>
+          <li key={r.module_type} className="flex justify-between py-2">
+            <span className="text-slate-600">{r.module_type}</span>
             <span className="num font-medium">{r.count}</span>
           </li>
         ))}
       </ul>
       <p className="mt-3 text-xs text-slate-400">
-        Events are appended by local triggers. Synced rows are acknowledged in a separate
-        table; queue rows are never deleted.
+        Local triggers append transaction snapshots. A row stays pending until a CSV file is
+        created successfully, then it is marked exported without deleting its audit record.
       </p>
     </>
   );

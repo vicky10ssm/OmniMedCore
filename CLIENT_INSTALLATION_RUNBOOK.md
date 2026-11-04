@@ -1,20 +1,19 @@
 # Client installation runbook
 
 Last updated: 4 November 2026  
-Applies to: MediCore `0.3.0` Windows desktop app  
-Status: supervised pilot only; not a general-availability hosted service
+Applies to: MediCore `0.4.0` Windows desktop app  
+Status: supervised pilot only; offline-first terminal with local CSV export
 
-This runbook covers two installation modes:
+This runbook covers the offline desktop terminal and its optional local Google Drive outbox:
 
-1. **Offline-only terminal** — the normal, recommended pilot installation. The terminal works without
-   internet access and stores all data locally in SQLCipher.
-2. **Offline terminals plus online monitoring** — optional, pilot-only. The terminals still write
-   locally; a vendor-hosted Next.js/PostgreSQL service receives append-only sync events and exposes a
-   read-only dashboard.
+1. **Offline terminal** — the normal, recommended installation. All billing and clinical operations
+   work without internet access and store data locally in SQLCipher.
+2. **Local Google Drive CSV export** — optional. The terminal writes unique CSV files into a local
+   Google Drive sync folder; the Google Drive desktop client uploads them independently. There is no
+   API, endpoint, token or hosted dashboard in the export path.
 
-The online tier is **not yet production-ready**. Do not install it at a client unless the vendor has
-deployed and accepted the hosted service, TLS, backups, uptime and token handling first. See
-[cloud-dashboard/README.md](cloud-dashboard/README.md) and
+The CSV export is a one-way summary outbox, not a live sync service. It does not import data, merge
+terminals or provide a remote monitor. See [LOCAL_CSV_EXPORT.md](LOCAL_CSV_EXPORT.md) and
 [docs/deployment-and-readiness.md](docs/deployment-and-readiness.md).
 
 ## 1. Before travelling to the site
@@ -29,10 +28,10 @@ Collect and confirm:
 - [ ] A4 and/or 80 mm printer installed and test page working
 - [ ] One Windows account per terminal; local administrator or per-user certificate install approved
 - [ ] Backup target: external drive, NAS or approved OneDrive folder
+- [ ] Google Drive desktop client installed/signed in, with a chosen local sync folder, if CSV export
+      is in scope
 - [ ] Migration workbook, opening balances and user/role list approved
 - [ ] Written acceptance criteria, rollback owner and support contact
-- [ ] For online monitoring only: HTTPS endpoint, `SYNC_INGEST_TOKEN`, dashboard credentials and a
-      vendor-deployed PostgreSQL service
 
 Do not load real patient data before the backup/restore test and the buyer's written acceptance.
 
@@ -55,8 +54,8 @@ Optional second backup folder:
 Release files:
 
 ```text
-MediCore_0.3.0_x64-setup.exe        NSIS per-user installer
-MediCore_0.3.0_x64_en-US.msi        MSI installer (may require administrator)
+MediCore_0.4.0_x64-setup.exe        NSIS per-user installer
+MediCore_0.4.0_x64_en-US.msi        MSI installer (may require administrator)
 MediCore-CodeSigning.cer            Public local root certificate
 <licence>.json                      Signed tenant/device licence
 ```
@@ -101,7 +100,7 @@ Valid to:   2031-11-03
 ### 3.2 Verify the installer signature
 
 ```powershell
-Get-AuthenticodeSignature .\MediCore_0.3.0_x64-setup.exe
+Get-AuthenticodeSignature .\MediCore_0.4.0_x64-setup.exe
 ```
 
 Expected:
@@ -113,7 +112,7 @@ Status: Valid
 Also check the SHA-256 hash against the release notes or `DESKTOP_BUILD.md`:
 
 ```powershell
-Get-FileHash .\MediCore_0.3.0_x64-setup.exe -Algorithm SHA256
+Get-FileHash .\MediCore_0.4.0_x64-setup.exe -Algorithm SHA256
 ```
 
 Stop if the signature is not `Valid` or the hash does not match the published release. Do not install
@@ -138,8 +137,8 @@ For a new installation, no database exists yet.
 
 ### 4.2 Run the installer
 
-- NSIS (`MediCore_0.3.0_x64-setup.exe`) installs for the current Windows user.
-- MSI (`MediCore_0.3.0_x64_en-US.msi`) may require administrator rights.
+- NSIS (`MediCore_0.4.0_x64-setup.exe`) installs for the current Windows user.
+- MSI (`MediCore_0.4.0_x64_en-US.msi`) may require administrator rights.
 - Run the installer interactively. Do not use silent switches for a production upgrade until the
   clean-machine upgrade path has been accepted.
 - Do not uninstall the old version as part of a normal upgrade.
@@ -211,7 +210,8 @@ Use **Settings** to configure:
 - Printing and report headers/footers
 - Accreditation labels only where the buyer is authorised to use them
 
-Do not claim ABDM exchange, NABL certification or public hosted monitoring from configuration alone.
+Do not claim ABDM exchange or NABL certification from configuration alone. The supported data-sharing
+path is the local Google Drive CSV outbox, not a hosted monitor.
 
 ### 4.7 Configure local backup
 
@@ -256,88 +256,56 @@ Before go-live:
 
 Key export/import, rotation and clean-machine restore remain release gates.
 
-## 5. Optional online monitoring installation — pilot only
+## 5. Optional local Google Drive CSV export
 
-The online tier is a **central read-only monitoring service**, not an online billing path. All billing
-remains on the desktop terminal. Do not attempt this section without a vendor-deployed service.
+The export path is entirely local. Google Drive performs the upload after the file is written.
 
-### 5.1 Server prerequisites
+### 5.1 Choose the sync folder
 
-The vendor or IT owner must provide:
+1. Install and sign in to the Google Drive desktop client on the terminal.
+2. Create a dedicated folder under the synced Google Drive location, for example:
+   `C:\Users\<user>\My Drive\MediCore\outbox`.
+3. Open **Settings → Device & sync → Local CSV export**.
+4. Set the export folder to that path, or keep the default:
+   `C:\Users\Public\MedicalApp_Sync`.
+5. Select **Save folder and export**.
+6. Keep the Google Drive desktop client running.
 
-- Node.js 24+ runtime
-- PostgreSQL database
-- HTTPS reverse proxy/domain
-- Private database networking and least-privilege credentials
-- Server backup, monitoring and an owner for incidents
-- Dashboard Basic-auth credentials and a strong `SYNC_INGEST_TOKEN`
+The app creates the directory automatically if it is missing. If the path is not a directory, cannot
+be written, or the drive is locked/full, the batch remains pending and the UI records the error.
 
-Set the values from `cloud-dashboard/.env.example`:
+### 5.2 Verify the first export
 
-```text
-DATABASE_URL
-DATABASE_SSL
-SYNC_INGEST_TOKEN
-SYNC_ALLOWED_ORIGIN
-DASHBOARD_USER
-DASHBOARD_PASSWORD
-DEFAULT_TENANT_ID
-```
-
-Apply the central schema from the `cloud-dashboard` folder:
-
-```powershell
-cd cloud-dashboard
-psql $env:DATABASE_URL -f sql/central-schema.sql
-```
-
-Build and run the service according to `cloud-dashboard/README.md`, then put HTTPS in front of it.
-
-Current limitations: the token is a shared fleet secret; per-device tokens, rotation/revocation,
-owner SSO/MFA, uptime monitoring and server backups are not complete. Do not expose the PostgreSQL
-database publicly.
-
-### 5.2 Configure each terminal
-
-Open **Settings → Device & sync → Cloud sync**:
+1. Create a test invoice, pharmacy sale or hospital charge.
+2. Select **Export now** in Settings, or wait for the 30-second interval.
+3. Confirm a new file appears in the chosen folder with this pattern:
 
 ```text
-Endpoint: https://<vendor-hosted-domain>/api
-Token:    the value of SYNC_INGEST_TOKEN
+tx_YYYYMMDD_HHMMSS_XXXXXX.csv
 ```
 
-Select **Save and sync**. Verify:
+4. Open the CSV and confirm the header:
 
-- health check passes;
-- pending events eventually reach `0`;
-- last successful sync updates;
-- errors are recorded and investigated.
-
-The terminal keeps billing offline. Events queue locally and push every 30 seconds while the desktop
-app is open. Sync does not run while the app is closed.
-
-### 5.3 Verify the read-only dashboard
-
-Open:
-
-```text
-https://<vendor-hosted-domain>/dashboard?tenant=tenant-default
+```csv
+Sync_Timestamp,Transaction_ID,Module_Type,Masked_Patient_ID,Total_Amount
 ```
 
-Sign in with the configured Basic-auth credentials. Confirm the dashboard shows the latest synced
-invoices/reports/admissions and does not offer any write controls.
+5. Confirm the row has no patient name or raw patient ID, and that the module is `Diagnostics`,
+   `Pharmacy` or `Hospital`.
+6. Confirm **Pending transactions** returns to `0` after the export.
+7. Confirm Google Drive uploads the file (the app does not wait for or receive an upload ACK).
 
-The monitor is strictly read-only. It is not a backup of the terminal, not a real-time clinical system
-and not a substitute for local backups.
+### 5.3 Local export acceptance tests
 
-### 5.4 Online acceptance tests
-
-- [ ] Create an invoice offline; confirm it appears on the dashboard after reconnecting
-- [ ] Queue records while disconnected; confirm they drain on reconnect
-- [ ] Confirm monitor write controls are absent and direct write attempts fail
-- [ ] Confirm tenant isolation with a second tenant before broad rollout
-- [ ] Confirm HTTPS, strong dashboard password and token handling
-- [ ] Confirm terminal backup still works independently of cloud sync
+- [ ] Google Drive client is running and the folder is writable
+- [ ] A new uniquely named CSV is created for each batch
+- [ ] Existing CSV files are not modified or overwritten
+- [ ] CSV header and five flat columns are correct
+- [ ] Patient ID is masked
+- [ ] Pending count returns to zero after success
+- [ ] Making the folder temporarily unavailable leaves the batch pending and records an error
+- [ ] Restoring the folder causes the next interval to retry successfully
+- [ ] Terminal backup/restore still works independently of the CSV export
 
 ## 6. Go-live acceptance checklist
 
@@ -350,8 +318,8 @@ and not a substitute for local backups.
 - [ ] Local backup and optional second folder verified
 - [ ] Restore test completed with recorded evidence
 - [ ] Windows profile/key backup and BitLocker decision recorded
-- [ ] Online sync configured and tested, if in scope
-- [ ] Read-only dashboard verified, if in scope
+- [ ] Local Google Drive CSV export configured and tested, if in scope
+- [ ] CSV filename, columns, masking and retry failure path verified
 - [ ] Rollback owner, previous installer and support contact recorded
 - [ ] Buyer acceptance signed with known limitations and open defects
 
@@ -389,8 +357,10 @@ State these limitations plainly:
 - Encrypted backups require the Windows Credential Manager key; key export/import and cross-machine
   restore are not implemented.
 - Daily backups run only while the app is open; there is no unattended Windows service.
-- The online dashboard is pilot-only, not a hosted SaaS; per-device tokens/revocation, SSO/MFA and
-  operational hardening are incomplete.
+- The CSV export is a one-way summary outbox, not a live sync service, import path, remote monitor or
+  terminal-to-terminal merge.
+- CSV success means the file was written locally, not that Google Drive has uploaded or a downstream
+  consumer has processed it.
 - Browser/IndexedDB storage is not the supported primary data store.
 - Clean-machine install/upgrade/restore acceptance and public-CA signing remain release gates.
 - MediCore is not NABL-certified, ISO-certified, ABDM-live or a complete HIS/LIS by installing it.
@@ -401,7 +371,7 @@ State these limitations plainly:
 - [code-signing/README.md](code-signing/README.md) — root-certificate installation
 - [ENCRYPTION.md](ENCRYPTION.md) — SQLCipher and Windows Credential Manager details
 - [BACKUP_RESTORE.md](BACKUP_RESTORE.md) — backup/restore behavior and retention
-- [cloud-dashboard/README.md](cloud-dashboard/README.md) — optional online service
+- [LOCAL_CSV_EXPORT.md](LOCAL_CSV_EXPORT.md) — Google Drive outbox contract and retry behavior
 - [docs/deployment-and-readiness.md](docs/deployment-and-readiness.md) — IT requirements and release gates
 - [docs/onboarding-migration-support.md](docs/onboarding-migration-support.md) — discovery, migration,
   training and support

@@ -169,7 +169,7 @@ const TENANT_TABLES = [
   "commission_entries", "report_orders", "test_parameters", "report_parameters",
   "samples", "report_result_revisions", "abdm_consents", "abdm_outbox",
   "admissions", "hospital_services", "hospital_charges", "hospital_bill_payments",
-  "sync_queue", "sync_ack",
+  "sync_queue", "sync_ack", "local_export_queue",
   "medicines", "pharmacy_batches", "pharmacy_sales", "pharmacy_sale_items",
 ];
 
@@ -196,7 +196,7 @@ const TABLES = [
   "commission_entries", "report_orders", "test_parameters", "report_parameters",
   "samples", "report_result_revisions", "abdm_consents", "abdm_outbox",
   "admissions", "hospital_services", "hospital_charges", "hospital_bill_payments",
-  "sync_queue", "sync_ack",
+  "sync_queue", "sync_ack", "local_export_queue",
   "medicines", "pharmacy_batches", "pharmacy_sales", "pharmacy_sale_items",
 ];
 

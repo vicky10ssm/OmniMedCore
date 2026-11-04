@@ -1,7 +1,7 @@
 # MediCore licensing process
 
 Last updated: 30 October 2026  
-Database schema: `17`  
+Database schema: `18`  
 Audience: sales, support, finance and vendor licence administrators
 
 ## 1. Purpose and scope
@@ -336,7 +336,7 @@ Do not claim the following until implemented and tested in the packaged release:
 - guaranteed online revocation
 - runtime terminal-count enforcement
 - tamper-proof clock handling
-- Tauri installer, automated backup/restore, cloud sync or hosted monitoring
+- Tauri installer, automated backup/restore or local CSV export
 
 For product rules, see [licensing-and-editions.md](licensing-and-editions.md). For portal setup and API,
 see [license-portal/README.md](../license-portal/README.md).

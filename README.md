@@ -6,9 +6,9 @@ MediCore is a modular, offline-first billing and care-operations application for
 centres, standalone pharmacies and small hospitals. It is one codebase with licensed editions and
 tenant-scoped configuration.
 
-> **Status: pilot / pre-production.** A Tauri Windows installer, SQLCipher encryption at rest and
-> encrypted backup/restore are implemented for the pilot release. OS-secure licence storage, hosted licence
-> portal, deployed cloud sync and live ABDM exchange are not yet released. See the deployment and
+> **Status: pilot / pre-production.** A Tauri Windows installer, SQLCipher encryption at rest,
+> encrypted backup/restore and local CSV export are implemented for the pilot release. OS-secure licence
+> storage, hosted licence portal and live ABDM exchange are not yet released. See the deployment and
 > productionization documents before promising production availability.
 
 ## Editions
@@ -46,9 +46,9 @@ Dashboard or the Expenses profitability card.
 - Signed Diagnostics/Pharmacy/Hospital/Complete/Custom licences with tenant/device binding,
   30-day grace and read-only mode after grace
 - Vendor licence portal for issue, download, renewal and revocation
-- Optional append-only sync queue for offline invoices, reports and admissions
-- 30-second desktop background sync loop with ACK tracking and a read-only Next.js cloud dashboard
-  (requires a deployed PostgreSQL/Next service)
+- Decoupled local CSV export into a Google Drive sync folder
+- Unique `tx_YYYYMMDD_HHMMSS_XXXXXX.csv` files with masked patient IDs, local retry queue and no
+  network calls
 
 Referral commissions are intentionally not offered. They are removed from navigation, doctor forms and
 new invoice accrual because commission/inducement visibility can create compliance and ethics risk.
@@ -109,7 +109,7 @@ npm run desktop:dev
 npm run tauri build
 ```
 
-Pushing a tag such as `v0.3.0` triggers `.github/workflows/release.yml`, which builds the Windows
+Pushing a tag such as `v0.4.0` triggers `.github/workflows/release.yml`, which builds the Windows
 installers and publishes them to GitHub Releases.
 
 ## Licence portal
@@ -136,8 +136,7 @@ src/
   pages/        terminal and shared application screens
   ui/           layout, navigation, route guards and UI kit
 docs/           buyer, product, architecture, deployment and licensing documentation
-src-tauri/      Tauri v2 shell, native SQLite commands and Windows bundle config
-cloud-dashboard/ Next.js central sync receiver and read-only dashboard
+src-tauri/      Tauri v2 shell, native SQLCipher commands and Windows bundle config
 license-portal/ vendor licence administration portal
 scripts/        migration, tenant-scope and build support checks
 .opencode/      project-local agent skills and workflows
@@ -164,17 +163,17 @@ See [SECURITY.md](SECURITY.md).
 
 - [docs/README.md](docs/README.md) — documentation map
 - [docs/product-capabilities.md](docs/product-capabilities.md) — ready/pilot/unavailable features
-- [docs/architecture.md](docs/architecture.md) — architecture and sync design
+- [docs/architecture.md](docs/architecture.md) - architecture and local export design
 - [docs/licensing-and-editions.md](docs/licensing-and-editions.md) — editions, activation and grace
 - [docs/licensing-process.md](docs/licensing-process.md) — sales-to-renewal operating procedure
 - [docs/deployment-and-readiness.md](docs/deployment-and-readiness.md) — deployment gates
 - [docs/productionization-plan.md](docs/productionization-plan.md) — production workstreams
 - [PRODUCTION_COMMERCIAL_READINESS.md](PRODUCTION_COMMERCIAL_READINESS.md) - current done/pending status and commercial release gates
-- [CLIENT_INSTALLATION_RUNBOOK.md](CLIENT_INSTALLATION_RUNBOOK.md) - end-to-end offline and optional online client installation, acceptance and rollback
+- [CLIENT_INSTALLATION_RUNBOOK.md](CLIENT_INSTALLATION_RUNBOOK.md) - end-to-end offline client installation, backup, local CSV export, acceptance and rollback
+- [LOCAL_CSV_EXPORT.md](LOCAL_CSV_EXPORT.md) - Google Drive outbox, filename/CSV contract, masking and retry behavior
 - [BACKUP_RESTORE.md](BACKUP_RESTORE.md) - local snapshots, retention, optional USB/OneDrive copy and restore
 - [ENCRYPTION.md](ENCRYPTION.md) - SQLCipher, Windows Credential Manager key storage and migration
 - [code-signing/README.md](code-signing/README.md) - local self-signed certificate and client trust setup
-- [cloud-dashboard/README.md](cloud-dashboard/README.md) - sync receiver and read-only central dashboard
 - [COMPLIANCE.md](COMPLIANCE.md) — compliance evidence and gaps
 
 ## Contributing
@@ -184,16 +183,14 @@ Read [CONTRIBUTING.md](CONTRIBUTING.md) before changing code or data rules.
 ## Current limitations
 
 - Locally self-signed NSIS/MSI installers have been built and verified; publicly trusted code signing, clean-machine acceptance and distribution are still pending
-- Browser storage is still the current persistence layer
+- Browser/development builds still use IndexedDB; the packaged desktop app uses SQLCipher
 - Desktop snapshots are SQLCipher-encrypted, but key export/import and cross-machine restore are not yet
   implemented; the daily schedule runs only while the desktop app is open
-- Browser/development builds still use IndexedDB without desktop SQLCipher protection
 - No cloud backup or unattended Windows scheduled backup task
 - No OS-secure licence storage or backend entitlement enforcement
 - No hosted/hardened vendor portal
-- Optional sync receiver/dashboard code exists but is not deployed, hardened or covered by per-device
-  token provisioning
-- Background sync runs only while the desktop app is open; it is not an OS service
+- Local CSV export is a one-way summary outbox; it is not a live sync, import, remote monitor or backup
+- The CSV export scheduler runs only while the desktop app is open; it is not an OS service
 - No live ABDM/ABHA exchange
 - No full HIS, insurance/TPA, nursing chart, pharmacy procurement or controlled-drug workflow
 - No referral commissions

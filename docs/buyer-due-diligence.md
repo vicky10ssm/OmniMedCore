@@ -59,11 +59,12 @@ invoice, payment, settings and ABDM draft actions. No tamper-evident external lo
 and validated restore are implemented. Key recovery, unattended scheduling and clean-machine restore
 acceptance remain mandatory before production use.
 
-**Monitoring:** a read-only sync receiver/dashboard codebase exists, but it is not hosted or hardened;
-per-device tokens, SSO/MFA and operational backups are pending.
+**Monitoring / data sharing:** online sync and the hosted dashboard were removed. The current option is
+a one-way local Google Drive CSV outbox; it is a plain-text summary, not a remote monitor, import path or
+backup. Any downstream Google Drive consumer must be separately validated and access-controlled.
 
-**Data location:** local at the terminal today. Future cloud region/subprocessors must be documented
-before hosting.
+**Data location:** local at the terminal today. Google Drive is an external outbox when enabled; its
+account, region, sharing and subprocessor terms must be reviewed by the buyer.
 
 **Incident response:** policy and contact must be completed before pilot. Do not claim 24×7 response.
 

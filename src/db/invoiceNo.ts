@@ -3,8 +3,8 @@
 // Numbers come in BLOCKS so two terminals billing offline can never print the
 // same invoice number:
 //   - each terminal draws a block (invoice_blocks row) and consumes it locally
-//   - when a block runs out, a new block is requested (today: extended locally;
-//     once cloud sync lands: assigned by the server so ranges never overlap)
+//   - when a block runs out, it is extended locally; there is no online sync
+//     coordinator or server-assigned block in the current local-export model
 //
 // The device code ("A", "B"…) is embedded in the number as a second safety net
 // and can be switched off once server-assigned blocks are in place

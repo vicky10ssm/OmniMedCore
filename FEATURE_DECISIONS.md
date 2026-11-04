@@ -479,14 +479,18 @@ The second deployment exists. `npm run build` makes the terminal (editing) app; 
   existing schema. `PRAGMA quick_check` runs before migrations.
 - Key export/import for cross-machine recovery remains a production gate.
 
-## Append-only sync queue and central dashboard - built (pilot)
+## Decoupled local Google Drive CSV export - supersedes cloud sync
 
-- Schema 17 adds `sync_queue` and `sync_ack`. Entity triggers snapshot invoices, reports and admissions
-  into an insert-only queue; ACKs are appended separately and queue rows are never deleted.
-- The Tauri app runs a 30-second background loop while open: health check, batch POST of up to 100
-  events, and tenant-scoped ACK persistence. It is not an OS service when the app is closed.
-- Device & sync includes endpoint/token configuration and pending/last-sync/error status. The token is
-  currently device-local and must move to OS-protected storage.
-- `cloud-dashboard/` is a standalone Next.js/PostgreSQL sync receiver and read-only `/dashboard` route.
-  Ingest requires a bearer token; dashboard requires HTTP Basic auth. Hosting, per-device tokens, SSO,
-  TLS, central backups and conflict/deletion handling are production work, not delivered.
+- The live API/cloud sync path was removed. There is no endpoint, bearer token, health check or central
+  dashboard in the app.
+- Schema 18 adds `local_export_queue`. Triggers snapshot invoices (Diagnostics), pharmacy sales
+  (Pharmacy), admissions (Hospital) and hospital charges.
+- A 30-second scheduler writes up to 100 pending rows into a brand-new
+  `tx_YYYYMMDD_HHMMSS_XXXXXX.csv` file inside `GOOGLE_DRIVE_SYNC_PATH`.
+- Files use `create_new` and are never appended to or overwritten.
+- CSV columns are `Sync_Timestamp, Transaction_ID, Module_Type, Masked_Patient_ID, Total_Amount`.
+  Patient IDs are SHA-256-masked; no names, results or notes are included.
+- The Rust writer runs in `spawn_blocking`. A failed write leaves rows pending with local error
+  evidence and retries on the next interval.
+- Success means the file was written locally, not that Google Drive uploaded or a consumer processed it.
+- Legacy `sync_queue`/`sync_ack` tables remain historical; migration 18 drops their triggers.

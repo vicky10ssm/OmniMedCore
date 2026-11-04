@@ -1435,6 +1435,231 @@ export const MIGRATIONS: Migration[] = [
       END;
     `,
   },
+  {
+    version: 18,
+    name: "decoupled local CSV export queue",
+    sql: `
+      -- Local-only export ledger: no network endpoint, token or ACK table is
+      -- involved. Each row remains pending until a CSV file is written.
+      CREATE TABLE IF NOT EXISTS local_export_queue (
+        id TEXT PRIMARY KEY,
+        tenant_id TEXT NOT NULL,
+        device_id TEXT NOT NULL DEFAULT '',
+        module_type TEXT NOT NULL
+          CHECK (module_type IN ('Pharmacy','Diagnostics','Hospital')),
+        transaction_id TEXT NOT NULL,
+        patient_id TEXT NOT NULL DEFAULT '',
+        total_amount_paise INTEGER NOT NULL DEFAULT 0,
+        occurred_at INTEGER NOT NULL,
+        exported_at INTEGER,
+        export_file TEXT NOT NULL DEFAULT '',
+        last_error TEXT NOT NULL DEFAULT '',
+        last_attempt_at INTEGER,
+        created_at INTEGER NOT NULL
+      );
+      CREATE INDEX IF NOT EXISTS idx_local_export_pending
+        ON local_export_queue(tenant_id, exported_at, created_at);
+
+      -- Stop writing the legacy cloud queue. Historical sync_queue/sync_ack
+      -- rows are left untouched for audit but are no longer read by the app.
+      DROP TRIGGER IF EXISTS sync_queue_invoice_insert;
+      DROP TRIGGER IF EXISTS sync_queue_invoice_update;
+      DROP TRIGGER IF EXISTS sync_queue_report_insert;
+      DROP TRIGGER IF EXISTS sync_queue_report_update;
+      DROP TRIGGER IF EXISTS sync_queue_admission_insert;
+      DROP TRIGGER IF EXISTS sync_queue_admission_update;
+
+      -- Backfill current transactions so the first local export catches up.
+      INSERT INTO local_export_queue
+        (id, tenant_id, device_id, module_type, transaction_id, patient_id,
+         total_amount_paise, occurred_at, exported_at, export_file, last_error, created_at)
+      SELECT lower(hex(randomblob(16))), i.tenant_id, i.device_id, 'Diagnostics', i.id,
+             i.patient_id, i.total_paise,
+             COALESCE(NULLIF(i.updated_at, 0), i.created_at,
+                      CAST(strftime('%s','now') AS INTEGER) * 1000),
+             NULL, '', '',
+             CAST(strftime('%s','now') AS INTEGER) * 1000
+      FROM invoices i;
+
+      INSERT INTO local_export_queue
+        (id, tenant_id, device_id, module_type, transaction_id, patient_id,
+         total_amount_paise, occurred_at, exported_at, export_file, last_error, created_at)
+      SELECT lower(hex(randomblob(16))), ps.tenant_id, ps.device_id, 'Pharmacy', ps.id,
+             ps.patient_id, ps.total_paise,
+             COALESCE(NULLIF(ps.updated_at, 0), ps.sale_date,
+                      CAST(strftime('%s','now') AS INTEGER) * 1000),
+             NULL, '', '',
+             CAST(strftime('%s','now') AS INTEGER) * 1000
+      FROM pharmacy_sales ps;
+
+      INSERT INTO local_export_queue
+        (id, tenant_id, device_id, module_type, transaction_id, patient_id,
+         total_amount_paise, occurred_at, exported_at, export_file, last_error, created_at)
+      SELECT lower(hex(randomblob(16))), a.tenant_id, a.device_id, 'Hospital', a.id,
+             a.patient_id,
+             COALESCE((
+               SELECT SUM(h.amount_paise)
+               FROM hospital_charges h
+               WHERE h.admission_id = a.id AND h.tenant_id = a.tenant_id
+                 AND h.deleted = 0
+             ), 0),
+             COALESCE(NULLIF(a.updated_at, 0), a.admitted_at,
+                      CAST(strftime('%s','now') AS INTEGER) * 1000),
+             NULL, '', '',
+             CAST(strftime('%s','now') AS INTEGER) * 1000
+      FROM admissions a;
+
+      CREATE TRIGGER IF NOT EXISTS local_export_invoice_insert
+      AFTER INSERT ON invoices
+      BEGIN
+        INSERT INTO local_export_queue
+          (id, tenant_id, device_id, module_type, transaction_id, patient_id,
+           total_amount_paise, occurred_at, exported_at, export_file, last_error, created_at)
+        VALUES
+          (lower(hex(randomblob(16))), NEW.tenant_id, NEW.device_id, 'Diagnostics', NEW.id,
+           NEW.patient_id, NEW.total_paise,
+           COALESCE(NULLIF(NEW.updated_at, 0), NEW.created_at,
+                    CAST(strftime('%s','now') AS INTEGER) * 1000),
+           NULL, '', '', CAST(strftime('%s','now') AS INTEGER) * 1000);
+      END;
+
+      CREATE TRIGGER IF NOT EXISTS local_export_invoice_update
+      AFTER UPDATE ON invoices
+      BEGIN
+        INSERT INTO local_export_queue
+          (id, tenant_id, device_id, module_type, transaction_id, patient_id,
+           total_amount_paise, occurred_at, exported_at, export_file, last_error, created_at)
+        VALUES
+          (lower(hex(randomblob(16))), NEW.tenant_id, NEW.device_id, 'Diagnostics', NEW.id,
+           NEW.patient_id, NEW.total_paise,
+           COALESCE(NULLIF(NEW.updated_at, 0), NEW.created_at,
+                    CAST(strftime('%s','now') AS INTEGER) * 1000),
+           NULL, '', '', CAST(strftime('%s','now') AS INTEGER) * 1000);
+      END;
+
+      CREATE TRIGGER IF NOT EXISTS local_export_pharmacy_sale_insert
+      AFTER INSERT ON pharmacy_sales
+      BEGIN
+        INSERT INTO local_export_queue
+          (id, tenant_id, device_id, module_type, transaction_id, patient_id,
+           total_amount_paise, occurred_at, exported_at, export_file, last_error, created_at)
+        VALUES
+          (lower(hex(randomblob(16))), NEW.tenant_id, NEW.device_id, 'Pharmacy', NEW.id,
+           NEW.patient_id, NEW.total_paise,
+           COALESCE(NULLIF(NEW.updated_at, 0), NEW.sale_date,
+                    CAST(strftime('%s','now') AS INTEGER) * 1000),
+           NULL, '', '', CAST(strftime('%s','now') AS INTEGER) * 1000);
+      END;
+
+      CREATE TRIGGER IF NOT EXISTS local_export_pharmacy_sale_update
+      AFTER UPDATE ON pharmacy_sales
+      BEGIN
+        INSERT INTO local_export_queue
+          (id, tenant_id, device_id, module_type, transaction_id, patient_id,
+           total_amount_paise, occurred_at, exported_at, export_file, last_error, created_at)
+        VALUES
+          (lower(hex(randomblob(16))), NEW.tenant_id, NEW.device_id, 'Pharmacy', NEW.id,
+           NEW.patient_id, NEW.total_paise,
+           COALESCE(NULLIF(NEW.updated_at, 0), NEW.sale_date,
+                    CAST(strftime('%s','now') AS INTEGER) * 1000),
+           NULL, '', '', CAST(strftime('%s','now') AS INTEGER) * 1000);
+      END;
+
+      CREATE TRIGGER IF NOT EXISTS local_export_admission_insert
+      AFTER INSERT ON admissions
+      BEGIN
+        INSERT INTO local_export_queue
+          (id, tenant_id, device_id, module_type, transaction_id, patient_id,
+           total_amount_paise, occurred_at, exported_at, export_file, last_error, created_at)
+        VALUES
+          (lower(hex(randomblob(16))), NEW.tenant_id, NEW.device_id, 'Hospital', NEW.id,
+           NEW.patient_id,
+           COALESCE((
+             SELECT SUM(h.amount_paise)
+             FROM hospital_charges h
+             WHERE h.admission_id = NEW.id AND h.tenant_id = NEW.tenant_id
+               AND h.deleted = 0
+           ), 0),
+           COALESCE(NULLIF(NEW.updated_at, 0), NEW.admitted_at,
+                    CAST(strftime('%s','now') AS INTEGER) * 1000),
+           NULL, '', '', CAST(strftime('%s','now') AS INTEGER) * 1000);
+      END;
+
+      CREATE TRIGGER IF NOT EXISTS local_export_admission_update
+      AFTER UPDATE ON admissions
+      BEGIN
+        INSERT INTO local_export_queue
+          (id, tenant_id, device_id, module_type, transaction_id, patient_id,
+           total_amount_paise, occurred_at, exported_at, export_file, last_error, created_at)
+        VALUES
+          (lower(hex(randomblob(16))), NEW.tenant_id, NEW.device_id, 'Hospital', NEW.id,
+           NEW.patient_id,
+           COALESCE((
+             SELECT SUM(h.amount_paise)
+             FROM hospital_charges h
+             WHERE h.admission_id = NEW.id AND h.tenant_id = NEW.tenant_id
+               AND h.deleted = 0
+           ), 0),
+           COALESCE(NULLIF(NEW.updated_at, 0), NEW.admitted_at,
+                    CAST(strftime('%s','now') AS INTEGER) * 1000),
+           NULL, '', '', CAST(strftime('%s','now') AS INTEGER) * 1000);
+      END;
+
+      CREATE TRIGGER IF NOT EXISTS local_export_hospital_charge_insert
+      AFTER INSERT ON hospital_charges
+      BEGIN
+        INSERT INTO local_export_queue
+          (id, tenant_id, device_id, module_type, transaction_id, patient_id,
+           total_amount_paise, occurred_at, exported_at, export_file, last_error, created_at)
+        SELECT lower(hex(randomblob(16))), a.tenant_id, a.device_id, 'Hospital', a.id,
+               a.patient_id,
+               COALESCE(SUM(h.amount_paise), 0),
+               NEW.charged_at, NULL, '', '',
+               CAST(strftime('%s','now') AS INTEGER) * 1000
+        FROM admissions a
+        LEFT JOIN hospital_charges h
+          ON h.admission_id = a.id AND h.tenant_id = a.tenant_id AND h.deleted = 0
+        WHERE a.id = NEW.admission_id AND a.tenant_id = NEW.tenant_id
+        GROUP BY a.id;
+      END;
+
+      CREATE TRIGGER IF NOT EXISTS local_export_hospital_charge_update
+      AFTER UPDATE ON hospital_charges
+      BEGIN
+        INSERT INTO local_export_queue
+          (id, tenant_id, device_id, module_type, transaction_id, patient_id,
+           total_amount_paise, occurred_at, exported_at, export_file, last_error, created_at)
+        SELECT lower(hex(randomblob(16))), a.tenant_id, a.device_id, 'Hospital', a.id,
+               a.patient_id,
+               COALESCE(SUM(h.amount_paise), 0),
+               NEW.charged_at, NULL, '', '',
+               CAST(strftime('%s','now') AS INTEGER) * 1000
+        FROM admissions a
+        LEFT JOIN hospital_charges h
+          ON h.admission_id = a.id AND h.tenant_id = a.tenant_id AND h.deleted = 0
+        WHERE a.id = NEW.admission_id AND a.tenant_id = NEW.tenant_id
+        GROUP BY a.id;
+      END;
+
+      CREATE TRIGGER IF NOT EXISTS local_export_hospital_charge_delete
+      AFTER DELETE ON hospital_charges
+      BEGIN
+        INSERT INTO local_export_queue
+          (id, tenant_id, device_id, module_type, transaction_id, patient_id,
+           total_amount_paise, occurred_at, exported_at, export_file, last_error, created_at)
+        SELECT lower(hex(randomblob(16))), a.tenant_id, a.device_id, 'Hospital', a.id,
+               a.patient_id,
+               COALESCE(SUM(h.amount_paise), 0),
+               OLD.charged_at, NULL, '', '',
+               CAST(strftime('%s','now') AS INTEGER) * 1000
+        FROM admissions a
+        LEFT JOIN hospital_charges h
+          ON h.admission_id = a.id AND h.tenant_id = a.tenant_id AND h.deleted = 0
+        WHERE a.id = OLD.admission_id AND a.tenant_id = OLD.tenant_id
+        GROUP BY a.id;
+      END;
+    `,
+  },
 ];
 
 /** First-boot seed data: lab settings, admin user, expense categories, sample catalog. */

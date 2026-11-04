@@ -1,19 +1,19 @@
-﻿# MediCore architecture and offline/online sync design
+﻿# MediCore architecture and local export design
 
-Last updated: 3 November 2026  
-Current product version: `0.3.0`  
-Current schema: `17`
+Last updated: 4 November 2026  
+Current product version: `0.4.0`  
+Current schema: `18`
 
 ## 1. Status and scope
 
 This document separates:
 
-- **Implemented today** â€” the local-first terminal build and read-only monitor build.
-- **Target production architecture** â€” planned Tauri desktop and cloud accumulator.
-- **Sync protocol** â€” the intended design; **not implemented yet**.
+- **Implemented today** — the local-first terminal build, local SQLCipher storage, encrypted backups and
+  the local Google Drive CSV outbox.
+- **Historical design** — an earlier hosted/cloud sync protocol retained below for context only.
 
-Today there is **no cloud sync backend**. The monitor build reads the same local browser database when
-opened on that machine; it cannot see another terminal or a phone outside that browser profile.
+The app no longer calls a hosted sync API, uses a sync token or writes to a cloud dashboard. The
+supported integration path is the local CSV export described in [LOCAL_CSV_EXPORT.md](../LOCAL_CSV_EXPORT.md).
 
 ## 2. Architectural principles
 
@@ -21,8 +21,7 @@ opened on that machine; it cannot see another terminal or a phone outside that b
    network request.
 2. **Only terminals write business data.** The hosted browser product is read-only; there is no browser
    billing endpoint.
-3. **The cloud is an accumulator, not a second editable copy.** It receives terminal events and serves a
-   read-only projection.
+3. **Google Drive is an outbox, not a second editable copy.** The app writes a unique CSV file and Google Drive uploads it independently.
 4. **Tenant isolation is mandatory.** Every business row and server query is scoped to a tenant derived
    from authenticated context, never trusted from request payload.
 5. **Money uses integer paise and append-only correction flows.** A mistake is cancelled/re-issued or
@@ -126,38 +125,39 @@ current JSON store and shared bearer token are a development baseline, not a hos
 plane. Public hosting, TLS, per-user admin auth/MFA, rate limits, backups and audit are deployment gates.
 See [licensing-and-editions.md](licensing-and-editions.md).
 
-### Current sync boundary
+### Current local export boundary
 
-The first sync module is intentionally append-only:
+The desktop app no longer calls an API, sends a sync token or writes to a cloud dashboard. It uses a
+decoupled local Google Drive outbox:
 
 ```text
 Terminal SQLite
-  â”œâ”€â”€ sync_queue (insert-only snapshots: invoice/report/admission)
-  â””â”€â”€ sync_ack   (append ACK rows, never delete queue rows)
-          â”‚ 30-second loop while the Tauri app is open
-          â–¼
-POST {cloud endpoint}/sync/push
-          â”‚
-          â–¼
-Next.js sync receiver â†’ PostgreSQL sync_events â†’ /dashboard (read-only)
+  -> local_export_queue (pending transaction snapshots)
+  -> 30-second scheduler while the Tauri app is open
+  -> masked rows -> Rust spawn_blocking writer
+  -> tx_YYYYMMDD_HHMMSS_XXXXXX.csv in GOOGLE_DRIVE_SYNC_PATH
+  -> Google Drive desktop client uploads independently
 ```
 
-- Queue rows are created by SQLite triggers on the three entity tables.
-- The desktop loop checks `GET /health`, pushes batches of up to 100, and inserts ACKs locally.
-- The loop stops when the app closes. It is not an OS service.
-- The sync token is currently device-local and must move to OS-protected storage.
-- The Next.js dashboard is read-only and protected by HTTP Basic auth. Per-device token provisioning,
-  SSO, conflict repair, deletion propagation, TLS deployment and backups remain production work.
-- The central store is not a replacement for terminal backups.
+- Triggers append snapshots for invoices (Diagnostics), pharmacy sales (Pharmacy) and admissions/
+  hospital charges (Hospital).
+- The scheduler reads up to 100 pending rows for the current tenant.
+- Rows are marked `exported_at` only after the unique CSV is written successfully.
+- A failed write leaves rows pending with `last_error`; the next interval retries.
+- There is no health endpoint, endpoint URL, bearer token, ACK table or cloud receiver in the export
+  path.
+- The legacy `sync_queue`/`sync_ack` tables are historical; migration 18 drops their triggers and the
+  app no longer reads them.
+- The CSV is a summary outbox, not a backup and not a terminal-to-terminal sync service.
 
-See [cloud-dashboard/README.md](../cloud-dashboard/README.md).
+See [LOCAL_CSV_EXPORT.md](../LOCAL_CSV_EXPORT.md).
 
 ### Data ownership in current build
 
 - The local database is the system of record.
 - Browser storage is per origin/profile; `localhost` and `127.0.0.1` are separate stores.
-- There is no cross-device sharing. â€œMonitor from anywhereâ€ is **not delivered** until the cloud tier
-  exists.
+- There is no cross-device sharing. “Monitor from anywhere” is **not delivered**; only the local
+  read-only monitor build and the one-way Google Drive CSV outbox exist.
 
 ## 4. Current data model and sync-ready metadata
 
@@ -170,7 +170,7 @@ Most business tables carry:
 | `created_at` | Client creation time (epoch ms) |
 | `updated_at` | Client edit time (epoch ms, sync hint, not trusted server time) |
 | `device_id` | Originating terminal |
-| `dirty` | Row has local changes not yet acknowledged by cloud |
+| `dirty` | Legacy local-change hint retained for schema compatibility; local export uses `local_export_queue` |
 | `deleted` | Soft-delete tombstone for propagation |
 
 Core relationships:
@@ -201,14 +201,16 @@ tenant
 Legacy `commission_entries`, `payouts` and doctor commission columns may remain in historical databases
 for data integrity, but the current product does not expose or accrue referral commissions.
 
-Sync tables are separate from business tables: `sync_queue` is insert-only and `sync_ack` appends ACK
-records. Queue triggers snapshot invoices, reports and admissions; no queue row is deleted after sync.
+The local export ledger is separate from business tables. `local_export_queue` stores pending and
+exported transaction snapshots, while `sync_queue`/`sync_ack` are retained as legacy history only.
+Triggers on invoices, pharmacy sales, admissions and hospital charges append new snapshots.
 
-### Important limitation of the current sync foundation
+### Important limitation of the local export foundation
 
-The `dirty` flag is enough for a simple prototype but **not enough for production sync**, because it
-stores only â€œthis row changedâ€, not the operation, base version or retry state. The production design
-below adds a durable outbox and server change sequence rather than relying only on `dirty`.
+The CSV outbox is deliberately one-way and minimal. It is enough to hand transaction summaries to a
+Google Drive consumer, but it is **not** a production multi-master sync service: there is no import,
+conflict repair, deletion propagation, upload ACK, remote monitor or terminal-to-terminal merge. The
+CSV itself is a plain-text summary and is not a backup.
 
 ## 5. Current offline workflow
 
@@ -218,7 +220,7 @@ A terminal can operate without internet:
 2. User signs in against the local user database.
 3. Patient, bill, payment, hospital charge, sample and report operations run in local SQLite.
 4. Invoice numbers come from a locally held block of 1000. The current implementation extends locally
-   when exhausted; the target server assigns exclusive blocks.
+   when exhausted; there is no server-assigned block in the local export model.
 5. Report release checks local sample status and user authority.
 6. A4/thermal invoices, hospital service bills and A4 reports print from local data.
 7. A draft ABDM FHIR document can be generated locally, but it is not transmitted.
@@ -230,55 +232,31 @@ are still P0 release gates.
 ## 6. Target production architecture
 
 ```text
-â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Windows terminal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-â”‚ Tauri application                                                â”‚
-â”‚  â”œâ”€â”€ React terminal bundle                                       â”‚
-â”‚  â”œâ”€â”€ Local SQLite file (encrypted, WAL)                          â”‚
-â”‚  â”œâ”€â”€ durable sync outbox + pull cursor                           â”‚
-â”‚  â”œâ”€â”€ device identity / OS credential-store token                 â”‚
-â”‚  â”œâ”€â”€ migration + pre-upgrade backup                              â”‚
-â”‚  â””â”€â”€ print / PDF / CSV                                           â”‚
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
-                â”‚ HTTPS
-                â”‚ device-authenticated push/pull, idempotency keys
-                â–¼
-â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Cloud accumulator â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-â”‚ API / sync service                                               â”‚
-â”‚  â”œâ”€â”€ authenticate tenant + device                                â”‚
-â”‚  â”œâ”€â”€ validate schema/version and references                      â”‚
-â”‚  â”œâ”€â”€ deduplicate operation IDs                                   â”‚
-â”‚  â”œâ”€â”€ append change log with server sequence                      â”‚
-â”‚  â”œâ”€â”€ conflict queue for clinical/version mismatches              â”‚
-â”‚  â””â”€â”€ read-only monitor query API                                 â”‚
-â”‚                                                                  â”‚
-â”‚ PostgreSQL                                                       â”‚
-â”‚  â”œâ”€â”€ tenant data accumulated from terminals                      â”‚
-â”‚  â”œâ”€â”€ server change sequence / row versions                       â”‚
-â”‚  â”œâ”€â”€ sync operation deduplication + cursors                      â”‚
-â”‚  â””â”€â”€ audit/ops metadata                                          â”‚
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
-                â”‚ authenticated read-only API
-                â–¼
-â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ Hosted monitor â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-â”‚ Static read-only bundle                                          â”‚
-â”‚  â”œâ”€â”€ tenant-scoped read API                                      â”‚
-â”‚  â”œâ”€â”€ no invoice/payment/sample/report write endpoints            â”‚
-â”‚  â”œâ”€â”€ no recovery-code or secret access                           â”‚
-â”‚  â””â”€â”€ minimum-necessary role-based views                          â”‚
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+Windows terminal
+  -> Tauri application
+  -> SQLCipher local database (system of record)
+  -> encrypted local backups
+  -> local_export_queue
+  -> Rust background writer
+  -> tx_YYYYMMDD_HHMMSS_XXXXXX.csv
+  -> Google Drive desktop client (external upload)
 ```
+
+There is no hosted write API or cloud sync service in the target design. The terminal remains the
+source of truth. Google Drive is an outbox transport only; it does not provide data recovery, conflict
+resolution, remote monitoring or a backup guarantee.
 
 ### Trust boundaries
 
 - Terminal database and authenticated session: trusted device boundary.
-- Network: untrusted; TLS plus device tokens; never trust tenant/device IDs in payload.
-- Cloud: authoritative for sync ordering and monitor projection, **not** for offline billing.
-- Monitor: untrusted remote client; read-only API and minimum data.
+- Google Drive sync folder and downstream consumer: outside the trusted terminal boundary; the CSV is
+  plain text and must be access-controlled.
+- Local read-only monitor: same-machine read-only view; no remote access.
 - Backups: encrypted at rest; separate key custody.
 
-## 7. Offline/online synchronization design
+## 7. Historical cloud sync design (retired)
 
-This section is the target protocol. It is not active in the current build.
+This section is retained only as historical design context. It is **not implemented or active**; the current product uses the local CSV outbox instead.
 
 ### 7.1 Device registration
 
@@ -660,11 +638,10 @@ At minimum automate:
 
 ### One centre, many terminals
 
-- 2â€“5 Tauri terminals
-- Cloud sync accumulator
-- Exclusive number blocks
-- Hosted read-only monitor
-- Highest-value first cloud topology
+- 2–5 independent Tauri terminals
+- Each terminal keeps its own SQLCipher database and invoice-number block
+- Each terminal writes its own local CSV outbox folder
+- No terminal-to-terminal merge; downstream consumers must treat transaction IDs as idempotency keys
 
 ### Multiple independent centres
 

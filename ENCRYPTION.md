@@ -1,7 +1,7 @@
 # Encryption at rest
 
 Last updated: 3 November 2026  
-Applies to: Tauri Windows desktop app (`0.3.0+`)
+Applies to: Tauri Windows desktop app (`0.3.0+`; schema `18` from `0.4.0`)
 
 ## What is implemented
 
@@ -58,6 +58,9 @@ relying on encrypted backups for disaster recovery:
 Key export/import and a clean-machine encrypted-restore runbook are remaining production gates.
 
 ## Verification performed
+
+The encryption verification below was captured on the `0.3.0` build with schema 17; `0.4.0` keeps the
+same SQLCipher key/migration path and adds schema 18 for the local export queue.
 
 - Existing database migrated from plaintext to SQLCipher; `PRAGMA cipher_version` reported
   `4.20.0 community`.

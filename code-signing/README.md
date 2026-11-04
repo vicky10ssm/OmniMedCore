@@ -31,7 +31,7 @@ certutil -user -addstore -f TrustedPublisher .\MediCore-CodeSigning.cer
 After installation, verify a downloaded installer or the installed app:
 
 ```powershell
-Get-AuthenticodeSignature .\MediCore_0.3.0_x64-setup.exe
+Get-AuthenticodeSignature .\MediCore_0.4.0_x64-setup.exe
 Get-AuthenticodeSignature "$env:LOCALAPPDATA\MediCore\medicore.exe"
 ```
 

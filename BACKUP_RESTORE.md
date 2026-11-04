@@ -1,7 +1,7 @@
 # Backup and restore
 
 Last updated: 3 November 2026  
-Applies to: Tauri Windows desktop app (`0.3.0+` for SQLCipher-encrypted backups)
+Applies to: Tauri Windows desktop app (`0.3.0+`; schema `18` from `0.4.0`)
 
 ## What is implemented
 
@@ -80,6 +80,9 @@ folder. Retention only deletes files beginning with `MediCore-daily-`, `MediCore
 `pre-restore-*.db` are not deleted by this policy.
 
 ## Verification performed
+
+The encryption/backup verification below was captured on the `0.3.0` build with schema 17; `0.4.0`
+adds schema 18 for the local export queue without changing the backup/restore format.
 
 - Daily scheduler produced `MediCore-daily`, `MediCore-weekly` and `MediCore-monthly` files.
 - Encrypted snapshot opened successfully with SQLCipher 4.20, `schema_version=17` and

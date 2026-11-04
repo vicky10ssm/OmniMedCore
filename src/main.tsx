@@ -5,12 +5,12 @@ import App from "./App";
 import { setModeOverride } from "./app/mode";
 import { installDesktopLifecycle } from "./app/desktopLifecycle";
 import { isTauriRuntime } from "./db/tauriStorage";
-import { startBackgroundSync } from "./sync/syncEngine";
+import { startLocalExportScheduler } from "./sync/syncEngine";
 import { startBackupScheduler } from "./backup/backupEngine";
 
 installDesktopLifecycle();
 if (isTauriRuntime()) {
-  startBackgroundSync();
+  startLocalExportScheduler();
   startBackupScheduler();
 }
 

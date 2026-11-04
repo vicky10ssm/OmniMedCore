@@ -123,7 +123,7 @@ Status meanings: **Ready**, **Pilot**, **Partial**, **Not available**, **Externa
 | Clinic logo | Ready | PNG/JPG/WebP up to 500 KB; shown in sidebar and printed invoice/report/pharmacy letterheads |
 | Multi-vertical branding | Ready | MediCore umbrella brand with tenant name/logo overrides |
 | Shared patient identity | Ready | Same patient used for OPD, diagnostics, pharmacy and admissions |
-| Read-only monitoring build | Pilot | Separate bundle and read-only `DataSource`; central dashboard code exists but is not deployed |
+| Read-only monitoring build | Pilot | Separate local read-only bundle; no cloud sync or remote dashboard |
 | Encrypted database | Pilot | Desktop database uses SQLCipher 4.20 (AES-256); key is stored in Windows Credential Manager. Key export/import and cross-machine recovery are not yet exposed |
 | Local backup/restore | Pilot | Daily in-app SQLCipher-encrypted snapshots with 7 daily/4 weekly/12 monthly retention, optional USB/OneDrive copy, manual backup, schema/integrity validation and safe restore. Only scheduled while the app is open |
 | Retention/legal hold | Not available | No configurable retention enforcement |
@@ -148,13 +148,14 @@ Status meanings: **Ready**, **Pilot**, **Partial**, **Not available**, **Externa
 | --- | --- | --- |
 | Tenant-scoped schema | Ready | Tenant ID and static scope checks across business tables |
 | Tenant management UI | Not available | No onboarding/switching/support console |
-| Multi-terminal offline billing | Partial | Data model ready; a simple append-only sync queue and push loop exist, but multi-terminal conflict coordination is not implemented |
-| Append-only sync queue | Pilot | Local `sync_queue` captures invoice/report/admission snapshots; `sync_ack` records central ACKs |
-| Desktop background sync | Pilot | Polls endpoint every 30 seconds while the Tauri app is open; not a Windows service when closed |
-| Read-only "monitor from anywhere" | Pilot | Next.js/PostgreSQL dashboard and sync receiver code exist; hosting, per-device tokens, SSO and operational hardening are pending |
+| Multi-terminal data sharing | Partial | Data model ready for multiple terminals; local CSV export is one-way and does not merge terminals |
+| Local CSV export | Pilot | Unique `tx_YYYYMMDD_HHMMSS_XXXXXX.csv` files in a Google Drive sync folder; masked patient IDs; local retry queue; no API calls |
+| Local export scheduler | Pilot | Runs every 30 seconds while the Tauri app is open; not a Windows service when closed |
+| Read-only "monitor from anywhere" | Not available | Cloud sync/dashboard removed; the local read-only monitor build remains |
 | Tauri Windows installer | Partial | Native SQLCipher database, single-instance guard and locally self-signed NSIS/MSI installers build successfully; public-CA signing, clean-machine acceptance and distribution are still pending |
 | Browser/PWA install | Pilot | Development/local browser storage only; not recommended as primary data store |
-| Cloud backup | Not available | Not implemented |
+| Cloud backup | Not available | Local encrypted backup only |
+| Cloud monitoring / dashboard | Not available | Online sync/dashboard removed; local CSV export is the supported outbox |
 
 ## The one-table summary for a first call
 
@@ -165,10 +166,10 @@ printing, configurable verticals and signed edition gating.
 
 **Pilot today:** local monitor build, ABHA/consent, ABDM JSON draft, compliance evidence dashboard,
 hospital/pharmacy read-only monitoring, tenant/device-bound licence activation, grace/read-only mode,
-the vendor licence portal, the local append-only sync queue and the Next.js central dashboard code.
+the vendor licence portal and the local Google Drive CSV export queue.
 
-**Not ready:** signed/distributed Windows installer, deployed and hardened cloud sync/hosted monitoring,
-per-device sync tokens, public hosted licence portal/customer self-service, OS-secure licence storage,
+**Not ready:** signed/distributed Windows installer, public hosted licence portal/customer self-service,
+OS-secure licence storage,
 key export/import for cross-machine recovery, offsite/unattended backups, live ABDM, QMS/QC/equipment/personnel modules, analyzer/PACS integration, critical-value
 workflow, full HIS features (insurance/TPA, nursing, medication charts, package/advance billing),
 advanced pharmacy procurement/controlled-drug workflows.
