@@ -49,7 +49,7 @@ MediCore is production-ready for a paid pilot only when all of the following are
 8. Role and clinical-control tests pass: operators can enter expenses but cannot see Dashboard/profit
    summaries, and accepted samples cannot be disposed before all linked test results are entered.
 9. Support, incident and rollback procedures are agreed.
-10. No contractual claim depends on an unreleased cloud, ABDM, hosted licence portal or QMS feature.
+10. No contractual claim depends on an unreleased hosted monitor, ABDM, hosted licence portal or QMS feature.
 
 General availability additionally requires security review, validation evidence, support operations and
 the commercial/legal model to be fully operational. Hosted monitoring is not part of the current scope.
@@ -99,9 +99,9 @@ Google Drive is an outbox transport only; it is not a backup or conflict-resolut
 - **Local DB:** real SQLCipher through Rust, not IndexedDB or plugin-sql.
 - **Encryption:** SQLCipher 4.20 page-level encryption with a random key stored in Windows Credential
   Manager. Key export/import and rotation remain to be added for cross-machine recovery.
-- **Cloud provider:** choose after data-residency and budget review. Viable patterns are a small VPS +
+- **Google Drive:** buyer-managed account/folder; there is no hosted application backend.
   managed PostgreSQL, or a serverless PostgreSQL/API platform. Do not rely on free tier for an SLA.
-- **Static monitor hosting:** Cloudflare Pages/Vercel/Netlify or the same VPS with a CDN.
+- **Downstream CSV consumer:** buyer/vendor-specific; not part of this product.
 - **Source control:** Git is mandatory; no production release from an uncommitted workspace.
 
 The detailed protocol, conflict rules and sequence diagrams are in
@@ -238,8 +238,8 @@ Tasks:
   - consent revocation and ABDM blocking
   - backup/restore
   - tenant isolation
-  - offline/reconnect sync
-- Add load/performance targets: startup, search, billing, report print, sync.
+  - local export failure/retry and folder/Drive availability
+- Add load/performance targets: startup, search, billing, report print, export.
 - Create a computer-system-validation pack:
   - intended use
   - risk assessment
@@ -256,7 +256,7 @@ Exit gate: release candidate passes scripted acceptance on buyer-like data and h
 Tasks:
 
 - Error tracking with PII scrubbing.
-- Uptime checks for API/monitor; local terminal health summary.
+- Local terminal health summary, export retry status and backup success alerting.
 - Structured logs with correlation/device ID but no patient identifiers.
 - Backup job monitoring and alerting.
 - Support portal/email and severity matrix.
@@ -272,7 +272,7 @@ Tasks:
   - tenant offboarding
   - suspected data breach
   - lost/stolen terminal
-  - cloud outage
+- Google Drive/folder outage
 - Release notes and known-issue register.
 
 Exit gate: support can diagnose and restore a simulated terminal failure using written runbooks.
@@ -302,9 +302,9 @@ Exit gate: contract and commercial pack can be sent without unsupported claims.
 | --- | --- | --- |
 | Development | Local coding | Synthetic only |
 | CI/test | Automated tests, migrations | Synthetic fixtures |
-| Staging | Signed release candidate, sync/monitor validation | Synthetic tenant |
+| Staging | Signed release candidate, local export validation | Synthetic tenant |
 | Buyer pilot | Controlled real operation | Real data only after P0/DPA gates |
-| Production | GA terminals and cloud | Real, tenant-isolated |
+| Production | GA offline terminals | Real, tenant-isolated |
 
 Never copy production patient data into development or screenshots. Use de-identified or synthetic
 fixtures.
@@ -316,7 +316,7 @@ fixtures.
 | A. Engineering foundation | Git, CI, tests baseline, release versioning | Reproducible checks/builds from tagged commit |
 | B. Desktop production | Tauri, local SQLite, installer, updater, printing | Offline install/upgrade/rollback acceptable |
 | C. Data protection | Encryption workflow, backup/restore, recovery | Clean-machine restore and recovery proven |
-| D. Cloud monitoring | Tenant/device auth, sync, monitor, ops | Two-tenant, two-terminal acceptance and isolation test |
+| D. Local export / integrations | CSV contract, masking, retry, downstream consumer | Unique masked files, forced-failure retry and downstream reconciliation |
 | E. Hardening | Security, performance, validation pack, observability | Pen-test and acceptance gates pass |
 | F. Pilot | Migration, training, parallel run, weekly review | Written pilot acceptance or rollback |
 | G. GA | Support/SLA, tenant operations, commercial conversion | GA readiness review |
@@ -398,7 +398,7 @@ Define and test:
 | Terminal disk/PC failure | Replace hardware, restore latest encrypted backup |
 | Corrupt database | Preserve copy, attempt recovery, restore verified backup |
 | Lost/stolen terminal | Revoke device, rotate credentials, assess encryption exposure |
-| Cloud/API outage | Terminal continues offline; queue sync; monitor unavailable |
+| Google Drive unavailable | Terminal continues offline; export queue grows; retry on next interval |
 | Failed upgrade | Rollback application and restore database |
 | Data-entry error | Correct via cancellation/amendment, never direct DB edits |
 | Suspected breach | Contain, preserve evidence, notify per policy/contract/law |
@@ -411,8 +411,8 @@ Every scenario requires an owner, contact path and evidence record.
 Proposed pilot service objectives:
 
 - Terminal billing available offline by design; no internet dependency.
-- Cloud monitor availability target: 99.5% monthly during supported pilot.
-- API sync success within 15 minutes of connectivity restoration for normal volumes.
+- Local export retry target: 99% of failed writes retried within 15 minutes during supported pilot.
+- Local CSV export retries within 15 minutes of folder/Drive restoration for normal volumes.
 - Backup success â‰¥99% with alert on failure.
 - S1 acknowledgement within agreed support hours.
 - No unresolved critical security findings at release.
@@ -424,7 +424,6 @@ Do not publish an SLA until monitoring and staffing can measure it.
 ### Lean pilot architecture
 
 - Desktop: local Tauri/SQLite, no hosting cost
-- Static monitor: free/low-cost static hosting
 - API: small VPS or serverless functions
 - PostgreSQL: managed small instance or serverless Postgres
 - Encrypted backups: buyer drive + optional object storage
@@ -446,7 +445,7 @@ Price hosting separately from licence/support.
 | Technical lead | Architecture, migrations, releases |
 | QA/validation lead | Test plan, evidence, release sign-off |
 | Security reviewer | Threat model, pen-test remediation |
-| DevOps/support engineer | CI/CD, cloud, backups, incidents |
+| DevOps/support engineer | CI/CD, infrastructure, backups, incidents |
 | Clinical advisor | Report workflows, release authority, reference-interval review |
 | Legal/CA | Contracts, GST/TDS, DPDP, liability |
 | Buyer champion | Data, users, UAT and acceptance |
@@ -462,7 +461,7 @@ Do not call MediCore generally available until:
 - All P0 productization gates are closed
 - At least one supervised pilot has passed acceptance
 - Backup/restore and upgrade/rollback have real evidence
-- Cloud tenant isolation and monitor security have been independently reviewed
+- Tenant isolation and local export masking are in the security review scope.
 - Security findings are closed or formally accepted
 - Support staffing and SLA are funded
 - Legal/DPDP/CA review is complete, including licence terms and the no-referral-commission decision
@@ -482,7 +481,7 @@ Do not call MediCore generally available until:
 | Backup restored on clean hardware? | | |
 | Upgrades tested from supported versions? | | |
 | Tenant isolation proven? | | |
-| Monitor strictly read-only? | | |
+| Local monitor strictly read-only? | | |
 | Licence activation/grace/read-only tested and stored securely? | | |
 | Operator Dashboard/profit restrictions tested? | | |
 | Sample disposal result gate tested? | | |
@@ -499,7 +498,7 @@ data.
 
 ## 17. Operating cadence after launch
 
-- Daily: backup success, sync health, error alerts
+- Daily: backup success, export retry health, error alerts
 - Weekly: defect/incident review, pending support issues
 - Monthly: restore spot-check, patch review, tenant/access review, licence expiry/renewal queue
 - Quarterly: dependency/security review, DR exercise, roadmap review, portal key-custody/backup check

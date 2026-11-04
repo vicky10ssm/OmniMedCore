@@ -42,7 +42,6 @@ All amounts are INR, excluding GST. Ranges are negotiation boundaries, not autom
 | Custom report/template | **₹3,000/report** | ₹2,000–₹8,000 | One approved layout; excludes new data fields/integration |
 | Onsite visit | **₹5,000/day + travel** | ₹4,000–₹8,000/day + actuals | Travel/accommodation at actuals |
 | Priority support add-on | **₹6,000/year** | ₹5,000–₹12,000/year | Agreed faster response/hours, fair-use support |
-| Cloud read-only monitoring add-on — when released | **₹6,000/year/centre** | ₹4,800–₹12,000/year | Hosted monitor, not terminal writes |
 | ABDM production onboarding — when released | **₹25,000 setup + ₹6,000/year** | ₹15,000–₹75,000 setup | HFR/HIP assistance, sandbox acceptance, consent/transport validation; exclude statutory/provider fees |
 | Multi-centre licence | **₹20,000/year for each additional centre** | ₹15,000–₹24,000 | Up to 2 terminals per centre; 5–10% volume discount at 3+ centres |
 
@@ -170,7 +169,7 @@ backup/restore and supported installation. Until those gates are complete:
 - Sell only a **paid supervised pilot** at ₹15,000–₹30,000.
 - State that the pilot is time-boxed and data handling requires the release-gate checklist.
 - Do not collect annual-licence money for a product that cannot yet be safely deployed.
-- Do not include cloud monitoring, ABDM transport, QMS or backups in the price until they are delivered.
+- Do not include hosted monitoring, ABDM transport, QMS or backups in the price until they are delivered.
 
 See [productionization-plan.md](productionization-plan.md) for the gates that unlock the launch price
 card.
@@ -180,7 +179,6 @@ card.
 - Keep the buyer’s total cost materially below a full LIMS/HIS.
 - Avoid per-invoice or per-patient charges that punish growth.
 - Charge for implementation and support, not only for source code.
-- Keep hosting cost low once a cloud tier exists.
 - Do not sell unimplemented modules to win a deal.
 
 ## Recommended offer structure
@@ -210,8 +208,8 @@ Pilot fee = discovery/configuration
           + travel/onsite costs (if any)
 ```
 
-Do not bundle future cloud monitoring, live ABDM or custom modules into the pilot fee without a
-separate success gate.
+Do not bundle hosted monitoring, live ABDM or custom modules into the pilot fee without a separate
+success gate.
 
 ### 2. Annual per-centre licence
 
@@ -245,7 +243,7 @@ AMC should not include unlimited custom development. Define included support hou
 - Printer/network setup
 - Onsite training beyond included days
 - Custom CSV/accounting export
-- Cloud monitoring subscription (only after it exists)
+- Optional local Google Drive CSV export setup
 - ABDM onboarding and sandbox certification (only after integration exists)
 - Compliance/QMS configuration consultancy (partner with a qualified consultant)
 - Priority/24×7 support
@@ -257,7 +255,7 @@ AMC should not include unlimited custom development. Define included support hou
 | Cost | Current/future treatment |
 | --- | --- |
 | Tauri/SQLite/local app runtime | No licence fee; development and support labour still matter |
-| Hosted monitor free tier | ₹0 at low volume, but free-tier limits/availability are not an SLA |
+| Google Drive storage | Buyer-managed Google account/quota |
 | VPS optional | Buyer-specific; reuse target ₹400–600/month from early design assumptions |
 | Domain/TLS | Domain annual cost; TLS normally free |
 | Windows code-signing certificate | Optional recurring cost; estimate varies |
@@ -345,7 +343,7 @@ Avoid:
 - Fixed per-invoice charges that discourage billing volume
 - Free custom development to close a deal
 - Discounting below implementation/support cost
-- Promising cloud hosting before the backend exists
+- Promising hosted monitoring or live sync that the product does not provide
 - Using competitor prices as the only basis; price the value and support burden
 - Charging for compliance certification you cannot provide (accreditation is external)
 

@@ -9,13 +9,13 @@ Use this skill for structural work on the diagnostic-centre application. Read th
 
 ## Product shape
 
-- One React/TypeScript application supplies the offline billing UI and a read-only monitoring build.
-- Development currently uses sql.js/SQLite WASM persisted in IndexedDB. Tauri desktop packaging and the cloud accumulator/sync backend are planned, not completed.
+- One React/TypeScript application supplies the offline billing UI and a local read-only monitoring build.
+- The packaged desktop app uses Tauri + native SQLCipher; the browser build remains sql.js/IndexedDB and is development-only.
 - The same app supports Diagnostics, Pharmacy, Hospital, Complete and Custom editions. Effective modules are the signed licence's modules ∩ the clinic's enabled modules. Licence verification is offline ECDSA P-256 with tenant/device binding; see the `diagbill-licensing` skill.
-- Browser monitoring must remain read-only. Billing belongs on trusted offline terminals, including when several terminals work without connectivity.
-- The optional sync tier is append-only: `sync_queue` snapshots invoices/reports/admissions, `sync_ack` records ACKs, and a 30-second in-app loop pushes to the cloud. It is not a conflict-resolving multi-master sync service and does not run while the app is closed. See `diagbill-sync`.
-- Every independent centre/hospital is a tenant. Never mix tenant records, settings, invoice numbers, or monitoring data.
-- Records use UUIDs, `created_at`, `updated_at`, `device_id`, `dirty`, `deleted`, and `tenant_id` where applicable. Deletion is normally a syncable tombstone.
+- Monitoring is local and read-only. Billing belongs on trusted offline terminals, including when several terminals work without connectivity.
+- The integration path is a decoupled local Google Drive CSV outbox: `local_export_queue` snapshots invoices, pharmacy sales, admissions and hospital charges, and a 30-second scheduler writes unique masked CSV files. There is no API, token, ACK table or hosted cloud dashboard. See `diagbill-sync` and `LOCAL_CSV_EXPORT.md`.
+- Every independent centre/hospital is a tenant. Never mix tenant records, settings, invoice numbers or monitoring data.
+- Records use UUIDs, `created_at`, `updated_at`, `device_id`, `dirty`, `deleted`, and `tenant_id` where applicable. `dirty` is legacy; the local export ledger is separate.
 
 ## Read first
 
@@ -24,12 +24,14 @@ Use this skill for structural work on the diagnostic-centre application. Read th
 - `../../../src/db/types.ts` — row contracts
 - `../../../src/db/tenant.ts` — tenant context, predicates, `TENANT_TABLES`
 - `../../../src/app/mode.ts` and `../../../src/app/MonitorContext.tsx` — product mode
+- `../../../src/sync/syncEngine.ts`, `syncConfig.ts` and `../../../src-tauri/src/export.rs` — local CSV outbox
 - `../../../scripts/check-migrations.mjs` and `../../../scripts/check-tenant-scope.mjs`
+- `../../../LOCAL_CSV_EXPORT.md` — CSV contract and retry behavior
 - `../../../FEATURE_DECISIONS.md` — product decisions and remaining roadmap
 
 ## Migration workflow
 
-1. Inspect the real current schema version. The current tested baseline is version 16 (hospital service/IPD billing); always inspect the source rather than blindly reusing that number after later changes.
+1. Inspect the real current schema version. The current tested baseline is version 18 (local CSV export queue); always inspect the source rather than blindly reusing that number after later changes.
 2. Append a new migration in strictly increasing order. Do not reorder migrations or weaken version assertions to hide an ordering error.
 3. Keep upgrades additive and preserve existing rows. Use tolerant, statement-by-statement execution only where partial data repairs must continue after individual failures.
 4. Update fresh-schema creation and upgrade migrations deliberately so both paths produce equivalent structures.
@@ -48,7 +50,7 @@ Use this skill for structural work on the diagnostic-centre application. Read th
 
 - Keep the offline path independent of hosted services.
 - Do not introduce floating-point money, random per-terminal invoice numbers, or cloud-only billing behavior.
-- Do not claim Tauri `.exe` packaging, hosted monitoring, ABDM exchange, or cloud sync exists until it is implemented and tested.
+- Do not claim hosted monitoring, ABDM exchange, or live cloud sync exists. Tauri packaging/signing exists but must be verified for each release; the supported export is the local Google Drive CSV outbox.
 - Avoid broad rewrites when an additive migration and a small `DataSource`-compatible change suffice.
 
 ## Multi-vertical product scope
@@ -60,8 +62,9 @@ MediCore is branded across Diagnostics, Pharmacy and Hospital. The same tenant c
 - Hospital: admissions, ward/bed, treating doctor, discharge summary, generic hospital service
   catalogue, IPD charges/payments/balance and bill print.
 
-New modules use the same tenant/sync columns and module-visibility model. They are not a full HIS or
-chain-pharmacy ERP. See the skill `diagbill-hospital-pharmacy` for domain rules and boundaries.
+New modules use the same tenant columns, module-visibility model and local-export triggers where they
+produce a financial transaction. They are not a full HIS or chain-pharmacy ERP. See the skill
+`diagbill-hospital-pharmacy` for domain rules and boundaries.
 
 ## Clinic configuration and branding
 
@@ -118,3 +121,7 @@ npm run build:monitor
 ```
 
 Also exercise the affected boot/upgrade path with actual application data. A successful fresh migration alone is insufficient.
+
+For local export changes, also run `cargo test --manifest-path src-tauri/Cargo.toml --lib`, verify
+schema 18, and test a forced folder failure/retry. Never mark a cloud monitor or online sync as passed;
+those paths no longer exist.

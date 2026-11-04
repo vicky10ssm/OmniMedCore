@@ -19,7 +19,7 @@ general-availability hosted SaaS or a publicly trusted, clean-machine-accepted d
 
 The safest current offer is a **paid, tightly scoped design-partner pilot** after the release gates in
 [deployment-and-readiness.md](deployment-and-readiness.md) are completed. Do not sell it as a complete
-LIS, a NABL-certified system, a live ABDM product or a cloud monitoring service yet.
+LIS, a NABL-certified system, a live ABDM product or a hosted monitoring service yet.
 
 For the current done/pending and commercial release decision, use
 [PRODUCTION_COMMERCIAL_READINESS.md](../PRODUCTION_COMMERCIAL_READINESS.md).

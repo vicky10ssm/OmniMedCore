@@ -46,8 +46,7 @@ Never commit or share:
 - `license-portal/data/licenses.json`
 - `.env` files
 - `MEDICORE_PORTAL_ADMIN_TOKEN`
-- `SYNC_INGEST_TOKEN`, `DASHBOARD_PASSWORD` or sync endpoint tokens
-- central `DATABASE_URL` credentials
+- Google Drive account credentials or OAuth tokens
 - signing certificates or private keys
 - real patient data, databases or backups
 - screenshots containing patient identifiers

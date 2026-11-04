@@ -26,7 +26,7 @@ Do not invent certifications, references or insurance.
 | Is the Windows `.exe` available? | Not yet; Tauri packaging is a release gate |
 | Where is data stored today? | Development build uses IndexedDB; production target is local SQLite |
 | Can it bill without internet? | The terminal design is offline-first; packaged offline acceptance still required |
-| Can I monitor remotely today? | No hosted sync backend; monitor build is local read-only |
+| Can I monitor remotely today? | No; the monitor build is local read-only and the CSV outbox is one-way |
 | Can it send to ABDM? | Not yet; only offline FHIR R4 draft generation |
 | Is it NABL/ISO certified? | No; it supports evidence requirements and documents gaps |
 | Are backups automatic? | No; backup/restore must be delivered before real pilot data |

@@ -162,4 +162,4 @@ When testing NABL/ABDM/ISO work:
 
 Record the schema version, relevant invoice/order IDs, selected and tombstoned parameter rows, and browser console errors. Check both UI and persisted rows. For migrations, include an existing upgraded database, not only a fresh profile.
 
-Monitor builds additionally need a read-only check. Offline claims need testing with connectivity unavailable; encryption claims need a reload/relock test. Do not mark hosted sync, ABDM exchange, Tauri packaging, or accreditation alignment as passed without exercising those actual capabilities.
+Monitor builds additionally need a read-only check. Offline claims need testing with connectivity unavailable; encryption claims need a reload/relock test. Test local CSV export for unique filenames, masked patient IDs, and retry after a forced folder failure. Do not mark a hosted monitor, online sync, ABDM exchange, Tauri packaging, or accreditation alignment as passed without exercising those actual capabilities.

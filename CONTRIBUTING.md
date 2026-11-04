@@ -79,13 +79,15 @@ For browser/clinical workflows, run the seeded demonstration and exercise the af
 - Do not weaken report revision/amendment evidence.
 - Do not put real patient data in tests, fixtures, logs or screenshots.
 
-### Sync
+### Local export
 
-- `sync_queue` is insert-only; ACKs belong in `sync_ack`.
-- The terminal is the source of truth; the cloud dashboard is read-only.
-- Every queue/ACK and central query must be tenant-scoped.
-- Do not describe the 30-second in-app loop as an OS service or the central dashboard as a backup.
-- The sync token must move to OS-protected storage before production.
+- `local_export_queue` is the pending/exported ledger; never delete rows to mark success.
+- Use unique `tx_YYYYMMDD_HHMMSS_XXXXXX.csv` files and `create_new`; never append or overwrite.
+- Keep the CSV exactly `Sync_Timestamp, Transaction_ID, Module_Type, Masked_Patient_ID, Total_Amount`.
+- Never export raw patient IDs, names, phone numbers, report results or clinical notes.
+- Keep export reads/writes tenant-scoped and file I/O off the UI thread.
+- A failed write must remain pending and retry; success means local file write only, not Google Drive upload.
+- Do not describe the 30-second scheduler as an OS service or the CSV outbox as a backup or remote monitor.
 
 ### Licensing
 

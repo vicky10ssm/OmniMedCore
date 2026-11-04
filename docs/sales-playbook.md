@@ -100,9 +100,9 @@ Score 0–2 each; proceed with caution below 12/20.
 
 > MediCore is an offline-first billing and reporting system for small diagnostic centres. It keeps GST
 > billing, dues, sample traceability and pathology report amendments working on the centre’s own
-> terminal. It is being offered initially as a supervised pilot, with cloud monitoring,
-> live ABDM exchange and advanced quality modules on a documented roadmap rather than claimed as
-> finished.
+> terminal. It is being offered initially as a supervised pilot, with a local Google Drive CSV
+> outbox, live ABDM exchange and advanced quality modules on a documented roadmap rather than claimed
+> as finished.
 
 ### Value by buyer
 
@@ -120,12 +120,12 @@ Score 0–2 each; proceed with caution below 12/20.
 | Area | Say this | Do not say |
 | --- | --- | --- |
 | Offline billing | “The terminal build is designed to keep billing offline.” | “Guaranteed zero downtime.” |
-| Cloud monitoring | “A read-only monitor build exists; hosted sync is not yet live.” | “Monitor from anywhere today.” |
+| Data sharing | “A local Google Drive CSV outbox exports masked transaction summaries; it is not a live monitor or import path.” | “Monitor from anywhere today” or “real-time cloud sync.” |
 | NABL/ISO | “Provides evidence foundations and a documented gap matrix.” | “NABL/ISO certified software.” |
 | ABDM | “Generates offline ABDM FHIR R4 draft documents.” | “ABDM integrated/sends to ABHA.” |
-| Encryption | “Encryption foundation exists; enable/recovery workflow is still being completed.” | “All data is encrypted.” |
-| Backups | “Backup/restore is a pre-pilot release gate.” | “Backups are automatic.” |
-| Desktop | “Tauri desktop packaging is the target.” | “Windows .exe is ready.” |
+| Encryption | “Desktop database and local backups are SQLCipher-encrypted with the key in Windows Credential Manager; key recovery is still a gate.” | “All data is encrypted” or “key recovery is complete.” |
+| Backups | “Encrypted local backup and validated restore exist; unattended/offsite scheduling and key recovery are still gates.” | “Backups are fully unattended and disaster-proof.” |
+| Desktop | “Signed Windows installers are available with a local root certificate; public-CA trust and clean-machine acceptance are pending.” | “Publicly trusted installer with SmartScreen reputation.” |
 | Licensing | “Diagnostics, Pharmacy, Hospital, Complete and Custom editions are enforced by a signed tenant/device licence, with 30-day grace and read-only access after expiry.” | “Perpetual public cloud subscription is live” or “the licence portal is hosted and hardened for public use.” |
 | Referral commissions | “MediCore keeps a doctor directory but does not track or pay referral commissions.” | “Tracks doctor commissions/payouts.” Commission visibility can create compliance and ethics issues. |
 | Hospital IPD | “Generic hospital service/IPD charges, payments and bill print are included; full HIS, insurance/TPA, nursing and package/advance billing are not.” | “Full IPD/HIS or insurance claims.” |
@@ -144,7 +144,8 @@ Score 0–2 each; proceed with caution below 12/20.
 > Yes in the commercial model. One installer supports Diagnostics, Pharmacy, Hospital, Complete and
 > Custom editions. A signed licence activates the edition and terminal; the clinic can then hide any
 > licensed module it does not use. The current portal is a vendor-run admin portal, not a public
-> self-service store, and the packaged production installer/licence storage is still a release gate.
+> self-service store. Public-CA installer trust, clean-machine acceptance and OS-secure licence storage
+> remain release gates.
 
 ### “Can it run a full hospital or pharmacy chain?”
 > Not as a full HIS or chain ERP. It covers small-hospital admission/discharge and generic inpatient
@@ -158,8 +159,9 @@ Score 0–2 each; proceed with caution below 12/20.
 > procedures remain the laboratory’s responsibility; we provide a written gap matrix.
 
 ### “Can I access it from anywhere?”
-> A read-only monitor interface is designed and builds today, but the cloud data pipeline is not yet
-> live. We should not include remote monitoring in a pilot until that backend is delivered and tested.
+> The product is offline-first. A local read-only monitor build exists on the same machine, and an
+> optional local Google Drive CSV outbox can hand masked transaction summaries to an external process.
+> There is no hosted remote monitor or live sync in the current product; do not sell one.
 
 ### “Does it integrate with ABDM?”
 > It prepares an offline ABDM FHIR R4 draft using the current public implementation guide. It does not
@@ -174,8 +176,9 @@ Score 0–2 each; proceed with caution below 12/20.
 > a partner.
 
 ### “What if the computer fails?”
-> Backup/restore is a mandatory release gate before the pilot. We will not deploy patient data without
-> a tested restore procedure and defined backup ownership.
+> Encrypted local backup and validated restore are implemented. Before live patient data we still require
+> a clean-machine restore test, key-recovery plan, unattended/offsite backup decision and named backup
+> ownership.
 
 ### “Will it work with my printer?”
 > A4 and 80 mm print layouts exist, but the exact printer and Windows/browser combination must be

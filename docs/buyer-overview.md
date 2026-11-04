@@ -53,7 +53,7 @@ a mixture of Excel, paper registers and disconnected software:
 - Can tolerate a supervised pilot and manual migration
 
 Common requirements for all: willingness to participate in acceptance testing, a named data/training
-owner, and realistic acceptance that cloud monitoring, ABDM transport and advanced QMS are not live yet.
+owner, and realistic acceptance that hosted monitoring, ABDM transport and advanced QMS are not live yet.
 
 ## Poor-fit buyer today
 
@@ -90,8 +90,8 @@ Do not position the current build as suitable for:
 9. **Edition licensing without a cloud dependency.** One installer can sell Diagnostics, Pharmacy,
    Hospital, Complete or Custom, with signed tenant/device activation and 30-day grace. Hosted portal
    hardening and OS-secure licence storage remain production gates.
-10. **Low target running cost.** The architecture targets local SQLite/Tauri and a cheap read-only
-   hosting tier, with no mandatory per-message service.
+10. **Low target running cost.** The architecture targets local SQLCipher/Tauri and an optional local
+   Google Drive CSV outbox, with no mandatory hosted service or per-message fee.
 
 ## What the buyer is actually buying in a pilot
 
@@ -115,7 +115,7 @@ Pricing is intentionally not fixed in this document. Candidate structures are:
 - Annual per-centre licence
 - One-time licence + annual maintenance/support
 - Optional implementation, migration, training and custom-integration fees
-- Separate cloud-monitoring subscription once that service exists
+- Optional local Google Drive CSV export/outbox configuration
 
 See [commercial-model-and-pricing.md](commercial-model-and-pricing.md) for the costing and proposal
 method.
@@ -125,5 +125,5 @@ method.
 You may promise a **controlled pilot that improves billing discipline and creates auditable sample and
 report evidence**.
 
-You must not promise accreditation, regulatory approval, uninterrupted cloud access, live ABDM
+You must not promise accreditation, regulatory approval, uninterrupted hosted access, live ABDM
 exchange or complete LIS functionality until those are implemented and validated.

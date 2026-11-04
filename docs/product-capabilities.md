@@ -168,8 +168,8 @@ printing, configurable verticals and signed edition gating.
 hospital/pharmacy read-only monitoring, tenant/device-bound licence activation, grace/read-only mode,
 the vendor licence portal and the local Google Drive CSV export queue.
 
-**Not ready:** signed/distributed Windows installer, public hosted licence portal/customer self-service,
-OS-secure licence storage,
+**Not ready:** public-CA signed/distributed Windows installer, public hosted licence portal/customer
+self-service, OS-secure licence storage,
 key export/import for cross-machine recovery, offsite/unattended backups, live ABDM, QMS/QC/equipment/personnel modules, analyzer/PACS integration, critical-value
 workflow, full HIS features (insurance/TPA, nursing, medication charts, package/advance billing),
 advanced pharmacy procurement/controlled-drug workflows.

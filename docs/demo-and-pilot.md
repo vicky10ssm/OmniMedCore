@@ -118,7 +118,6 @@ Ask:
 
 ## Never demo as working
 
-- Windows `.exe` installer
 - Hosted cloud monitoring or login from a phone outside the local machine
 - Live ABDM send/consent artefacts
 - NABL certificate/logo
@@ -128,8 +127,12 @@ Ask:
 - Public hosted licence self-service or guaranteed online revocation
 - Pharmacy procurement, supplier returns, narcotics registers or chain-store transfers
 - Referral commission rules, accruals, payouts or a Commissions tab; these are intentionally removed
-- Automated backup/restore
+- SQLCipher key export/import or cross-machine encrypted restore
+- Unattended backup scheduling or off-device upload acknowledgement
 - Promised custom reports or integration without a change order
+
+Working installer, SQLCipher, local backup/restore and local CSV export may be demonstrated as implemented,
+subject to the release-gate and signature limitations.
 
 If asked, say the status and offer the roadmap, not a workaround that looks production-ready.
 
