@@ -194,12 +194,15 @@ Remaining tasks:
 - Validate the local Google Drive outbox with the buyer's chosen folder and access policy.
 - Test failure/retry behavior with locked, full and permission-denied folders.
 - Validate downstream duplicate handling using transaction IDs.
-- Document that CSV success means file write, not Google Drive upload or processing.
-- Confirm no patient names, raw IDs, report results or clinical notes enter the CSV.
-- Prove the export scheduler and backup scheduler do not interfere under load.
+- Document that export success means file write, not Google Drive upload or processing.
+- Confirm the transaction outbox contains no patient names, raw IDs, report results or clinical notes.
+- Approve the full snapshot's patient/clinical data scope, folder permissions and retention.
+- Confirm full-snapshot authentication secrets are excluded and the manifest is complete.
+- Prove the export scheduler, full-snapshot scheduler and backup scheduler do not interfere under load.
 
-Exit gate: a controlled buyer test produces unique masked CSV files, retries safely after a forced
-failure, and the downstream consumer reconciles the expected transaction IDs and totals.
+Exit gate: a controlled buyer test produces unique masked transaction CSVs and a complete full
+snapshot, retries safely after a forced failure, and the downstream consumer reconciles the expected
+transaction IDs and totals.
 
 ### WS5 â€” Security and privacy hardening
 
@@ -367,13 +370,17 @@ ABDM production, full QMS, analyzer/PACS and multi-branch are separate programme
 - [ ] Google Drive client installed and signed in
 - [ ] Export folder exists, is writable and uses the approved access policy
 - [ ] Unique filenames verified
-- [ ] CSV header and five flat columns verified
-- [ ] Patient IDs masked; no names/results/notes
+- [ ] Transaction CSV header and five flat columns verified
+- [ ] Transaction patient IDs masked; no names/results/notes
 - [ ] Diagnostics, Pharmacy and Hospital sources tested
 - [ ] Forced write failure leaves queue pending
 - [ ] Next interval retries and clears pending after folder restoration
+- [ ] Full snapshot writes every business table, including patients
+- [ ] Full snapshot `_manifest.json` records files, row counts and exclusions
+- [ ] Full snapshot excludes password hashes, TOTP secrets and recovery codes
+- [ ] Confidential-data handling and Google Drive sharing policy approved
 - [ ] Downstream duplicate handling documented
-- [ ] Backup/restore still independent of CSV export
+- [ ] Backup/restore still independent of both exports
 
 ## 10. Upgrade and rollback runbook
 

@@ -3,6 +3,24 @@
 All notable changes to MediCore are recorded here. This project follows semantic versioning once
 production releases begin.
 
+## [0.5.0] - 2026-11-05
+
+### Added
+
+- Full Google Drive data snapshots: one CSV per database table, including patients, billing,
+  diagnostics, pharmacy, hospital, expenses, compliance and audit data.
+- Manual **Export all modules now** control in Settings → Device & sync.
+- Automatic full snapshot once per day while the desktop app is open.
+- Snapshot folders under `<sync folder>\full-export\snapshot_YYYYMMDD_HHMMSS_XXXXXX`.
+- `_manifest.json` with table row counts, exported columns, excluded columns and skipped tables.
+- Tenant-scoped export of every business table plus the current tenant record and local metadata.
+- Formula-injection guarding for text values in full snapshots.
+
+### Security
+
+- Full snapshots never export password hashes, TOTP secrets, recovery codes or TOTP replay state.
+- The UI and documentation warn that snapshots contain confidential patient data and are not backups.
+
 ## [0.4.3] - 2026-11-04
 
 ### Fixed

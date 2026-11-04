@@ -6,11 +6,13 @@ import { setModeOverride } from "./app/mode";
 import { installDesktopLifecycle } from "./app/desktopLifecycle";
 import { isTauriRuntime } from "./db/tauriStorage";
 import { startLocalExportScheduler } from "./sync/syncEngine";
+import { startFullExportScheduler } from "./sync/fullExport";
 import { startBackupScheduler } from "./backup/backupEngine";
 
 installDesktopLifecycle();
 if (isTauriRuntime()) {
   startLocalExportScheduler();
+  startFullExportScheduler();
   startBackupScheduler();
 }
 

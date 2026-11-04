@@ -30,19 +30,26 @@ sync token or cloud dashboard.
 - CSV columns are `Sync_Timestamp, Transaction_ID, Module_Type, Masked_Patient_ID, Total_Amount`.
 - Patient IDs are SHA-256 masked; no names/results/notes are exported.
 - Success marks `exported_at` and `export_file`; failure leaves rows pending with `last_error`.
+- A separate full-data export writes one CSV per database table under
+  `<sync folder>\full-export\snapshot_...`, once daily and on demand.
+- Full snapshots include patients and all business modules but never `users.password_hash`,
+  `users.totp_secret`, `users.recovery_codes` or `users.totp_last_step`.
+- Full snapshots include tenant/device metadata and soft-deleted rows; they are not backups.
 
 ## Change rules
 
 1. Never append to or overwrite an existing CSV.
 2. Keep filenames unique; preserve the exact timestamp/random pattern.
-3. Keep CSV rows flat and exactly five columns unless the contract is deliberately versioned.
-4. Never export raw patient IDs, names, phone numbers, report results or clinical notes.
+3. Keep transaction CSV rows flat and exactly five columns unless the contract is deliberately versioned.
+4. Never expose authentication secrets in either export. Full snapshots may contain patient identifiers
+   and clinical data only because the user explicitly requested all modules; protect the folder.
 5. File I/O must stay off the UI thread.
-6. A failed write must leave the batch pending and retryable; do not mark it exported.
+6. A failed write must leave the transaction batch pending and retryable; do not mark it exported.
 7. Success means local file write only, not Google Drive upload or downstream processing.
 8. Do not promise import, merge, deletion propagation, remote monitoring or terminal-to-terminal sync.
-9. Keep tenant scoping on queue reads and updates.
+9. Keep tenant scoping on queue reads, full-snapshot reads and updates.
 10. Do not delete legacy `sync_queue`/`sync_ack` history; migration 18 only drops their triggers.
+11. Full-snapshot table/column changes must update `_manifest.json`, docs and secret-column exclusions.
 
 ## Verification
 
@@ -54,4 +61,7 @@ sync token or cloud dashboard.
 6. Confirm the source rows are marked exported and pending returns to zero.
 7. Make the sync folder unavailable/read-only; confirm pending remains and `last_error` is recorded.
 8. Restore the folder; confirm the next interval retries and succeeds.
-9. Confirm no `fetch`, endpoint, token, ACK or cloud-dashboard call exists in the export path.
+9. Run **Export all modules now**; confirm one CSV per table, patient rows present, tenant-scoped,
+   soft-deleted rows included and `_manifest.json` valid.
+10. Confirm `users.csv` omits password/TOTP/recovery columns.
+11. Confirm no `fetch`, endpoint, token, ACK or cloud-dashboard call exists in either export path.

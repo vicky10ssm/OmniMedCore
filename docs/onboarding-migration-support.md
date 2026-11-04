@@ -159,7 +159,8 @@ admission_no,patient_phone,patient_name,ward,bed,doctor_name,admitted_at,reason
 ```
 
 CSV must be UTF-8 and validated for spreadsheet formulas before import. Import tooling is not yet
-implemented; early migration is supervised/manual and must be quoted as effort.
+implemented; early migration is supervised/manual and must be quoted as effort. The full Google Drive
+snapshot is an export-only view of live data, not an import template.
 
 ### Reconciliation evidence
 

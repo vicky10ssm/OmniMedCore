@@ -500,4 +500,9 @@ The second deployment exists. `npm run build` makes the terminal (editing) app; 
 - The Rust writer runs in `spawn_blocking`. A failed write leaves rows pending with local error
   evidence and retries on the next interval.
 - Success means the file was written locally, not that Google Drive uploaded or a consumer processed it.
+- A separate full-data export writes one CSV per database table under
+  `GOOGLE_DRIVE_SYNC_PATH\full-export\snapshot_...`, once daily and on demand. It includes patients,
+  clinical records and all business modules; it excludes authentication secrets and never exports
+  TOTP/password/recovery material.
+- Full snapshots contain confidential patient data and are not encrypted backups.
 - Legacy `sync_queue`/`sync_ack` tables remain historical; migration 18 drops their triggers.

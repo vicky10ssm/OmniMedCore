@@ -34,7 +34,7 @@ Do not invent certifications, references or insurance.
 | Is there an analyzer/PACS integration? | No |
 | Is it multi-tenant SaaS today? | Tenant-scoped schema exists; service/platform is not built |
 | Are calculations audited? | Money is integer paise; diagnostic GST and pharmacy GST logic are exercised in checks |
-| Can data be exported? | CSV export exists for selected records; full exit procedure to be agreed |
+| Can data be exported? | Local Google Drive transaction summaries plus full all-module CSV snapshots (including patients) exist; a contractual full exit procedure and retention policy are still to be agreed |
 | Does it support hospital inpatients? | Yes, basic admission/ward/bed/discharge and generic IPD service charges/payments/bill print; not a full HIS, insurance/TPA, nursing or package/advance billing |
 | Does it support pharmacy? | Yes, medicine/batch/expiry stock and local dispensing/receipts; not chain procurement or controlled-drug registers |
 | Are modules configurable? | Yes: signed edition first, then per-tenant visibility in Settings → Modules & logo |
@@ -60,11 +60,13 @@ and validated restore are implemented. Key recovery, unattended scheduling and c
 acceptance remain mandatory before production use.
 
 **Monitoring / data sharing:** online sync and the hosted dashboard were removed. The current option is
-a one-way local Google Drive CSV outbox; it is a plain-text summary, not a remote monitor, import path or
-backup. Any downstream Google Drive consumer must be separately validated and access-controlled.
+a one-way local Google Drive export. The transaction outbox is a masked summary; full snapshots include
+patient and clinical data. Neither is a remote monitor, import path or backup. The Google Drive account,
+folder permissions and downstream consumer must be separately validated and access-controlled.
 
-**Data location:** local at the terminal today. Google Drive is an external outbox when enabled; its
-account, region, sharing and subprocessor terms must be reviewed by the buyer.
+**Data location:** local at the terminal today. Google Drive is an external export destination when
+enabled; full snapshots can contain patient and clinical data. Its account, region, sharing and
+subprocessor terms must be reviewed by the buyer.
 
 **Incident response:** policy and contact must be completed before pilot. Do not claim 24×7 response.
 

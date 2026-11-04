@@ -115,7 +115,7 @@ Pricing is intentionally not fixed in this document. Candidate structures are:
 - Annual per-centre licence
 - One-time licence + annual maintenance/support
 - Optional implementation, migration, training and custom-integration fees
-- Optional local Google Drive CSV export/outbox configuration
+- Optional local Google Drive transaction outbox and full all-module CSV snapshots, including patients
 
 See [commercial-model-and-pricing.md](commercial-model-and-pricing.md) for the costing and proposal
 method.

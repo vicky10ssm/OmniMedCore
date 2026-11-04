@@ -2,7 +2,7 @@
 
 ## Supported versions
 
-Security fixes are currently provided for the `0.1.x` development/pilot line. This project is not
+Security fixes are currently provided for the `0.5.x` development/pilot line. This project is not
 yet a generally available production product; see `docs/deployment-and-readiness.md`.
 
 ## Reporting a vulnerability
@@ -38,6 +38,8 @@ Reports are especially important for:
 - Invoice/payment manipulation or missing audit evidence
 - Remote monitoring gaining write capability
 - Patient-data leakage in logs, exports, screenshots or error messages
+- Full Google Drive snapshots exposed through weak folder sharing, wrong account or retained test data
+- Authentication secrets accidentally added to full-snapshot exports
 
 ## Secret handling
 
