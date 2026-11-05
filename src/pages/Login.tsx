@@ -62,7 +62,7 @@ export default function Login() {
           </Btn>
         </form>
         <p className="mt-4 text-center text-[11px] text-slate-400">
-          First sign-in: <b>admin / admin123</b> â€” you'll set a new password.
+          First sign-in: <b>admin / admin123</b> - you'll set a new password.
         </p>
       </Card>
     </div>
