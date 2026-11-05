@@ -373,7 +373,7 @@ fn write_full_snapshot(
             files: files.clone(),
             excluded_columns: excluded_columns.clone(),
             skipped_tables: skipped_tables.clone(),
-            note: "Full MediCore business-data snapshot. Authentication secrets and internal runtime state are excluded. Treat this folder as confidential patient data.",
+            note: "Full OmniMed Core business-data snapshot. Authentication secrets and internal runtime state are excluded. Treat this folder as confidential patient data.",
         };
         let manifest_path = snapshot_dir.join("_manifest.json");
         fs::write(

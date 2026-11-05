@@ -1,4 +1,4 @@
-// MediCore licence administration portal.
+// OmniMed Core licence administration portal.
 //
 // Run:  $env:MEDICORE_PORTAL_ADMIN_TOKEN="..." ; node license-portal/server.mjs
 // Open: http://127.0.0.1:8787
@@ -233,6 +233,6 @@ const server = createServer(async (req, res) => {
 });
 
 server.listen(PORT, "127.0.0.1", () => {
-  console.log(`MediCore licence portal: http://127.0.0.1:${PORT}`);
+  console.log(`OmniMed Core licence portal: http://127.0.0.1:${PORT}`);
   console.log("Admin token is read from MEDICORE_PORTAL_ADMIN_TOKEN.");
 });

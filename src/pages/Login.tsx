@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+﻿import { useState, type FormEvent } from "react";
 import { useAuth } from "../auth/AuthContext";
 import { APP_NAME, APP_TAGLINE } from "../app/brand";
 import { Btn, Card, ErrorNote, Labeled, TextInput } from "../ui/kit";
@@ -30,7 +30,7 @@ export default function Login() {
       <Card className="w-full max-w-sm p-6">
         <div className="mb-5 text-center">
           <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-teal-700 text-base font-bold text-white">
-            M
+            O
           </div>
           <h1 className="text-lg font-semibold">{APP_NAME}</h1>
           <p className="text-xs text-slate-500">{APP_TAGLINE}</p>
@@ -58,11 +58,11 @@ export default function Login() {
           </Labeled>
           <ErrorNote message={error} />
           <Btn type="submit" variant="primary" className="w-full" disabled={busy}>
-            {busy ? "Signing in…" : "Sign in"}
+            {busy ? "Signing inâ€¦" : "Sign in"}
           </Btn>
         </form>
         <p className="mt-4 text-center text-[11px] text-slate-400">
-          First sign-in: <b>admin / admin123</b> — you'll set a new password.
+          First sign-in: <b>admin / admin123</b> â€” you'll set a new password.
         </p>
       </Card>
     </div>
@@ -113,7 +113,7 @@ function SecondFactor() {
           </Labeled>
           <ErrorNote message={error} />
           <Btn type="submit" variant="primary" className="w-full" disabled={busy}>
-            {busy ? "Verifying…" : "Verify and sign in"}
+            {busy ? "Verifyingâ€¦" : "Verify and sign in"}
           </Btn>
           <div className="flex justify-between pt-1 text-xs">
             <button
@@ -192,7 +192,7 @@ export function ForcePasswordChange() {
           </Labeled>
           <ErrorNote message={error} />
           <Btn type="submit" variant="primary" className="w-full" disabled={busy}>
-            {busy ? "Saving…" : "Save password"}
+            {busy ? "Savingâ€¦" : "Save password"}
           </Btn>
         </form>
       </Card>

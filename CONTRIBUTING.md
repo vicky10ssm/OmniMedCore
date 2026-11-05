@@ -1,4 +1,4 @@
-# Contributing to MediCore
+# Contributing to OmniMed Core
 
 ## Prerequisites
 

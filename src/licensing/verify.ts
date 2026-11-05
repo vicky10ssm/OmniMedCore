@@ -44,7 +44,7 @@ export function validateLicenseShape(payload: unknown): payload is LicensePayloa
 
 export async function verifyLicenseFile(file: LicenseFile): Promise<LicensePayload> {
   if (!validateLicenseShape(file?.payload)) {
-    throw new Error("This is not a valid MediCore licence file.");
+    throw new Error("This is not a valid OmniMed Core licence file.");
   }
   if (!file.signature) throw new Error("Licence signature is missing.");
   const key = await crypto.subtle.importKey(

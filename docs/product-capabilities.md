@@ -47,6 +47,8 @@ Status meanings: **Ready**, **Pilot**, **Partial**, **Not available**, **Externa
 | Report amendments | Ready | Issued results cannot return to draft; amendment reason and prior revision retained |
 | Sample release gate | Ready | Pathology release requires an accepted linked sample |
 | Report letterhead printing | Ready | Lab identity, patient/doctor, sample ID, authorizer, version |
+| X-ray report workflow | Ready | Clinical history, radiologist findings, impression, signature and configurable disclaimer |
+| X-ray letterhead printing | Ready | A4 report with logo/clinic header, patient details, findings, impression, signature and bottom disclaimer |
 | Critical-value notification | Not available | No critical-limit workflow/read-back log yet |
 | Auto-verification/middleware | Not available | No automated release rules |
 | Analyzer integration | Not available | No Mindray/Sysmex/driver interfaces |
@@ -121,7 +123,7 @@ Status meanings: **Ready**, **Pilot**, **Partial**, **Not available**, **Externa
 | Vendor licence portal | Pilot | Local/self-hosted admin portal issues, downloads, renews and revokes signed licence files; public hosting and customer self-service are not deployed |
 | OS-secure licence storage | Pilot | Windows DPAPI current-user storage in the packaged Tauri app; copied blobs fail on another machine/account. Browser builds use a localStorage fallback because they have no DPAPI |
 | Clinic logo | Ready | PNG/JPG/WebP up to 500 KB; shown in sidebar and printed invoice/report/pharmacy letterheads |
-| Multi-vertical branding | Ready | MediCore umbrella brand with tenant name/logo overrides |
+| Multi-vertical branding | Ready | OmniMed Core umbrella brand with tenant name/logo overrides |
 | Shared patient identity | Ready | Same patient used for OPD, diagnostics, pharmacy and admissions |
 | Read-only monitoring build | Pilot | Separate local read-only bundle; no cloud sync or remote dashboard |
 | Encrypted database | Pilot | Desktop database uses SQLCipher 4.20 (AES-256); key is stored in Windows Credential Manager. Key export/import and cross-machine recovery are not yet exposed |

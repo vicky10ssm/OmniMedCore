@@ -130,7 +130,7 @@ export function LicenseProvider({ children }: { children: ReactNode }) {
       }
       if (!licenseBindsToDevice(verified.deviceIds, device)) {
         throw new Error(
-          `Hardware mismatch: this licence is not activated for this device. Send the current Device ID to MediCore to reissue the licence for this machine.`
+          `Hardware mismatch: this licence is not activated for this device. Send the current Device ID to OmniMed Core to reissue the licence for this machine.`
         );
       }
       const state = statusForPayload(verified);

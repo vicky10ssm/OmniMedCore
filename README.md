@@ -1,8 +1,8 @@
-# MediCore
+﻿# OmniMed Core
 
-**Diagnostics · Pharmacy · Hospital**
+**Diagnostics | Pharmacy | Hospital**
 
-MediCore is a modular, offline-first billing and care-operations application for diagnostic
+OmniMed Core is a modular, offline-first billing and care-operations application for diagnostic
 centres, standalone pharmacies and small hospitals. It is one codebase with licensed editions and
 tenant-scoped configuration.
 
@@ -25,7 +25,7 @@ tenant-scoped configuration.
 Effective modules are:
 
 ```text
-licensed modules ∩ clinic-enabled modules
+licensed modules âˆ© clinic-enabled modules
 ```
 
 Dashboard and Settings are administrator-only. Terminal operators work from Expenses and do not see the
@@ -37,6 +37,7 @@ Dashboard, Settings, Compliance or the Expenses profitability card.
 - GST billing, invoices, payments, dues, cancellation and A4/80 mm printing
 - Test/package catalogue with GST and specimen metadata
 - Parameter-based pathology reporting, verification, amendment history and printing
+- X-ray/radiology reports with clinical history, findings, impression, radiologist signature and configurable disclaimer
 - Sample accession, collection, receipt, acceptance/rejection and disposal
 - Disposal is blocked until every linked test has complete entered results
 - Hospital admissions, ward/bed, discharge summary and generic IPD service charges/payments/printing
@@ -87,7 +88,7 @@ admin / admin123
 ```
 
 The app forces a password change on first sign-in. The synthetic demo seed is available only in DEV
-through Settings → Modules & logo or `window.__diagbillSeedDemo()`.
+through Settings â†’ Modules & logo or `window.__diagbillSeedDemo()`.
 
 ## Checks and builds
 
@@ -162,20 +163,20 @@ See [SECURITY.md](SECURITY.md).
 
 ## Documentation
 
-- [docs/README.md](docs/README.md) — documentation map
-- [docs/product-capabilities.md](docs/product-capabilities.md) — ready/pilot/unavailable features
+- [docs/README.md](docs/README.md) â€” documentation map
+- [docs/product-capabilities.md](docs/product-capabilities.md) â€” ready/pilot/unavailable features
 - [docs/architecture.md](docs/architecture.md) - architecture and local export design
-- [docs/licensing-and-editions.md](docs/licensing-and-editions.md) — editions, activation and grace
-- [docs/licensing-process.md](docs/licensing-process.md) — sales-to-renewal operating procedure
-- [docs/deployment-and-readiness.md](docs/deployment-and-readiness.md) — deployment gates
-- [docs/productionization-plan.md](docs/productionization-plan.md) — production workstreams
+- [docs/licensing-and-editions.md](docs/licensing-and-editions.md) â€” editions, activation and grace
+- [docs/licensing-process.md](docs/licensing-process.md) â€” sales-to-renewal operating procedure
+- [docs/deployment-and-readiness.md](docs/deployment-and-readiness.md) â€” deployment gates
+- [docs/productionization-plan.md](docs/productionization-plan.md) â€” production workstreams
 - [PRODUCTION_COMMERCIAL_READINESS.md](PRODUCTION_COMMERCIAL_READINESS.md) - current done/pending status and commercial release gates
 - [CLIENT_INSTALLATION_RUNBOOK.md](CLIENT_INSTALLATION_RUNBOOK.md) - end-to-end offline client installation, backup, local CSV export, acceptance and rollback
 - [LOCAL_CSV_EXPORT.md](LOCAL_CSV_EXPORT.md) - Google Drive transaction outbox, full all-module snapshots, masking, secret exclusions and retry behavior
 - [BACKUP_RESTORE.md](BACKUP_RESTORE.md) - local snapshots, retention, optional USB/OneDrive copy and restore
 - [ENCRYPTION.md](ENCRYPTION.md) - SQLCipher, Windows Credential Manager key storage and migration
 - [code-signing/README.md](code-signing/README.md) - local self-signed certificate and client trust setup
-- [COMPLIANCE.md](COMPLIANCE.md) — compliance evidence and gaps
+- [COMPLIANCE.md](COMPLIANCE.md) â€” compliance evidence and gaps
 
 ## Contributing
 

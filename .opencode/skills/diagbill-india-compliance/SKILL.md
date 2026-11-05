@@ -86,7 +86,7 @@ anti-corruption, medical-council, tax and audit issues in Indian healthcare. **M
 rules, accruals or payouts visible in the product can itself create a compliance or discoverability
 problem**, even if the feature is optional.
 
-MediCore therefore does not expose a Commissions tab/module, does not collect commission rules in the
+OmniMed Core therefore does not expose a Commissions tab/module, does not collect commission rules in the
 Doctors screen, and does not accrue referral commissions on new bills. Legacy commission tables/rows may
 remain in historical databases and are not displayed by the current UI. Do not reintroduce commission
 visibility, accrual, payout or reporting without a written legal/compliance review and an explicit

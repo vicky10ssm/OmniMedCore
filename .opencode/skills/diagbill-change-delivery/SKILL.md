@@ -1,9 +1,9 @@
 ---
 name: DiagBill Change Delivery
-description: Use for every MediCore/DiagBill change request that must go end-to-end: implement, document, verify, commit, open/merge a GitHub PR, and cut a versioned signed release. Trigger this skill whenever the user asks for a change without explicitly exempting release or GitHub delivery.
+description: Use for every OmniMed Core/DiagBill change request that must go end-to-end: implement, document, verify, commit, open/merge a GitHub PR, and cut a versioned signed release. Trigger this skill whenever the user asks for a change without explicitly exempting release or GitHub delivery.
 ---
 
-# MediCore end-to-end change delivery
+# OmniMed Core end-to-end change delivery
 
 This skill is the default delivery workflow for **every change request** in this repository. Do not stop
 at a local code edit when the user asked for a change. Treat "done" as: implemented, tested, documented,
@@ -128,15 +128,15 @@ that claims to be signed.
 
 ```powershell
 $target = Join-Path $env:TEMP 'medicore-msi-verify'
-msiexec /a .\src-tauri\target\release\bundle\msi\MediCore_X.Y.Z_x64_en-US.msi /qn TARGETDIR=$target
-Get-AuthenticodeSignature "$target\PFiles\MediCore\medicore.exe"
+msiexec /a .\src-tauri\target\release\bundle\msi\OmniMed Core_X.Y.Z_x64_en-US.msi /qn TARGETDIR=$target
+Get-AuthenticodeSignature "$target\PFiles\OmniMed Core\medicore.exe"
 ```
 
 - Verify NSIS and MSI:
 
 ```powershell
-Get-AuthenticodeSignature .\src-tauri\target\release\bundle\nsis\MediCore_X.Y.Z_x64-setup.exe
-Get-AuthenticodeSignature .\src-tauri\target\release\bundle\msi\MediCore_X.Y.Z_x64_en-US.msi
+Get-AuthenticodeSignature .\src-tauri\target\release\bundle\nsis\OmniMed Core_X.Y.Z_x64-setup.exe
+Get-AuthenticodeSignature .\src-tauri\target\release\bundle\msi\OmniMed Core_X.Y.Z_x64_en-US.msi
 ```
 
 - Confirm `ProductVersion` matches the release version.
@@ -184,16 +184,16 @@ when publishing a locally signed release:
 ```powershell
 gh workflow list --all
 gh workflow disable "Release Windows"
-git tag -a vX.Y.Z -m "MediCore vX.Y.Z"
+git tag -a vX.Y.Z -m "OmniMed Core vX.Y.Z"
 git push origin vX.Y.Z
 ```
 
 Create the GitHub release with signed assets and the release notes file:
 
 ```powershell
-gh release create vX.Y.Z --title "MediCore vX.Y.Z" --notes-file <release-notes.md> --latest `
-  .\release\vX.Y.Z\MediCore_X.Y.Z_x64-setup.exe `
-  .\release\vX.Y.Z\MediCore_X.Y.Z_x64_en-US.msi `
+gh release create vX.Y.Z --title "OmniMed Core vX.Y.Z" --notes-file <release-notes.md> --latest `
+  .\release\vX.Y.Z\OmniMed Core_X.Y.Z_x64-setup.exe `
+  .\release\vX.Y.Z\OmniMed Core_X.Y.Z_x64_en-US.msi `
   .\release\vX.Y.Z\MediCore-CodeSigning.cer `
   .\release\vX.Y.Z\SHA256SUMS.txt
 ```

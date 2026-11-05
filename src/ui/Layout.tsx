@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import { getDb } from "../db";
@@ -178,7 +178,7 @@ export default function Layout() {
         />
       ) : (
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-teal-500 text-sm font-bold text-white">
-          M
+          O
         </div>
       )}
       <div className="min-w-0">
@@ -259,13 +259,13 @@ export default function Layout() {
           <div className="mx-auto max-w-6xl">
             {license.status === "grace" && (
               <div className="no-print mb-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
-                Licence expired and is in the 30-day grace period. Renew from Settings → Licence.
+                Licence expired and is in the 30-day grace period. Renew from Settings â†’ Licence.
               </div>
             )}
             {license.status === "expired" && (
               <div className="no-print mb-4 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-800">
-                Licence grace period has ended. MediCore is in read-only mode; existing records can be
-                viewed, printed and exported. Renew from Settings → Licence.
+                Licence grace period has ended. OmniMed Core is in read-only mode; existing records can be
+                viewed, printed and exported. Renew from Settings â†’ Licence.
               </div>
             )}
             <Outlet />

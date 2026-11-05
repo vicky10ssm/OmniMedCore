@@ -1,11 +1,11 @@
-// The encryption gate shown before sign-in.
+﻿// The encryption gate shown before sign-in.
 //
 // Order matters and is deliberate: the database is unlocked FIRST, then users
 // sign in. Unlocking answers "can this machine read its own records"; signing in
 // answers "should this person be allowed to see them". Two different questions,
 // two different secrets.
 //
-// The recovery-code route is always visible but visually secondary — it is the
+// The recovery-code route is always visible but visually secondary â€” it is the
 // escape hatch for a forgotten passphrase, and hiding it would mean someone
 // discovers it only after they are already locked out.
 
@@ -45,7 +45,7 @@ export default function UnlockScreen({
       <div className="w-full max-w-sm">
         <div className="mb-5 text-center">
           <div className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-xl bg-teal-600 text-lg font-bold text-white">
-            D
+            O
           </div>
           <h1 className="text-lg font-semibold tracking-tight">
             {mode === "passphrase" ? "Unlock this computer" : "Use a recovery code"}
@@ -70,7 +70,7 @@ export default function UnlockScreen({
               autoComplete="off"
               spellCheck={false}
               placeholder={
-                mode === "passphrase" ? "Centre passphrase" : "xxxx-xxxx-xxxx-…"
+                mode === "passphrase" ? "Centre passphrase" : "xxxx-xxxx-xxxx-â€¦"
               }
             />
           </Labeled>
@@ -78,7 +78,7 @@ export default function UnlockScreen({
           {error && <ErrorNote message={error} />}
 
           <Btn type="submit" variant="primary" disabled={busy || !value}>
-            {busy ? "Checking…" : "Unlock"}
+            {busy ? "Checkingâ€¦" : "Unlock"}
           </Btn>
         </form>
 

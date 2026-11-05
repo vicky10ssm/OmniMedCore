@@ -1,7 +1,7 @@
 # Client installation runbook
 
 Last updated: 4 November 2026  
-Applies to: MediCore `0.4.1` Windows desktop app  
+Applies to: OmniMed Core `0.4.1` Windows desktop app  
 Status: supervised pilot only; offline-first terminal with local CSV export
 
 This runbook covers the offline desktop terminal and its optional local Google Drive outbox:
@@ -42,7 +42,7 @@ Typical installed layout:
 
 ```text
 Application:
-  %LOCALAPPDATA%\MediCore\medicore.exe
+  %LOCALAPPDATA%\OmniMed Core\medicore.exe
 
 Database and local backups:
   %APPDATA%\in.medicore.desktop\medicore.db
@@ -74,7 +74,7 @@ Do this on every client machine before installing.
 
 ### 3.1 Install the local root certificate
 
-Windows trusts the locally signed build only after the MediCore root certificate is installed.
+Windows trusts the locally signed build only after the OmniMed Core root certificate is installed.
 
 Administrator PowerShell:
 
@@ -93,7 +93,7 @@ certutil -user -addstore -f TrustedPublisher .\MediCore-CodeSigning.cer
 Expected local certificate:
 
 ```text
-Subject:    CN=MediCore Local Code Signing, O=MediCore, C=IN
+Subject:    CN=OmniMed Core Local Code Signing, O=OmniMed Core, C=IN
 Thumbprint: 1180CA1A9509C9E968DED5E4274C89410AC52584
 Valid to:   2031-11-03
 ```
@@ -126,7 +126,7 @@ be limited, and a client without the root certificate will not trust the signatu
 
 ### 4.1 Protect existing data before an upgrade
 
-If MediCore is already installed:
+If OmniMed Core is already installed:
 
 1. Close the application normally and wait for it to exit.
 2. Copy the current `%APPDATA%\in.medicore.desktop\medicore.db` and the `Backups` folder to a protected
@@ -147,14 +147,14 @@ For a new installation, no database exists yet.
 After installation, verify the installed executable:
 
 ```powershell
-Get-AuthenticodeSignature "$env:LOCALAPPDATA\MediCore\medicore.exe"
+Get-AuthenticodeSignature "$env:LOCALAPPDATA\OmniMed Core\medicore.exe"
 ```
 
 Expected `Status: Valid`.
 
 ### 4.3 First launch and encryption
 
-Launch MediCore from the Start menu.
+Launch OmniMed Core from the Start menu.
 
 On first launch of a new version:
 
@@ -267,7 +267,7 @@ The export path is entirely local. Google Drive performs the upload after the fi
 
 1. Install and sign in to the Google Drive desktop client on the terminal.
 2. Create a dedicated folder under the synced Google Drive location, for example:
-   `C:\Users\<user>\My Drive\MediCore\outbox`.
+   `C:\Users\<user>\My Drive\OmniMed Core\outbox`.
 3. Open **Settings → Device & sync → Local CSV export**.
 4. Set the export folder to that path, or keep the default:
    `C:\Users\Public\MedicalApp_Sync`.
@@ -335,6 +335,7 @@ including patients and clinical records, and therefore contain confidential data
 - [ ] Admin password changed; named users and roles created; 2FA considered
 - [ ] Centre profile, modules, numbering, printing and letterhead configured
 - [ ] Test patient, invoice, payment, print and report workflow passed
+- [ ] X-ray report letterhead, radiologist signature and disclaimer verified
 - [ ] Local backup and optional second folder verified
 - [ ] Restore test completed with recorded evidence
 - [ ] Windows profile/key backup and BitLocker decision recorded
@@ -383,7 +384,7 @@ State these limitations plainly:
   consumer has processed it.
 - Browser/IndexedDB storage is not the supported primary data store.
 - Clean-machine install/upgrade/restore acceptance and public-CA signing remain release gates.
-- MediCore is not NABL-certified, ISO-certified, ABDM-live or a complete HIS/LIS by installing it.
+- OmniMed Core is not NABL-certified, ISO-certified, ABDM-live or a complete HIS/LIS by installing it.
 
 ## 9. Related documents
 

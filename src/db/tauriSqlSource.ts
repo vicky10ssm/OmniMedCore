@@ -97,7 +97,7 @@ export class TauriSqlSource implements DataSource {
     const info = await databaseInfo();
     if (!info.writable) {
       throw new Error(
-        `The MediCore database folder is not writable: ${info.dataDir}. Check Windows permissions or free disk space.`
+        `The OmniMed Core database folder is not writable: ${info.dataDir}. Check Windows permissions or free disk space.`
       );
     }
 

@@ -1,11 +1,11 @@
 # Licensing, editions and activation
 
 Last updated: 4 November 2026<br>
-Database schema: `18`
+Database schema: `19`
 
 ## Commercial model
 
-MediCore is one product codebase with purchasable editions. The installed application exposes:
+OmniMed Core is one product codebase with purchasable editions. The installed application exposes:
 
 ```text
 effective modules = modules allowed by the signed licence
@@ -173,7 +173,7 @@ confirm it is refused.
 - **Active:** all licensed modules are available.
 - **Grace:** 30 days after expiry by default. Licensed modules remain available and the UI shows a renewal
   warning.
-- **After grace:** MediCore enters read-only mode. Existing records can be viewed, printed and exported.
+- **After grace:** OmniMed Core enters read-only mode. Existing records can be viewed, printed and exported.
   New financial/clinical writes are blocked, including billing, sample/report work, admissions and
   pharmacy dispensing.
 

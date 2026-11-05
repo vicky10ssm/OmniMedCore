@@ -70,7 +70,7 @@ Training output: attendance record, quick-reference guide, competency sign-off f
 
 ### Phase 6 — Parallel run
 
-- Run MediCore and existing process in parallel for an agreed period.
+- Run OmniMed Core and existing process in parallel for an agreed period.
 - Reconcile daily totals and weekly dues.
 - Log every discrepancy with owner and resolution.
 - Do not switch off the old system until acceptance.

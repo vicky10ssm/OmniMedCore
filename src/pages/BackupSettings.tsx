@@ -51,11 +51,11 @@ async function validateBackup(
   };
   const latest = MIGRATIONS[MIGRATIONS.length - 1]?.version ?? 0;
   if (!Number.isFinite(validation.schemaVersion) || validation.schemaVersion < 1) {
-    throw new Error("The backup has no valid MediCore schema version.");
+    throw new Error("The backup has no valid OmniMed Core schema version.");
   }
   if (validation.schemaVersion > latest) {
     throw new Error(
-      `This backup uses schema ${validation.schemaVersion}; this app supports up to ${latest}. Update MediCore before restoring.`
+      `This backup uses schema ${validation.schemaVersion}; this app supports up to ${latest}. Update OmniMed Core before restoring.`
     );
   }
   return { bytes, validation };
@@ -86,7 +86,7 @@ export default function BackupSettings() {
       const selected = await open({
         directory: true,
         multiple: false,
-        title: "Choose a second folder for MediCore backups",
+        title: "Choose a second folder for OmniMed Core backups",
       });
       if (typeof selected === "string") {
         setSecondaryBackupDir(selected);
@@ -132,7 +132,7 @@ export default function BackupSettings() {
       const { bytes, validation } = await validateBackup(file);
       const confirmed = window.confirm(
         `Restore this ${validation.encrypted ? "encrypted " : "legacy plaintext "}backup ` +
-          `(schema ${validation.schemaVersion}) and replace the current MediCore database?\n\n` +
+          `(schema ${validation.schemaVersion}) and replace the current OmniMed Core database?\n\n` +
           "A pre-restore safety copy will be created in the local Backups folder. " +
           "The application will reload. Data created after this backup will no longer be visible."
       );
@@ -141,7 +141,7 @@ export default function BackupSettings() {
       await closeDatabaseForRestore();
       closed = true;
       await invoke<string>("restore_database", { bytesBase64: bytesToBase64(bytes) });
-      setMessage("Restore completed. Reloading MediCore…");
+      setMessage("Restore completed. Reloading OmniMed Core…");
       window.setTimeout(() => window.location.reload(), 600);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Restore failed");

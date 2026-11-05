@@ -1,11 +1,11 @@
 # Local Google Drive CSV export
 
 Last updated: 5 November 2026<br>
-Applies to: MediCore desktop `0.5.0+`, schema `18+`
+Applies to: OmniMed Core desktop `0.6.0+`, schema `19+`
 
 ## What it does
 
-MediCore no longer sends sync rows to an API, endpoint or cloud dashboard. It writes CSV files into a
+OmniMed Core no longer sends sync rows to an API, endpoint or cloud dashboard. It writes CSV files into a
 local Google Drive sync folder. The Google Drive desktop client uploads those files independently.
 
 The terminal remains completely offline-capable. There is no network request in either export path.
@@ -146,7 +146,7 @@ No queue rows are deleted, so export history remains auditable.
 
 1. Install and sign in to the Google Drive desktop client on the terminal.
 2. Choose a folder under the synced Google Drive location (for example
-   `C:\Users\<user>\My Drive\MediCore\outbox`) or keep the default public folder if the buyer accepts
+   `C:\Users\<user>\My Drive\OmniMed Core\outbox`) or keep the default public folder if the buyer accepts
    it.
 3. Keep the Google Drive client running so completed CSV files upload.
 4. Do not let two terminals write to the same folder unless the downstream consumer can handle multiple

@@ -18,7 +18,7 @@ the final document reviewed by your CA and legal counsel.
 | Field | Vendor | Buyer |
 | --- | --- | --- |
 | Legal name | [Vendor legal name] | [Buyer legal name] |
-| Trade name | MediCore | [Centre/hospital name] |
+| Trade name | OmniMed Core | [Centre/hospital name] |
 | Registered address | [Address] | [Address] |
 | GSTIN | [GSTIN / registration status] | [Buyer GSTIN] |
 | PAN | [PAN] | [PAN] |
@@ -29,7 +29,7 @@ the final document reviewed by your CA and legal counsel.
 
 ## 2. Proposal purpose
 
-This proposal covers the configuration, implementation and licensing of MediCore for **[number]** centre(s)
+This proposal covers the configuration, implementation and licensing of OmniMed Core for **[number]** centre(s)
 and **[number]** terminal(s), as detailed in the agreed scope.
 
 ### Included in this proposal

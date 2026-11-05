@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+﻿import { useEffect, useRef, useState, type ReactNode } from "react";
 import { APP_NAME, APP_TAGLINE } from "../app/brand";
 import { useLicense } from "../licensing/LicenseContext";
 import { Btn, Card, ErrorNote, Icon, Labeled } from "../ui/kit";
@@ -20,7 +20,7 @@ export function LicenseGate({ children }: { children: ReactNode }) {
   if (status === "loading") {
     return (
       <div className="flex h-full items-center justify-center bg-slate-100">
-        <p className="text-sm text-slate-500">Verifying licence…</p>
+        <p className="text-sm text-slate-500">Verifying licenceâ€¦</p>
       </div>
     );
   }
@@ -59,7 +59,7 @@ function ActivationScreen() {
       <Card className="w-full max-w-lg p-6">
         <div className="mb-4 text-center">
           <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-xl bg-teal-700 text-base font-bold text-white">
-            M
+            O
           </div>
           <h1 className="text-lg font-semibold">{APP_NAME} licence activation</h1>
           <p className="text-xs text-slate-500">{APP_TAGLINE}</p>
@@ -73,9 +73,9 @@ function ActivationScreen() {
 
         <div className="mb-3 rounded-lg bg-slate-50 p-3 text-xs text-slate-600">
           <p><b>Tenant ID:</b> <span className="num break-all">{tenantId}</span></p>
-          <p className="mt-1"><b>Hardware Device ID:</b> <span className="num break-all">{deviceId || "Loading…"}</span></p>
+          <p className="mt-1"><b>Hardware Device ID:</b> <span className="num break-all">{deviceId || "Loadingâ€¦"}</span></p>
           <p className="mt-2 text-slate-400">
-            Send both IDs to MediCore support when purchasing or moving this installation.
+            Send both IDs to OmniMed Core support when purchasing or moving this installation.
             This Device ID is a hardware fingerprint for this machine; the licence file is protected by
             this Windows account.
           </p>
@@ -111,7 +111,7 @@ function ActivationScreen() {
             onClick={() => void activate()}
             disabled={busy || !text.trim()}
           >
-            {busy ? "Verifying…" : "Activate licence"}
+            {busy ? "Verifyingâ€¦" : "Activate licence"}
           </Btn>
           <p className="text-center text-[11px] text-slate-400">
             Offline activation verifies the vendor signature, tenant and device binding.
@@ -162,11 +162,11 @@ export function LicenseSettingsPanel() {
         <dl className="mt-3 grid gap-3 text-sm sm:grid-cols-2">
           <div><dt className="text-xs text-slate-500">Edition</dt><dd className="font-medium">{editionLabel}</dd></div>
           <div><dt className="text-xs text-slate-500">Status</dt><dd className="font-medium capitalize">{status}</dd></div>
-          <div><dt className="text-xs text-slate-500">Customer</dt><dd>{payload?.customerName || "—"}</dd></div>
-          <div><dt className="text-xs text-slate-500">Licence ID</dt><dd className="num">{payload?.licenseId || "—"}</dd></div>
-          <div><dt className="text-xs text-slate-500">Expires</dt><dd>{payload?.expiresAt ? new Date(payload.expiresAt).toLocaleDateString("en-IN") : payload ? "Perpetual" : "—"}</dd></div>
-          <div><dt className="text-xs text-slate-500">Remaining</dt><dd>{daysRemaining === null ? "—" : `${daysRemaining} days`}</dd></div>
-          <div className="sm:col-span-2"><dt className="text-xs text-slate-500">Licensed modules</dt><dd className="mt-1 flex flex-wrap gap-1">{modules.size > 0 ? [...modules].map((m) => <span key={m} className="rounded-full bg-teal-50 px-2 py-0.5 text-xs text-teal-700">{m}</span>) : "—"}</dd></div>
+          <div><dt className="text-xs text-slate-500">Customer</dt><dd>{payload?.customerName || "â€”"}</dd></div>
+          <div><dt className="text-xs text-slate-500">Licence ID</dt><dd className="num">{payload?.licenseId || "â€”"}</dd></div>
+          <div><dt className="text-xs text-slate-500">Expires</dt><dd>{payload?.expiresAt ? new Date(payload.expiresAt).toLocaleDateString("en-IN") : payload ? "Perpetual" : "â€”"}</dd></div>
+          <div><dt className="text-xs text-slate-500">Remaining</dt><dd>{daysRemaining === null ? "â€”" : `${daysRemaining} days`}</dd></div>
+          <div className="sm:col-span-2"><dt className="text-xs text-slate-500">Licensed modules</dt><dd className="mt-1 flex flex-wrap gap-1">{modules.size > 0 ? [...modules].map((m) => <span key={m} className="rounded-full bg-teal-50 px-2 py-0.5 text-xs text-teal-700">{m}</span>) : "â€”"}</dd></div>
           <div><dt className="text-xs text-slate-500">Tenant ID</dt><dd className="num break-all text-xs">{tenantId}</dd></div>
           <div><dt className="text-xs text-slate-500">Hardware Device ID</dt><dd className="num break-all text-xs">{deviceId}</dd></div>
         </dl>
@@ -215,7 +215,7 @@ export function LicenseSettingsPanel() {
           <ErrorNote message={error} />
           {message && <p className="rounded-lg bg-emerald-50 px-3 py-2 text-xs text-emerald-700">{message}</p>}
           <Btn variant="primary" className="w-full" onClick={() => void activate()} disabled={busy || !text.trim()}>
-            {busy ? "Verifying…" : "Import licence"}
+            {busy ? "Verifyingâ€¦" : "Import licence"}
           </Btn>
         </div>
       </Card>

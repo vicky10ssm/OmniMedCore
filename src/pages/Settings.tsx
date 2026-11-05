@@ -62,6 +62,9 @@ interface ProfileForm {
   lab_gstin: string;
   pathologist_name: string;
   pathologist_qualification: string;
+  radiologist_name: string;
+  radiologist_qualification: string;
+  xray_disclaimer: string;
   invoice_prefix: string;
   device_code: string;
   invoice_device_code: string;
@@ -80,6 +83,9 @@ const PROFILE_KEYS: (keyof ProfileForm)[] = [
   "lab_gstin",
   "pathologist_name",
   "pathologist_qualification",
+  "radiologist_name",
+  "radiologist_qualification",
+  "xray_disclaimer",
   "invoice_prefix",
   "device_code",
   "invoice_device_code",
@@ -98,6 +104,10 @@ const EMPTY: ProfileForm = {
   lab_gstin: "",
   pathologist_name: "",
   pathologist_qualification: "",
+  radiologist_name: "",
+  radiologist_qualification: "",
+  xray_disclaimer:
+    "This report is based on the information available at the time of examination. It is not a substitute for clinical correlation or further investigation.",
   invoice_prefix: "INV-",
   device_code: "A",
   invoice_device_code: "1",
@@ -618,6 +628,49 @@ export default function Settings() {
                     />
                   </Labeled>
                 </div>
+              </div>
+
+              <div className="border-t border-slate-200 pt-4">
+                <h2 className="mb-3 text-sm font-semibold">Radiologist / X-ray report</h2>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <Labeled label="Radiologist name">
+                    <TextInput
+                      value={form.radiologist_name}
+                      disabled={!isAdmin}
+                      onChange={(e) =>
+                        setForm({ ...form, radiologist_name: e.target.value })
+                      }
+                      placeholder="Dr. A. Sharma"
+                    />
+                  </Labeled>
+                  <Labeled label="Qualification">
+                    <TextInput
+                      value={form.radiologist_qualification}
+                      disabled={!isAdmin}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          radiologist_qualification: e.target.value,
+                        })
+                      }
+                      placeholder="MD (Radiodiagnosis)"
+                    />
+                  </Labeled>
+                </div>
+                <Labeled
+                  label="X-ray report disclaimer"
+                  hint="Printed at the bottom of every X-ray report. Leave blank to use the default."
+                >
+                  <textarea
+                    value={form.xray_disclaimer}
+                    disabled={!isAdmin}
+                    onChange={(e) =>
+                      setForm({ ...form, xray_disclaimer: e.target.value })
+                    }
+                    rows={3}
+                    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:border-teal-600 focus:outline-none focus:ring-1 focus:ring-teal-600"
+                  />
+                </Labeled>
               </div>
 
               <div className="border-t border-slate-200 pt-4">

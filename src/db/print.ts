@@ -18,7 +18,7 @@ import { UpdateExecutionTimestamp } from "../licensing/executionClock";
 function reportPrintFailure(error: unknown): void {
   // UpdateExecutionTimestamp already dispatches CLOCK_TAMPER_EVENT when it
   // detects tampering. Keep the console diagnostic for support logs.
-  console.error("MediCore blocked printing because licence time validation failed.", error);
+  console.error("OmniMed Core blocked printing because licence time validation failed.", error);
 }
 
 /** Prints the current page as an 80mm thermal receipt. */

@@ -124,6 +124,9 @@ Record invoice/payment IDs and totals used for acceptance.
 - [ ] Verification requires all selected results
 - [ ] Amendment requires reason and preserves previous revision
 - [ ] Report print shows accession, authorizer and version
+- [ ] X-ray report saves clinical history, findings and impression
+- [ ] X-ray print shows logo/header, patient details, signature and configured disclaimer
+- [ ] X-ray releases require `can_authorize_reports`
 - [ ] **Dispose disabled before any linked result is entered**
 - [ ] **Dispose disabled for partial/multi-parameter results**
 - [ ] **Dispose enabled after all linked tests have complete results or are verified**
@@ -253,7 +256,7 @@ If the vendor licence portal changes:
 - [ ] Artifact storage access controlled
 
 ```powershell
-Get-FileHash .\release\MediCore-Setup.exe -Algorithm SHA256
+Get-FileHash .\release\OmniMed Core-Setup.exe -Algorithm SHA256
 Get-FileHash .\dist\assets\*.js -Algorithm SHA256
 ```
 

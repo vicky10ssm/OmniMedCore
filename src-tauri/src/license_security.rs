@@ -1,4 +1,4 @@
-// Native security primitives for MediCore's offline licence.
+// Native security primitives for OmniMed Core's offline licence.
 //
 // Three layers live here because all three need the operating system:
 //   1. A stable machine fingerprint derived from immutable hardware identifiers.
@@ -52,7 +52,7 @@ fn app_data_dir(app: &tauri::AppHandle) -> Result<PathBuf, String> {
     let dir = app
         .path()
         .app_config_dir()
-        .map_err(|e| format!("Could not resolve the MediCore application-data directory: {e}"))?;
+        .map_err(|e| format!("Could not resolve the OmniMed Core application-data directory: {e}"))?;
     fs::create_dir_all(&dir)
         .map_err(|e| format!("Could not create the application-data directory: {e}"))?;
     Ok(dir)
@@ -291,7 +291,7 @@ fn save_execution_state(path: &Path, state: &ExecutionState) -> Result<(), Strin
 fn advance_execution_time(now: i64, last_known: i64) -> Result<i64, String> {
     if now < last_known {
         return Err(
-            "System Clock Manipulation Detected. The system clock is earlier than the last recorded MediCore execution time. Correct the clock and restart MediCore."
+            "System Clock Manipulation Detected. The system clock is earlier than the last recorded OmniMed Core execution time. Correct the clock and restart OmniMed Core."
                 .to_string(),
         );
     }
@@ -491,7 +491,7 @@ fn machine_identity() -> Result<MachineIdentity, String> {
     }
 
     Err(
-        "MediCore could not read a stable hardware identifier. WMI may be restricted and the primary drive serial is unavailable."
+        "OmniMed Core could not read a stable hardware identifier. WMI may be restricted and the primary drive serial is unavailable."
             .to_string(),
     )
 }

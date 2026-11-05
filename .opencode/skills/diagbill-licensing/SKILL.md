@@ -1,9 +1,9 @@
 ---
 name: DiagBill Licensing
-description: Use when changing MediCore editions, signed licence activation, hardware fingerprinting, DPAPI storage, tenant/device entitlement, clock high-water checks, grace/read-only behavior, the vendor licence portal, or licence QA.
+description: Use when changing OmniMed Core editions, signed licence activation, hardware fingerprinting, DPAPI storage, tenant/device entitlement, clock high-water checks, grace/read-only behavior, the vendor licence portal, or licence QA.
 ---
 
-# MediCore licensing and editions
+# OmniMed Core licensing and editions
 
 Use this skill for commercial entitlement work. A licence is a **commercial control**, not a clinical
 authorization or a replacement for user roles, tenant isolation, monitor write refusal or backend access

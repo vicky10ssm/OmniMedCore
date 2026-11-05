@@ -24,7 +24,7 @@ export function installDesktopLifecycle(): void {
     } catch (error) {
       console.error("Could not flush the local database before closing", error);
       alert(
-        "MediCore could not save the local database before closing. Keep this window open and contact support."
+        "OmniMed Core could not save the local database before closing. Keep this window open and contact support."
       );
     }
   });

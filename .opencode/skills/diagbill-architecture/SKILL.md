@@ -55,7 +55,7 @@ Use this skill for structural work on the diagnostic-centre application. Read th
 
 ## Multi-vertical product scope
 
-MediCore is branded across Diagnostics, Pharmacy and Hospital. The same tenant can enable:
+OmniMed Core is branded across Diagnostics, Pharmacy and Hospital. The same tenant can enable:
 
 - Diagnostics: tests, samples, parameter reports and amendments.
 - Pharmacy: medicine/batch/expiry stock, dispensing, GST receipts and stock deduction.
@@ -124,5 +124,5 @@ npm run build:monitor
 Also exercise the affected boot/upgrade path with actual application data. A successful fresh migration alone is insufficient.
 
 For local export changes, also run `cargo test --manifest-path src-tauri/Cargo.toml --lib`, verify
-schema 18, and test a forced folder failure/retry. Never mark a cloud monitor or online sync as passed;
+schema 19, and test a forced folder failure/retry. Never mark a cloud monitor or online sync as passed;
 those paths no longer exist.

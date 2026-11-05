@@ -1,12 +1,12 @@
-# MediCore licensing process
+# OmniMed Core licensing process
 
 Last updated: 4 November 2026<br>
-Database schema: `18`<br>
+Database schema: `19`<br>
 Audience: sales, support, finance and vendor licence administrators
 
 ## 1. Purpose and scope
 
-This is the operating procedure for selling, issuing, activating, renewing and revoking MediCore
+This is the operating procedure for selling, issuing, activating, renewing and revoking OmniMed Core
 licences. It complements the product rules in [licensing-and-editions.md](licensing-and-editions.md) and
 the portal instructions in [license-portal/README.md](../license-portal/README.md).
 
@@ -89,7 +89,7 @@ Do not use the development licence as a free production licence.
 
 On the customer machine:
 
-1. Open MediCore.
+1. Open OmniMed Core.
 2. Go to **Settings → Licence**.
 3. Copy:
    - **Tenant ID** (usually `tenant-default` for a single-centre installation)
@@ -303,13 +303,13 @@ Do not store portal tokens or private keys in the customer register.
 
 ### Issuance
 
-> Your MediCore [Edition] licence is attached. It is activated for tenant [ID] and device [ID].
+> Your OmniMed Core [Edition] licence is attached. It is activated for tenant [ID] and device [ID].
 > Please import it in Settings → Licence, then confirm the edition, module list and expiry. Keep the file
 > with your software records. Contact [support] before changing the computer.
 
 ### Renewal reminder
 
-> Your MediCore licence expires on [date]. A 30-day grace period follows expiry; after that MediCore
+> Your OmniMed Core licence expires on [date]. A 30-day grace period follows expiry; after that OmniMed Core
 > becomes read-only but existing records remain available to view, print and export. Please confirm
 > renewal and return the current device IDs.
 
@@ -325,7 +325,7 @@ Do not store portal tokens or private keys in the customer register.
 | Wrong customer/device ID | Reissue; do not hand-edit the signed file |
 | Customer moved to a new computer | Verify approval, issue replacement with the new hardware Device ID, record transfer |
 | Clock appears wrong | Correct system time; investigate clock tampering as a security issue |
-| Clock rollback detected after correction | Restart MediCore; if the high-water time is ahead of a corrected clock, escalate rather than deleting state files |
+| Clock rollback detected after correction | Restart OmniMed Core; if the high-water time is ahead of a corrected clock, escalate rather than deleting state files |
 | DPAPI licence cannot be decrypted | Re-import the signed file on the current Windows user/machine; confirm whether the profile or hardware changed |
 | WMI restricted / fingerprint fallback used | Confirm the displayed Hardware Device ID is stable; document the volume-serial source in support notes |
 | Lost licence file | Re-download from the portal by licence ID |

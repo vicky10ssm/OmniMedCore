@@ -1,8 +1,8 @@
-# MediCore — buyer overview
+# OmniMed Core — buyer overview
 
 ## The proposition
 
-MediCore is a modular, offline-first billing and care-operations suite for Indian diagnostic centres,
+OmniMed Core is a modular, offline-first billing and care-operations suite for Indian diagnostic centres,
 pharmacies and small hospitals. It is designed so teams can keep registering patients, billing,
 dispensing medicines, managing inpatients and releasing diagnostic reports when the internet is
 unavailable.

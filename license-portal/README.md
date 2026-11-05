@@ -1,6 +1,6 @@
-# MediCore licence portal
+# OmniMed Core licence portal
 
-Vendor-only web portal for issuing, downloading, renewing and revoking signed MediCore offline
+Vendor-only web portal for issuing, downloading, renewing and revoking signed OmniMed Core offline
 licences. The application verifies the ECDSA P-256 signature, tenant binding and hardware fingerprint
 without network access.
 

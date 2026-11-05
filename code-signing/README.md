@@ -1,6 +1,6 @@
-# MediCore local code signing
+﻿# OmniMed Core local code signing
 
-The public root certificate in this folder is used to trust locally signed MediCore builds:
+The public root certificate in this folder is used to trust locally signed OmniMed Core builds:
 
 ```text
 MediCore-CodeSigning.cer
@@ -10,7 +10,10 @@ Valid to:   2031-11-03
 ```
 
 This is a **self-signed local certificate**, not a public CA certificate. Windows trusts a signed
-MediCore build only after this certificate is installed on the client machine.
+OmniMed Core build only after this certificate is installed on the client machine.
+
+The certificate subject and filename retain the original MediCore naming for continuity; rotating the
+subject would require distributing a new root certificate.
 
 ## Client installation
 

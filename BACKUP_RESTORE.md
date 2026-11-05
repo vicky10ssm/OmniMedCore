@@ -1,7 +1,7 @@
 # Backup and restore
 
 Last updated: 3 November 2026  
-Applies to: Tauri Windows desktop app (`0.3.0+`; schema `18` from `0.4.0`)
+Applies to: Tauri Windows desktop app (`0.3.0+`; schema `19` from `0.6.0`)
 
 ## What is implemented
 
@@ -53,7 +53,7 @@ folder error. Retention is applied independently in each folder.
 3. The Rust backend validates the SQLCipher (or legacy plaintext) file:
    - SQLCipher key / SQLite open check
    - `PRAGMA quick_check`
-   - MediCore schema version
+   - OmniMed Core schema version
    - required core tables
 4. Confirm replacement.
 5. The active database is closed, copied to a safety file, replaced, and the app reloads.

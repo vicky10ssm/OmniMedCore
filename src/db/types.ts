@@ -221,6 +221,9 @@ export interface ReportOrderRow extends SyncCols {
   status: "pending" | "in_progress" | "verified" | "done" | "rejected";
   result_value: number | null;
   result_text: string;
+  clinical_history: string;
+  findings_text: string;
+  impression_text: string;
   unit: string;
   ref_range: string;
   ref_min: number | null;

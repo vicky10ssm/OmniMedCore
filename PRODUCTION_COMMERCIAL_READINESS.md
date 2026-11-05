@@ -2,7 +2,7 @@
 
 Last updated: 4 November 2026  
 Product version: `0.4.1`  
-Database schema: `18`  
+Database schema: `19`  
 Current stage: supervised pilot / pre-production
 
 This is the single high-level status document for “what is done” and “what is still pending” from a
