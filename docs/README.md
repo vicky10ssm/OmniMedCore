@@ -1,7 +1,7 @@
 # OmniMed Core buyer documentation
 
-Last updated: 3 November 2026  
-Product version: `0.4.1`  
+Last updated: 5 November 2026  
+Product version: `0.7.1`  
 Database schema: `20`
 
 **OmniMed Core** is the umbrella product name. The internal package/browser storage keys retain the
@@ -39,6 +39,7 @@ For the current done/pending and commercial release decision, use
 | [productionization-plan.md](productionization-plan.md) | Full engineering, packaging, backup, security and operations plan to reach production |
 | [../DESKTOP_BUILD.md](../DESKTOP_BUILD.md) | Windows/Tauri prerequisites, WS2 verification, installer and desktop failure tests |
 | [../LOCAL_CSV_EXPORT.md](../LOCAL_CSV_EXPORT.md) | Google Drive transaction outbox, full all-module snapshots, masking, secret exclusions and limitations |
+| [../GOOGLE_DASHBOARD.md](../GOOGLE_DASHBOARD.md) | Design for an optional read-only Google Sheets/BigQuery/Looker Studio dashboard on exported CSVs |
 | [../BACKUP_RESTORE.md](../BACKUP_RESTORE.md) | Daily snapshots, 7/4/12 retention, USB/OneDrive copy, validation and restore |
 | [../ENCRYPTION.md](../ENCRYPTION.md) | SQLCipher, Windows Credential Manager key storage, migration and key-recovery limits |
 | [security-privacy-compliance.md](security-privacy-compliance.md) | Security posture, NABL/ISO/ABDM evidence, data protection and claims policy |

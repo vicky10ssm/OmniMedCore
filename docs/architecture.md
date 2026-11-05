@@ -1,7 +1,7 @@
 # OmniMed Core architecture and local export design
 
-Last updated: 4 November 2026  
-Current product version: `0.4.1`  
+Last updated: 5 November 2026  
+Current product version: `0.7.1`  
 Current schema: `20`
 
 ## 1. Status and scope
@@ -169,7 +169,9 @@ authentication secrets (`users.password_hash`, `users.totp_secret`, `users.recov
 `users.totp_last_step`) and non-table runtime state. It is not a backup and does not provide import,
 merge or online revocation.
 
-See [LOCAL_CSV_EXPORT.md](../LOCAL_CSV_EXPORT.md).
+See [LOCAL_CSV_EXPORT.md](../LOCAL_CSV_EXPORT.md). An optional downstream Google
+Sheets/BigQuery/Looker Studio dashboard is described in [GOOGLE_DASHBOARD.md](../GOOGLE_DASHBOARD.md);
+it is design-only and not part of the desktop product.
 
 ### Data ownership in current build
 

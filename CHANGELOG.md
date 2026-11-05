@@ -3,6 +3,18 @@
 All notable changes to OmniMed Core are recorded here. This project follows semantic versioning once
 production releases begin.
 
+## [0.7.1] - 2026-11-05
+
+### Documentation
+
+- Added `GOOGLE_DASHBOARD.md`: an external design for an optional read-only Google dashboard over
+  the existing Drive CSV exports.
+- Covers Google Sheets/Apps Script pilot, BigQuery + Cloud Run production ingestion, Looker Studio
+  pages, metric definitions, security, data freshness, deduplication, setup, costs and acceptance tests.
+- Clarifies that the dashboard is not bundled with OmniMed Core and cannot write back, acknowledge
+  uploads or replace terminal backups.
+- Linked the design from the README, documentation index, local-export contract and architecture.
+
 ## [0.7.0] - 2026-11-05
 
 ### Added

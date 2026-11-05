@@ -119,6 +119,15 @@ Google Drive export. The full snapshot does contain patient-identifying and clin
 Google Drive folder and sharing permissions accordingly. It is still **not a backup**: use the
 SQLCipher backup in [BACKUP_RESTORE.md](BACKUP_RESTORE.md).
 
+### Optional Google dashboard
+
+An external read-only dashboard can be built from these files, but it is **not part of the desktop
+product**. The design, ingestion options, recommended BigQuery model, Looker Studio pages, security
+controls and acceptance tests are documented in [GOOGLE_DASHBOARD.md](GOOGLE_DASHBOARD.md).
+
+The key boundary remains: Google Drive is an outbox, and the dashboard is a downstream consumer. No
+dashboard can write back into OmniMed Core, acknowledge uploads or replace terminal backups.
+
 ## Queue, retry and failure handling
 
 - The scheduler runs every 30 seconds while the app is open.

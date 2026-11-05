@@ -174,6 +174,7 @@ See [SECURITY.md](SECURITY.md).
 - [PRODUCTION_COMMERCIAL_READINESS.md](PRODUCTION_COMMERCIAL_READINESS.md) - current done/pending status and commercial release gates
 - [CLIENT_INSTALLATION_RUNBOOK.md](CLIENT_INSTALLATION_RUNBOOK.md) - end-to-end offline client installation, backup, local CSV export, acceptance and rollback
 - [LOCAL_CSV_EXPORT.md](LOCAL_CSV_EXPORT.md) - Google Drive transaction outbox, full all-module snapshots, masking, secret exclusions and retry behavior
+- [GOOGLE_DASHBOARD.md](GOOGLE_DASHBOARD.md) - design for an optional read-only Google Sheets/BigQuery/Looker Studio dashboard on exported CSVs
 - [BACKUP_RESTORE.md](BACKUP_RESTORE.md) - local snapshots, retention, optional USB/OneDrive copy and restore
 - [ENCRYPTION.md](ENCRYPTION.md) - SQLCipher, Windows Credential Manager key storage and migration
 - [code-signing/README.md](code-signing/README.md) - local self-signed certificate and client trust setup
@@ -194,6 +195,7 @@ Read [CONTRIBUTING.md](CONTRIBUTING.md) before changing code or data rules.
   outside the desktop UI is still pending
 - No hosted/hardened vendor portal
 - Google Drive exports are one-way; they are not live sync, import, remote monitoring or backups
+- A Google Sheets/BigQuery/Looker Studio dashboard is an external design only, documented in [GOOGLE_DASHBOARD.md](GOOGLE_DASHBOARD.md); it is not bundled or supported as a live product feature
 - Full snapshots contain patient and clinical data; protect the Google Drive folder accordingly
 - The export schedulers run only while the desktop app is open; they are not OS services
 - No live ABDM/ABHA exchange
