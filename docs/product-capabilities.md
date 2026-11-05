@@ -161,6 +161,7 @@ Status meanings: **Ready**, **Pilot**, **Partial**, **Not available**, **Externa
 | Browser/PWA install | Pilot | Development/local browser storage only; not recommended as primary data store |
 | Cloud backup | Not available | Local encrypted backup only |
 | Cloud monitoring / dashboard | Not available | Online sync/dashboard removed; local CSV export is the supported outbox |
+| External Google dashboard | Not available | Design only: read-only Google Sheets/BigQuery/Looker Studio consumer for exported CSVs; see [GOOGLE_DASHBOARD.md](../GOOGLE_DASHBOARD.md) |
 
 ## The one-table summary for a first call
 

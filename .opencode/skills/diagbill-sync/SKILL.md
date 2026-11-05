@@ -16,6 +16,8 @@ sync token or cloud dashboard.
 - `../../../src/pages/SyncSettings.tsx` — folder configuration and status
 - `../../../src-tauri/src/export.rs` — unique file writer and CSV contract
 - `../../../LOCAL_CSV_EXPORT.md` — operator/developer contract
+- `../../../GOOGLE_DASHBOARD.md` — external read-only dashboard design (Sheets/BigQuery/Looker
+  Studio); design-only, not part of the desktop product
 - `../../../docs/architecture.md` — local export boundary
 
 ## Current behavior
@@ -47,6 +49,9 @@ sync token or cloud dashboard.
 6. A failed write must leave the transaction batch pending and retryable; do not mark it exported.
 7. Success means local file write only, not Google Drive upload or downstream processing.
 8. Do not promise import, merge, deletion propagation, remote monitoring or terminal-to-terminal sync.
+9. A Google dashboard is a downstream, read-only consumer only. Do not add API calls, tokens, upload
+   ACKs or write-back to the app, and do not change the CSV contract without versioning it and updating
+   `GOOGLE_DASHBOARD.md`.
 9. Keep tenant scoping on queue reads, full-snapshot reads and updates.
 10. Do not delete legacy `sync_queue`/`sync_ack` history; migration 18 only drops their triggers.
 11. Full-snapshot table/column changes must update `_manifest.json`, docs and secret-column exclusions.

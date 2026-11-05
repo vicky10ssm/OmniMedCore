@@ -1,7 +1,7 @@
-﻿# Productionization plan
+# Productionization plan
 
-Last updated: 3 November 2026
-Current product version: `0.4.1`
+Last updated: 5 November 2026
+Current product version: `0.7.1`
 Current schema: `20`
 Current deployment: packaged Windows desktop with SQLCipher, encrypted backups and local Google Drive
 CSV export for supervised pilots; browser build remains development-only
@@ -43,7 +43,7 @@ OmniMed Core is production-ready for a paid pilot only when all of the following
 3. Encryption can be enabled, unlocked, recovered and relocked through tested workflows.
 4. An encrypted backup can be restored successfully on a clean machine.
 5. Upgrades migrate real prior databases without losing rows or changing financial totals.
-6. The buyerâ€™s users, printers, data and workflows pass written acceptance tests.
+6. The buyer’s users, printers, data and workflows pass written acceptance tests.
 7. Tenant/hardware licence activation, DPAPI storage, clock-rollback rejection, renewal, grace/read-only
    mode and backend entitlement enforcement pass on the packaged build.
 8. Role and clinical-control tests pass: operators can enter expenses but cannot see Dashboard/profit
@@ -109,7 +109,7 @@ The detailed protocol, conflict rules and sequence diagrams are in
 
 ## 5. Workstreams
 
-### WS1 â€” Source control and release engineering
+### WS1 — Source control and release engineering
 
 Tasks:
 
@@ -130,7 +130,7 @@ Tasks:
 
 Exit gate: a clean machine/runner can reproduce a signed build from a tagged commit.
 
-### WS2 â€” Desktop application and local data
+### WS2 — Desktop application and local data
 
 Use [DESKTOP_BUILD.md](../DESKTOP_BUILD.md) for the Windows prerequisites, data-path checks, failure tests
 and installer verification.
@@ -151,9 +151,9 @@ Tasks:
 - Validate A4 and 80 mm printing on supported printers.
 - Test OS sleep, power loss, disk-full and abrupt termination.
 
-Exit gate: install â†’ create bill/report â†’ close â†’ reopen â†’ upgrade â†’ data intact, all offline.
+Exit gate: install → create bill/report → close → reopen → upgrade → data intact, all offline.
 
-### WS3 â€” Encryption, recovery and backups
+### WS3 — Encryption, recovery and backups
 
 Implemented pilot foundation:
 
@@ -170,13 +170,13 @@ Remaining tasks:
 - Add encrypted key export/import and key rotation for cross-machine recovery.
 - Prove encrypted backup restore on a clean Windows profile/machine.
 - Add unattended Windows scheduled backup outside the app.
-- Test backup/restore with the buyerâ€™s real volume before go-live.
-- Define RPO/RTO. Proposed pilot targets: RPO â‰¤ 1 hour, RTO â‰¤ 4 hours; confirm with buyer.
+- Test backup/restore with the buyer’s real volume before go-live.
+- Define RPO/RTO. Proposed pilot targets: RPO ≤ 1 hour, RTO ≤ 4 hours; confirm with buyer.
 - Record restore evidence: date, operator, backup ID, record counts, checksum.
 
 Exit gate: encrypted backup restored on a clean machine with exact invoice/payment counts.
 
-### WS4 — Local Google Drive CSV export
+### WS4 � Local Google Drive CSV export
 
 Implemented pilot foundation:
 
@@ -204,7 +204,7 @@ Exit gate: a controlled buyer test produces unique masked transaction CSVs and a
 snapshot, retries safely after a forced failure, and the downstream consumer reconciles the expected
 transaction IDs and totals.
 
-### WS5 â€” Security and privacy hardening
+### WS5 — Security and privacy hardening
 
 Tasks:
 
@@ -224,7 +224,7 @@ Tasks:
 
 Exit gate: no unresolved critical/high findings; security evidence pack approved.
 
-### WS6 â€” Testing and validation
+### WS6 — Testing and validation
 
 Tasks:
 
@@ -233,7 +233,7 @@ Tasks:
 - Add tests for licence editions/grace/read-only, operator role restrictions, commission absence and the
   sample disposal result gate.
 - Add Playwright E2E on a packaged Tauri build or its production web equivalent.
-- Add migration fixtures from versions 1â†’current and supported installed releases.
+- Add migration fixtures from versions 1→current and supported installed releases.
 - Add tests for:
   - invoice number blocks
   - partial payments and dues
@@ -255,7 +255,7 @@ Tasks:
 
 Exit gate: release candidate passes scripted acceptance on buyer-like data and hardware.
 
-### WS7 â€” Operations, observability and support
+### WS7 — Operations, observability and support
 
 Tasks:
 
@@ -281,7 +281,7 @@ Tasks:
 
 Exit gate: support can diagnose and restore a simulated terminal failure using written runbooks.
 
-### WS8 â€” Legal and commercial operations
+### WS8 — Legal and commercial operations
 
 Tasks:
 
@@ -332,13 +332,13 @@ must be re-estimated after the Tauri/SQLCipher spikes.
 
 | Phase | Indicative effort |
 | --- | --- |
-| A | 1â€“2 weeks |
-| B | 2â€“4 weeks |
-| C | 2â€“3 weeks |
-| D | 4â€“8 weeks |
-| E | 3â€“6 weeks |
-| F | 4â€“6 weeks elapsed (pilot, not full-time build) |
-| G | 1â€“2 weeks |
+| A | 1–2 weeks |
+| B | 2–4 weeks |
+| C | 2–3 weeks |
+| D | 4–8 weeks |
+| E | 3–6 weeks |
+| F | 4–6 weeks elapsed (pilot, not full-time build) |
+| G | 1–2 weeks |
 
 ABDM production, full QMS, analyzer/PACS and multi-branch are separate programmes and are not included.
 
@@ -421,7 +421,7 @@ Proposed pilot service objectives:
 - Terminal billing available offline by design; no internet dependency.
 - Local export retry target: 99% of failed writes retried within 15 minutes during supported pilot.
 - Local CSV export retries within 15 minutes of folder/Drive restoration for normal volumes.
-- Backup success â‰¥99% with alert on failure.
+- Backup success ≥99% with alert on failure.
 - S1 acknowledgement within agreed support hours.
 - No unresolved critical security findings at release.
 
@@ -437,7 +437,7 @@ Do not publish an SLA until monitoring and staffing can measure it.
 - Encrypted backups: buyer drive + optional object storage
 - Error tracking/uptime: entry-level hosted plans
 
-Indicative infrastructure: **â‚¹500â€“2,000/month** excluding domain, support labour and incident costs. Free
+Indicative infrastructure: **₹500–2,000/month** excluding domain, support labour and incident costs. Free
 tiers may be used for development but not as an SLA-bearing production dependency.
 
 ### Larger deployment
@@ -501,7 +501,7 @@ Do not call OmniMed Core generally available until:
 | Support and rollback ready? | | |
 | Claims and limitations acknowledged? | | |
 
-A single â€œNoâ€ against data protection, recovery, tenant isolation or security is a no-go for real patient
+A single “No” against data protection, recovery, tenant isolation or security is a no-go for real patient
 data.
 
 ## 17. Operating cadence after launch
