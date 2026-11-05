@@ -125,7 +125,11 @@ Record invoice/payment IDs and totals used for acceptance.
 - [ ] Amendment requires reason and preserves previous revision
 - [ ] Report print shows accession, authorizer and version
 - [ ] X-ray report saves clinical history, findings and impression
-- [ ] X-ray print shows logo/header, patient details, signature and configured disclaimer
+- [ ] Admin can add/edit/deactivate/delete multiple radiologist signature records
+- [ ] Operator can select an active radiologist when entering an X-ray report
+- [ ] X-ray release is blocked when no radiologist/signature is selected or the selected record has no image
+- [ ] X-ray print shows logo/header, patient details, signature image, name/qualification and configured disclaimer
+- [ ] Issued report keeps its signature snapshot after the radiologist is renamed, deactivated or deleted
 - [ ] X-ray releases require `can_authorize_reports`
 - [ ] **Dispose disabled before any linked result is entered**
 - [ ] **Dispose disabled for partial/multi-parameter results**

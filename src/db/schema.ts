@@ -1669,6 +1669,32 @@ export const MIGRATIONS: Migration[] = [
       ALTER TABLE report_orders ADD COLUMN impression_text TEXT NOT NULL DEFAULT '';
     `,
   },
+  {
+    version: 20,
+    name: "radiologist signature catalogue",
+    tolerant: true,
+    sql: `
+      CREATE TABLE IF NOT EXISTS radiologists (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        qualification TEXT NOT NULL DEFAULT '',
+        signature_data TEXT NOT NULL DEFAULT '',
+        is_active INTEGER NOT NULL DEFAULT 1,
+        sort_order INTEGER NOT NULL DEFAULT 0,
+        ${SYNC_COLUMNS},
+        ${TENANT_COLUMN}
+      );
+      CREATE INDEX IF NOT EXISTS idx_radiologists_tenant
+        ON radiologists(tenant_id);
+      CREATE INDEX IF NOT EXISTS idx_radiologists_active
+        ON radiologists(tenant_id, is_active, sort_order);
+
+      ALTER TABLE report_orders ADD COLUMN radiologist_id TEXT NOT NULL DEFAULT '';
+      ALTER TABLE report_orders ADD COLUMN radiologist_name TEXT NOT NULL DEFAULT '';
+      ALTER TABLE report_orders ADD COLUMN radiologist_qualification TEXT NOT NULL DEFAULT '';
+      ALTER TABLE report_orders ADD COLUMN radiologist_signature TEXT NOT NULL DEFAULT '';
+    `,
+  },
 ];
 
 /** First-boot seed data: lab settings, admin user, expense categories, sample catalog. */

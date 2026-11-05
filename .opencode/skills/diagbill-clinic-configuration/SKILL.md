@@ -68,6 +68,17 @@ Do not invent a second list of module names in another file or duplicate JSON pa
 - Keep the printed logo height constrained (`max-h-16`, `max-w-28`) so letterheads and thermal print
   do not break layout.
 
+## Radiologist signatures
+
+- Administrators manage multiple radiologist records under Settings -> Radiologists.
+- Each `radiologists` row is tenant-scoped and stores name, qualification, signature data URL, active
+  state and sort order. The image limit is the same PNG/JPEG/WebP 500 KB rule as the logo.
+- Operators select an active radiologist with a signature when entering/releasing an X-ray report.
+- The selected radiologist id/name/qualification/signature is snapshotted onto `report_orders`; print
+  uses the snapshot, never the live catalogue.
+- Deleting/deactivating a radiologist must not alter or block printing of an already issued report.
+- Write audit events for create/update/delete. Never put the signature data URL in audit detail.
+
 ## Persistence and audit
 
 - Both `enabled_modules` and `logo_data` are written with `setSetting()`, which is tenant-scoped.
@@ -89,8 +100,10 @@ Do not invent a second list of module names in another file or duplicate JSON pa
 6. Upload PNG/JPEG/WebP under 500 KB; verify sidebar, invoice print and report print.
 7. Try an unsupported type and a file over 500 KB; both must be rejected.
 8. Remove the logo and verify fallback marks on screen and in print.
-9. Inspect `settings` rows to confirm both keys carry the current `tenant_id`.
-10. Run `npm run check`, `npm run build`, and `npm run build:monitor`.
+9. Upload two radiologist signatures, select one on an X-ray report and verify the printed image.
+10. Deactivate one radiologist; confirm new reports cannot select it while an issued report still prints.
+11. Inspect `settings` and `radiologists` rows to confirm tenant scoping.
+12. Run `npm run check`, `npm run build`, and `npm run build:monitor`.
 
 ## Limitations
 

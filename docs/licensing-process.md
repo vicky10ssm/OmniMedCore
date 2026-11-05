@@ -1,7 +1,7 @@
 # OmniMed Core licensing process
 
 Last updated: 4 November 2026<br>
-Database schema: `19`<br>
+Database schema: `20`<br>
 Audience: sales, support, finance and vendor licence administrators
 
 ## 1. Purpose and scope

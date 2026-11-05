@@ -37,7 +37,8 @@ Dashboard, Settings, Compliance or the Expenses profitability card.
 - GST billing, invoices, payments, dues, cancellation and A4/80 mm printing
 - Test/package catalogue with GST and specimen metadata
 - Parameter-based pathology reporting, verification, amendment history and printing
-- X-ray/radiology reports with clinical history, findings, impression, radiologist signature and configurable disclaimer
+- X-ray/radiology reports with clinical history, findings, impression and configurable disclaimer,
+  using administrator-uploaded radiologist signatures selected by the operator
 - Sample accession, collection, receipt, acceptance/rejection and disposal
 - Disposal is blocked until every linked test has complete entered results
 - Hospital admissions, ward/bed, discharge summary and generic IPD service charges/payments/printing

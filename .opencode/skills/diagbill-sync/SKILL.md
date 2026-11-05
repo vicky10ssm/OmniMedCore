@@ -55,7 +55,7 @@ sync token or cloud dashboard.
 
 1. `npm run check` and both Vite builds.
 2. `cargo test --manifest-path src-tauri/Cargo.toml --lib`.
-3. Launch the packaged/Tauri app and confirm schema 19.
+3. Launch the packaged/Tauri app and confirm schema 20.
 4. Create a synthetic invoice/pharmacy sale/hospital charge and confirm queue rows.
 5. Confirm a new CSV is created with the exact name/header and masked patient ID.
 6. Confirm the source rows are marked exported and pending returns to zero.

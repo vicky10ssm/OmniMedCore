@@ -47,8 +47,10 @@ Status meanings: **Ready**, **Pilot**, **Partial**, **Not available**, **Externa
 | Report amendments | Ready | Issued results cannot return to draft; amendment reason and prior revision retained |
 | Sample release gate | Ready | Pathology release requires an accepted linked sample |
 | Report letterhead printing | Ready | Lab identity, patient/doctor, sample ID, authorizer, version |
-| X-ray report workflow | Ready | Clinical history, radiologist findings, impression, signature and configurable disclaimer |
-| X-ray letterhead printing | Ready | A4 report with logo/clinic header, patient details, findings, impression, signature and bottom disclaimer |
+| X-ray report workflow | Ready | Clinical history, radiologist findings, impression and configurable disclaimer |
+| Radiologist signature catalogue | Ready | Admin uploads multiple names, qualifications and scanned signatures; operator selects one per report |
+| X-ray letterhead printing | Ready | A4 report with logo/clinic header, patient details, findings, impression, signature image, name/qualification and bottom disclaimer |
+| Signature snapshot on issued reports | Ready | Selected radiologist snapshot is stored on the report; catalogue edits/deletions do not alter history |
 | Critical-value notification | Not available | No critical-limit workflow/read-back log yet |
 | Auto-verification/middleware | Not available | No automated release rules |
 | Analyzer integration | Not available | No Mindray/Sysmex/driver interfaces |

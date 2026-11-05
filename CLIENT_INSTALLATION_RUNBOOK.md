@@ -335,7 +335,9 @@ including patients and clinical records, and therefore contain confidential data
 - [ ] Admin password changed; named users and roles created; 2FA considered
 - [ ] Centre profile, modules, numbering, printing and letterhead configured
 - [ ] Test patient, invoice, payment, print and report workflow passed
-- [ ] X-ray report letterhead, radiologist signature and disclaimer verified
+- [ ] At least one radiologist name/qualification/signature uploaded under Settings -> Radiologists
+- [ ] X-ray report letterhead, selected signature image and disclaimer verified
+- [ ] Deactivating a radiologist removes them from new report selection without changing issued reports
 - [ ] Local backup and optional second folder verified
 - [ ] Restore test completed with recorded evidence
 - [ ] Windows profile/key backup and BitLocker decision recorded

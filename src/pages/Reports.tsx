@@ -16,6 +16,7 @@ import type {
   PatientRow,
   ReportOrderRow,
   ReportParameterRow,
+  RadiologistRow,
   ReportResultRevisionRow,
   SampleRow,
   TestParameterRow,
@@ -34,6 +35,7 @@ import {
   Labeled,
   Modal,
   PageHeader,
+  Select,
   TextInput,
 } from "../ui/kit";
 
@@ -94,6 +96,28 @@ function isRadiologyReport(row: Pick<WorkRow, "test_category">): boolean {
   return category.includes("x-ray") || category.includes("xray") || category.includes("radiology");
 }
 
+/**
+ * Keep an existing report's signature selectable even if its radiologist was
+ * later deactivated or deleted. The report stores its own immutable snapshot.
+ */
+function radiologistFromOrder(row: WorkRow): RadiologistRow | null {
+  if (!row.radiologist_id) return null;
+  return {
+    id: row.radiologist_id,
+    name: row.radiologist_name || "Radiologist",
+    qualification: row.radiologist_qualification || "",
+    signature_data: row.radiologist_signature || "",
+    is_active: 0,
+    sort_order: 0,
+    created_at: row.created_at,
+    updated_at: row.updated_at,
+    device_id: row.device_id,
+    dirty: 0,
+    deleted: 0,
+    tenant_id: row.tenant_id,
+  };
+}
+
 const DEFAULT_XRAY_DISCLAIMER =
   "This report is based on the information available at the time of examination. It is not a substitute for clinical correlation or further investigation.";
 
@@ -124,6 +148,8 @@ export default function Reports() {
   const [xrayClinicalHistory, setXrayClinicalHistory] = useState("");
   const [xrayFindings, setXrayFindings] = useState("");
   const [xrayImpression, setXrayImpression] = useState("");
+  const [radiologists, setRadiologists] = useState<RadiologistRow[]>([]);
+  const [selectedRadiologistId, setSelectedRadiologistId] = useState("");
 
   const [printingInvoice, setPrintingInvoice] = useState<string | null>(null);
   const [printingXray, setPrintingXray] = useState<WorkRow | null>(null);
@@ -204,6 +230,19 @@ export default function Reports() {
     }),
     [rows]
   );
+
+  const selectedRadiologist = useMemo(
+    () =>
+      radiologists.find(
+        (radiologist) => radiologist.id === selectedRadiologistId
+      ) ?? null,
+    [radiologists, selectedRadiologistId]
+  );
+
+  const xraySignatureReady =
+    !entering ||
+    !isRadiologyReport(entering) ||
+    Boolean(selectedRadiologist?.signature_data.trim());
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -289,10 +328,38 @@ export default function Reports() {
     setXrayClinicalHistory(r.clinical_history || "");
     setXrayFindings(r.findings_text || "");
     setXrayImpression(r.impression_text || "");
+    setRadiologists([]);
+    setSelectedRadiologistId("");
     setError("");
 
     if (isRadiologyReport(r)) {
-      setParametersLoading(false);
+      try {
+        const db = await getDb();
+        const [tenantClause, tenantParams] = tenantAnd();
+        const list = await db.all<RadiologistRow>(
+          `SELECT * FROM radiologists
+           WHERE is_active = 1 AND deleted = 0 ${tenantClause}
+           ORDER BY sort_order, name`,
+          tenantParams
+        );
+        if (
+          r.radiologist_id &&
+          !list.some((radiologist) => radiologist.id === r.radiologist_id)
+        ) {
+          const snapshot = radiologistFromOrder(r);
+          if (snapshot) list.push(snapshot);
+        }
+        setRadiologists(list);
+        setSelectedRadiologistId(r.radiologist_id || "");
+      } catch (err) {
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Could not load radiologist signatures"
+        );
+      } finally {
+        setParametersLoading(false);
+      }
       return;
     }
 
@@ -398,6 +465,16 @@ export default function Reports() {
     if (radiology && markDone && !xrayFindings.trim() && !xrayImpression.trim()) {
       return setError("Enter X-ray findings or impression before verifying the report");
     }
+    if (radiology && markDone && !selectedRadiologist) {
+      return setError(
+        "Select the radiologist whose signature should appear on this X-ray report"
+      );
+    }
+    if (radiology && markDone && !selectedRadiologist?.signature_data.trim()) {
+      return setError(
+        "The selected radiologist has no signature image. Upload one in Settings → Radiologists before releasing."
+      );
+    }
     if (!radiology && !hasParameters && markDone && !text) {
       return setError("Enter a result before verifying, or save as pending draft");
     }
@@ -444,6 +521,18 @@ export default function Reports() {
       const xrayImpressionValue = radiology
         ? xrayImpression.trim()
         : entering.impression_text || "";
+      const radiologistIdValue = radiology
+        ? selectedRadiologist?.id ?? ""
+        : entering.radiologist_id || "";
+      const radiologistNameValue = radiology
+        ? selectedRadiologist?.name.trim() ?? ""
+        : entering.radiologist_name || "";
+      const radiologistQualificationValue = radiology
+        ? selectedRadiologist?.qualification.trim() ?? ""
+        : entering.radiologist_qualification || "";
+      const radiologistSignatureValue = radiology
+        ? selectedRadiologist?.signature_data.trim() ?? ""
+        : entering.radiologist_signature || "";
       const combined = radiology
         ? [
             xrayFindingsValue ? `Findings:\n${xrayFindingsValue}` : "",
@@ -521,6 +610,8 @@ export default function Reports() {
         await db.run(
           `UPDATE report_orders
            SET result_text = ?, clinical_history = ?, findings_text = ?, impression_text = ?,
+               radiologist_id = ?, radiologist_name = ?, radiologist_qualification = ?,
+               radiologist_signature = ?,
                result_value = ?, abnormal = ?, status = ?,
                entered_by = ?, verified_by = ?, reported_at = ?,
                approval_status = ?, approved_by = ?, approved_at = ?,
@@ -533,6 +624,10 @@ export default function Reports() {
             xrayClinicalHistoryValue,
             xrayFindingsValue,
             xrayImpressionValue,
+            radiologistIdValue,
+            radiologistNameValue,
+            radiologistQualificationValue,
+            radiologistSignatureValue,
             hasParameters ? null : singleNumeric,
             abnormal,
             markDone ? "done" : "pending",
@@ -947,6 +1042,52 @@ export default function Reports() {
                     placeholder="e.g. No significant abnormality detected"
                   />
                 </Labeled>
+                <Labeled
+                  label="Radiologist signature *"
+                  hint="The selected name, qualification and signature are stored on this report."
+                >
+                  <Select
+                    value={selectedRadiologistId}
+                    onChange={(e) => setSelectedRadiologistId(e.target.value)}
+                  >
+                    <option value="">Select radiologist</option>
+                    {radiologists.map((radiologist) => (
+                      <option key={radiologist.id} value={radiologist.id}>
+                        {radiologist.name}
+                        {radiologist.qualification
+                          ? ` - ${radiologist.qualification}`
+                          : ""}
+                        {radiologist.is_active === 0 ? " (inactive)" : ""}
+                      </option>
+                    ))}
+                  </Select>
+                </Labeled>
+                {selectedRadiologist?.signature_data && (
+                  <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
+                    <p className="mb-1 text-[11px] font-medium text-slate-500">
+                      Signature preview
+                    </p>
+                    <img
+                      src={selectedRadiologist.signature_data}
+                      alt="Selected radiologist signature"
+                      className="max-h-20 max-w-56 object-contain"
+                    />
+                  </div>
+                )}
+                {radiologists.length === 0 && (
+                  <p className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">
+                    No active radiologist signatures are configured. Ask an
+                    administrator to add one in Settings → Radiologists before
+                    releasing an X-ray report.
+                  </p>
+                )}
+                {selectedRadiologist &&
+                  !selectedRadiologist.signature_data.trim() && (
+                    <p className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">
+                      This radiologist has no signature image. Upload one in
+                      Settings → Radiologists before releasing.
+                    </p>
+                  )}
               </div>
             ) : parametersLoading ? (
               <p className="py-6 text-center text-sm text-slate-400">Loading parameters…</p>
@@ -1105,7 +1246,12 @@ export default function Reports() {
               <Btn
                 variant="primary"
                 onClick={() => void saveResult(true)}
-                disabled={busy || parametersLoading || !user?.can_authorize_reports}
+                disabled={
+                  busy ||
+                  parametersLoading ||
+                  !user?.can_authorize_reports ||
+                  !xraySignatureReady
+                }
               >
                 <Icon name="check" className="h-4 w-4" />
                 {entering.status === "done" ? "Save amendment" : "Verify & release"}
@@ -1509,13 +1655,16 @@ function XrayReportPrint({
   }, [ready]);
 
   const radiologistName =
+    order.radiologist_name?.trim() ||
     lab.radiologist_name?.trim() ||
     order.verified_by_name?.trim() ||
     lab.pathologist_name?.trim() ||
     "Radiologist";
   const radiologistQualification =
+    order.radiologist_qualification?.trim() ||
     lab.radiologist_qualification?.trim() ||
     (radiologistName === lab.pathologist_name ? lab.pathologist_qualification?.trim() : "");
+  const radiologistSignature = order.radiologist_signature?.trim() || "";
   const disclaimer = lab.xray_disclaimer?.trim() || DEFAULT_XRAY_DISCLAIMER;
   const findings = order.findings_text?.trim() || "";
   const impression = order.impression_text?.trim() || "";
@@ -1611,6 +1760,13 @@ function XrayReportPrint({
 
           <div className="mt-10 flex items-end justify-between text-[10px] text-slate-600">
             <div>
+              {radiologistSignature && (
+                <img
+                  src={radiologistSignature}
+                  alt=""
+                  className="mb-1 max-h-16 max-w-44 object-contain"
+                />
+              )}
               <p className="border-t border-slate-400 pt-1 font-semibold">
                 {radiologistName}
                 {radiologistQualification ? `, ${radiologistQualification}` : ""}

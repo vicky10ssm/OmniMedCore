@@ -1,7 +1,7 @@
 # Local Google Drive CSV export
 
 Last updated: 5 November 2026<br>
-Applies to: OmniMed Core desktop `0.6.0+`, schema `19+`
+Applies to: OmniMed Core desktop `0.7.0+`, schema `20+`
 
 ## What it does
 
@@ -94,7 +94,7 @@ The snapshot is tenant-scoped and includes all business tables, including:
 - patients and doctors
 - tests, parameters, packages and package items
 - invoices, invoice items, payments, dues and invoice blocks
-- samples, report orders, report parameters and report result revisions
+- samples, report orders, report parameters, report result revisions and radiologist signature records
 - admissions, hospital services, hospital charges and hospital bill payments
 - medicines, pharmacy batches, pharmacy sales and sale items
 - expenses, expense categories, payouts and commission history

@@ -2,7 +2,7 @@
 
 Last updated: 4 November 2026  
 Current product version: `0.4.1`  
-Current schema: `19`
+Current schema: `20`
 
 ## 1. Status and scope
 
@@ -95,8 +95,9 @@ OmniMed Core is a multi-vertical product; a tenant enables only the modules it o
 - Billing and money: patients, billing, invoices, dues, doctors, expenses. Referral commissions are
   not exposed or accrued.
 - Diagnostics: tests/packages, sample chain, result entry, amendments, pathology report printing, and
-  X-ray/radiology reports with clinical history, findings, impression, radiologist signature and a
-  configurable disclaimer.
+  X-ray/radiology reports with clinical history, findings, impression and a configurable disclaimer.
+- Radiologist catalogue: tenant-scoped names, qualifications and signature images selected at X-ray
+  entry; the chosen snapshot is stored on `report_orders` so issued reports are immutable.
 - Hospital: inpatient admission, ward/bed, treating doctor, discharge diagnosis/summary, generic
   hospital service catalogue, IPD service charges, payments/balance and bill print.
 - Pharmacy: medicine master, batch/expiry inventory, stock receipt, dispensing, GST receipt and

@@ -31,6 +31,9 @@ Use this skill for parameter-based pathology reports and the current diagnostic-
   do not rely on a disabled button alone.
 - Numeric limits drive low/high/abnormal flags. Displayed reference text and numeric limits are related but independently stored; edit both deliberately.
 - A report becomes printable only when every order on that invoice is `done`. Parameter rows print under their test heading with result, unit, reference range, and abnormal indication.
+- X-ray reports use the radiology form, not the parameter table. Administrators maintain multiple radiologists (name, qualification, signature image) under Settings -> Radiologists.
+- X-ray release requires selecting an active radiologist with a signature image. The report stores the radiologist id/name/qualification/signature snapshot; printing uses that snapshot so later catalogue edits or deletions cannot rewrite an issued report.
+- Inactive/deleted radiologists already captured on a report remain available as an inactive historical choice when amending, and their saved signature remains printable.
 
 ## Starter templates
 
@@ -50,7 +53,7 @@ Insertion avoids duplicates by test/name and preserves custom rows. These are st
 2. Preserve selection tombstones and snapshot history when editing save/reopen logic.
 3. Use a transaction for multi-row result saves so a failure cannot leave a half-written report.
 4. Test template add/edit/remove, first entry, incomplete draft, deselection, draft reopen, verification, re-edit, and print.
-5. Test a multi-parameter profile and a no-template single-result/X-ray test.
+5. Test a multi-parameter profile, a no-template single-result test, and an X-ray report with a selected signature image.
 6. Confirm removed templates do not erase existing report snapshots and new template parameters do not unexpectedly alter an already saved selection.
 7. Test sample disposal before/after result entry: no results or partial parameters → Dispose disabled/blocked;
    complete selected results or verified report → Dispose allowed; direct/manipulated action must still fail.
