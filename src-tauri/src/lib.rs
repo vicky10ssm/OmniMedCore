@@ -32,7 +32,7 @@ struct SnapshotResult {
 fn app_data_dir(app: &tauri::AppHandle) -> Result<PathBuf, String> {
     app.path()
         .app_config_dir()
-        .map_err(|e| format!("Could not resolve the MediCore application-data directory: {e}"))
+        .map_err(|e| format!("Could not resolve the OmniMed Core application-data directory: {e}"))
 }
 
 fn database_path(app: &tauri::AppHandle) -> Result<PathBuf, String> {
@@ -283,7 +283,7 @@ pub fn run() {
             license_security::license_update_execution_timestamp
         ])
         .run(tauri::generate_context!())
-        .expect("error while running MediCore");
+        .expect("error while running OmniMed Core");
 }
 
 #[cfg(test)]

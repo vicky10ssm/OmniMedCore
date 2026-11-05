@@ -18,7 +18,7 @@ For the current done/pending snapshot and commercial release decision, see
   migration and local pre-encryption copy are implemented.
 - **Deployment runbook:** `CLIENT_INSTALLATION_RUNBOOK.md` covers offline installation, local CSV
   export, acceptance and rollback.
-- **Local export:** schema 18 `local_export_queue`, unique masked transaction CSVs, retry-safe
+- **Local export:** schema 19 `local_export_queue`, unique masked transaction CSVs, retry-safe
   background writing and full all-module Google Drive snapshots (including patients) are implemented.
   Full snapshots contain confidential data and exclude authentication secrets.
 
@@ -64,7 +64,7 @@ The current build now includes:
   cancellation with stock return
 - Shared patient identity across OPD billing, diagnostics, pharmacy and admissions
 - Pharmacy/IPD cards on the dashboard
-- MediCore branding with tenant name/logo
+- OmniMed Core branding with tenant name/logo
 
 These modules are early-stage and must not be presented as a full HIS or chain-pharmacy ERP. The
 licence portal is implemented as a vendor admin portal, not a hosted public subscription service.

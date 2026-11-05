@@ -1,19 +1,19 @@
-﻿# MediCore buyer documentation
+# OmniMed Core buyer documentation
 
 Last updated: 3 November 2026  
 Product version: `0.4.1`  
-Database schema: `18`
+Database schema: `19`
 
-**MediCore** is the umbrella product name. The internal package/browser storage keys retain the
+**OmniMed Core** is the umbrella product name. The internal package/browser storage keys retain the
 historical `diagbill` identifier; this does not affect buyer branding.
 
-This folder is the commercial and technical briefing pack for discussing MediCore with diagnostic
+This folder is the commercial and technical briefing pack for discussing OmniMed Core with diagnostic
 centres, pharmacies, small hospitals, laboratories and implementation partners. It also records honest
 release limits so that a buyer conversation does not become an unsupported promise.
 
 ## Read this first
 
-**Current commercial position:** MediCore is a functional offline billing/pathology-reporting product
+**Current commercial position:** OmniMed Core is a functional offline billing/pathology-reporting product
 with strong foundations for NABL/ISO evidence and ABDM interoperability, but it is **not yet a
 general-availability hosted SaaS or a publicly trusted, clean-machine-accepted desktop installer**.
 
@@ -54,11 +54,11 @@ Compliance source detail remains in [`../COMPLIANCE.md`](../COMPLIANCE.md).
 
 ## Status vocabulary used throughout
 
-- **Ready** â€” implemented and exercised in the current application.
-- **Pilot** â€” implemented but requires supervised deployment, configuration or acceptance testing.
-- **Partial** â€” foundation exists; important workflow/evidence is still missing.
-- **Not available** â€” do not demonstrate or promise as a current feature.
-- **External** â€” depends on the buyer, NABL assessment, ABDM credentials, Windows signing or another third party.
+- **Ready** — implemented and exercised in the current application.
+- **Pilot** — implemented but requires supervised deployment, configuration or acceptance testing.
+- **Partial** — foundation exists; important workflow/evidence is still missing.
+- **Not available** — do not demonstrate or promise as a current feature.
+- **External** — depends on the buyer, NABL assessment, ABDM credentials, Windows signing or another third party.
 
 ## Quick facts for a buyer call
 
@@ -66,11 +66,11 @@ Compliance source detail remains in [`../COMPLIANCE.md`](../COMPLIANCE.md).
 | --- | --- |
 | Product type | Modular offline-first billing and care operations for diagnostics, pharmacy and hospital inpatients |
 | Market | Independent diagnostic centres, standalone pharmacies, small hospitals and multi-service clinics in India |
-| Verticals | Diagnostics Â· Pharmacy Â· Hospital; licensed edition plus per-tenant module visibility |
+| Verticals | Diagnostics · Pharmacy · Hospital; licensed edition plus per-tenant module visibility |
 | Hospital | Admission/ward/bed/discharge plus generic IPD service charges, payments, balance and bill print |
 | Pharmacy | Medicine master, batch/expiry inventory, stock receipt, dispensing, GST pharmacy receipt |
 | Licensing | Signed offline licence bound to tenant + Windows hardware fingerprint, DPAPI storage and clock-rollback checks; Diagnostics/Pharmacy/Hospital/Complete/Custom editions; 30-day grace and read-only after grace |
-| Module branding | MediCore umbrella brand; licensed modules then toggled per tenant in Settings |
+| Module branding | OmniMed Core umbrella brand; licensed modules then toggled per tenant in Settings |
 | Billing | GST invoices, packages, discounts, dues, payments, cancellations |
 | Money controls | Integer paise, CGST/SGST, invoice-number blocks, append-only corrections |
 | Clinical reporting | Parameter templates, selected parameters, units, references, abnormal flags, amendments |
@@ -83,12 +83,12 @@ Compliance source detail remains in [`../COMPLIANCE.md`](../COMPLIANCE.md).
 | Desktop `.exe` | Locally self-signed NSIS/MSI installers built; public-CA signing and clean-machine acceptance pending |
 | Cloud monitoring | **Not available**; removed in favour of local Google Drive CSV export |
 | Backups | Encrypted local snapshots, 7/4/12 retention, optional USB/OneDrive copy and validated restore; key export/import and unattended scheduling pending |
-| Recommended launch price | â‚¹20,000 paid pilot; â‚¹24,000/year for 1 centre/2 terminals, excluding GST â€” see [commercial-model-and-pricing.md](commercial-model-and-pricing.md#recommended-launch-prices-for-india) |
+| Recommended launch price | ₹20,000 paid pilot; ₹24,000/year for 1 centre/2 terminals, excluding GST — see [commercial-model-and-pricing.md](commercial-model-and-pricing.md#recommended-launch-prices-for-india) |
 | Default demo login | First-run bootstrap `admin / admin123`, forcing a password change |
 
 ## Golden rule for buyer conversations
 
-Say **â€œcurrently availableâ€**, **â€œpilotâ€** or **â€œroadmapâ€** explicitly. Never convert a roadmap item
+Say **“currently available”**, **“pilot”** or **“roadmap”** explicitly. Never convert a roadmap item
 into a present-tense feature claim. The claims table in
 [sales-playbook.md](sales-playbook.md#claims-you-may-and-may-not-make) is the reference.
 

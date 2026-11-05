@@ -1660,6 +1660,15 @@ export const MIGRATIONS: Migration[] = [
       END;
     `,
   },
+  {
+    version: 19,
+    name: "radiology report fields",
+    sql: `
+      ALTER TABLE report_orders ADD COLUMN clinical_history TEXT NOT NULL DEFAULT '';
+      ALTER TABLE report_orders ADD COLUMN findings_text TEXT NOT NULL DEFAULT '';
+      ALTER TABLE report_orders ADD COLUMN impression_text TEXT NOT NULL DEFAULT '';
+    `,
+  },
 ];
 
 /** First-boot seed data: lab settings, admin user, expense categories, sample catalog. */

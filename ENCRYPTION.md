@@ -1,7 +1,7 @@
 # Encryption at rest
 
 Last updated: 3 November 2026  
-Applies to: Tauri Windows desktop app (`0.3.0+`; schema `18` from `0.4.0`)
+Applies to: Tauri Windows desktop app (`0.3.0+`; schema `19` from `0.6.0`)
 
 ## What is implemented
 

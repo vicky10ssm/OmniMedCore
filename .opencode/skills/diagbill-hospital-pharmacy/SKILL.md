@@ -1,11 +1,11 @@
 ---
 name: DiagBill Hospital and Pharmacy
-description: Use when changing hospital admissions, inpatient ward/bed/discharge, pharmacy medicine inventory, batches/expiry, stock receipt, dispensing, pharmacy receipts, or the multi-vertical MediCore modules.
+description: Use when changing hospital admissions, inpatient ward/bed/discharge, pharmacy medicine inventory, batches/expiry, stock receipt, dispensing, pharmacy receipts, or the multi-vertical OmniMed Core modules.
 ---
 
-# MediCore hospital and pharmacy modules
+# OmniMed Core hospital and pharmacy modules
 
-MediCore (internal package `diagbill`) is a configurable multi-vertical product. Diagnostics, Pharmacy
+OmniMed Core (internal package `diagbill`) is a configurable multi-vertical product. Diagnostics, Pharmacy
 and Hospital modules share one tenant and one patient identity. Keep the current scope honest: this is
 not a full HIS or chain-pharmacy ERP.
 
@@ -15,7 +15,7 @@ not a full HIS or chain-pharmacy ERP.
 - `../../../src/pages/HospitalBill.tsx`
 - `../../../src/pages/Pharmacy.tsx`
 - `../../../src/db/types.ts`
-- `../../../src/db/schema.ts` (current schema 18)
+- `../../../src/db/schema.ts` (current schema 19)
 - `../../../src/app/modules.ts`
 - `../../../src/app/brand.ts`
 - `../../../src/db/demoSeed.ts`
@@ -82,7 +82,7 @@ transfers or insurance claims.
 
 ## Branding and module configuration
 
-- Umbrella brand constants: `src/app/brand.ts` (`MediCore`, `Diagnostics · Pharmacy · Hospital`).
+- Umbrella brand constants: `src/app/brand.ts` (`OmniMed Core`, `Diagnostics · Pharmacy · Hospital`).
 - Tenant name/logo override the visible app identity inside authenticated screens.
 - Edition licensing comes first; module IDs `admissions` and `pharmacy` are then configured in
   **Settings → Modules & logo**.

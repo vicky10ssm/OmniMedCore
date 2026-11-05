@@ -1,4 +1,4 @@
-// Monitoring layout — the read-only web version's shell.
+﻿// Monitoring layout â€” the read-only web version's shell.
 //
 // Same visual language as the terminal, but the navigation contains only pages
 // that can be safely served read-only, and there is a permanent reminder that
@@ -31,7 +31,7 @@ interface NavItem {
   label: string;
   icon: string;
   section?: string;
-  /** Money screens — admins only. */
+  /** Money screens â€” admins only. */
   adminOnly?: boolean;
   moduleId?: ModuleId;
 }
@@ -142,14 +142,14 @@ export default function MonitorLayout() {
         />
       ) : (
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-teal-500 text-sm font-bold text-white">
-          M
+          O
         </div>
       )}
       <div className="min-w-0">
         <p className="truncate text-sm font-semibold text-white">
           {labName || APP_NAME}
         </p>
-        <p className="truncate text-[11px] text-slate-400">{APP_TAGLINE} · Monitoring</p>
+        <p className="truncate text-[11px] text-slate-400">{APP_TAGLINE} Â· Monitoring</p>
       </div>
     </div>
   );

@@ -2,7 +2,7 @@
 
 ## Ideal customer profile
 
-MediCore is sold as three verticals on one platform. Qualify which modules the buyer actually needs.
+OmniMed Core is sold as three verticals on one platform. Qualify which modules the buyer actually needs.
 
 **Diagnostics:** owner-operated independent diagnostic centre in India with 1–3 billing terminals,
 manual/basic reporting, pathology ± X-ray, GST billing, doctor referrals and frustration with Excel or
@@ -39,7 +39,7 @@ public tenders, multi-site real-time operations, or buyers demanding live ABDM/a
 2. What is the average daily bill volume and peak hour?
 3. Which tests and packages generate most revenue?
 4. Are X-ray and pathology billed together?
-5. How are referral relationships and doctor contacts tracked today? (MediCore intentionally does not track referral commissions.)
+5. How are referral relationships and doctor contacts tracked today? (OmniMed Core intentionally does not track referral commissions.)
 6. How much outstanding credit is on the books, and how is it followed up?
 7. What happens today when internet or the billing PC fails?
 
@@ -98,7 +98,7 @@ Score 0–2 each; proceed with caution below 12/20.
 
 ### 30-second introduction
 
-> MediCore is an offline-first billing and reporting system for small diagnostic centres. It keeps GST
+> OmniMed Core is an offline-first billing and reporting system for small diagnostic centres. It keeps GST
 > billing, dues, sample traceability and pathology report amendments working on the centre’s own
 > terminal. It is being offered initially as a supervised pilot, with a local Google Drive CSV
 > outbox, live ABDM exchange and advanced quality modules on a documented roadmap rather than claimed
@@ -127,7 +127,7 @@ Score 0–2 each; proceed with caution below 12/20.
 | Backups | “Encrypted local backup and validated restore exist; unattended/offsite scheduling and key recovery are still gates.” | “Backups are fully unattended and disaster-proof.” |
 | Desktop | “Signed Windows installers are available with a local root certificate; public-CA trust and clean-machine acceptance are pending.” | “Publicly trusted installer with SmartScreen reputation.” |
 | Licensing | “Diagnostics, Pharmacy, Hospital, Complete and Custom editions are enforced by a signed tenant/hardware licence with DPAPI storage and clock-rollback checks, plus 30-day grace and read-only access after expiry.” | “Perpetual public cloud subscription is live” or “the licence portal is hosted and hardened for public use.” |
-| Referral commissions | “MediCore keeps a doctor directory but does not track or pay referral commissions.” | “Tracks doctor commissions/payouts.” Commission visibility can create compliance and ethics issues. |
+| Referral commissions | “OmniMed Core keeps a doctor directory but does not track or pay referral commissions.” | “Tracks doctor commissions/payouts.” Commission visibility can create compliance and ethics issues. |
 | Hospital IPD | “Generic hospital service/IPD charges, payments and bill print are included; full HIS, insurance/TPA, nursing and package/advance billing are not.” | “Full IPD/HIS or insurance claims.” |
 | Analyzer/PACS | “Not available.” | “Integrates with any analyser.” |
 | Support | “Pilot support scope is agreed in writing.” | “24×7 support” unless contracted. |
@@ -154,7 +154,7 @@ Score 0–2 each; proceed with caution below 12/20.
 > narcotics registers and multi-store transfers are separate roadmap/partner scopes.
 
 ### “Is it NABL certified?”
-> NABL accredits laboratories, not billing software. MediCore provides sample, report, amendment and
+> NABL accredits laboratories, not billing software. OmniMed Core provides sample, report, amendment and
 > audit evidence that can support your NABL processes. The full QMS/QC/EQA scope and your laboratory
 > procedures remain the laboratory’s responsibility; we provide a written gap matrix.
 
@@ -213,7 +213,7 @@ Score 0–2 each; proceed with caution below 12/20.
 
 Subject: **Offline GST billing + pathology reports for [Centre]**
 
-> Hello [Name], I work on MediCore, an offline-first billing/reporting system for independent diagnostic
+> Hello [Name], I work on OmniMed Core, an offline-first billing/reporting system for independent diagnostic
 > centres. It is aimed at centres that want GST billing, dues and parameter-based
 > pathology reports on their own terminal without relying on continuous internet.
 >

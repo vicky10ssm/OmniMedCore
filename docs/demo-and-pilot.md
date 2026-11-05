@@ -93,6 +93,8 @@ Then frame the demo around those answers.
 - Amend with a reason.
 - Show History with prior revision preserved.
 - Print preview: sample ID, authorizer, version, reference intervals.
+- Open an X-ray order, enter clinical history/findings/impression, release it, and preview the
+  radiology letterhead with radiologist signature and configured disclaimer.
 
 ### 8. Compliance evidence — 2 minutes
 
@@ -189,7 +191,7 @@ Redact any environment-specific device ID if necessary. Never include a real pat
 
 | Metric | Suggested target |
 | --- | --- |
-| Bills created through MediCore | ≥95% of pilot volume |
+| Bills created through OmniMed Core | ≥95% of pilot volume |
 | Correct GST totals vs parallel check | 100% sample audit |
 | Critical billing defects | Zero unresolved at acceptance |
 | Report release with linked accepted sample | 100% |

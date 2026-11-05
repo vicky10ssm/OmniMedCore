@@ -89,6 +89,14 @@ function parameterFlag(p: ParameterEntry): "Low" | "High" | "" {
   return "";
 }
 
+function isRadiologyReport(row: Pick<WorkRow, "test_category">): boolean {
+  const category = row.test_category.toLowerCase();
+  return category.includes("x-ray") || category.includes("xray") || category.includes("radiology");
+}
+
+const DEFAULT_XRAY_DISCLAIMER =
+  "This report is based on the information available at the time of examination. It is not a substitute for clinical correlation or further investigation.";
+
 function revisionResultSummary(snapshotJson: string): string {
   try {
     const snapshot = JSON.parse(snapshotJson) as { order?: { result_text?: string } };
@@ -113,8 +121,12 @@ export default function Reports() {
   const [entryParameters, setEntryParameters] = useState<ParameterEntry[]>([]);
   const [parametersLoading, setParametersLoading] = useState(false);
   const [amendmentReason, setAmendmentReason] = useState("");
+  const [xrayClinicalHistory, setXrayClinicalHistory] = useState("");
+  const [xrayFindings, setXrayFindings] = useState("");
+  const [xrayImpression, setXrayImpression] = useState("");
 
   const [printingInvoice, setPrintingInvoice] = useState<string | null>(null);
+  const [printingXray, setPrintingXray] = useState<WorkRow | null>(null);
   const [historyFor, setHistoryFor] = useState<WorkRow | null>(null);
   const [historyRows, setHistoryRows] = useState<HistoryRow[]>([]);
   const [historyLoaded, setHistoryLoaded] = useState(false);
@@ -245,16 +257,24 @@ export default function Reports() {
       if (list.length === 0) continue;
       // Printable only when every test in this invoice is verified.
       if (list.some((r) => r.status !== "done")) continue;
+      // X-ray reporting has its own template and print control.
+      const printableOrders = list.filter((r) => !isRadiologyReport(r));
+      if (printableOrders.length === 0) continue;
       out.push({
         invoiceId,
         invoiceNo: list[0].invoice_no,
         name: list[0].patient_name,
-        tests: list.length,
+        tests: printableOrders.length,
         date: formatDate(list[0].invoice_date),
       });
     }
     return out.sort((a, b) => b.invoiceNo.localeCompare(a.invoiceNo));
   }, [rows]);
+
+  const xrayReady = useMemo(
+    () => rows.filter((r) => r.status === "done" && isRadiologyReport(r)),
+    [rows]
+  );
 
   const openEntry = async (r: WorkRow) => {
     if (r.status === "rejected") {
@@ -266,7 +286,16 @@ export default function Reports() {
     setEntryParameters([]);
     setParametersLoading(true);
     setAmendmentReason("");
+    setXrayClinicalHistory(r.clinical_history || "");
+    setXrayFindings(r.findings_text || "");
+    setXrayImpression(r.impression_text || "");
     setError("");
+
+    if (isRadiologyReport(r)) {
+      setParametersLoading(false);
+      return;
+    }
+
     try {
       const db = await getDb();
       const [tenantClause, tenantParams] = tenantAnd();
@@ -344,6 +373,7 @@ export default function Reports() {
     const selected = entryParameters.filter((p) => p.selected);
     const text = resultText.trim();
     const isAmendment = entering.status === "done";
+    const radiology = isRadiologyReport(entering);
 
     if (markDone && !user?.can_authorize_reports) {
       return setError(
@@ -365,7 +395,10 @@ export default function Reports() {
         return setError(`Enter a result for ${missing.name}, or deselect that parameter`);
       }
     }
-    if (!hasParameters && markDone && !text) {
+    if (radiology && markDone && !xrayFindings.trim() && !xrayImpression.trim()) {
+      return setError("Enter X-ray findings or impression before verifying the report");
+    }
+    if (!radiology && !hasParameters && markDone && !text) {
       return setError("Enter a result before verifying, or save as pending draft");
     }
 
@@ -393,23 +426,37 @@ export default function Reports() {
           );
         }
       }
-      const singleNumeric = numericValue(text);
+      const singleNumeric = radiology ? null : numericValue(text);
       let abnormal = 0;
-      if (singleNumeric !== null && entering.ref_min !== null && singleNumeric < entering.ref_min) {
+      if (!radiology && singleNumeric !== null && entering.ref_min !== null && singleNumeric < entering.ref_min) {
         abnormal = 1;
       }
-      if (singleNumeric !== null && entering.ref_max !== null && singleNumeric > entering.ref_max) {
+      if (!radiology && singleNumeric !== null && entering.ref_max !== null && singleNumeric > entering.ref_max) {
         abnormal = 1;
       }
       if (hasParameters) {
         abnormal = selected.some((p) => parameterFlag(p)) ? 1 : 0;
       }
-      const combined = hasParameters
-        ? selected
-            .filter((p) => p.result.trim())
-            .map((p) => `${p.name}: ${p.result.trim()}${p.unit.trim() ? ` ${p.unit.trim()}` : ""}`)
-            .join(" | ")
-        : text;
+      const xrayClinicalHistoryValue = radiology
+        ? xrayClinicalHistory.trim()
+        : entering.clinical_history || "";
+      const xrayFindingsValue = radiology ? xrayFindings.trim() : entering.findings_text || "";
+      const xrayImpressionValue = radiology
+        ? xrayImpression.trim()
+        : entering.impression_text || "";
+      const combined = radiology
+        ? [
+            xrayFindingsValue ? `Findings:\n${xrayFindingsValue}` : "",
+            xrayImpressionValue ? `Impression:\n${xrayImpressionValue}` : "",
+          ]
+            .filter(Boolean)
+            .join("\n\n")
+        : hasParameters
+          ? selected
+              .filter((p) => p.result.trim())
+              .map((p) => `${p.name}: ${p.result.trim()}${p.unit.trim() ? ` ${p.unit.trim()}` : ""}`)
+              .join(" | ")
+          : text;
 
       await db.tx(async () => {
         if (hasParameters) {
@@ -473,7 +520,8 @@ export default function Reports() {
 
         await db.run(
           `UPDATE report_orders
-           SET result_text = ?, result_value = ?, abnormal = ?, status = ?,
+           SET result_text = ?, clinical_history = ?, findings_text = ?, impression_text = ?,
+               result_value = ?, abnormal = ?, status = ?,
                entered_by = ?, verified_by = ?, reported_at = ?,
                approval_status = ?, approved_by = ?, approved_at = ?,
                analysis_started_at = COALESCE(analysis_started_at, ?),
@@ -482,6 +530,9 @@ export default function Reports() {
            WHERE id = ? ${tenantClause}`,
           [
             combined,
+            xrayClinicalHistoryValue,
+            xrayFindingsValue,
+            xrayImpressionValue,
             hasParameters ? null : singleNumeric,
             abnormal,
             markDone ? "done" : "pending",
@@ -717,6 +768,11 @@ export default function Reports() {
                               ABDM
                             </Btn>
                           )}
+                          {!monitor && r.status === "done" && isRadiologyReport(r) && (
+                            <Btn variant="ghost" onClick={() => setPrintingXray(r)}>
+                              Print X-ray
+                            </Btn>
+                          )}
                           {!monitor && r.status !== "rejected" && (
                             <Btn
                               variant={r.status === "pending" ? "primary" : "outline"}
@@ -793,12 +849,44 @@ export default function Reports() {
               </ul>
             </Card>
           )}
+
+          {xrayReady.length > 0 && (
+            <Card className="p-4">
+              <h2 className="mb-1 text-sm font-semibold">X-ray reports ready</h2>
+              <p className="mb-3 text-xs text-slate-400">
+                Independent radiology letterhead with findings, impression, signature and disclaimer.
+              </p>
+              <ul className="divide-y divide-slate-100 text-sm">
+                {xrayReady.slice(0, 8).map((r) => (
+                  <li key={r.id} className="flex items-center justify-between py-2">
+                    <span className="min-w-0">
+                      <span className="block truncate">{r.patient_name}</span>
+                      <span className="block truncate text-xs text-slate-400">
+                        {r.test_name} A� {r.invoice_no} A� {formatDate(r.invoice_date)}
+                      </span>
+                    </span>
+                    <Btn
+                      variant="ghost"
+                      className="shrink-0"
+                      onClick={() => setPrintingXray(r)}
+                    >
+                      <Icon name="printer" className="h-4 w-4" /> Print X-ray
+                    </Btn>
+                  </li>
+                ))}
+              </ul>
+            </Card>
+          )}
         </div>
       </div>
 
       <Modal
         open={entering !== null}
-        title={entering ? `Result — ${entering.test_name}` : "Result"}
+        title={
+          entering
+            ? `${isRadiologyReport(entering) ? "X-ray report" : "Result"} - ${entering.test_name}`
+            : "Result"
+        }
         onClose={() => setEntering(null)}
         wide
       >
@@ -810,7 +898,10 @@ export default function Reports() {
                 {entering.patient_age != null ? `${entering.patient_age} years` : ""}
                 {entering.patient_gender ? ` · ${entering.patient_gender}` : ""}
               </p>
-              {entering.ref_range && entryParameters.length === 0 && !parametersLoading && (
+              {!isRadiologyReport(entering) &&
+                entering.ref_range &&
+                entryParameters.length === 0 &&
+                !parametersLoading && (
                 <p className="mt-1 text-xs text-slate-500">
                   Reference: {entering.ref_range}
                   {entering.unit ? ` ${entering.unit}` : ""}
@@ -818,7 +909,46 @@ export default function Reports() {
               )}
             </div>
 
-            {parametersLoading ? (
+            {isRadiologyReport(entering) ? (
+              <div className="space-y-3">
+                <Labeled
+                  label="Clinical history"
+                  hint="Optional. Printed above the radiological findings."
+                >
+                  <textarea
+                    value={xrayClinicalHistory}
+                    onChange={(e) => setXrayClinicalHistory(e.target.value)}
+                    rows={2}
+                    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:border-teal-600 focus:outline-none focus:ring-1 focus:ring-teal-600"
+                    placeholder="e.g. Dry cough and fever for 3 days"
+                  />
+                </Labeled>
+                <Labeled
+                  label="Findings *"
+                  hint="Radiologist narrative for the X-ray study."
+                >
+                  <textarea
+                    value={xrayFindings}
+                    onChange={(e) => setXrayFindings(e.target.value)}
+                    rows={6}
+                    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:border-teal-600 focus:outline-none focus:ring-1 focus:ring-teal-600"
+                    placeholder="Describe the radiological findings..."
+                  />
+                </Labeled>
+                <Labeled
+                  label="Impression"
+                  hint="Short summary or diagnosis for the report footer."
+                >
+                  <textarea
+                    value={xrayImpression}
+                    onChange={(e) => setXrayImpression(e.target.value)}
+                    rows={3}
+                    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:border-teal-600 focus:outline-none focus:ring-1 focus:ring-teal-600"
+                    placeholder="e.g. No significant abnormality detected"
+                  />
+                </Labeled>
+              </div>
+            ) : parametersLoading ? (
               <p className="py-6 text-center text-sm text-slate-400">Loading parameters…</p>
             ) : entryParameters.length > 0 ? (
               <div className="space-y-2">
@@ -1048,6 +1178,13 @@ export default function Reports() {
           onClose={() => setPrintingInvoice(null)}
         />
       )}
+
+      {printingXray && (
+        <XrayReportPrint
+          order={printingXray}
+          onClose={() => setPrintingXray(null)}
+        />
+      )}
     </>
   );
 }
@@ -1077,6 +1214,7 @@ function ReportPrint({
         `SELECT ro.*, i.invoice_no, i.invoice_date,
                 p.name AS patient_name, p.phone AS patient_phone,
                 p.age AS patient_age, p.gender AS patient_gender,
+                COALESCE(t.category, '') AS test_category,
                 smp.accession_no, smp.status AS sample_status,
                 smp.specimen_type AS sample_specimen_type,
                 smp.collected_at AS sample_collected_at,
@@ -1089,6 +1227,7 @@ function ReportPrint({
          FROM report_orders ro
          JOIN invoices i ON i.id = ro.invoice_id AND i.tenant_id = ro.tenant_id
          JOIN patients p ON p.id = ro.patient_id AND p.tenant_id = ro.tenant_id
+         LEFT JOIN tests t ON t.id = ro.test_id AND t.tenant_id = ro.tenant_id
          LEFT JOIN samples smp ON smp.id = ro.sample_id AND smp.tenant_id = ro.tenant_id
          LEFT JOIN users u ON u.id = ro.verified_by AND u.tenant_id = ro.tenant_id
          WHERE ro.invoice_id = ? AND ro.deleted = 0 AND ro.status = 'done'
@@ -1097,9 +1236,10 @@ function ReportPrint({
          ORDER BY ro.created_at`,
         [invoiceId, ...tenantParams, ...tenantParams, ...tenantParams]
       );
-      setOrders(list);
+      const printableOrders = list.filter((order) => !isRadiologyReport(order));
+      setOrders(printableOrders);
       const map: Record<string, ReportParameterRow[]> = {};
-      for (const o of list) {
+      for (const o of printableOrders) {
         const rp = await db.all<ReportParameterRow>(
           `SELECT * FROM report_parameters WHERE report_order_id = ? AND deleted = 0 ${tenantClause} ORDER BY created_at`,
           [o.id, ...tenantParams]
@@ -1322,6 +1462,167 @@ function ReportPrint({
               <p className="text-slate-500">Authorized for release</p>
             </div>
             <p>Released {formatDateTime(orders[0]?.reported_at ?? Date.now())}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ---- Printable X-ray / radiology report ----
+
+function XrayReportPrint({
+  order,
+  onClose,
+}: {
+  order: WorkRow;
+  onClose: () => void;
+}) {
+  const [lab, setLab] = useState<Record<string, string>>({});
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    void (async () => {
+      const db = await getDb();
+      setLab(
+        await getSettings(db, [
+          "lab_name",
+          "lab_address",
+          "lab_phone",
+          "lab_gstin",
+          "pathologist_name",
+          "pathologist_qualification",
+          "radiologist_name",
+          "radiologist_qualification",
+          "xray_disclaimer",
+          "logo_data",
+        ])
+      );
+      setReady(true);
+    })();
+  }, []);
+
+  useEffect(() => {
+    if (!ready) return;
+    const t = setTimeout(() => printA4(), 400);
+    return () => clearTimeout(t);
+  }, [ready]);
+
+  const radiologistName =
+    lab.radiologist_name?.trim() ||
+    order.verified_by_name?.trim() ||
+    lab.pathologist_name?.trim() ||
+    "Radiologist";
+  const radiologistQualification =
+    lab.radiologist_qualification?.trim() ||
+    (radiologistName === lab.pathologist_name ? lab.pathologist_qualification?.trim() : "");
+  const disclaimer = lab.xray_disclaimer?.trim() || DEFAULT_XRAY_DISCLAIMER;
+  const findings = order.findings_text?.trim() || "";
+  const impression = order.impression_text?.trim() || "";
+  const clinicalHistory = order.clinical_history?.trim() || "";
+
+  return (
+    <div className="fixed inset-0 z-40 overflow-y-auto bg-slate-900/50 p-0 sm:p-6">
+      <div className="mx-auto w-full max-w-3xl">
+        <div className="no-print flex items-center justify-between gap-2 rounded-t-xl bg-white px-4 py-2.5">
+          <span className="text-sm font-medium">X-ray report preview</span>
+          <div className="flex gap-2">
+            <Btn onClick={onClose}>Close</Btn>
+            <Btn variant="primary" onClick={printA4}>
+              <Icon name="printer" className="h-4 w-4" /> Print
+            </Btn>
+          </div>
+        </div>
+
+        <div className="print-area bg-white p-8 shadow-xl sm:rounded-b-xl print:shadow-none">
+          <div className="flex items-start justify-between gap-6 border-b border-slate-300 pb-3">
+            <div className="flex items-start gap-3">
+              {lab.logo_data && (
+                <img
+                  src={lab.logo_data}
+                  alt=""
+                  className="max-h-16 max-w-28 shrink-0 object-contain"
+                />
+              )}
+              <div>
+                <h1 className="text-lg font-bold uppercase tracking-wide">
+                  {lab.lab_name || "Diagnostic Centre"}
+                </h1>
+                {lab.lab_address && (
+                  <p className="mt-1 whitespace-pre-line text-xs text-slate-600">
+                    {lab.lab_address}
+                  </p>
+                )}
+                <p className="mt-1 text-xs text-slate-600">
+                  {lab.lab_phone && `Phone: ${lab.lab_phone}`}
+                  {lab.lab_gstin && ` | GSTIN: ${lab.lab_gstin}`}
+                </p>
+              </div>
+            </div>
+            <div className="text-right text-xs text-slate-600">
+              <p className="text-sm font-bold uppercase tracking-widest">X-Ray Report</p>
+              <p className="num mt-0.5">{order.invoice_no}</p>
+              <p>Exam: {order.test_name}</p>
+              <p>Study: {formatDate(order.invoice_date)}</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4 py-3 text-xs">
+            <div>
+              <p className="font-semibold text-slate-500">Patient</p>
+              <p className="mt-0.5 text-sm font-semibold">{order.patient_name}</p>
+              <p className="text-slate-600">
+                {order.patient_age != null ? `${order.patient_age} years` : ""}
+                {order.patient_gender ? ` | ${order.patient_gender}` : ""}
+                {order.patient_phone ? ` | ${order.patient_phone}` : ""}
+              </p>
+            </div>
+            <div className="text-right">
+              <p className="font-semibold text-slate-500">Accession / Study date</p>
+              <p className="num mt-0.5">
+                {order.accession_no || "—"} | {formatDate(order.invoice_date)}
+              </p>
+              <p>{order.test_category || "Radiology"}</p>
+            </div>
+          </div>
+
+          {clinicalHistory && (
+            <div className="border-t border-slate-200 py-3 text-xs">
+              <p className="mb-1 font-semibold uppercase tracking-wide text-slate-500">
+                Clinical history
+              </p>
+              <p className="whitespace-pre-wrap text-sm text-slate-700">{clinicalHistory}</p>
+            </div>
+          )}
+
+          <div className="border-t border-slate-300 py-4 text-xs">
+            <p className="mb-2 font-semibold uppercase tracking-wide text-slate-500">Findings</p>
+            <p className="whitespace-pre-wrap text-sm leading-6 text-slate-800">
+              {findings || "No findings recorded."}
+            </p>
+          </div>
+
+          <div className="border-t border-slate-200 py-3 text-xs">
+            <p className="mb-2 font-semibold uppercase tracking-wide text-slate-500">Impression</p>
+            <p className="whitespace-pre-wrap text-sm font-medium leading-6 text-slate-800">
+              {impression || "No impression recorded."}
+            </p>
+          </div>
+
+          <div className="mt-10 flex items-end justify-between text-[10px] text-slate-600">
+            <div>
+              <p className="border-t border-slate-400 pt-1 font-semibold">
+                {radiologistName}
+                {radiologistQualification ? `, ${radiologistQualification}` : ""}
+              </p>
+              <p className="text-slate-500">Radiologist</p>
+            </div>
+            <p>Reported {formatDateTime(order.reported_at ?? Date.now())}</p>
+          </div>
+
+          <div className="mt-6 border-t border-slate-300 pt-2 text-[10px] leading-4 text-slate-500">
+            <span className="font-semibold uppercase tracking-wide">Disclaimer: </span>
+            {disclaimer}
           </div>
         </div>
       </div>

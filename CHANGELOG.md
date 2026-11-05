@@ -1,7 +1,33 @@
 # Changelog
 
-All notable changes to MediCore are recorded here. This project follows semantic versioning once
+All notable changes to OmniMed Core are recorded here. This project follows semantic versioning once
 production releases begin.
+
+## [0.6.0] - 2026-11-05
+
+### Added
+
+- Rebranded the application, installers, documentation and vendor portal as **OmniMed Core**.
+- X-ray/radiology report workflow in Reports: clinical history, findings, impression, radiologist
+  signature and configurable disclaimer.
+- Dedicated A4 X-ray letterhead with logo, clinic header, patient details, findings, impression,
+  signature block and bottom disclaimer.
+- Separate **Print X-ray** controls in the reports table and a ready-to-print X-ray queue.
+- Admin-configurable radiologist name, qualification and X-ray disclaimer under Settings → Centre profile.
+
+### Database
+
+- Schema 19 adds `clinical_history`, `findings_text` and `impression_text` to `report_orders`.
+- Existing pathology reporting, report revisions, audit history and licensing remain unchanged.
+- Internal identifiers (`in.medicore.desktop`, `medicore.db`, storage keys) are retained for data and
+  licence continuity; user-facing branding is OmniMed Core.
+
+### Verified
+
+- `npm run check`, terminal and monitor builds.
+- Migration from schema 18 to 19 on the existing encrypted database.
+- Admin/operator access rules remain enforced.
+- X-ray print template renders logo/header, patient details, findings, impression, signature and disclaimer.
 
 ## [0.5.0] - 2026-11-05
 

@@ -1,31 +1,31 @@
-﻿# Deployment, architecture and commercial readiness
+# Deployment, architecture and commercial readiness
 
 Last updated: 3 November 2026  
-Current schema: `18`
+Current schema: `19`
 
 ## Current architecture
 
 ```text
 React/TypeScript single codebase
-â”œâ”€â”€ Terminal build
-â”‚   â”œâ”€â”€ browser: sql.js SQLite persisted to IndexedDB
-â”‚   â”œâ”€â”€ desktop: native SQLCipher file; key in Windows Credential Manager
-â”‚   â”œâ”€â”€ all billing/clinical data entry
-â”‚   â””â”€â”€ local print layouts (A4 and 80 mm)
-â””â”€â”€ Monitor build
-    â”œâ”€â”€ same read-only-capable pages
-    â”œâ”€â”€ DataSource rejects writes
-    â””â”€â”€ currently reads local data only; no cloud backend
+├── Terminal build
+│   ├── browser: sql.js SQLite persisted to IndexedDB
+│   ├── desktop: native SQLCipher file; key in Windows Credential Manager
+│   ├── all billing/clinical data entry
+│   └── local print layouts (A4 and 80 mm)
+└── Monitor build
+    ├── same read-only-capable pages
+    ├── DataSource rejects writes
+    └── currently reads local data only; no cloud backend
 ```
 
 Target production architecture:
 
 ```text
 Windows terminal (Tauri + SQLite file, encrypted)
-        â”‚
-        â”œâ”€â”€ offline billing/reporting/sample workflow
-        â”‚
-        â””â”€â”€ local_export_queue → Google Drive CSV outbox (no hosted monitor)
+        │
+        ├── offline billing/reporting/sample workflow
+        │
+        └── local_export_queue ? Google Drive CSV outbox (no hosted monitor)
 ```
 
 The target architecture is **not the same as the current deployment**. Be explicit in buyer meetings.
@@ -126,7 +126,7 @@ Recommended minimum before installing at a buyer site:
 | Runtime | WebView2 (normally present or installed by installer) |
 | Memory | 4 GB recommended; 2 GB minimum for pilot |
 | Disk | At least 2 GB free plus backup capacity |
-| Display | 1366Ã—768 minimum |
+| Display | 1366×768 minimum |
 | Printer | A4 laser/inkjet and optional 80 mm thermal |
 | Network | Not required for terminal billing; Google Drive client network is optional for CSV export; ABDM is future |
 | Antivirus | Buyer-managed; installer must be excluded only with written IT approval |

@@ -190,9 +190,9 @@ Confirm the exact path in **Settings → Device & sync**. The card should show:
 
 Use a test VM or temporary test user, not a real production profile.
 
-1. Close MediCore.
+1. Close OmniMed Core.
 2. Remove write permission from the app-data folder for the test user.
-3. Launch MediCore.
+3. Launch OmniMed Core.
 4. Confirm a clear database/writability error instead of silent data loss.
 5. Restore write permission.
 
@@ -200,10 +200,10 @@ Use a test VM or temporary test user, not a real production profile.
 
 Use a disposable test database only.
 
-1. Close MediCore.
+1. Close OmniMed Core.
 2. Copy `medicore.db` to a safe test backup.
 3. Replace `medicore.db` with an invalid file.
-4. Launch MediCore.
+4. Launch OmniMed Core.
 5. Confirm the integrity error is shown.
 6. Restore the safe test backup to `medicore.db`.
 7. Relaunch and confirm the app opens.
@@ -240,7 +240,7 @@ MediCore_0.4.1_x64-setup.exe
 MediCore_0.4.1_x64_en-US.msi
 ```
 
-The local installers are signed with the self-signed MediCore certificate, but they are not publicly
+The local installers are signed with the self-signed OmniMed Core certificate, but they are not publicly
 trusted until the client installs `code-signing\MediCore-CodeSigning.cer`. Do not describe the local
 certificate as equivalent to a public CA certificate.
 
@@ -329,7 +329,7 @@ Before pushing a tag:
 npm version 0.1.1 --no-git-tag-version
 git add package.json package-lock.json src-tauri/tauri.conf.json
 git commit -m "release: v0.1.1"
-git tag -a v0.1.1 -m "MediCore v0.1.1"
+git tag -a v0.1.1 -m "OmniMed Core v0.1.1"
 git push origin main --tags
 ```
 
@@ -350,14 +350,14 @@ not a substitute for a publicly trusted CA if the buyer will not install the loc
 The local build is signed with a dedicated self-signed code-signing certificate:
 
 ```text
-Subject:    CN=MediCore Local Code Signing, O=MediCore, C=IN
+Subject:    CN=OmniMed Core Local Code Signing, O=OmniMed Core, C=IN
 Thumbprint: 1180CA1A9509C9E968DED5E4274C89410AC52584
 Valid to:   2031-11-03
 Root file:  code-signing\MediCore-CodeSigning.cer
 ```
 
 The public `.cer` is committed so client machines can trust the root. The private key and PFX are kept
-outside the repository at `%LOCALAPPDATA%\MediCore\CodeSigning\`.
+outside the repository at `%LOCALAPPDATA%\OmniMed Core\CodeSigning\`.
 
 Do not commit:
 
@@ -408,11 +408,11 @@ Verify the app embedded in the MSI, not only the installer shell:
 
 ```powershell
 msiexec /a .\src-tauri\target\release\bundle\msi\MediCore_0.4.1_x64_en-US.msi /qn TARGETDIR=$env:TEMP\medicore-msi
-Get-AuthenticodeSignature "$env:TEMP\medicore-msi\PFiles\MediCore\medicore.exe"
+Get-AuthenticodeSignature "$env:TEMP\medicore-msi\PFiles\OmniMed Core\medicore.exe"
 Get-AuthenticodeSignature .\src-tauri\target\release\bundle\nsis\MediCore_0.4.1_x64-setup.exe
 ```
 
-Expected status: `Valid` and the same MediCore thumbprint.
+Expected status: `Valid` and the same OmniMed Core thumbprint.
 
 Generate checksums:
 

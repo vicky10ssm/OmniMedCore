@@ -3,7 +3,7 @@ name: DiagBill Clinic Configuration
 description: Use when changing clinic module visibility, Settings configuration, logo/branding upload, sidebar navigation, module route guards, or invoice/report letterhead branding.
 ---
 
-# MediCore clinic configuration and branding
+# OmniMed Core clinic configuration and branding
 
 Use this skill when a clinic must enable only the sections it uses or add its own logo. These are
 tenant-scoped configuration features, not security permissions.
@@ -22,7 +22,7 @@ tenant-scoped configuration features, not security permissions.
 
 ## Configuration model
 
-- The umbrella brand is **MediCore**, configured in `src/app/brand.ts`; tenant name/logo override it.
+- The umbrella brand is **OmniMed Core**, configured in `src/app/brand.ts`; tenant name/logo override it.
 - Edition licensing is separate from clinic configuration. A module can be enabled only if the signed
   licence includes it; effective modules are licensed ∩ clinic-enabled.
 - Module IDs include `admissions` (Hospital + generic IPD billing) and `pharmacy`, alongside the

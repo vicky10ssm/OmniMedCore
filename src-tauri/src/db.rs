@@ -57,7 +57,7 @@ pub struct BackupValidation {
 fn app_data_dir(app: &tauri::AppHandle) -> Result<PathBuf, String> {
     app.path()
         .app_config_dir()
-        .map_err(|e| format!("Could not resolve the MediCore application-data directory: {e}"))
+        .map_err(|e| format!("Could not resolve the OmniMed Core application-data directory: {e}"))
 }
 
 fn database_path(app: &tauri::AppHandle) -> Result<PathBuf, String> {
@@ -266,10 +266,10 @@ fn validate_connection(conn: &Connection, encrypted: bool) -> Result<BackupValid
         )
         .optional()
         .map_err(|e| format!("Could not read the backup schema version: {e}"))?
-        .ok_or_else(|| "The backup has no MediCore schema version.".to_string())?;
+        .ok_or_else(|| "The backup has no OmniMed Core schema version.".to_string())?;
     let schema_version = schema
         .parse::<i64>()
-        .map_err(|_| "The backup has an invalid MediCore schema version.".to_string())?;
+        .map_err(|_| "The backup has an invalid OmniMed Core schema version.".to_string())?;
     let tables: Vec<String> = {
         let mut statement = conn
             .prepare("SELECT name FROM sqlite_master WHERE type = 'table'")
@@ -343,7 +343,7 @@ fn ensure_encrypted_database(app: &tauri::AppHandle) -> Result<(), String> {
         // key over an encrypted database that may still contain live records.
         if read_key()?.is_none() {
             return Err(
-                "ENCRYPTED_KEY_MISSING: This MediCore database is encrypted, but the database key is missing from Windows Credential Manager."
+                "ENCRYPTED_KEY_MISSING: This OmniMed Core database is encrypted, but the database key is missing from Windows Credential Manager."
                     .into(),
             );
         }

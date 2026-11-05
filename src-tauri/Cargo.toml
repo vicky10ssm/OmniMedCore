@@ -1,8 +1,8 @@
 [package]
 name = "medicore"
-version = "0.5.0"
-description = "MediCore offline billing and care operations"
-authors = ["MediCore"]
+version = "0.6.0"
+description = "OmniMed Core offline billing and care operations"
+authors = ["OmniMed Core"]
 edition = "2021"
 rust-version = "1.90"
 

@@ -23,7 +23,7 @@ export class ClockManipulationError extends Error {
 }
 
 function tamperMessage(): string {
-  return "System Clock Manipulation Detected. The system clock is earlier than the last recorded MediCore execution time. Correct the clock and restart MediCore.";
+  return "System Clock Manipulation Detected. The system clock is earlier than the last recorded OmniMed Core execution time. Correct the clock and restart OmniMed Core.";
 }
 
 function notifyClockTamper(message: string): void {

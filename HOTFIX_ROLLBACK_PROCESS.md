@@ -122,7 +122,7 @@ After the fix is on `main`:
 ```powershell
 git switch main
 git pull --ff-only
-git tag -a v0.1.1 -m "MediCore v0.1.1 hotfix"
+git tag -a v0.1.1 -m "OmniMed Core v0.1.1 hotfix"
 git push origin v0.1.1
 ```
 
@@ -221,7 +221,7 @@ For S1/S2:
 
 Template:
 
-> We are investigating an issue affecting [workflow] on MediCore [version]. Please pause [specific action]
+> We are investigating an issue affecting [workflow] on OmniMed Core [version]. Please pause [specific action]
 > and continue [safe alternative]. Existing records remain [available/not available] as described below.
 > We will update you by [time]. No action is required beyond [specific step].
 

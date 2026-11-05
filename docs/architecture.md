@@ -1,14 +1,14 @@
-﻿# MediCore architecture and local export design
+# OmniMed Core architecture and local export design
 
 Last updated: 4 November 2026  
 Current product version: `0.4.1`  
-Current schema: `18`
+Current schema: `19`
 
 ## 1. Status and scope
 
 This document separates:
 
-- **Implemented today** — the local-first terminal build, local SQLCipher storage, encrypted backups and
+- **Implemented today** � the local-first terminal build, local SQLCipher storage, encrypted backups and
   the local Google Drive CSV outbox.
 - **Historical design** - an earlier hosted/cloud sync protocol moved to the archive for context only.
 
@@ -35,18 +35,18 @@ supported integration path is the local CSV export described in [LOCAL_CSV_EXPOR
 ## 3. Current implementation
 
 ```text
-â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ One React/TypeScript codebase â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-â”‚                                                                        â”‚
-â”‚  Terminal mode                         Monitor mode                    â”‚
-â”‚  â”œâ”€â”€ Layout + all terminal routes       â”œâ”€â”€ MonitorLayout               â”‚
-â”‚  â”œâ”€â”€ billing/reporting/samples         â”œâ”€â”€ read-only routes            â”‚
-â”‚  â”œâ”€â”€ client-side calculations          â””â”€â”€ no write controls            â”‚
-â”‚  â””â”€â”€ SQL reads/writes                                                  â”‚
-â”‚                                                                        â”‚
-â”‚  DataSource interface                                                  â”‚
-â”‚  â”œâ”€â”€ SqlJsSource (DEV/terminal)  â”€â”€ sql.js WASM â†’ IndexedDB            â”‚
-â”‚  â””â”€â”€ ReadOnlySource (monitor)    â”€â”€ rejects run()/tx()                 â”‚
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+┌──────────────────── One React/TypeScript codebase ────────────────────┐
+│                                                                        │
+│  Terminal mode                         Monitor mode                    │
+│  ├── Layout + all terminal routes       ├── MonitorLayout               │
+│  ├── billing/reporting/samples         ├── read-only routes            │
+│  ├── client-side calculations          └── no write controls            │
+│  └── SQL reads/writes                                                  │
+│                                                                        │
+│  DataSource interface                                                  │
+│  ├── SqlJsSource (DEV/terminal)  ── sql.js WASM → IndexedDB            │
+│  └── ReadOnlySource (monitor)    ── rejects run()/tx()                 │
+└────────────────────────────────────────────────────────────────────────┘
 ```
 
 ### Current runtime characteristics
@@ -85,16 +85,18 @@ supported integration path is the local CSV export described in [LOCAL_CSV_EXPOR
    fingerprint/expiry and the execution-time high-water mark, then derives the licensed module set. A
    development build falls back to a complete development licence only when no real licence is stored.
 7. Auth restores a session or shows login/unlock.
-8. Effective modules and routes are `licensed modules âˆ© clinic-enabled modules`; read-only mode applies
+8. Effective modules and routes are `licensed modules ∩ clinic-enabled modules`; read-only mode applies
    after grace expiry.
 
 ### Module composition
 
-MediCore is a multi-vertical product; a tenant enables only the modules it operates.
+OmniMed Core is a multi-vertical product; a tenant enables only the modules it operates.
 
 - Billing and money: patients, billing, invoices, dues, doctors, expenses. Referral commissions are
   not exposed or accrued.
-- Diagnostics: tests/packages, sample chain, result entry, amendments, report printing.
+- Diagnostics: tests/packages, sample chain, result entry, amendments, pathology report printing, and
+  X-ray/radiology reports with clinical history, findings, impression, radiologist signature and a
+  configurable disclaimer.
 - Hospital: inpatient admission, ward/bed, treating doctor, discharge diagnosis/summary, generic
   hospital service catalogue, IPD service charges, payments/balance and bill print.
 - Pharmacy: medicine master, batch/expiry inventory, stock receipt, dispensing, GST receipt and
@@ -104,21 +106,21 @@ MediCore is a multi-vertical product; a tenant enables only the modules it opera
   numbering and terminal configuration.
 - Monitor: read-only dashboards, invoices, dues, reports, admissions, pharmacy and money views.
 
-The umbrella brand is **MediCore** (`src/app/brand.ts`). Internal package/storage names retain the
+The umbrella brand is **OmniMed Core** (`src/app/brand.ts`). Internal package/storage names retain the
 historical `diagbill` identifier.
 
 ### Licensing boundary
 
 ```text
 Vendor portal (private key, vendor-controlled)
-   â””â”€â”€ signs licence JSON for tenantIds + deviceIds
-                 â”‚ file / renewal download
-                 â–¼
+   └── signs licence JSON for tenantIds + deviceIds
+                 │ file / renewal download
+                 ▼
 Terminal (public key only)
-   â”œâ”€â”€ verifies ECDSA P-256 signature offline
-   â”œâ”€â”€ checks tenant + device + status + expiry/grace
-   â”œâ”€â”€ derives edition/module entitlements
-   â””â”€â”€ gates navigation/routes and write controls
+   ├── verifies ECDSA P-256 signature offline
+   ├── checks tenant + device + status + expiry/grace
+   ├── derives edition/module entitlements
+   └── gates navigation/routes and write controls
 ```
 
 The private key must never be embedded in the application or exposed to the browser. The portal's
@@ -172,7 +174,7 @@ See [LOCAL_CSV_EXPORT.md](../LOCAL_CSV_EXPORT.md).
 
 - The local database is the system of record.
 - Browser storage is per origin/profile; `localhost` and `127.0.0.1` are separate stores.
-- There is no cross-device sharing. “Monitor from anywhere” is **not delivered**; only the local
+- There is no cross-device sharing. �Monitor from anywhere� is **not delivered**; only the local
   read-only monitor build and the one-way Google Drive CSV outbox exist.
 
 ## 4. Current data model and export-ready metadata
@@ -193,25 +195,25 @@ Core relationships:
 
 ```text
 tenant
-â”œâ”€â”€ users / settings / audit
-â”œâ”€â”€ patients
-â”‚    â”œâ”€â”€ invoices â”€â”€ invoice_items
-â”‚    â”‚    â”œâ”€â”€ payments
-â”‚    â”‚    â”œâ”€â”€ samples
-â”‚    â”‚    â””â”€â”€ report_orders
-â”‚    â”‚         â”œâ”€â”€ report_parameters
-â”‚    â”‚         â””â”€â”€ report_result_revisions
-â”‚    â”œâ”€â”€ admissions â”€â”€ doctors
-â”‚    â”‚    â”œâ”€â”€ hospital_charges
-â”‚    â”‚    â””â”€â”€ hospital_bill_payments
-â”‚    â”œâ”€â”€ pharmacy_sales â”€â”€ pharmacy_sale_items
-â”‚    â””â”€â”€ abdm_consents â”€â”€ abdm_outbox
-â”œâ”€â”€ hospital_services
-â”œâ”€â”€ tests â”€â”€ test_parameters
-â”œâ”€â”€ packages â”€â”€ package_items
-â”œâ”€â”€ medicines â”€â”€ pharmacy_batches
-â”œâ”€â”€ doctors
-â””â”€â”€ expense_categories â”€â”€ expenses
+├── users / settings / audit
+├── patients
+│    ├── invoices ── invoice_items
+│    │    ├── payments
+│    │    ├── samples
+│    │    └── report_orders
+│    │         ├── report_parameters
+│    │         └── report_result_revisions
+│    ├── admissions ── doctors
+│    │    ├── hospital_charges
+│    │    └── hospital_bill_payments
+│    ├── pharmacy_sales ── pharmacy_sale_items
+│    └── abdm_consents ── abdm_outbox
+├── hospital_services
+├── tests ── test_parameters
+├── packages ── package_items
+├── medicines ── pharmacy_batches
+├── doctors
+└── expense_categories ── expenses
 ```
 
 Legacy `commission_entries`, `payouts` and doctor commission columns may remain in historical databases
@@ -286,7 +288,7 @@ The earlier host/API/cloud-dashboard design has been removed from the product an
 
 ### One centre, many terminals
 
-- 2–5 independent Tauri terminals
+- 2�5 independent Tauri terminals
 - Each terminal keeps its own SQLCipher database and invoice-number block
 - Each terminal writes its own local CSV outbox folder
 - No terminal-to-terminal merge; downstream consumers must treat transaction IDs as idempotency keys

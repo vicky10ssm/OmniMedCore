@@ -1,6 +1,6 @@
 # Feature Decisions — Diagnostic Centre Billing Software (India)
 
-> **Scope update (27 Oct 2026):** The product is now branded **MediCore** and sold as configurable
+> **Scope update (27 Oct 2026):** The product is now branded **OmniMed Core** and sold as configurable
 > verticals for diagnostic centres, standalone pharmacies and small hospitals. Added hospital admission
 > (ward/bed/discharge) and pharmacy batch/expiry inventory + dispensing modules. The earlier diagnostic
 > working decisions below remain the baseline for the diagnostics vertical.
@@ -395,7 +395,7 @@ The second deployment exists. `npm run build` makes the terminal (editing) app; 
 
 ## Multi-vertical editions, licensing and generic IPD billing - built
 
-- MediCore remains one codebase/installer. The signed licence activates Diagnostics, Pharmacy, Hospital,
+- OmniMed Core remains one codebase/installer. The signed licence activates Diagnostics, Pharmacy, Hospital,
   Complete or Custom modules; clinic Settings can then hide licensed modules. Effective modules are the
   intersection of the two.
 - Licences are ECDSA P-256/SHA-256 files over canonical JSON, bound to tenant IDs and Windows hardware
@@ -506,3 +506,17 @@ The second deployment exists. `npm run build` makes the terminal (editing) app; 
   TOTP/password/recovery material.
 - Full snapshots contain confidential patient data and are not encrypted backups.
 - Legacy `sync_queue`/`sync_ack` tables remain historical; migration 18 drops their triggers.
+
+## OmniMed Core rebrand and X-ray reporting - built
+
+- The product is branded **OmniMed Core** across the app, installers, portal and documentation.
+- Internal identifiers (`in.medicore.desktop`, `medicore.db`, DPAPI entropy and storage keys) remain
+  unchanged intentionally so existing databases, licences and app-data paths survive the rebrand.
+- Schema 19 adds `clinical_history`, `findings_text` and `impression_text` to `report_orders`.
+- The Reports work list detects `X-Ray`/`Radiology` categories and opens a radiology form instead of the
+  pathology parameter table.
+- X-ray reports use a dedicated A4 letterhead with clinic logo/header, patient details, clinical history,
+  findings, impression, radiologist signature and a configurable disclaimer.
+- Admin settings provide radiologist name, qualification and the X-ray disclaimer.
+- X-ray release still requires `can_authorize_reports`; report revisions and audit evidence use the same
+  append-only workflow as pathology reports.
