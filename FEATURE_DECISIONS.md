@@ -520,3 +520,19 @@ The second deployment exists. `npm run build` makes the terminal (editing) app; 
 - Admin settings provide radiologist name, qualification and the X-ray disclaimer.
 - X-ray release still requires `can_authorize_reports`; report revisions and audit evidence use the same
   append-only workflow as pathology reports.
+
+## Multiple radiologist signatures - built
+
+- Schema 20 adds the tenant-scoped `radiologists` table: name, qualification, signature image data URL,
+  active flag, sort order and standard sync/tombstone columns.
+- Administrators manage the catalogue under **Settings → Radiologists**. Signatures are PNG/JPG/WebP up
+  to 500 KB, matching the clinic-logo ingestion limit.
+- The X-ray entry form loads only active radiologists and requires the operator to choose one before
+  release. A selected radiologist without a signature image is rejected at release.
+- The selected radiologist id, name, qualification and signature image are copied into `report_orders`.
+  Printing reads that snapshot, not the live catalogue, so renaming, deactivating or deleting a
+  radiologist cannot silently rewrite an issued report.
+- An issued report whose radiologist was later deactivated or deleted keeps that radiologist as an
+  inactive, read-only choice on amendment and retains the saved signature for printing.
+- Existing text-only X-ray reports remain printable through the legacy settings fallback until amended
+  with a signature snapshot.

@@ -34,6 +34,7 @@ import {
 } from "../db/tauriStorage";
 import SyncSettings from "./SyncSettings";
 import BackupSettings from "./BackupSettings";
+import RadiologistsSettings from "./RadiologistsSettings";
 import type { UserRow } from "../db/types";
 import {
   generateRecoveryCodes,
@@ -62,8 +63,6 @@ interface ProfileForm {
   lab_gstin: string;
   pathologist_name: string;
   pathologist_qualification: string;
-  radiologist_name: string;
-  radiologist_qualification: string;
   xray_disclaimer: string;
   invoice_prefix: string;
   device_code: string;
@@ -83,8 +82,6 @@ const PROFILE_KEYS: (keyof ProfileForm)[] = [
   "lab_gstin",
   "pathologist_name",
   "pathologist_qualification",
-  "radiologist_name",
-  "radiologist_qualification",
   "xray_disclaimer",
   "invoice_prefix",
   "device_code",
@@ -104,8 +101,6 @@ const EMPTY: ProfileForm = {
   lab_gstin: "",
   pathologist_name: "",
   pathologist_qualification: "",
-  radiologist_name: "",
-  radiologist_qualification: "",
   xray_disclaimer:
     "This report is based on the information available at the time of examination. It is not a substitute for clinical correlation or further investigation.",
   invoice_prefix: "INV-",
@@ -124,7 +119,9 @@ export default function Settings() {
   const license = useLicense();
   const isAdmin = user?.role === "admin";
 
-  const [tab, setTab] = useState<"lab" | "modules" | "license" | "users" | "device">("lab");
+  const [tab, setTab] = useState<
+    "lab" | "radiologists" | "modules" | "license" | "users" | "device"
+  >("lab");
   const [desktopInfo, setDesktopInfo] = useState<DatabaseInfo | null>(null);
   const [encryptionInfo, setEncryptionInfo] = useState<DatabaseEncryptionInfo | null>(null);
   const [form, setForm] = useState<ProfileForm>(EMPTY);
@@ -507,6 +504,7 @@ export default function Settings() {
 
   const tabs: [typeof tab, string][] = [
     ["lab", "Centre profile"],
+    ["radiologists", "Radiologists"],
     ["modules", "Modules & logo"],
     ["license", "Licence"],
     ["users", "Users"],
@@ -524,7 +522,7 @@ export default function Settings() {
         }
       />
 
-      <div className="mb-4 flex gap-1">
+      <div className="mb-4 flex flex-wrap gap-1">
         {tabs.map(([t, label]) => (
           <button
             key={t}
@@ -631,31 +629,18 @@ export default function Settings() {
               </div>
 
               <div className="border-t border-slate-200 pt-4">
-                <h2 className="mb-3 text-sm font-semibold">Radiologist / X-ray report</h2>
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <Labeled label="Radiologist name">
-                    <TextInput
-                      value={form.radiologist_name}
-                      disabled={!isAdmin}
-                      onChange={(e) =>
-                        setForm({ ...form, radiologist_name: e.target.value })
-                      }
-                      placeholder="Dr. A. Sharma"
-                    />
-                  </Labeled>
-                  <Labeled label="Qualification">
-                    <TextInput
-                      value={form.radiologist_qualification}
-                      disabled={!isAdmin}
-                      onChange={(e) =>
-                        setForm({
-                          ...form,
-                          radiologist_qualification: e.target.value,
-                        })
-                      }
-                      placeholder="MD (Radiodiagnosis)"
-                    />
-                  </Labeled>
+                <h2 className="mb-3 text-sm font-semibold">X-ray report</h2>
+                <div className="mb-3 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-600">
+                  Radiologist names and scanned signature images are managed in
+                  the{" "}
+                  <button
+                    type="button"
+                    className="font-medium text-teal-700 hover:underline"
+                    onClick={() => setTab("radiologists")}
+                  >
+                    Radiologists
+                  </button>{" "}
+                  tab. Operators select one when issuing an X-ray report.
                 </div>
                 <Labeled
                   label="X-ray report disclaimer"
@@ -842,6 +827,10 @@ export default function Settings() {
             </p>
           </Card>
         </div>
+      )}
+
+      {tab === "radiologists" && (
+        <RadiologistsSettings canEdit={isAdmin} />
       )}
 
       {tab === "modules" && (

@@ -1,11 +1,11 @@
-# Production and commercial readiness status
+﻿# Production and commercial readiness status
 
-Last updated: 4 November 2026  
-Product version: `0.4.1`  
-Database schema: `19`  
+Last updated: 4 November 2026
+Product version: `0.4.1`
+Database schema: `20`
 Current stage: supervised pilot / pre-production
 
-This is the single high-level status document for “what is done” and “what is still pending” from a
+This is the single high-level status document for â€œwhat is doneâ€ and â€œwhat is still pendingâ€ from a
 production and commercial perspective. It summarises, rather than replaces, the detailed plans:
 
 - [Productionization plan](docs/productionization-plan.md)
@@ -23,9 +23,9 @@ production and commercial perspective. It summarises, rather than replaces, the 
 | Can the offline desktop app be demonstrated? | **Yes** |
 | Can it be sold as a supervised design-partner pilot? | **Conditionally**, after the pilot P0 gates and written limitations acknowledgement |
 | Can it be sold as general-availability production software? | **No** |
-| Is a hosted monitoring/SaaS tier part of the product? | **No** — online sync was removed in favour of local Google Drive CSV export |
-| Is ABDM production exchange available? | **No** — offline FHIR draft only |
-| Is this NABL/ISO certified software? | **No** — evidence foundations only |
+| Is a hosted monitoring/SaaS tier part of the product? | **No** â€” online sync was removed in favour of local Google Drive CSV export |
+| Is ABDM production exchange available? | **No** â€” offline FHIR draft only |
+| Is this NABL/ISO certified software? | **No** â€” evidence foundations only |
 
 The commercially safe offer today is a **paid, tightly scoped, supervised pilot**. Do not promise a
 general production SLA, a hosted monitor, live ABDM, key recovery or public-CA SmartScreen reputation
@@ -109,7 +109,7 @@ migration 18.
 
 ## 3. What is pending
 
-### P0 — before real patient data and a paid production pilot
+### P0 â€” before real patient data and a paid production pilot
 
 | Item | Current state | Required before |
 | --- | --- | --- |
@@ -131,10 +131,10 @@ migration 18.
 | GST/SAC/TDS/e-invoice/MSME review | Guidance exists; CA sign-off pending | Invoicing a buyer |
 | Claims register and customer-facing limitations | Documents exist; must be refreshed every release | Every sale |
 
-### P1 — clinical and quality evidence
+### P1 â€” clinical and quality evidence
 
 - Critical-value limits, notification, read-back and escalation evidence
-- IQC control lots, Levey–Jennings review, acceptance rules and out-of-control investigation
+- IQC control lots, Leveyâ€“Jennings review, acceptance rules and out-of-control investigation
 - EQA/PT plans, results, review and corrective action
 - Equipment inventory, calibration, maintenance, qualification and temperature logs
 - Reagent/consumable lots and verification
@@ -148,13 +148,13 @@ migration 18.
 - Tamper-evident audit export and periodic review
 - Computer-system-validation pack for regulated buyers
 
-### P2 — Future integrations (not in current scope)
+### P2 â€” Future integrations (not in current scope)
 
 Hosted monitoring and online sync were removed. Future work may add a controlled downstream CSV
 consumer, but it must not become a write path or a substitute for terminal backups. Current scope does
 not include a hosted dashboard, per-device sync tokens, cloud tenant administration or SaaS billing.
 
-### P3 — ABDM production
+### P3 â€” ABDM production
 
 - HFR facility and HIP onboarding
 - Sandbox credentials and client authentication
@@ -164,7 +164,7 @@ not include a hosted dashboard, per-device sync tokens, cloud tenant administrat
 - Audit/redaction, monitoring and support runbook
 - Production approval and buyer acceptance
 
-### P4 — product depth
+### P4 â€” product depth
 
 Hospital and pharmacy depth (bed board, insurance/TPA, nursing/medication, procurement/GRN,
 controlled-drug registers, chain transfers), analyser/PACS, accounting integration, patient portal,

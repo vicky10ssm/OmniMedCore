@@ -334,6 +334,7 @@ class SqlJsSource implements DataSource {
       "payouts",
       "commission_entries",
       "report_orders",
+      "radiologists",
       "test_parameters",
       "report_parameters",
       "samples",

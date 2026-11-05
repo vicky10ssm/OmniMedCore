@@ -1,7 +1,7 @@
 # Deployment, architecture and commercial readiness
 
 Last updated: 3 November 2026  
-Current schema: `19`
+Current schema: `20`
 
 ## Current architecture
 

@@ -1,7 +1,7 @@
 {
   "name": "diagbill",
   "private": true,
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "OmniMed Core — modular billing and care operations for diagnostic centres, pharmacies and small hospitals",
   "type": "module",
   "scripts": {

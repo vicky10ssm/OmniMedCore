@@ -24,6 +24,7 @@ a mixture of Excel, paper registers and disconnected software:
 - Referring-doctor directory without commission/inducement tracking
 - Expenses and a basic profit view
 - Pathology reports with selectable parameters, units and reference intervals
+- X-ray reports with administrator-managed radiologist signature images selected by the operator
 - Sample traceability from accession to acceptance/rejection
 - Hospital admission, ward/bed assignment, discharge summary and generic IPD service billing
 - Pharmacy medicine master, batch/expiry stock, dispensing and receipts

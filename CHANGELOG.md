@@ -3,6 +3,41 @@
 All notable changes to OmniMed Core are recorded here. This project follows semantic versioning once
 production releases begin.
 
+## [0.7.0] - 2026-11-05
+
+### Added
+
+- Multiple radiologist signature records managed by administrators under
+  **Settings → Radiologists**.
+- Signature image upload (PNG, JPG or WebP, up to 500 KB), name, qualification,
+  active/inactive state and delete controls for each radiologist.
+- Operator selection of the issuing radiologist when entering or amending an
+  X-ray report.
+- Signature image rendering above the radiologist name on the printed X-ray
+  letterhead.
+- Immutable report snapshot of radiologist id, name, qualification and signature
+  so later catalogue edits or deletions do not change issued reports.
+- Inactive or deleted radiologists already captured on a report remain available
+  to that report as a read-only historical choice.
+
+### Database
+
+- Schema 20 adds the tenant-scoped `radiologists` table.
+- Schema 20 adds `radiologist_id`, `radiologist_name`,
+  `radiologist_qualification` and `radiologist_signature` to `report_orders`.
+- Existing issued X-ray reports fall back to the previous configured radiologist
+  text when no image snapshot exists.
+
+### Verified
+
+- `npm run check` and migration checks from schema 19 to 20.
+- Admin upload of two signature images, edit/deactivate/delete controls.
+- Operator selection, report release, snapshot persistence and print preview.
+- Deactivated/deleted radiologists are not offered for new reports, while their
+  saved report signature remains printable.
+- Signature image visible in the X-ray print preview with name, qualification,
+  findings, impression and disclaimer.
+
 ## [0.6.0] - 2026-11-05
 
 ### Added

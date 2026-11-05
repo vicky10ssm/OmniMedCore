@@ -2,7 +2,7 @@
 
 Last updated: 3 November 2026  
 Product version: `0.4.1`  
-Database schema: `19`
+Database schema: `20`
 
 **OmniMed Core** is the umbrella product name. The internal package/browser storage keys retain the
 historical `diagbill` identifier; this does not affect buyer branding.

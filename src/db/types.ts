@@ -224,6 +224,10 @@ export interface ReportOrderRow extends SyncCols {
   clinical_history: string;
   findings_text: string;
   impression_text: string;
+  radiologist_id: string;
+  radiologist_name: string;
+  radiologist_qualification: string;
+  radiologist_signature: string;
   unit: string;
   ref_range: string;
   ref_min: number | null;
@@ -246,6 +250,15 @@ export interface ReportOrderRow extends SyncCols {
   approval_status: string;
   approved_by: string;
   approved_at: number | null;
+}
+
+export interface RadiologistRow extends SyncCols {
+  id: string;
+  name: string;
+  qualification: string;
+  signature_data: string;
+  is_active: number;
+  sort_order: number;
 }
 
 export interface TestParameterRow extends SyncCols {
