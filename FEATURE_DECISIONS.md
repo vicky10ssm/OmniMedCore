@@ -548,3 +548,19 @@ The second deployment exists. `npm run build` makes the terminal (editing) app; 
 - This is a broad routine/specialty library, not a claim that every possible esoteric or send-out test
   exists. Custom tests remain the escape hatch for local methods and rare assays.
 - No schema migration is required; schema remains 21.
+
+## Parameter templates for the starter catalogue - built
+
+- `src/db/starterParameters.ts` seeds 319 pathology parameters after the starter tests are present.
+- Every pathology test gets at least one parameter. Single-analyte tests get one parameter named after
+  the test; panels get their component set.
+- Explicit panel maps cover differential count, PT/INR, blood group/Rh, dengue, Widal, urine microscopy,
+  stool routine, semen analysis, CSF/pleural/ascitic/synovial fluid, Hb electrophoresis, ANA and
+  cultures.
+- X-ray tests remain parameter-free because they use the radiology report form.
+- Seeding is additive and idempotent. Existing custom parameters are preserved, and parameter names are
+  matched case-insensitively per test.
+- Tests with recorded results are not reshaped. A historical single-result report is mapped into its new
+  one-parameter template when reopened, so amendment does not lose the result.
+- Newly seeded panel reference intervals are intentionally blank; the laboratory must validate them for
+  its methods and population.

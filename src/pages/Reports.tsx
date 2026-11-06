@@ -412,6 +412,19 @@ export default function Reports() {
           loincCode: p.loinc_code,
         });
       }
+      // A historical single-result report may predate its new one-parameter
+      // template. Carry the saved result into that parameter so an amendment
+      // cannot silently lose it.
+      if (entries.length === 1 && saved.length === 0) {
+        const only = entries[0];
+        only.result =
+          r.result_text.trim() ||
+          (r.result_value !== null ? String(r.result_value) : "");
+        if (r.unit) only.unit = r.unit;
+        if (r.ref_range) only.refRange = r.ref_range;
+        if (r.ref_min !== null) only.refMin = r.ref_min;
+        if (r.ref_max !== null) only.refMax = r.ref_max;
+      }
       setEntryParameters(entries);
       setResultText(entries.length > 0 ? "" : r.result_text || "");
     } catch (err) {

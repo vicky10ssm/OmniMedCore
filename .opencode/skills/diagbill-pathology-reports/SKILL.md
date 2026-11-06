@@ -47,6 +47,19 @@ every active tenant. Seeding is additive and idempotent:
 - labs must set prices and validate reference intervals before billing or clinical use
 - this is a broad routine/specialty library, not a claim that every possible esoteric test exists
 
+`src/db/starterParameters.ts` seeds 319 pathology parameter templates after the test catalogue:
+
+- every pathology test has at least one parameter
+- single-analyte tests receive one parameter named after the test
+- panels receive explicit component maps (CBC/LFT/KFT/Lipid/Urine base templates plus DC, PT/INR,
+  blood group/Rh, dengue, Widal, urine microscopy, stool, semen, fluid analysis, Hb electrophoresis,
+  ANA and cultures)
+- X-ray tests remain parameter-free and use the radiology form
+- seeding is additive/idempotent and preserves custom parameters
+- tests with recorded results are not reshaped; historical single-result reports map into their new
+  one-parameter template on amendment
+- new panel reference intervals are blank and must be validated locally
+
 ## Starter templates
 
 Schema migration 10 added editable starter sets for the default catalogue:

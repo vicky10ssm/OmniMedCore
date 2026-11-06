@@ -20,6 +20,7 @@ Status meanings: **Ready**, **Pilot**, **Partial**, **Not available**, **Externa
 | --- | --- | --- |
 | Test catalog and packages | Ready | Price, editable GST rate (default 0%), SAC, department, specimen, container, method, LOINC fields |
 | Starter test library | Ready | 226 entries: 183 pathology and 43 X-ray/radiography tests; additive, idempotent seeding preserves custom, renamed and deleted tests |
+| Starter parameter templates | Ready | 319 pathology parameters; every pathology test has at least one; panels include CBC 14, LFT 11, KFT 9, Lipid 8, Urine 18 and other component sets; X-rays remain text-only |
 | GST invoice | Ready | Per-line GST, CGST/SGST split, taxable value, round-off, GSTIN |
 | Invoice discounts | Ready | Line-level discount reducing taxable value |
 | Payments | Ready | Cash, UPI, card, bank, credit; partial payments create dues |
