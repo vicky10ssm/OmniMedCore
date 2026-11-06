@@ -17,6 +17,7 @@ import { getDeviceId, now, setDeviceId } from "./helpers";
 import { hashPassword } from "../auth/crypto";
 import { isMonitor } from "../app/mode";
 import { ensureDefaultTenant, getCurrentTenantId } from "./tenant";
+import { ensureStarterTests } from "./starterTests";
 import { isTauriRuntime } from "./tauriStorage";
 import { TauriSqlSource } from "./tauriSqlSource";
 import {
@@ -170,6 +171,7 @@ class SqlJsSource implements DataSource {
     // Pass the source in. Calling getDb() here would deadlock: it returns the
     // pending promise that is waiting on this very call.
     await ensureDefaultTenant(src);
+    await ensureStarterTests(src);
     src.persist();
     return src;
   }

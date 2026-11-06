@@ -536,3 +536,15 @@ The second deployment exists. `npm run build` makes the terminal (editing) app; 
   inactive, read-only choice on amendment and retains the saved signature for printing.
 - Existing text-only X-ray reports remain printable through the legacy settings fallback until amended
   with a signature snapshot.
+
+## Broad pathology and X-ray starter catalogue - built
+
+- `src/db/starterTests.ts` contains 183 pathology and 43 X-ray starter entries (226 total).
+- Seeding runs after tenant bootstrap in both the SQL.js and Tauri SQLCipher sources.
+- It is additive and idempotent per tenant. Matching is by stable seed id, code and case-insensitive name.
+- Existing custom tests, renamed seed tests and deleted seed tests are not overwritten or resurrected.
+- New entries default to 0% GST and price 0. Labs must set rates and validate reference intervals before
+  billing or clinical use.
+- This is a broad routine/specialty library, not a claim that every possible esoteric or send-out test
+  exists. Custom tests remain the escape hatch for local methods and rare assays.
+- No schema migration is required; schema remains 21.

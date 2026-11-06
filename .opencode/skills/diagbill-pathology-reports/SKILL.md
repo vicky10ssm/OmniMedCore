@@ -35,6 +35,18 @@ Use this skill for parameter-based pathology reports and the current diagnostic-
 - X-ray release requires selecting an active radiologist with a signature image. The report stores the radiologist id/name/qualification/signature snapshot; printing uses that snapshot so later catalogue edits or deletions cannot rewrite an issued report.
 - Inactive/deleted radiologists already captured on a report remain available as an inactive historical choice when amending, and their saved signature remains printable.
 
+## Starter test catalogue
+
+`src/db/starterTests.ts` seeds a broad 226-entry library (183 pathology and 43 X-ray) on app boot for
+every active tenant. Seeding is additive and idempotent:
+
+- matches by stable seed id, code and case-insensitive name
+- preserves custom tests
+- does not resurrect renamed or deleted starter tests
+- new entries ship with 0% GST, price 0 and blank reference intervals
+- labs must set prices and validate reference intervals before billing or clinical use
+- this is a broad routine/specialty library, not a claim that every possible esoteric test exists
+
 ## Starter templates
 
 Schema migration 10 added editable starter sets for the default catalogue:

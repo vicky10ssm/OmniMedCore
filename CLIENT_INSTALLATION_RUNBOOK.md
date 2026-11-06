@@ -334,6 +334,7 @@ including patients and clinical records, and therefore contain confidential data
 - [ ] Licence activated for the correct tenant/device/edition
 - [ ] Admin password changed; named users and roles created; 2FA considered
 - [ ] Centre profile, modules, numbering, printing and letterhead configured
+- [ ] Starter pathology/X-ray library present; prices and reference intervals reviewed
 - [ ] Test patient, invoice, payment, print and report workflow passed
 - [ ] At least one radiologist name/qualification/signature uploaded under Settings -> Radiologists
 - [ ] X-ray report letterhead, selected signature image and disclaimer verified
