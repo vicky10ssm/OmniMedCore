@@ -3,6 +3,46 @@
 All notable changes to OmniMed Core are recorded here. This project follows semantic versioning once
 production releases begin.
 
+## [0.8.1] - 2026-11-07
+
+### Added
+
+- Seeded **319 pathology parameter templates** across the starter catalogue.
+- Every pathology test now has at least one parameter.
+- Multi-component panels now include their full component sets, including:
+  - differential count (5)
+  - PT/INR (2)
+  - blood group and Rh (2)
+  - dengue NS1/IgM/IgG (3)
+  - Widal (8)
+  - urine microscopy (6)
+  - stool routine (6)
+  - semen analysis (8)
+  - CSF (8), pleural (8), ascitic (7) and synovial (6) fluid analysis
+  - Hb electrophoresis (2)
+  - ANA (2)
+  - blood/urine/pus/sputum/throat/CSF/wound/stool/fungal cultures (3 each)
+  - AFB smear (2), Gram stain (2), KOH mount (2), antibiotic sensitivity (2)
+- Single-analyte pathology tests receive one parameter named after the test.
+- X-ray tests remain parameter-free and use the radiology report form.
+
+### Compatibility
+
+- Parameter seeding is additive and idempotent; existing custom parameters and results are preserved.
+- Tests with recorded results are not reshaped. Historical single-result tests are mapped into their new
+  one-parameter template when reopened for amendment.
+- No schema change; database schema remains 21.
+
+### Verified
+
+- Confirmed 183/183 pathology tests have at least one parameter.
+- Confirmed 0 X-ray tests have parameters.
+- Confirmed 319 active parameter rows.
+- Duplicate parameter-name check returned zero rows.
+- Existing core panels remain at CBC 14, LFT 11, KFT 9, Lipid 8 and Urine Routine 18 parameters.
+- Restarted the app and confirmed the parameter count remained stable.
+- `npm run check`, terminal build, monitor build and Rust tests.
+
 ## [0.8.0] - 2026-11-06
 
 ### Added

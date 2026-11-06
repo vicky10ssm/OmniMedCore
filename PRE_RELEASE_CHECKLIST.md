@@ -125,7 +125,10 @@ Record invoice/payment IDs and totals used for acceptance.
 - [ ] Amendment requires reason and preserves previous revision
 - [ ] Report print shows accession, authorizer and version
 - [ ] Starter catalogue contains 183 pathology and 43 X-ray tests without duplicate names/codes
-- [ ] Restarting the app does not duplicate starter tests or resurrect deleted tests
+- [ ] Every pathology test has at least one parameter; X-ray tests have none
+- [ ] Starter panel parameters exist for CBC, LFT, KFT, Lipid, Urine, DC, PT/INR, Widal, dengue, cultures, fluids, semen and stool
+- [ ] Parameter duplicate-name check is zero; historical single results survive amendment
+- [ ] Restarting the app does not duplicate starter tests/parameters or resurrect deleted ones
 - [ ] Every test, X-ray and package shows 0% GST after migration
 - [ ] A new test/X-ray bill has zero CGST/SGST
 - [ ] Historical issued invoices retain their original GST lines

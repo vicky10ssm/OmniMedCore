@@ -18,6 +18,7 @@ import { hashPassword } from "../auth/crypto";
 import { isMonitor } from "../app/mode";
 import { ensureDefaultTenant, getCurrentTenantId } from "./tenant";
 import { ensureStarterTests } from "./starterTests";
+import { ensureStarterParameters } from "./starterParameters";
 import { isTauriRuntime } from "./tauriStorage";
 import { TauriSqlSource } from "./tauriSqlSource";
 import {
@@ -172,6 +173,7 @@ class SqlJsSource implements DataSource {
     // pending promise that is waiting on this very call.
     await ensureDefaultTenant(src);
     await ensureStarterTests(src);
+    await ensureStarterParameters(src);
     src.persist();
     return src;
   }
