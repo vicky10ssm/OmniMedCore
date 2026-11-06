@@ -1,7 +1,7 @@
 # Production and commercial readiness status
 
 Last updated: 6 November 2026
-Product version: `0.7.2`
+Product version: `0.8.0`
 Database schema: `21`
 Current stage: supervised pilot / pre-production
 

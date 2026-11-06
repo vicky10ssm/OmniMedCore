@@ -9,6 +9,7 @@ import { hashPassword } from "../auth/crypto";
 import { getDeviceId, now, setDeviceId } from "./helpers";
 import { MIGRATIONS, SEED_SQL, splitSqlStatements } from "./schema";
 import { ensureDefaultTenant, getCurrentTenantId } from "./tenant";
+import { ensureStarterTests } from "./starterTests";
 import { backupDatabase, databaseInfo } from "./tauriStorage";
 import type { DataSource } from "./index";
 
@@ -115,6 +116,7 @@ export class TauriSqlSource implements DataSource {
     await source.migrate();
     await source.ensureAdmin();
     await ensureDefaultTenant(source);
+    await ensureStarterTests(source);
     return source;
   }
 

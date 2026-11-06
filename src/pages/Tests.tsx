@@ -580,7 +580,11 @@ export default function Tests() {
                       <td className="px-4 py-2.5 font-medium">{t.name}</td>
                       <td className="px-4 py-2.5 text-slate-600">{t.category}</td>
                       <td className="num px-4 py-2.5 text-right">
-                        {formatINR(t.price_paise)}
+                        {t.price_paise === 0 ? (
+                          <span className="text-amber-700">Set price</span>
+                        ) : (
+                          formatINR(t.price_paise)
+                        )}
                       </td>
                       <td className="num px-4 py-2.5 text-right text-slate-600">
                         {t.gst_rate_bp / 100}%

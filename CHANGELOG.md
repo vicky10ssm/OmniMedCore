@@ -3,6 +3,35 @@
 All notable changes to OmniMed Core are recorded here. This project follows semantic versioning once
 production releases begin.
 
+## [0.8.0] - 2026-11-06
+
+### Added
+
+- Broad starter catalogue for pathology and radiography: **183 pathology tests and 43 X-ray tests**
+  (226 total).
+- Coverage includes haematology, routine biochemistry, lipids, renal/urine chemistry, endocrinology,
+  serology/immunology, microbiology, molecular diagnostics, urine/stool routine, fluid analysis,
+  cytology, histopathology and common X-ray examinations.
+- Starter seeding runs automatically on app boot for every active tenant.
+- Seeding is additive and idempotent: it matches by id, code and case-insensitive name, preserves custom
+  tests, and does not resurrect renamed or deleted starter tests.
+- New entries are created with 0% GST and price 0; the laboratory must set its own rates and validate
+  reference intervals before billing/clinical use.
+
+### Notes
+
+- Core starter tests retain their existing example prices.
+- No schema change; database schema remains 21.
+- Historical invoices, reports and existing custom tests are untouched.
+
+### Verified
+
+- Live existing-database boot added the missing catalogue without duplicates.
+- Counts confirmed: 183 pathology and 43 X-ray tests.
+- Duplicate-name and duplicate-code queries returned zero rows.
+- Restarting the app kept the same count and did not duplicate tests.
+- `npm run check`, terminal build, monitor build and Rust tests.
+
 ## [0.7.2] - 2026-11-06
 
 ### Changed

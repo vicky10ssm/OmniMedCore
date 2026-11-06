@@ -36,6 +36,7 @@ Dashboard, Settings, Compliance or the Expenses profitability card.
 - Patient registration, search and shared patient identity
 - GST billing, invoices, payments, dues, cancellation and A4/80 mm printing
 - Test/package catalogue with GST and specimen metadata
+- Broad starter library: 183 pathology tests and 43 X-ray/radiography exams, with editable prices and reference intervals
 - Parameter-based pathology reporting, verification, amendment history and printing
 - X-ray/radiology reports with clinical history, findings, impression and configurable disclaimer,
   using administrator-uploaded radiologist signatures selected by the operator
