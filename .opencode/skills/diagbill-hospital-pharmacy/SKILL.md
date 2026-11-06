@@ -15,7 +15,7 @@ not a full HIS or chain-pharmacy ERP.
 - `../../../src/pages/HospitalBill.tsx`
 - `../../../src/pages/Pharmacy.tsx`
 - `../../../src/db/types.ts`
-- `../../../src/db/schema.ts` (current schema 20)
+- `../../../src/db/schema.ts` (current schema 21)
 - `../../../src/app/modules.ts`
 - `../../../src/app/brand.ts`
 - `../../../src/db/demoSeed.ts`

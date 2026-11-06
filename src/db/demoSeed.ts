@@ -767,7 +767,7 @@ export async function seedDemoData(db: DataSource): Promise<{
           ref_range, ref_min, ref_max, report_type, is_active, method, specimen_type,
           container_type, equipment_id, loinc_code, turnaround_time_hours, department,
           accreditation_status, created_at, updated_at, device_id, dirty, deleted, tenant_id)
-       VALUES (?,?,?,'Pathology',?,1200,'999316',?,?,?,?,'numeric',1,?,?,?,'',?,4,?,'',?,?,?,1,0,?)`,
+       VALUES (?,?,?,'Pathology',?,0,'999316',?,?,?,?,'numeric',1,?,?,?,'',?,4,?,'',?,?,?,1,0,?)`,
       [
         t.id,
         t.code,

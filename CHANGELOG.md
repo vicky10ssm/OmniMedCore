@@ -3,6 +3,28 @@
 All notable changes to OmniMed Core are recorded here. This project follows semantic versioning once
 production releases begin.
 
+## [0.7.2] - 2026-11-06
+
+### Changed
+
+- Reset the catalogue GST rate to **0%** for every test, including all X-ray tests.
+- Reset package GST rates to **0%** for consistency with their component tests.
+- New tests and packages now default to 0% GST in the catalogue forms.
+- Fresh installs seed all tests and packages at 0% GST.
+
+### Database
+
+- Schema 21 updates existing `tests.gst_rate_bp` and `packages.gst_rate_bp` rows to zero.
+- Historical invoice lines are deliberately not rewritten; already issued bills keep their original tax
+  treatment. The reset applies to future bills from the updated catalogue.
+
+### Verified
+
+- Migration from schema 20 to 21 on the existing encrypted database.
+- Fresh database migration check asserts zero GST for every seeded test and package.
+- Catalogue forms default to 0%.
+- Historical invoice line-item GST remains unchanged.
+
 ## [0.7.1] - 2026-11-05
 
 ### Documentation

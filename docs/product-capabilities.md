@@ -18,7 +18,7 @@ Status meanings: **Ready**, **Pilot**, **Partial**, **Not available**, **Externa
 
 | Capability | Status | Description |
 | --- | --- | --- |
-| Test catalog and packages | Ready | Price, GST rate, SAC, department, specimen, container, method, LOINC fields |
+| Test catalog and packages | Ready | Price, editable GST rate (default 0%), SAC, department, specimen, container, method, LOINC fields |
 | GST invoice | Ready | Per-line GST, CGST/SGST split, taxable value, round-off, GSTIN |
 | Invoice discounts | Ready | Line-level discount reducing taxable value |
 | Payments | Ready | Cash, UPI, card, bank, credit; partial payments create dues |

@@ -124,6 +124,9 @@ Record invoice/payment IDs and totals used for acceptance.
 - [ ] Verification requires all selected results
 - [ ] Amendment requires reason and preserves previous revision
 - [ ] Report print shows accession, authorizer and version
+- [ ] Every test, X-ray and package shows 0% GST after migration
+- [ ] A new test/X-ray bill has zero CGST/SGST
+- [ ] Historical issued invoices retain their original GST lines
 - [ ] X-ray report saves clinical history, findings and impression
 - [ ] Admin can add/edit/deactivate/delete multiple radiologist signature records
 - [ ] Operator can select an active radiologist when entering an X-ray report
