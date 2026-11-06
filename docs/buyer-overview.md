@@ -18,7 +18,7 @@ The product focuses on operational and financial control points that small provi
 a mixture of Excel, paper registers and disconnected software:
 
 - One patient record shared across OPD, diagnostics, pharmacy and inpatient workflows
-- A configurable test/package rate list with GST
+- A configurable test/package rate list with GST (catalogue defaults to 0%; edit as required)
 - GST invoices, A4 and 80 mm thermal printing
 - Dues, part-payments and collection follow-up
 - Referring-doctor directory without commission/inducement tracking

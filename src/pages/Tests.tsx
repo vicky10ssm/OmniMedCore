@@ -47,7 +47,7 @@ const EMPTY_TEST: TestForm = {
   name: "",
   category: "Pathology",
   price: "",
-  gst: "12",
+  gst: "0",
   sac_code: "999316",
   unit: "",
   ref_range: "",
@@ -104,7 +104,7 @@ export default function Tests() {
   const [pkgForm, setPkgForm] = useState({
     name: "",
     price: "",
-    gst: "12",
+    gst: "0",
     is_active: true,
     testIds: [] as string[],
   });
@@ -381,7 +381,7 @@ export default function Tests() {
   // ---- Package save ----
   const openNewPkg = () => {
     setEditingPkg(null);
-    setPkgForm({ name: "", price: "", gst: "12", is_active: true, testIds: [] });
+    setPkgForm({ name: "", price: "", gst: "0", is_active: true, testIds: [] });
     setPkgError("");
     setPkgQuery("");
     setPkgOpen(true);

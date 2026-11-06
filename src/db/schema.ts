@@ -207,7 +207,7 @@ export const MIGRATIONS: Migration[] = [
         name TEXT NOT NULL,
         category TEXT NOT NULL DEFAULT 'Pathology',
         price_paise INTEGER NOT NULL DEFAULT 0,
-        gst_rate_bp INTEGER NOT NULL DEFAULT 1200,
+        gst_rate_bp INTEGER NOT NULL DEFAULT 0,
         sac_code TEXT NOT NULL DEFAULT '999316',
         unit TEXT NOT NULL DEFAULT '',
         ref_range TEXT NOT NULL DEFAULT '',
@@ -234,7 +234,7 @@ export const MIGRATIONS: Migration[] = [
         id TEXT PRIMARY KEY,
         name TEXT NOT NULL,
         price_paise INTEGER NOT NULL DEFAULT 0,
-        gst_rate_bp INTEGER NOT NULL DEFAULT 1200,
+        gst_rate_bp INTEGER NOT NULL DEFAULT 0,
         is_active INTEGER NOT NULL DEFAULT 1,
         ${SYNC_COLUMNS},
         ${TENANT_COLUMN}
@@ -1695,6 +1695,14 @@ export const MIGRATIONS: Migration[] = [
       ALTER TABLE report_orders ADD COLUMN radiologist_signature TEXT NOT NULL DEFAULT '';
     `,
   },
+  {
+    version: 21,
+    name: "reset diagnostic GST to zero",
+    sql: `
+      UPDATE tests SET gst_rate_bp = 0 WHERE gst_rate_bp <> 0;
+      UPDATE packages SET gst_rate_bp = 0 WHERE gst_rate_bp <> 0;
+    `,
+  },
 ];
 
 /** First-boot seed data: lab settings, admin user, expense categories, sample catalog. */
@@ -1734,20 +1742,20 @@ export const SEED_SQL = `
 
   -- Starter catalog, EDIT FREELY (prices are pre-tax examples, adjust to your rate list)
   INSERT OR IGNORE INTO tests (id, code, name, category, price_paise, gst_rate_bp, sac_code, unit, ref_range, ref_min, ref_max, report_type, is_active, created_at, updated_at, device_id, dirty, deleted, tenant_id) VALUES
-    ('test-cbc',   'CBC',    'Complete Blood Count (CBC)',        'Pathology', 30000, 1200, '999316', 'cells/cmm', '4,000 - 11,000', 4000, 11000, 'numeric', 1, 0, 0, '', 0, 0, 'tenant-default'),
-    ('test-hb',    'HB',     'Haemoglobin',                      'Pathology', 10000, 1200, '999316', 'g/dL',      '12 - 16',       12,   16,   'numeric', 1, 0, 0, '', 0, 0, 'tenant-default'),
-    ('test-fbs',   'FBS',    'Blood Sugar Fasting',              'Pathology', 10000, 1200, '999316', 'mg/dL',     '70 - 100',      70,   100,  'numeric', 1, 0, 0, '', 0, 0, 'tenant-default'),
-    ('test-rbs',   'RBS',    'Blood Sugar Random',               'Pathology', 10000, 1200, '999316', 'mg/dL',     '70 - 140',      70,   140,  'numeric', 1, 0, 0, '', 0, 0, 'tenant-default'),
-    ('test-lipid', 'LIPID',  'Lipid Profile',                    'Pathology', 40000, 1200, '999316', '',          '',              NULL, NULL, 'text',    1, 0, 0, '', 0, 0, 'tenant-default'),
-    ('test-lft',   'LFT',    'Liver Function Test (LFT)',        'Pathology', 50000, 1200, '999316', '',          '',              NULL, NULL, 'text',    1, 0, 0, '', 0, 0, 'tenant-default'),
-    ('test-kft',   'KFT',    'Kidney Function Test (KFT)',       'Pathology', 50000, 1200, '999316', '',          '',              NULL, NULL, 'text',    1, 0, 0, '', 0, 0, 'tenant-default'),
-    ('test-urine', 'URINE',  'Urine Routine Examination',        'Pathology', 15000, 1200, '999316', '',          '',              NULL, NULL, 'text',    1, 0, 0, '', 0, 0, 'tenant-default'),
-    ('test-tsh',   'TSH',    'Thyroid Stimulating Hormone',      'Pathology', 25000, 1200, '999316', 'mIU/L',     '0.4 - 4.0',     0.4,  4,    'numeric', 1, 0, 0, '', 0, 0, 'tenant-default'),
-    ('test-hba1c', 'HBA1C',  'Glycated Haemoglobin (HbA1c)',     'Pathology', 55000, 1200, '999316', '%',          '< 5.7',         NULL, 5.7,  'numeric', 1, 0, 0, '', 0, 0, 'tenant-default'),
-    ('xr-chestpa', 'CXP',    'Chest X-Ray PA View',              'X-Ray',     30000, 1200, '999316', '',          '',              NULL, NULL, 'text',    1, 0, 0, '', 0, 0, 'tenant-default'),
-    ('xr-chestlat', 'CXL',   'Chest X-Ray Lateral View',         'X-Ray',     30000, 1200, '999316', '',          '',              NULL, NULL, 'text',    1, 0, 0, '', 0, 0, 'tenant-default'),
-    ('xr-abdomen', 'ABXP',   'X-Ray Abdomen PA View',            'X-Ray',     35000, 1200, '999316', '',          '',              NULL, NULL, 'text',    1, 0, 0, '', 0, 0, 'tenant-default'),
-    ('xr-knee',    'KNEE',   'X-Ray Knee AP & Lateral',          'X-Ray',     40000, 1200, '999316', '',          '',              NULL, NULL, 'text',    1, 0, 0, '', 0, 0, 'tenant-default');
+    ('test-cbc',   'CBC',    'Complete Blood Count (CBC)',        'Pathology', 30000, 0, '999316', 'cells/cmm', '4,000 - 11,000', 4000, 11000, 'numeric', 1, 0, 0, '', 0, 0, 'tenant-default'),
+    ('test-hb',    'HB',     'Haemoglobin',                      'Pathology', 10000, 0, '999316', 'g/dL',      '12 - 16',       12,   16,   'numeric', 1, 0, 0, '', 0, 0, 'tenant-default'),
+    ('test-fbs',   'FBS',    'Blood Sugar Fasting',              'Pathology', 10000, 0, '999316', 'mg/dL',     '70 - 100',      70,   100,  'numeric', 1, 0, 0, '', 0, 0, 'tenant-default'),
+    ('test-rbs',   'RBS',    'Blood Sugar Random',               'Pathology', 10000, 0, '999316', 'mg/dL',     '70 - 140',      70,   140,  'numeric', 1, 0, 0, '', 0, 0, 'tenant-default'),
+    ('test-lipid', 'LIPID',  'Lipid Profile',                    'Pathology', 40000, 0, '999316', '',          '',              NULL, NULL, 'text',    1, 0, 0, '', 0, 0, 'tenant-default'),
+    ('test-lft',   'LFT',    'Liver Function Test (LFT)',        'Pathology', 50000, 0, '999316', '',          '',              NULL, NULL, 'text',    1, 0, 0, '', 0, 0, 'tenant-default'),
+    ('test-kft',   'KFT',    'Kidney Function Test (KFT)',       'Pathology', 50000, 0, '999316', '',          '',              NULL, NULL, 'text',    1, 0, 0, '', 0, 0, 'tenant-default'),
+    ('test-urine', 'URINE',  'Urine Routine Examination',        'Pathology', 15000, 0, '999316', '',          '',              NULL, NULL, 'text',    1, 0, 0, '', 0, 0, 'tenant-default'),
+    ('test-tsh',   'TSH',    'Thyroid Stimulating Hormone',      'Pathology', 25000, 0, '999316', 'mIU/L',     '0.4 - 4.0',     0.4,  4,    'numeric', 1, 0, 0, '', 0, 0, 'tenant-default'),
+    ('test-hba1c', 'HBA1C',  'Glycated Haemoglobin (HbA1c)',     'Pathology', 55000, 0, '999316', '%',          '< 5.7',         NULL, 5.7,  'numeric', 1, 0, 0, '', 0, 0, 'tenant-default'),
+    ('xr-chestpa', 'CXP',    'Chest X-Ray PA View',              'X-Ray',     30000, 0, '999316', '',          '',              NULL, NULL, 'text',    1, 0, 0, '', 0, 0, 'tenant-default'),
+    ('xr-chestlat', 'CXL',   'Chest X-Ray Lateral View',         'X-Ray',     30000, 0, '999316', '',          '',              NULL, NULL, 'text',    1, 0, 0, '', 0, 0, 'tenant-default'),
+    ('xr-abdomen', 'ABXP',   'X-Ray Abdomen PA View',            'X-Ray',     35000, 0, '999316', '',          '',              NULL, NULL, 'text',    1, 0, 0, '', 0, 0, 'tenant-default'),
+    ('xr-knee',    'KNEE',   'X-Ray Knee AP & Lateral',          'X-Ray',     40000, 0, '999316', '',          '',              NULL, NULL, 'text',    1, 0, 0, '', 0, 0, 'tenant-default');
 
   -- Starter specimen metadata. Seed runs after migrations, so keep this here as
   -- well as in the upgrade repair migration.
@@ -1766,8 +1774,8 @@ export const SEED_SQL = `
     AND tenant_id = 'tenant-default' AND department = '';
 
   INSERT OR IGNORE INTO packages (id, name, price_paise, gst_rate_bp, is_active, created_at, updated_at, device_id, dirty, deleted, tenant_id) VALUES
-    ('pkg-fasting', 'Fasting Sugar + Lipid Combo', 45000, 1200, 1, 0, 0, '', 0, 0, 'tenant-default'),
-    ('pkg-master',  'Master Health Check (Basic)', 99900, 1200, 1, 0, 0, '', 0, 0, 'tenant-default');
+    ('pkg-fasting', 'Fasting Sugar + Lipid Combo', 45000, 0, 1, 0, 0, '', 0, 0, 'tenant-default'),
+    ('pkg-master',  'Master Health Check (Basic)', 99900, 0, 1, 0, 0, '', 0, 0, 'tenant-default');
 
   INSERT OR IGNORE INTO package_items (id, package_id, test_id, created_at, updated_at, device_id, dirty, deleted, tenant_id) VALUES
     ('pkgi-1', 'pkg-fasting', 'test-fbs',   0, 0, '', 0, 0, 'tenant-default'),

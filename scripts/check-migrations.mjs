@@ -265,9 +265,43 @@ scenario("fresh database: migrate + seed", () => {
   checkStarterParameters(db, "fresh");
   const n = db.exec("SELECT COUNT(*) AS n FROM tests")[0].values[0][0];
   if (Number(n) < 10) throw new Error(`expected seeded test catalogue, got ${n}`);
+  for (const table of ["tests", "packages"]) {
+    const nonzero = db.exec(
+      `SELECT COUNT(*) AS n FROM ${table} WHERE gst_rate_bp <> 0`
+    )[0].values[0][0];
+    if (Number(nonzero) !== 0) {
+      throw new Error(`${table} must ship with 0% GST, found ${nonzero} rows`);
+    }
+  }
   const t = db.exec("SELECT COUNT(*) AS n FROM tenants")[0].values[0][0];
   if (Number(t) < 1) throw new Error("expected a default tenant row");
   console.log(`      version=${v}, tests=${n}, tenants=${t}`);
+});
+
+// ---- Case 2a: diagnostic GST reset ------------------------------------------
+scenario("migration 21 resets test and package GST", () => {
+  const db = freshDb();
+  migrate(db);
+  db.exec(`
+    INSERT INTO tests (id, name, category, gst_rate_bp, created_at, updated_at, tenant_id)
+    VALUES ('qa-gst-test', 'QA GST Test', 'Pathology', 1200, 0, 0, 'tenant-default');
+    INSERT INTO packages (id, name, gst_rate_bp, created_at, updated_at, tenant_id)
+    VALUES ('qa-gst-package', 'QA GST Package', 1200, 0, 0, 'tenant-default');
+  `);
+  const reset = MIGRATIONS.find((m) => m.version === 21);
+  if (!reset) throw new Error("migration 21 not found");
+  db.exec(reset.sql);
+  for (const [table, id] of [
+    ["tests", "qa-gst-test"],
+    ["packages", "qa-gst-package"],
+  ]) {
+    const rate = db.exec(
+      `SELECT gst_rate_bp FROM ${table} WHERE id = '${id}'`
+    )[0].values[0][0];
+    if (Number(rate) !== 0) {
+      throw new Error(`${table} GST reset failed: ${rate}`);
+    }
+  }
 });
 
 // ---- Case 2: an existing pre-tenant database (v2) ----------------------------
