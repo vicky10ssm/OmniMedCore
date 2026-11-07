@@ -68,6 +68,10 @@ Update every affected document, not just the changelog. Check:
   `PRODUCTION_COMMERCIAL_READINESS.md`, `PRE_RELEASE_CHECKLIST.md`, `SECURITY.md`
 - `license-portal/README.md` and portal UI when licensing changes
 - The relevant `.opencode/skills/*/SKILL.md`
+- If tests, parameters, packages or catalogue counts change, regenerate
+  `.opencode/skills/diagbill-test-catalogue/references/test-catalogue.md` and
+  `.opencode/skills/diagbill-test-catalogue/references/packages.md` using
+  `diagbill-test-catalogue/references/regenerate.md`
 - Release notes and migration guidance
 
 Useful stale-claim scan (avoid `target/` and `node_modules/`):
