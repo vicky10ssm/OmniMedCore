@@ -19,6 +19,7 @@ import { isMonitor } from "../app/mode";
 import { ensureDefaultTenant, getCurrentTenantId } from "./tenant";
 import { ensureStarterTests } from "./starterTests";
 import { ensureStarterParameters } from "./starterParameters";
+import { ensureStarterPackages } from "./starterPackages";
 import { isTauriRuntime } from "./tauriStorage";
 import { TauriSqlSource } from "./tauriSqlSource";
 import {
@@ -174,6 +175,7 @@ class SqlJsSource implements DataSource {
     await ensureDefaultTenant(src);
     await ensureStarterTests(src);
     await ensureStarterParameters(src);
+    await ensureStarterPackages(src);
     src.persist();
     return src;
   }

@@ -568,3 +568,16 @@ The second deployment exists. `npm run build` makes the terminal (editing) app; 
 - A previously seeded generic parameter is removed only when no report stores a value against it.
 - Newly seeded panel reference intervals are intentionally blank; the laboratory must validate them for
   its methods and population.
+
+## Combined starter packages - built
+
+- `src/db/starterPackages.ts` seeds 27 combined health-check packages from existing pathology and X-ray
+  tests.
+- Packages are pricing/name wrappers only. Component tests retain their own parameters, reference
+  intervals and report workflows; X-ray components use the radiology form.
+- Seeding is additive and idempotent. Packages match by stable seed id or name; items match by test id,
+  including deleted items, so a deliberately removed item is not recreated.
+- Existing custom/deleted packages and package items are preserved.
+- New packages default to price 0 and 0% GST; the Tests screen shows **Set price** until a package rate
+  is configured.
+- No schema change is required; schema remains 21.

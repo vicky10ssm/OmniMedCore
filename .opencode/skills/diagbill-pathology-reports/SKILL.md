@@ -63,6 +63,11 @@ every active tenant. Seeding is additive and idempotent:
 - a previously seeded generic parameter is removed only when no report value references it
 - new panel reference intervals are blank and must be validated locally
 
+`src/db/starterPackages.ts` seeds 27 combined health-check packages from pathology and X-ray tests.
+Packages are price/name wrappers; each item keeps its own parameters/report workflow. Seeding matches
+packages by id/name and items by test id (including deleted items), so custom and deleted content is
+preserved. New package prices default to 0 and must be configured before billing.
+
 ## Starter templates
 
 Schema migration 10 added editable starter sets for the default catalogue:

@@ -3,6 +3,40 @@
 All notable changes to OmniMed Core are recorded here. This project follows semantic versioning once
 production releases begin.
 
+## [0.9.0] - 2026-11-07
+
+### Added
+
+- **27 combined starter health-check packages** built from the pathology and X-ray catalogue.
+- Total package catalogue is now 29, including the two original starter packages.
+- Packages include:
+  - Basic Health Check, Master Health Check (Comprehensive), Full Body Checkup and Executive Health Check
+  - Diabetic, Cardiac Risk, Thyroid, Anemia, Iron, Vitamin and Metabolic Syndrome profiles
+  - Fever, Dengue, Arthritis, Respiratory, Gut Health, UTI and Tuberculosis panels
+  - Women's Health, Men's Health, Senior Citizen, PCOS and Bone Health packages
+  - Pre-employment, Pre-operative and Pregnancy packages
+  - Chest X-Ray + CBC
+- Packages combine parameterized pathology tests with X-ray report tests where clinically appropriate.
+- Package tests retain their own parameters; a package is a price/name wrapper.
+- Seeding is additive and idempotent per tenant:
+  - packages are matched by stable seed id or name
+  - custom/deleted packages are preserved
+  - package items are matched by test id, including deleted items
+  - restarting does not duplicate package items
+- New packages default to price 0 and 0% GST; the package list shows **Set price** until configured.
+
+### Verified
+
+- 27 seeded packages, 29 total active packages.
+- 222 package-to-test links.
+- No duplicate package names.
+- No duplicate package/test links.
+- No empty packages.
+- No pathology test inside a package lacks parameters.
+- Restart kept the package and item counts stable.
+- No schema change; database schema remains 21.
+- `npm run check`, terminal build, monitor build and Rust tests.
+
 ## [0.8.2] - 2026-11-07
 
 ### Added
