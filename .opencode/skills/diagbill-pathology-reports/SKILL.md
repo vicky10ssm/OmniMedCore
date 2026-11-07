@@ -37,7 +37,7 @@ Use this skill for parameter-based pathology reports and the current diagnostic-
 
 ## Starter test catalogue
 
-`src/db/starterTests.ts` seeds a broad 226-entry library (183 pathology and 43 X-ray) on app boot for
+`src/db/starterTests.ts` seeds a broad 227-entry library (184 pathology and 43 X-ray) on app boot for
 every active tenant. Seeding is additive and idempotent:
 
 - matches by stable seed id, code and case-insensitive name
@@ -47,7 +47,7 @@ every active tenant. Seeding is additive and idempotent:
 - labs must set prices and validate reference intervals before billing or clinical use
 - this is a broad routine/specialty library, not a claim that every possible esoteric test exists
 
-`src/db/starterParameters.ts` seeds 358 pathology parameter templates after the test catalogue:
+`src/db/starterParameters.ts` seeds 371 pathology parameter templates after the test catalogue:
 
 - every pathology test has at least one parameter
 - single-analyte tests receive one parameter named after the test

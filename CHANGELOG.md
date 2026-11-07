@@ -3,6 +3,39 @@
 All notable changes to OmniMed Core are recorded here. This project follows semantic versioning once
 production releases begin.
 
+## [0.9.1] - 2026-11-08
+
+### Added
+
+- Added **Arterial Blood Gas (ABG)** to the pathology starter catalogue.
+- ABG includes 13 parameters:
+  - pH
+  - pCO2
+  - pO2
+  - HCO3
+  - Base Excess
+  - O2 Saturation
+  - Lactate
+  - Sodium
+  - Potassium
+  - Ionised Calcium
+  - Glucose
+  - FiO2
+  - Interpretation
+- Test specimen is arterial blood, collected in a heparinized arterial syringe and run on a blood gas analyser.
+- Starter catalogue is now **184 pathology + 43 X-ray = 227 tests**.
+- Pathology parameter templates are now **371**.
+- ABG is added additively without changing existing reports, packages or custom tests.
+
+### Verified
+
+- ABG test present with 13 parameters.
+- 184/184 pathology tests have at least one parameter.
+- No duplicate parameter names.
+- Restart keeps counts stable.
+- No schema change; schema remains 21.
+- `npm run check`, terminal build, monitor build and Rust tests.
+
 ## [0.9.0] - 2026-11-07
 
 ### Added

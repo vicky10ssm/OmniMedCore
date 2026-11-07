@@ -101,6 +101,16 @@ export const STARTER_TESTS: StarterTest[] = [
   path("SICKLE", "Sickling Test", "Haematology", ...EDTA, "", "text", "Sodium metabisulphite"),
   path("MPS", "Malaria Parasite Smear", "Haematology", ...EDTA, "", "text", "Thick and thin smear"),
   path("MPAG", "Malaria Antigen (Pf/Pan)", "Serology", ...EDTA, "", "text", "Rapid immunochromatography"),
+  path(
+    "ABG",
+    "Arterial Blood Gas (ABG)",
+    "Blood Gas",
+    "Arterial Blood",
+    "Heparinized arterial syringe",
+    "",
+    "text",
+    "Blood gas analyser"
+  ),
 
   // ---- Routine biochemistry ----
   path("FBS", "Blood Sugar Fasting", "Clinical Biochemistry", ...SERUM, "mg/dL", "numeric", "Spectrophotometry"),
