@@ -142,6 +142,44 @@ export const STARTER_PARAMETERS: Record<string, StarterParameter[]> = {
   GRAM: [p("Gram Stain Result"), p("Organism Seen")],
   KOH: [p("KOH Result"), p("Fungal Elements")],
   CULTUREAS: [p("Organism Isolated"), p("Antibiotic Sensitivity")],
+  MPS: [
+    p("Parasite Species"),
+    p("Parasite Stage"),
+    n("Parasite Density", "/uL"),
+    n("RBC Parasitised", "%"),
+    p("Interpretation"),
+  ],
+  MPAG: [p("Pf Antigen"), p("Pan Antigen"), p("Interpretation")],
+  VDRL: [p("VDRL Result"), p("VDRL Titre")],
+  TPHA: [p("TPHA Result"), p("TPHA Titre")],
+  PSMEAR: [
+    p("RBC Morphology"),
+    p("WBC Morphology"),
+    p("Platelet Morphology"),
+    p("Impression"),
+  ],
+  BIOPSY: histopathologyParameters(),
+  BIOPSYL: histopathologyParameters(),
+  BMA: [
+    p("Specimen"),
+    p("Cellularity"),
+    p("Morphology"),
+    p("Impression"),
+  ],
+  FNAC: [p("Site"), p("Cytology Findings"), p("Diagnosis")],
+  PAP: [
+    p("Specimen Adequacy"),
+    p("Bethesda Interpretation"),
+    p("Recommendation"),
+  ],
+  FLUIDCYT: [p("Specimen"), p("Cytology Findings"), p("Diagnosis")],
+  URINECYT: [p("Specimen"), p("Cytology Findings"), p("Diagnosis")],
+  SPUTUMCYT: [p("Specimen"), p("Cytology Findings"), p("Diagnosis")],
+  IHC: [p("Marker(s)"), p("Result"), p("Interpretation")],
+  SPECIAL: [p("Stain"), p("Result"), p("Interpretation")],
+  MRSA: [p("MRSA Screen Result"), p("Organism Isolated")],
+  VRE: [p("VRE Screen Result"), p("Organism Isolated")],
+  OVA: [p("Ova"), p("Cyst")],
   BLOODC: cultureParameters(),
   URINEC: cultureParameters(),
   PUSC: cultureParameters(),
@@ -158,6 +196,16 @@ function cultureParameters(): StarterParameter[] {
     p("Organism Isolated"),
     p("Colony Count"),
     p("Antibiotic Sensitivity"),
+  ];
+}
+
+function histopathologyParameters(): StarterParameter[] {
+  return [
+    p("Specimen"),
+    p("Gross Examination"),
+    p("Microscopic Examination"),
+    p("Diagnosis"),
+    p("Comment"),
   ];
 }
 
@@ -201,16 +249,17 @@ export async function ensureStarterParameters(
     if (tests.length === 0) continue;
 
     const existingRows = await store.all<{
+      id: string;
       test_id: string;
       name: string;
     }>(
-      "SELECT test_id, name FROM test_parameters WHERE tenant_id = ?",
+      "SELECT id, test_id, name FROM test_parameters WHERE tenant_id = ?",
       [tenant.id]
     );
-    const existingByTest = new Map<string, Set<string>>();
+    const existingByTest = new Map<string, Map<string, string>>();
     for (const row of existingRows) {
-      const names = existingByTest.get(row.test_id) ?? new Set<string>();
-      names.add(row.name.trim().toLowerCase());
+      const names = existingByTest.get(row.test_id) ?? new Map<string, string>();
+      names.set(row.name.trim().toLowerCase(), row.id);
       existingByTest.set(row.test_id, names);
     }
 
@@ -230,7 +279,9 @@ export async function ensureStarterParameters(
       if (test.category === "X-Ray") continue;
 
       const mapped = STARTER_PARAMETERS[test.code];
-      const existingNames = existingByTest.get(test.id) ?? new Set<string>();
+      const namesById =
+        existingByTest.get(test.id) ?? new Map<string, string>();
+      const existingNames = new Set(namesById.keys());
 
       // Do not add a generic single parameter to a test that already has a
       // panel template. Only known panel maps may extend existing templates.
@@ -252,6 +303,28 @@ export async function ensureStarterParameters(
         if (existingNames.size > 0) continue;
         // A historical single-result test can be safely mapped to one parameter.
         if (definitions.length !== 1) continue;
+      }
+
+      // A previously seeded generic parameter may be replaced safely by a
+      // richer panel when no report has stored a value against it.
+      if (mapped && !hasRecordedResult.has(test.id)) {
+        const genericName = test.name.trim().toLowerCase();
+        const genericId = namesById.get(genericName);
+        if (genericId && genericId.startsWith("param-seed-")) {
+          const references = await store.all<{ n: number }>(
+            `SELECT COUNT(*) AS n FROM report_parameters
+             WHERE parameter_id = ? AND deleted = 0 AND tenant_id = ?`,
+            [genericId, tenant.id]
+          );
+          if ((references[0]?.n ?? 0) === 0) {
+            await store.run(
+              "DELETE FROM test_parameters WHERE id = ? AND tenant_id = ?",
+              [genericId, tenant.id]
+            );
+            namesById.delete(genericName);
+            existingNames.delete(genericName);
+          }
+        }
       }
 
       for (let index = 0; index < definitions.length; index += 1) {
@@ -280,6 +353,10 @@ export async function ensureStarterParameters(
               deviceId,
               tenant.id,
             ]
+          );
+          namesById.set(
+            normalizedName,
+            parameterId(tenant.id, test.code, definition.name)
           );
           existingNames.add(normalizedName);
           inserted += 1;

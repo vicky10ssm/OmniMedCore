@@ -37,7 +37,7 @@ Dashboard, Settings, Compliance or the Expenses profitability card.
 - GST billing, invoices, payments, dues, cancellation and A4/80 mm printing
 - Test/package catalogue with GST and specimen metadata
 - Broad starter library: 183 pathology tests and 43 X-ray/radiography exams, with editable prices and reference intervals
-- 319 starter pathology parameter templates; every pathology test has a result parameter, and panels include their components
+- 358 starter pathology parameter templates; every pathology test has a result parameter, and complex reports include split subfields
 - Parameter-based pathology reporting, verification, amendment history and printing
 - X-ray/radiology reports with clinical history, findings, impression and configurable disclaimer,
   using administrator-uploaded radiologist signatures selected by the operator

@@ -3,6 +3,36 @@
 All notable changes to OmniMed Core are recorded here. This project follows semantic versioning once
 production releases begin.
 
+## [0.8.2] - 2026-11-07
+
+### Added
+
+- Split optional subfields into dedicated parameters for complex pathology reports:
+  - malaria parasite smear: species, stage, parasite density, RBC parasitised and interpretation
+  - malaria antigen: Pf, Pan and interpretation
+  - VDRL: result and titre
+  - TPHA: result and titre
+  - peripheral blood smear: RBC, WBC, platelet morphology and impression
+  - histopathology: specimen, gross, microscopic, diagnosis and comment
+  - bone marrow aspiration: specimen, cellularity, morphology and impression
+  - FNAC, Pap smear, urine/sputum/fluid cytology: specimen/site, findings and diagnosis
+  - IHC and special stain: marker/stain, result and interpretation
+  - MRSA/VRE screens: result and organism
+  - stool ova and cyst: separate ova and cyst fields
+- Parameter catalogue increased from 319 to **358** templates while keeping every pathology test
+  parameterized and every X-ray test parameter-free.
+- Generic seed parameters for split tests are removed only when no report stores a value against them.
+- Historical reports and custom parameters remain preserved.
+
+### Verified
+
+- 358 active parameter rows.
+- 183/183 pathology tests still have at least one parameter.
+- 0/43 X-ray tests have parameters.
+- No missing pathology parameters and no duplicate parameter names.
+- Restart kept the count stable.
+- `npm run check`, terminal build, monitor build and Rust tests.
+
 ## [0.8.1] - 2026-11-07
 
 ### Added
