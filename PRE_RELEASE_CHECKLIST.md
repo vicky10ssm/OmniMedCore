@@ -129,6 +129,8 @@ Record invoice/payment IDs and totals used for acceptance.
 - [ ] Starter panel parameters exist for CBC, LFT, KFT, Lipid, Urine, DC, PT/INR, Widal, dengue, cultures, fluids, semen and stool
 - [ ] Optional subfields exist for malaria, VDRL/TPHA, peripheral smear, histopathology, cytology, IHC and special stains
 - [ ] Parameter duplicate-name check is zero; historical single results survive amendment
+- [ ] 27 combined starter packages present with no empty or duplicate package/test links
+- [ ] Every pathology test included in a package has parameters; X-ray items use the radiology form
 - [ ] Restarting the app does not duplicate starter tests/parameters or resurrect deleted ones
 - [ ] Every test, X-ray and package shows 0% GST after migration
 - [ ] A new test/X-ray bill has zero CGST/SGST

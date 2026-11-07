@@ -642,7 +642,13 @@ export default function Tests() {
                       {p.is_active ? "Active" : "Hidden"}
                     </p>
                   </div>
-                  <p className="num font-semibold">{formatINR(p.price_paise)}</p>
+                  <p className="num font-semibold">
+                    {p.price_paise === 0 ? (
+                      <span className="text-amber-700">Set price</span>
+                    ) : (
+                      formatINR(p.price_paise)
+                    )}
+                  </p>
                   <Btn variant="ghost" onClick={() => void openEditPkg(p)}>
                     <Icon name="edit" className="h-4 w-4" /> Edit
                   </Btn>

@@ -11,6 +11,7 @@ import { MIGRATIONS, SEED_SQL, splitSqlStatements } from "./schema";
 import { ensureDefaultTenant, getCurrentTenantId } from "./tenant";
 import { ensureStarterTests } from "./starterTests";
 import { ensureStarterParameters } from "./starterParameters";
+import { ensureStarterPackages } from "./starterPackages";
 import { backupDatabase, databaseInfo } from "./tauriStorage";
 import type { DataSource } from "./index";
 
@@ -119,6 +120,7 @@ export class TauriSqlSource implements DataSource {
     await ensureDefaultTenant(source);
     await ensureStarterTests(source);
     await ensureStarterParameters(source);
+    await ensureStarterPackages(source);
     return source;
   }
 
