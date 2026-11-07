@@ -89,7 +89,7 @@ own parameters.
 - Method: IFCC | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Alkaline Phosphatase (ALP) U/L; ref Adult: 40-130 U/L; children/adolescents higher (age-specific); numeric
+  - Alkaline Phosphatase (ALP) U/L; ref Adult: 40-130 U/L; children 1-12y: 100-400 U/L; adolescents: higher; numeric
 
 #### `AMMONIA` — Ammonia
 
@@ -188,7 +188,7 @@ own parameters.
 - Method: Arsenazo III | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Calcium mg/dL; ref Adult: 8.6-10.2 mg/dL; children age-specific; numeric
+  - Calcium mg/dL; ref Adult: 8.6-10.2 mg/dL; children: 8.8-10.8 mg/dL; numeric
 
 #### `CL` — Chloride
 
@@ -325,13 +325,13 @@ own parameters.
 - Parameters (9):
   - Blood Urea mg/dL; ref Adult: 15-40 mg/dL; numeric
   - Blood Urea Nitrogen (BUN) mg/dL; ref Adult: 7-20 mg/dL; numeric
-  - Serum Creatinine mg/dL; ref Adult male: 0.7-1.3 mg/dL; adult female: 0.6-1.1 mg/dL; children age-specific; numeric
-  - Uric Acid mg/dL; ref Adult male: 3.5-7.2 mg/dL; adult female: 2.6-6.0 mg/dL; numeric
+  - Serum Creatinine mg/dL; ref Adult male: 0.7-1.3 mg/dL; adult female: 0.6-1.1 mg/dL; children 1-5y: 0.3-0.7; children 6-12y: 0.4-0.9 mg/dL; numeric
+  - Uric Acid mg/dL; ref Adult male: 3.5-7.2 mg/dL; adult female: 2.6-6.0 mg/dL; children: 2.0-5.5 mg/dL; numeric
   - Sodium mmol/L; ref Adult: 135-145 mmol/L; numeric
   - Potassium mmol/L; ref Adult: 3.5-5.1 mmol/L; numeric
   - Chloride mmol/L; ref Adult: 98-107 mmol/L; numeric
-  - Calcium mg/dL; ref Adult: 8.6-10.2 mg/dL; children age-specific; numeric
-  - Phosphorus mg/dL; ref Adult: 2.5-4.5 mg/dL; children higher; numeric
+  - Calcium mg/dL; ref Adult: 8.6-10.2 mg/dL; children: 8.8-10.8 mg/dL; numeric
+  - Phosphorus mg/dL; ref Adult: 2.5-4.5 mg/dL; children 1-12y: 4.0-7.0 mg/dL; numeric
 
 #### `LACTATE` — Lactate
 
@@ -397,7 +397,7 @@ own parameters.
   - Bilirubin Indirect mg/dL; ref Adult: 0.1-1.0 mg/dL; numeric
   - SGOT (AST) U/L; ref Adult: 5-40 U/L; numeric
   - SGPT (ALT) U/L; ref Adult: 5-41 U/L; numeric
-  - Alkaline Phosphatase U/L; ref Adult: 40-130 U/L; children/adolescents higher (age-specific); numeric
+  - Alkaline Phosphatase U/L; ref Adult: 40-130 U/L; children 1-12y: 100-400 U/L; adolescents: higher; numeric
   - Gamma GT (GGT) U/L; ref Adult male: 0-55 U/L; adult female: 0-38 U/L; numeric
   - Total Protein g/dL; ref Adult: 6.0-8.3 g/dL; numeric
   - Albumin g/dL; ref Adult: 3.5-5.2 g/dL; numeric
@@ -438,7 +438,7 @@ own parameters.
 - Method: Molybdate | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Phosphorus mg/dL; ref Adult: 2.5-4.5 mg/dL; children higher; numeric
+  - Phosphorus mg/dL; ref Adult: 2.5-4.5 mg/dL; children 1-12y: 4.0-7.0 mg/dL; numeric
 
 #### `K` — Potassium
 
@@ -465,7 +465,7 @@ own parameters.
 - Method: Jaffe / enzymatic | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Serum Creatinine mg/dL; ref Adult male: 0.7-1.3 mg/dL; adult female: 0.6-1.1 mg/dL; children age-specific; numeric
+  - Serum Creatinine mg/dL; ref Adult male: 0.7-1.3 mg/dL; adult female: 0.6-1.1 mg/dL; children 1-5y: 0.3-0.7; children 6-12y: 0.4-0.9 mg/dL; numeric
 
 #### `FERRITIN` — Serum Ferritin
 
@@ -501,7 +501,7 @@ own parameters.
 - Method: Uricase | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Serum Uric Acid mg/dL; ref Adult male: 3.5-7.2 mg/dL; adult female: 2.6-6.0 mg/dL; numeric
+  - Serum Uric Acid mg/dL; ref Adult male: 3.5-7.2 mg/dL; adult female: 2.6-6.0 mg/dL; children: 2.0-5.5 mg/dL; numeric
 
 #### `SGOT` — SGOT (AST)
 
@@ -1174,11 +1174,11 @@ own parameters.
 - Method: Automated analyser | Report type: numeric
 - Price: ₹300.00 | GST: 0%
 - Parameters (14):
-  - Haemoglobin g/dL; ref Adult male: 13.0-17.0 g/dL; adult female: 12.0-15.0 g/dL; children age-specific; numeric
+  - Haemoglobin g/dL; ref Adult male: 13.0-17.0 g/dL; adult female: 12.0-15.0 g/dL; children 1-5y: 11.0-14.0 g/dL; children 6-12y: 11.5-15.5 g/dL; numeric
   - Total Leukocyte Count cells/cmm; ref Adult: 4,000-11,000 /cmm; numeric
   - Platelet Count cells/cmm; ref Adult: 1,50,000-4,50,000 /cmm; numeric
-  - RBC Count million/cmm; ref Adult male: 4.5-5.9 million/cmm; adult female: 4.1-5.1 million/cmm; children age-specific; numeric
-  - Packed Cell Volume (PCV) %; ref Adult male: 40-52%; adult female: 36-48%; children age-specific; numeric
+  - RBC Count million/cmm; ref Adult male: 4.5-5.9 million/cmm; adult female: 4.1-5.1 million/cmm; children 1-5y: 4.0-5.5; children 6-12y: 4.0-5.2 million/cmm; numeric
+  - Packed Cell Volume (PCV) %; ref Adult male: 40-52%; adult female: 36-48%; children 1-5y: 33-42%; children 6-12y: 35-45%; numeric
   - Mean Corpuscular Volume (MCV) fL; ref Adult: 80-100 fL; numeric
   - Mean Corpuscular Haemoglobin (MCH) pg; ref Adult: 27-32 pg; numeric
   - Mean Corpuscular Hb Concentration (MCHC) g/dL; ref Adult: 32-36 g/dL; numeric
@@ -1263,7 +1263,7 @@ own parameters.
 - Method: Automated analyser | Report type: numeric
 - Price: ₹100.00 | GST: 0%
 - Parameters (1):
-  - Haemoglobin g/dL; ref Adult male: 13.0-17.0 g/dL; adult female: 12.0-15.0 g/dL; children age-specific; numeric
+  - Haemoglobin g/dL; ref Adult male: 13.0-17.0 g/dL; adult female: 12.0-15.0 g/dL; children 1-5y: 11.0-14.0 g/dL; children 6-12y: 11.5-15.5 g/dL; numeric
 
 #### `HBELEC` — Haemoglobin Electrophoresis
 
@@ -1331,7 +1331,7 @@ own parameters.
 - Method: Automated analyser | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Packed Cell Volume (PCV/HCT) %; ref Adult male: 40-52%; adult female: 36-48%; children age-specific; numeric
+  - Packed Cell Volume (PCV/HCT) %; ref Adult male: 40-52%; adult female: 36-48%; children 1-5y: 33-42%; children 6-12y: 35-45%; numeric
 
 #### `PSMEAR` — Peripheral Blood Smear
 
@@ -1482,7 +1482,7 @@ own parameters.
 - Price: ₹0.00 | GST: 0%
 - Parameters (2):
   - Organism Isolated; ref No growth / no pathogen isolated; text
-  - Antibiotic Sensitivity; text
+  - Antibiotic Sensitivity; ref Reported as susceptible / intermediate / resistant; text
 
 #### `BLOODC` — Blood Culture
 

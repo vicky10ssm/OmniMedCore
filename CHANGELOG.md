@@ -21,6 +21,8 @@ production releases begin.
 - Filled reference intervals for **all 371 pathology parameters**.
 - Sex/age variants are included in the reference text where applicable, e.g. haemoglobin, RBC, PCV,
   creatinine, uric acid, ALP, ferritin, iron, lipids, sex hormones and ESR.
+- Explicit pediatric ranges are included for haemoglobin, RBC, PCV, creatinine, ALP, calcium,
+  phosphorus and uric acid.
 - Qualitative/text tests now carry appropriate references such as negative, non-reactive, no growth,
   not seen or descriptive report.
 
