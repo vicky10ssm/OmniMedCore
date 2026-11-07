@@ -22,7 +22,7 @@ a mixture of Excel, paper registers and disconnected software:
 - GST invoices, A4 and 80 mm thermal printing
 - Dues, part-payments and collection follow-up
 - Referring-doctor directory without commission/inducement tracking
-- Expenses and a basic profit view
+- Expenses with multi-module attribution and a basic profit view
 - Pathology reports with selectable parameters, units and reference intervals
 - X-ray reports with administrator-managed radiologist signature images selected by the operator
 - Sample traceability from accession to acceptance/rejection

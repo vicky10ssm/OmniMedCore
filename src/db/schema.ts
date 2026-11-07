@@ -370,6 +370,7 @@ export const MIGRATIONS: Migration[] = [
         mode TEXT NOT NULL DEFAULT 'cash' CHECK (mode IN ('cash','upi','card','bank')),
         bill_no TEXT NOT NULL DEFAULT '',
         note TEXT NOT NULL DEFAULT '',
+        modules TEXT NOT NULL DEFAULT '[]',
         created_by TEXT NOT NULL DEFAULT '',
         ${SYNC_COLUMNS},
         ${TENANT_COLUMN}
@@ -1701,6 +1702,14 @@ export const MIGRATIONS: Migration[] = [
     sql: `
       UPDATE tests SET gst_rate_bp = 0 WHERE gst_rate_bp <> 0;
       UPDATE packages SET gst_rate_bp = 0 WHERE gst_rate_bp <> 0;
+    `,
+  },
+  {
+    version: 22,
+    name: "expense module attribution",
+    tolerant: true,
+    sql: `
+      ALTER TABLE expenses ADD COLUMN modules TEXT NOT NULL DEFAULT '[]';
     `,
   },
 ];

@@ -335,6 +335,8 @@ including patients and clinical records, and therefore contain confidential data
 - [ ] Admin password changed; named users and roles created; 2FA considered
 - [ ] Centre profile, modules, numbering, printing and letterhead configured
 - [ ] Starter pathology/X-ray library present; prices and reference intervals reviewed
+- [ ] Reference intervals show sex/age variants where applicable; local validation recorded
+- [ ] Expense module attribution tested with a shared Pathology + X-ray expense
 - [ ] Test patient, invoice, payment, print and report workflow passed
 - [ ] At least one radiologist name/qualification/signature uploaded under Settings -> Radiologists
 - [ ] X-ray report letterhead, selected signature image and disclaimer verified

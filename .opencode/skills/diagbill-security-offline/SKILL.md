@@ -28,6 +28,8 @@ Use this skill for security-sensitive and boot/persistence work. Preserve the ex
 
 ## Implemented security baseline
 
+- The sign-in screen must never display default or demo credentials. Keep the forced first-sign-in
+  password change, but direct users to contact an administrator for access.
 - Password hashing uses PBKDF2 through WebCrypto.
 - TOTP uses SHA-1, six digits, 30-second steps, ±1 drift, and last-step replay protection.
 - Recovery codes are single-use and stored as hashes.

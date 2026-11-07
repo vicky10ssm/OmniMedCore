@@ -12,6 +12,7 @@ import { ensureDefaultTenant, getCurrentTenantId } from "./tenant";
 import { ensureStarterTests } from "./starterTests";
 import { ensureStarterParameters } from "./starterParameters";
 import { ensureStarterPackages } from "./starterPackages";
+import { ensureStarterReferences } from "./starterReferences";
 import { backupDatabase, databaseInfo } from "./tauriStorage";
 import type { DataSource } from "./index";
 
@@ -120,6 +121,7 @@ export class TauriSqlSource implements DataSource {
     await ensureDefaultTenant(source);
     await ensureStarterTests(source);
     await ensureStarterParameters(source);
+    await ensureStarterReferences(source);
     await ensureStarterPackages(source);
     return source;
   }

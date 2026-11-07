@@ -29,8 +29,8 @@ Load it before touching the test catalogue.
 - Other: **0**
 - Active parameters: **371**
 - Combined packages: **29** total (27 seeded by this skill, plus 2 original packages)
-- Schema: **21**
-- Current release at time of writing: **0.9.1**
+- Schema: **22**
+- Current release at time of writing: **0.10.0**
 
 Counts change when tests/parameters/packages are added. The generated reference files are authoritative
 for the current snapshot; the source modules are authoritative if they disagree.
@@ -56,8 +56,8 @@ for the current snapshot; the source modules are authoritative if they disagree.
    report value references it.
 9. New tests/packages ship with **0% GST** and **price 0**. The Tests screen shows **Set price** until
    the clinic sets a rate.
-10. New panel reference intervals are blank. Do not invent clinical ranges; the laboratory must
-    validate intervals for its methods and population.
+10. Starter reference intervals are filled, including sex/age variants where applicable. The laboratory
+    must still validate intervals for its methods and population.
 11. Do not rename or repurpose a test code without checking packages, report orders, historical report
     snapshots and the generated catalogue.
 12. A scanned radiologist signature is not a digital signature/DSC.
@@ -208,7 +208,8 @@ WHERE p.deleted = 0
 
 - X-ray tests have no numeric parameters by design.
 - Histopathology/cytology use narrative parameters, not every possible structured field.
-- New panel reference intervals are intentionally blank.
+- Starter reference intervals are filled; numeric abnormal flags still use each report parameter's numeric
+  limits, so validate sex/age-specific flags locally.
 - The catalogue is broad but not a claim that every esoteric/send-out assay exists. Custom tests are
   the escape hatch for local methods and rare assays.
 - No analyzer interfacing is implied by a test entry.

@@ -18,7 +18,7 @@ For the current done/pending snapshot and commercial release decision, see
   migration and local pre-encryption copy are implemented.
 - **Deployment runbook:** `CLIENT_INSTALLATION_RUNBOOK.md` covers offline installation, local CSV
   export, acceptance and rollback.
-- **Local export:** schema 21 `local_export_queue`, unique masked transaction CSVs, retry-safe
+- **Local export:** schema 22 `local_export_queue`, unique masked transaction CSVs, retry-safe
   background writing and full all-module Google Drive snapshots (including patients) are implemented.
   Full snapshots contain confidential data and exclude authentication secrets.
 

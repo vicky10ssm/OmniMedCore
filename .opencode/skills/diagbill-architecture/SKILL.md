@@ -124,5 +124,5 @@ npm run build:monitor
 Also exercise the affected boot/upgrade path with actual application data. A successful fresh migration alone is insufficient.
 
 For local export changes, also run `cargo test --manifest-path src-tauri/Cargo.toml --lib`, verify
-schema 21, and test a forced folder failure/retry. Never mark a cloud monitor or online sync as passed;
+schema 22, and test a forced folder failure/retry. Never mark a cloud monitor or online sync as passed;
 those paths no longer exist.

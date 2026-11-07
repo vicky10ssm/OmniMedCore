@@ -124,6 +124,10 @@ Record invoice/payment IDs and totals used for acceptance.
 - [ ] Verification requires all selected results
 - [ ] Amendment requires reason and preserves previous revision
 - [ ] Report print shows accession, authorizer and version
+- [ ] Login screen contains no default admin password hint
+- [ ] Expenses can be tagged with one or more modules; shared expense shows all selected modules in list/filter/CSV
+- [ ] Every pathology parameter has a non-blank reference interval; sex/age variants are present where applicable
+- [ ] Starter references were updated once per tenant and custom references remain editable
 - [ ] Starter catalogue contains 184 pathology and 43 X-ray tests without duplicate names/codes
 - [ ] Every pathology test has at least one parameter; X-ray tests have none
 - [ ] Starter panel parameters exist for CBC, LFT, KFT, Lipid, Urine, DC, PT/INR, Widal, dengue, cultures, fluids, semen and stool

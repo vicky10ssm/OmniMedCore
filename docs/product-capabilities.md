@@ -31,7 +31,7 @@ Status meanings: **Ready**, **Pilot**, **Partial**, **Not available**, **Externa
 | A4 and 80 mm invoice print | Ready | Browser print layouts |
 | PDF download | Ready/Pilot | Browser-generated document output; verify printer/browser on buyer hardware |
 | Doctor/referral commissions | Not available | No Commissions tab/module, no commission rules in Doctors, and no new accrual/payouts; legacy rows are retained but not displayed |
-| Expenses | Ready | Categories, payment mode, bill number, notes, monthly categories |
+| Expenses | Ready | Categories, payment mode, bill number, notes, monthly categories and multi-module attribution (Pathology, X-ray, Pharmacy, Hospital, General/shared); shared expenses are tagged, not split |
 | Financial dashboard | Ready | Collection, dues, revenue, expenses and profit on local data |
 | CSV export | Ready | Formula-injection guarded invoice export; confirm exact export list in demo |
 | Accounting/Tally integration | Not available | No Tally import/export or ledger posting |
@@ -42,7 +42,8 @@ Status meanings: **Ready**, **Pilot**, **Partial**, **Not available**, **Externa
 | Capability | Status | Description |
 | --- | --- | --- |
 | Test parameter templates | Ready | Multiple parameters, units, references, numeric limits, LOINC field |
-| Starter parameter sets | Ready | CBC 14, LFT 11, KFT 9, Lipid 8, Urine 18 |
+| Starter parameter sets | Ready | CBC 14, LFT 11, KFT 9, Lipid 8, Urine 18, plus 371 total pathology parameters with filled references |
+| Reference intervals | Ready | Adult ranges filled; sex/age variants included in reference text where applicable; laboratory validation still required |
 | Per-report parameter selection | Ready | Include/exclude each parameter; excluded rows retained for draft reopening |
 | Per-report unit/reference editing | Ready | Snapshot values for that patient; printer shows them |
 | Abnormal flags | Ready | Low/High from numeric limits |

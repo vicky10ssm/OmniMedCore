@@ -37,7 +37,7 @@ Dashboard, Settings, Compliance or the Expenses profitability card.
 - GST billing, invoices, payments, dues, cancellation and A4/80 mm printing
 - Test/package catalogue with GST and specimen metadata
 - Broad starter library: 184 pathology tests and 43 X-ray/radiography exams, with editable prices and reference intervals
-- 358 starter pathology parameter templates; every pathology test has a result parameter, and complex reports include split subfields
+- 371 starter pathology parameter templates; every pathology test has a result parameter, filled reference intervals, sex/age variants where relevant, and complex-report subfields
 - 27 combined starter health-check packages combining pathology and X-ray tests
 - Parameter-based pathology reporting, verification, amendment history and printing
 - X-ray/radiology reports with clinical history, findings, impression and configurable disclaimer,
@@ -46,7 +46,7 @@ Dashboard, Settings, Compliance or the Expenses profitability card.
 - Disposal is blocked until every linked test has complete entered results
 - Hospital admissions, ward/bed, discharge summary and generic IPD service charges/payments/printing
 - Pharmacy medicine, batch/expiry stock, receipt, dispensing, GST receipt and cancellation
-- Expenses, audit evidence and a read-only monitoring build
+- Expenses with multi-module attribution (Pathology, X-ray, Pharmacy, Hospital, General/shared), audit evidence and a read-only monitoring build
 - SQLCipher-encrypted desktop database with the key held in Windows Credential Manager
 - Daily encrypted snapshots with 7/4/12 retention, optional USB/OneDrive copy, manual backup and validated restore
 - Signed Diagnostics/Pharmacy/Hospital/Complete/Custom licences with tenant/hardware fingerprint binding,
