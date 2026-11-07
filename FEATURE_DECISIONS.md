@@ -551,7 +551,7 @@ The second deployment exists. `npm run build` makes the terminal (editing) app; 
 
 ## Parameter templates for the starter catalogue - built
 
-- `src/db/starterParameters.ts` seeds 319 pathology parameters after the starter tests are present.
+- `src/db/starterParameters.ts` seeds 358 pathology parameters after the starter tests are present.
 - Every pathology test gets at least one parameter. Single-analyte tests get one parameter named after
   the test; panels get their component set.
 - Explicit panel maps cover differential count, PT/INR, blood group/Rh, dengue, Widal, urine microscopy,
@@ -562,5 +562,9 @@ The second deployment exists. `npm run build` makes the terminal (editing) app; 
   matched case-insensitively per test.
 - Tests with recorded results are not reshaped. A historical single-result report is mapped into its new
   one-parameter template when reopened, so amendment does not lose the result.
+- Complex reports have optional subfields split out: malaria species/stage/density, VDRL/TPHA titre,
+  peripheral-smear morphology, histopathology gross/microscopic/diagnosis/comment, cytology findings,
+  IHC/special-stain result and MRSA/VRE organism fields.
+- A previously seeded generic parameter is removed only when no report stores a value against it.
 - Newly seeded panel reference intervals are intentionally blank; the laboratory must validate them for
   its methods and population.

@@ -2048,7 +2048,7 @@ dependencies = [
 
 [[package]]
 name = "medicore"
-version = "0.8.1"
+version = "0.8.2"
 dependencies = [
  "base64 0.22.1",
  "getrandom 0.2.17",
