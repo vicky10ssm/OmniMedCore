@@ -37,6 +37,10 @@ Use this skill for parameter-based pathology reports and the current diagnostic-
 
 ## Starter test catalogue
 
+Before changing any test, parameter or package, load `diagbill-test-catalogue` and read its generated
+`references/test-catalogue.md` and `references/packages.md`. Regenerate both references in the same PR
+after a catalogue change.
+
 `src/db/starterTests.ts` seeds a broad 227-entry library (184 pathology and 43 X-ray) on app boot for
 every active tenant. Seeding is additive and idempotent:
 
