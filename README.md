@@ -1,4 +1,4 @@
-﻿# OmniMed Core
+# OmniMed Core
 
 **Diagnostics | Pharmacy | Hospital**
 
@@ -25,7 +25,7 @@ tenant-scoped configuration.
 Effective modules are:
 
 ```text
-licensed modules âˆ© clinic-enabled modules
+licensed modules ∩ clinic-enabled modules
 ```
 
 Dashboard and Settings are administrator-only. Terminal operators work from Expenses and do not see the
@@ -36,7 +36,7 @@ Dashboard, Settings, Compliance or the Expenses profitability card.
 - Patient registration, search and shared patient identity
 - GST billing, invoices, payments, dues, cancellation and A4/80 mm printing
 - Test/package catalogue with GST and specimen metadata
-- Broad starter library: 183 pathology tests and 43 X-ray/radiography exams, with editable prices and reference intervals
+- Broad starter library: 184 pathology tests and 43 X-ray/radiography exams, with editable prices and reference intervals
 - 358 starter pathology parameter templates; every pathology test has a result parameter, and complex reports include split subfields
 - 27 combined starter health-check packages combining pathology and X-ray tests
 - Parameter-based pathology reporting, verification, amendment history and printing
@@ -92,7 +92,7 @@ admin / admin123
 ```
 
 The app forces a password change on first sign-in. The synthetic demo seed is available only in DEV
-through Settings â†’ Modules & logo or `window.__diagbillSeedDemo()`.
+through Settings → Modules & logo or `window.__diagbillSeedDemo()`.
 
 ## Checks and builds
 
@@ -167,13 +167,13 @@ See [SECURITY.md](SECURITY.md).
 
 ## Documentation
 
-- [docs/README.md](docs/README.md) â€” documentation map
-- [docs/product-capabilities.md](docs/product-capabilities.md) â€” ready/pilot/unavailable features
+- [docs/README.md](docs/README.md) — documentation map
+- [docs/product-capabilities.md](docs/product-capabilities.md) — ready/pilot/unavailable features
 - [docs/architecture.md](docs/architecture.md) - architecture and local export design
-- [docs/licensing-and-editions.md](docs/licensing-and-editions.md) â€” editions, activation and grace
-- [docs/licensing-process.md](docs/licensing-process.md) â€” sales-to-renewal operating procedure
-- [docs/deployment-and-readiness.md](docs/deployment-and-readiness.md) â€” deployment gates
-- [docs/productionization-plan.md](docs/productionization-plan.md) â€” production workstreams
+- [docs/licensing-and-editions.md](docs/licensing-and-editions.md) — editions, activation and grace
+- [docs/licensing-process.md](docs/licensing-process.md) — sales-to-renewal operating procedure
+- [docs/deployment-and-readiness.md](docs/deployment-and-readiness.md) — deployment gates
+- [docs/productionization-plan.md](docs/productionization-plan.md) — production workstreams
 - [PRODUCTION_COMMERCIAL_READINESS.md](PRODUCTION_COMMERCIAL_READINESS.md) - current done/pending status and commercial release gates
 - [CLIENT_INSTALLATION_RUNBOOK.md](CLIENT_INSTALLATION_RUNBOOK.md) - end-to-end offline client installation, backup, local CSV export, acceptance and rollback
 - [LOCAL_CSV_EXPORT.md](LOCAL_CSV_EXPORT.md) - Google Drive transaction outbox, full all-module snapshots, masking, secret exclusions and retry behavior
@@ -181,7 +181,7 @@ See [SECURITY.md](SECURITY.md).
 - [BACKUP_RESTORE.md](BACKUP_RESTORE.md) - local snapshots, retention, optional USB/OneDrive copy and restore
 - [ENCRYPTION.md](ENCRYPTION.md) - SQLCipher, Windows Credential Manager key storage and migration
 - [code-signing/README.md](code-signing/README.md) - local self-signed certificate and client trust setup
-- [COMPLIANCE.md](COMPLIANCE.md) â€” compliance evidence and gaps
+- [COMPLIANCE.md](COMPLIANCE.md) — compliance evidence and gaps
 
 ## Contributing
 

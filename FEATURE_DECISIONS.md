@@ -539,7 +539,9 @@ The second deployment exists. `npm run build` makes the terminal (editing) app; 
 
 ## Broad pathology and X-ray starter catalogue - built
 
-- `src/db/starterTests.ts` contains 183 pathology and 43 X-ray starter entries (226 total).
+- `src/db/starterTests.ts` contains 184 pathology and 43 X-ray starter entries (227 total).
+- Arterial Blood Gas (ABG) is included with pH, pCO2, pO2, HCO3, base excess, O2 saturation,
+  lactate, sodium, potassium, ionised calcium, glucose, FiO2 and interpretation parameters.
 - Seeding runs after tenant bootstrap in both the SQL.js and Tauri SQLCipher sources.
 - It is additive and idempotent per tenant. Matching is by stable seed id, code and case-insensitive name.
 - Existing custom tests, renamed seed tests and deleted seed tests are not overwritten or resurrected.
@@ -551,7 +553,7 @@ The second deployment exists. `npm run build` makes the terminal (editing) app; 
 
 ## Parameter templates for the starter catalogue - built
 
-- `src/db/starterParameters.ts` seeds 358 pathology parameters after the starter tests are present.
+- `src/db/starterParameters.ts` seeds 371 pathology parameters after the starter tests are present.
 - Every pathology test gets at least one parameter. Single-analyte tests get one parameter named after
   the test; panels get their component set.
 - Explicit panel maps cover differential count, PT/INR, blood group/Rh, dengue, Widal, urine microscopy,

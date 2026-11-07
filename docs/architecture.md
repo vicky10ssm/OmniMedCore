@@ -1,7 +1,7 @@
 # OmniMed Core architecture and local export design
 
-Last updated: 7 November 2026  
-Current product version: `0.9.0`  
+Last updated: 8 November 2026  
+Current product version: `0.9.1`  
 Current schema: `21`
 
 ## 1. Status and scope
@@ -98,7 +98,7 @@ OmniMed Core is a multi-vertical product; a tenant enables only the modules it o
   X-ray/radiology reports with clinical history, findings, impression and a configurable disclaimer.
 - Radiologist catalogue: tenant-scoped names, qualifications and signature images selected at X-ray
   entry; the chosen snapshot is stored on `report_orders` so issued reports are immutable.
-- Starter test catalogue: 183 pathology and 43 X-ray entries seeded additively per tenant at boot;
+- Starter test catalogue: 184 pathology and 43 X-ray entries seeded additively per tenant at boot;
   custom/renamed/deleted tests are preserved, and new entries require local pricing/reference validation.
 - Hospital: inpatient admission, ward/bed, treating doctor, discharge diagnosis/summary, generic
   hospital service catalogue, IPD service charges, payments/balance and bill print.
