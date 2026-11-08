@@ -45,7 +45,7 @@ export default function Login() {
               onChange={(e) => setUsername(e.target.value)}
               autoFocus
               autoComplete="username"
-              placeholder="admin"
+              placeholder="Enter username"
             />
           </Labeled>
           <Labeled label="Password">
@@ -62,7 +62,7 @@ export default function Login() {
           </Btn>
         </form>
         <p className="mt-4 text-center text-[11px] text-slate-400">
-          First sign-in: <b>admin / admin123</b> - you'll set a new password.
+          Contact your administrator if you need first-time access.
         </p>
       </Card>
     </div>

@@ -1,7 +1,7 @@
 # Backup and restore
 
 Last updated: 3 November 2026  
-Applies to: Tauri Windows desktop app (`0.3.0+`; schema `21` from `0.7.2`)
+Applies to: Tauri Windows desktop app (`0.3.0+`; schema `22` from `0.10.0`)
 
 ## What is implemented
 

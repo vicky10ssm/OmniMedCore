@@ -1,6 +1,6 @@
 # OmniMed Core starter combined packages
 
-Generated: 2026-11-07
+Generated: 2026-11-08
 
 > This is a generated snapshot. Source of truth: `src/db/starterPackages.ts`.
 > A package is a price/name wrapper; every component test keeps its own parameters.

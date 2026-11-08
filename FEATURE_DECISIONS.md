@@ -568,8 +568,8 @@ The second deployment exists. `npm run build` makes the terminal (editing) app; 
   peripheral-smear morphology, histopathology gross/microscopic/diagnosis/comment, cytology findings,
   IHC/special-stain result and MRSA/VRE organism fields.
 - A previously seeded generic parameter is removed only when no report stores a value against it.
-- Newly seeded panel reference intervals are intentionally blank; the laboratory must validate them for
-  its methods and population.
+- Starter reference intervals are now filled, including sex/age variants where applicable. They remain
+  editable starter values and the laboratory must validate them for its methods and population.
 
 ## Combined starter packages - built
 
@@ -582,4 +582,32 @@ The second deployment exists. `npm run build` makes the terminal (editing) app; 
 - Existing custom/deleted packages and package items are preserved.
 - New packages default to price 0 and 0% GST; the Tests screen shows **Set price** until a package rate
   is configured.
-- No schema change is required; schema remains 21.
+- No package-specific schema change is required.
+
+## Sign-in hygiene - built
+
+- The sign-in screen no longer prints the default `admin / admin123` credentials.
+- The username placeholder no longer advertises the default admin username.
+- First-run password change remains enforced after the legitimate default-admin sign-in.
+
+## Expense module attribution - built
+
+- Schema 22 adds `expenses.modules TEXT NOT NULL DEFAULT '[]'`.
+- Modules are Pathology, X-ray, Pharmacy, Hospital and General/shared.
+- An expense may belong to multiple modules; shared expenses are tagged, not split.
+- Existing expenses remain visible as Unassigned and can be edited.
+- The expenses list, search, module filter and CSV export include the attribution.
+- Operators can add and view expenses as before; admin/operator visibility rules are unchanged.
+
+## Filled reference intervals - built
+
+- `src/db/starterReferences.ts` fills references for all 371 pathology parameters.
+- Sex/age variants are stored in the reference text where applicable: haemoglobin, RBC, PCV, creatinine,
+  uric acid, ALP, ferritin, iron, lipids, sex hormones, ESR and others.
+- Qualitative/text tests use appropriate qualitative references (negative, non-reactive, no growth,
+  not seen, descriptive report).
+- Reference seeding is versioned per tenant in `meta` and updates starter-owned parameters only. It runs
+  once per reference release, so custom references are not overwritten on every boot.
+- Unresolved numeric parameters never remain blank; they show a validation-required fallback.
+- Reference text is for report display; numeric abnormal flags still use the report parameter's numeric
+  limits. Laboratories must validate sex/age-specific flags and intervals locally.

@@ -1,6 +1,13 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { useAuth } from "../auth/AuthContext";
 import { useMonitor } from "../app/MonitorContext";
+import {
+  EXPENSE_MODULES,
+  expenseModulesLabel,
+  parseExpenseModules,
+  serializeExpenseModules,
+  type ExpenseModuleId,
+} from "../app/expenseModules";
 import { getDb } from "../db";
 import { csvRupees, exportCsv as exportCsvFile } from "../db/csv";
 import {
@@ -37,6 +44,7 @@ interface ExpenseForm {
   mode: Mode;
   bill_no: string;
   note: string;
+  modules: ExpenseModuleId[];
 }
 
 const MODES: { value: Mode; label: string }[] = [
@@ -67,6 +75,7 @@ function emptyForm(categoryId: string): ExpenseForm {
     mode: "cash",
     bill_no: "",
     note: "",
+    modules: [],
   };
 }
 
@@ -82,6 +91,7 @@ export default function Expenses() {
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
   });
   const [categoryFilter, setCategoryFilter] = useState("");
+  const [moduleFilter, setModuleFilter] = useState("");
   const [query, setQuery] = useState("");
   const [loaded, setLoaded] = useState(false);
 
@@ -142,15 +152,18 @@ export default function Expenses() {
     const q = query.trim().toLowerCase();
     return monthRows.filter((r) => {
       const matchCat = !categoryFilter || r.category_id === categoryFilter;
+      const matchModule =
+        !moduleFilter || parseExpenseModules(r.modules).includes(moduleFilter as ExpenseModuleId);
       const matchQ =
         !q ||
         r.payee.toLowerCase().includes(q) ||
         r.note.toLowerCase().includes(q) ||
         r.bill_no.toLowerCase().includes(q) ||
-        catName(r.category_id).toLowerCase().includes(q);
-      return matchCat && matchQ;
+        catName(r.category_id).toLowerCase().includes(q) ||
+        expenseModulesLabel(r.modules).toLowerCase().includes(q);
+      return matchCat && matchModule && matchQ;
     });
-  }, [monthRows, categoryFilter, query, categories]);
+  }, [monthRows, categoryFilter, moduleFilter, query, categories]);
 
   const monthTotal = monthRows.reduce((s, r) => s + r.amount_paise, 0);
   const filteredTotal = filtered.reduce((s, r) => s + r.amount_paise, 0);
@@ -170,6 +183,15 @@ export default function Expenses() {
   // collected revenue or profit summary.
   const monthRevenue = useMonthRevenue(month, isAdmin);
 
+  const toggleModule = (id: ExpenseModuleId) => {
+    setForm((current) => ({
+      ...current,
+      modules: current.modules.includes(id)
+        ? current.modules.filter((module) => module !== id)
+        : [...current.modules, id],
+    }));
+  };
+
   const openNew = () => {
     setEditing(null);
     setForm(emptyForm(categories[0]?.id ?? ""));
@@ -187,6 +209,7 @@ export default function Expenses() {
       mode: e.mode,
       bill_no: e.bill_no,
       note: e.note,
+      modules: parseExpenseModules(e.modules),
     });
     setError("");
     setOpen(true);
@@ -195,6 +218,9 @@ export default function Expenses() {
   const submit = async (ev: FormEvent) => {
     ev.preventDefault();
     if (!form.category_id) return setError("Pick a category");
+    if (form.modules.length === 0) {
+      return setError("Select at least one module for this expense");
+    }
     const amount = rupeesToPaise(Number(form.amount) || 0);
     if (amount <= 0) return setError("Enter an amount greater than zero");
     if (!form.paid_at) return setError("Pick the date the money was paid");
@@ -213,20 +239,21 @@ export default function Expenses() {
         form.mode,
         form.bill_no.trim(),
         form.note.trim(),
+        serializeExpenseModules(form.modules),
       ];
       if (editing) {
         const [tenantClause, tenantParams] = tenantAnd();
         await db.run(
           `UPDATE expenses SET category_id=?, paid_at=?, payee=?, amount_paise=?,
-             mode=?, bill_no=?, note=?, updated_at=?, dirty=1
+             mode=?, bill_no=?, note=?, modules=?, updated_at=?, dirty=1
            WHERE id=? ${tenantClause}`,
           [...values, ts, editing.id, ...tenantParams]
         );
       } else {
         await db.run(
           `INSERT INTO expenses (id, category_id, paid_at, payee, amount_paise, mode,
-             bill_no, note, created_by, created_at, updated_at, device_id, dirty, deleted, tenant_id)
-           VALUES (?,?,?,?,?,?,?,?,?,?,?,?,1,0,?)`,
+             bill_no, note, modules, created_by, created_at, updated_at, device_id, dirty, deleted, tenant_id)
+           VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,1,0,?)`,
           [
             uuid(),
             ...values,
@@ -291,10 +318,11 @@ export default function Expenses() {
   const exportCsv = () => {
     exportCsvFile(
       `expenses-${month}.csv`,
-      ["Date", "Category", "Payee", "Amount", "Mode", "Bill no", "Note"],
+      ["Date", "Category", "Modules", "Payee", "Amount", "Mode", "Bill no", "Note"],
       filtered.map((r) => [
         toDateInput(r.paid_at),
         catName(r.category_id),
+        expenseModulesLabel(r.modules),
         r.payee,
         csvRupees(r.amount_paise),
         r.mode,
@@ -349,10 +377,22 @@ export default function Expenses() {
                   </option>
                 ))}
               </Select>
+              <Select
+                value={moduleFilter}
+                onChange={(e) => setModuleFilter(e.target.value)}
+                className="w-44"
+              >
+                <option value="">All modules</option>
+                {EXPENSE_MODULES.map((module) => (
+                  <option key={module.id} value={module.id}>
+                    {module.label}
+                  </option>
+                ))}
+              </Select>
               <TextInput
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search payee, bill no or note…"
+                placeholder="Search payee, bill, note or module…"
                 className="max-w-xs"
               />
             </div>
@@ -380,6 +420,7 @@ export default function Expenses() {
                     <tr className="border-b border-slate-200 bg-slate-50 text-left text-xs font-medium uppercase tracking-wide text-slate-500">
                       <th className="px-4 py-2.5">Date</th>
                       <th className="px-4 py-2.5">Category</th>
+                      <th className="px-4 py-2.5">Module</th>
                       <th className="px-4 py-2.5">Payee</th>
                       <th className="hidden px-4 py-2.5 md:table-cell">Bill no</th>
                       <th className="px-4 py-2.5">Mode</th>
@@ -403,6 +444,22 @@ export default function Expenses() {
                               {r.note}
                             </span>
                           )}
+                        </td>
+                        <td className="px-4 py-2.5">
+                          {(parseExpenseModules(r.modules).length > 0 ? (
+                            <span className="flex flex-wrap gap-1">
+                              {parseExpenseModules(r.modules).map((id) => (
+                                <span
+                                  key={id}
+                                  className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-600"
+                                >
+                                  {EXPENSE_MODULES.find((m) => m.id === id)?.label ?? id}
+                                </span>
+                              ))}
+                            </span>
+                          ) : (
+                            <span className="text-xs text-slate-400">Unassigned</span>
+                          ))}
                         </td>
                         <td className="px-4 py-2.5">{r.payee || "—"}</td>
                         <td className="hidden px-4 py-2.5 text-slate-500 md:table-cell">
@@ -439,7 +496,7 @@ export default function Expenses() {
                   </tbody>
                   <tfoot>
                     <tr className="border-t border-slate-200 bg-slate-50 text-sm font-semibold">
-                      <td className="px-4 py-2.5" colSpan={5}>
+                      <td className="px-4 py-2.5" colSpan={6}>
                         {filtered.length === monthRows.length
                           ? "Month total"
                           : "Filtered total"}
@@ -574,6 +631,31 @@ export default function Expenses() {
               </Select>
             </Labeled>
           </div>
+          <Labeled
+            label="Module attribution *"
+            hint="Select every module this expense supports. Shared expenses are tagged, not split."
+          >
+            <div className="grid gap-2 sm:grid-cols-2">
+              {EXPENSE_MODULES.map((module) => (
+                <label
+                  key={module.id}
+                  className={`flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-sm ${
+                    form.modules.includes(module.id)
+                      ? "border-teal-200 bg-teal-50/60"
+                      : "border-slate-200 bg-white"
+                  }`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={form.modules.includes(module.id)}
+                    onChange={() => toggleModule(module.id)}
+                    className="h-4 w-4 rounded border-slate-300 accent-teal-700"
+                  />
+                  {module.label}
+                </label>
+              ))}
+            </div>
+          </Labeled>
           <Labeled label="Payee / vendor">
             <TextInput
               value={form.payee}

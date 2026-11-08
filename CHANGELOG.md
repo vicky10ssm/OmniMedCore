@@ -3,6 +3,48 @@
 All notable changes to OmniMed Core are recorded here. This project follows semantic versioning once
 production releases begin.
 
+## [0.10.0] - 2026-11-08
+
+### Changed
+
+- Removed the default administrator password hint from the sign-in screen. First-time access now says
+  to contact an administrator; the username placeholder no longer exposes the default username.
+- Expenses now support **module attribution**:
+  - Pathology
+  - X-ray
+  - Pharmacy
+  - Hospital
+  - General / shared
+- An expense can carry multiple modules when shared. Shared expenses are tagged, not split.
+- Expense list, search, filters and CSV export now include modules.
+- Added a module filter to the expenses screen.
+- Filled reference intervals for **all 371 pathology parameters**.
+- Sex/age variants are included in the reference text where applicable, e.g. haemoglobin, RBC, PCV,
+  creatinine, uric acid, ALP, ferritin, iron, lipids, sex hormones and ESR.
+- Explicit pediatric ranges are included for haemoglobin, RBC, PCV, creatinine, ALP, calcium,
+  phosphorus and uric acid.
+- Qualitative/text tests now carry appropriate references such as negative, non-reactive, no growth,
+  not seen or descriptive report.
+
+### Database
+
+- Schema 22 adds `expenses.modules` (JSON array; default `[]`).
+- Existing expenses show as **Unassigned** until edited.
+- Reference seeding is versioned per tenant so it runs once per reference release and does not overwrite
+  custom parameters or re-run on every boot.
+- Starter reference values are still editable; laboratories must validate intervals for method,
+  population and local practice.
+
+### Verified
+
+- Sign-in screen contains no `admin123` hint.
+- Expense created with `["pathology","xray"]`; list/CSV/filter show both modules.
+- Schema 22 migration applied to the existing encrypted database.
+- 0 blank reference intervals across 371 parameters.
+- CBC haemoglobin shows adult male/adult female/children variants.
+- All previous tests, parameters, packages and reports remain intact.
+- `npm run check`, terminal build, monitor build and Rust tests.
+
 ## [0.9.1] - 2026-11-08
 
 ### Added

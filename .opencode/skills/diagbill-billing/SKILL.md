@@ -34,6 +34,9 @@ Use this skill for financial behavior. Preserve the existing accounting invarian
   hospital bills must remain viewable and printable.
 - Terminal operators can add/view expenses, but Dashboard and the Expenses collected/profit card are
   admin-only. Operators also cannot edit/delete expenses.
+- Expenses carry a multi-select module attribution (`pathology`, `xray`, `pharmacy`, `hospital`,
+  `general`) stored as JSON in `expenses.modules`. Shared expenses are tagged, not split. Preserve this
+  field in entry, edit, list, filter, search and CSV export.
 
 ## Referral commissions are removed
 

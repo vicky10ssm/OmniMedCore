@@ -1,6 +1,6 @@
 # OmniMed Core starter test catalogue
 
-Generated: 2026-11-07
+Generated: 2026-11-08
 
 > This is a generated snapshot. If it disagrees with the database/code, fix the source and regenerate.
 > Source of truth: `src/db/starterTests.ts`, `src/db/starterParameters.ts` and
@@ -30,19 +30,19 @@ own parameters.
 - Method: Blood gas analyser | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (13):
-  - pH; numeric
-  - pCO2 mmHg; numeric
-  - pO2 mmHg; numeric
-  - HCO3 mmol/L; numeric
-  - Base Excess mmol/L; numeric
-  - O2 Saturation %; numeric
-  - Lactate mmol/L; numeric
-  - Sodium mmol/L; numeric
-  - Potassium mmol/L; numeric
-  - Ionised Calcium mmol/L; numeric
-  - Glucose mg/dL; numeric
-  - FiO2 %; numeric
-  - Interpretation; text
+  - pH; ref Adult arterial: 7.35-7.45; numeric
+  - pCO2 mmHg; ref Adult arterial: 35-45 mmHg; numeric
+  - pO2 mmHg; ref Adult arterial: 80-100 mmHg; numeric
+  - HCO3 mmol/L; ref Adult arterial: 22-26 mmol/L; numeric
+  - Base Excess mmol/L; ref Adult arterial: -2 to +2 mmol/L; numeric
+  - O2 Saturation %; ref Adult arterial: 95-100%; numeric
+  - Lactate mmol/L; ref Adult: 0.5-2.2 mmol/L; numeric
+  - Sodium mmol/L; ref Adult: 135-145 mmol/L; numeric
+  - Potassium mmol/L; ref Adult: 3.5-5.1 mmol/L; numeric
+  - Ionised Calcium mmol/L; ref Adult: 1.15-1.30 mmol/L; numeric
+  - Glucose mg/dL; ref Adult fasting: 70-100 mg/dL; numeric
+  - FiO2 %; ref Room air: 21%; numeric
+  - Interpretation; ref Not applicable (clinical interpretation); text
 
 ### Clinical Biochemistry
 
@@ -53,7 +53,7 @@ own parameters.
 - Method: Jaffe | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - 24 Hour Urine Creatinine mg/24h; numeric
+  - 24 Hour Urine Creatinine mg/24h; ref Adult male: 1.0-2.0 g/24h; adult female: 0.8-1.8 g/24h; numeric
 
 #### `U24PROT` — 24 Hour Urine Protein
 
@@ -62,7 +62,7 @@ own parameters.
 - Method: Spectrophotometry | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - 24 Hour Urine Protein mg/24h; numeric
+  - 24 Hour Urine Protein mg/24h; ref Adult: <150 mg/24h; numeric
 
 #### `ALB` — Albumin
 
@@ -71,7 +71,7 @@ own parameters.
 - Method: BCG | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Albumin g/dL; numeric
+  - Albumin g/dL; ref Adult: 3.5-5.2 g/dL; numeric
 
 #### `AGRATIO` — Albumin / Globulin Ratio
 
@@ -80,7 +80,7 @@ own parameters.
 - Method: Calculated | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Albumin / Globulin Ratio ratio; numeric
+  - Albumin / Globulin Ratio ratio; ref Adult: 1.0-2.2; numeric
 
 #### `ALP` — Alkaline Phosphatase (ALP)
 
@@ -89,7 +89,7 @@ own parameters.
 - Method: IFCC | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Alkaline Phosphatase (ALP) U/L; numeric
+  - Alkaline Phosphatase (ALP) U/L; ref Adult: 40-130 U/L; children 1-12y: 100-400 U/L; adolescents: higher; numeric
 
 #### `AMMONIA` — Ammonia
 
@@ -98,7 +98,7 @@ own parameters.
 - Method: Enzymatic | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Ammonia umol/L; numeric
+  - Ammonia umol/L; ref Adult: 15-45 umol/L; numeric
 
 #### `APOA1` — Apolipoprotein A1
 
@@ -107,7 +107,7 @@ own parameters.
 - Method: Immunoturbidimetry | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Apolipoprotein A1 mg/dL; numeric
+  - Apolipoprotein A1 mg/dL; ref Adult male: 110-180 mg/dL; adult female: 120-220 mg/dL; numeric
 
 #### `APOB` — Apolipoprotein B
 
@@ -116,7 +116,7 @@ own parameters.
 - Method: Immunoturbidimetry | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Apolipoprotein B mg/dL; numeric
+  - Apolipoprotein B mg/dL; ref Adult: <90 mg/dL (desirable); numeric
 
 #### `HCO3` — Bicarbonate
 
@@ -125,7 +125,7 @@ own parameters.
 - Method: Calculated / enzymatic | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Bicarbonate mmol/L; numeric
+  - Bicarbonate mmol/L; ref Adult: 22-29 mmol/L; numeric
 
 #### `FBS` — Blood Sugar Fasting
 
@@ -134,7 +134,7 @@ own parameters.
 - Method: — | Report type: numeric
 - Price: ₹100.00 | GST: 0%
 - Parameters (1):
-  - Blood Sugar Fasting mg/dL; ref 70 - 100; numeric
+  - Blood Sugar Fasting mg/dL; ref Adult: 70-100 mg/dL; numeric
 
 #### `PPBS` — Blood Sugar Post Prandial
 
@@ -143,7 +143,7 @@ own parameters.
 - Method: Spectrophotometry | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Blood Sugar Post Prandial mg/dL; numeric
+  - Blood Sugar Post Prandial mg/dL; ref Adult: <140 mg/dL (2 hours after meal); numeric
 
 #### `RBS` — Blood Sugar Random
 
@@ -152,7 +152,7 @@ own parameters.
 - Method: — | Report type: numeric
 - Price: ₹100.00 | GST: 0%
 - Parameters (1):
-  - Blood Sugar Random mg/dL; ref 70 - 140; numeric
+  - Blood Sugar Random mg/dL; ref Adult: 70-140 mg/dL; numeric
 
 #### `UREA` — Blood Urea
 
@@ -161,7 +161,7 @@ own parameters.
 - Method: Urease / spectrophotometry | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Blood Urea mg/dL; numeric
+  - Blood Urea mg/dL; ref Adult: 15-40 mg/dL; numeric
 
 #### `BUN` — Blood Urea Nitrogen (BUN)
 
@@ -170,7 +170,7 @@ own parameters.
 - Method: Urease / spectrophotometry | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Blood Urea Nitrogen (BUN) mg/dL; numeric
+  - Blood Urea Nitrogen (BUN) mg/dL; ref Adult: 7-20 mg/dL; numeric
 
 #### `BNP` — BNP
 
@@ -179,7 +179,7 @@ own parameters.
 - Method: Chemiluminescence | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - BNP pg/mL; numeric
+  - BNP pg/mL; ref Adult: <100 pg/mL; numeric
 
 #### `CA` — Calcium
 
@@ -188,7 +188,7 @@ own parameters.
 - Method: Arsenazo III | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Calcium mg/dL; numeric
+  - Calcium mg/dL; ref Adult: 8.6-10.2 mg/dL; children: 8.8-10.8 mg/dL; numeric
 
 #### `CL` — Chloride
 
@@ -197,7 +197,7 @@ own parameters.
 - Method: ISE | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Chloride mmol/L; numeric
+  - Chloride mmol/L; ref Adult: 98-107 mmol/L; numeric
 
 #### `CK` — Creatine Kinase (CK)
 
@@ -206,7 +206,7 @@ own parameters.
 - Method: IFCC | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Creatine Kinase (CK) U/L; numeric
+  - Creatine Kinase (CK) U/L; ref Adult male: 39-308 U/L; adult female: 26-192 U/L; numeric
 
 #### `CKMB` — Creatine Kinase MB (CK-MB)
 
@@ -215,7 +215,7 @@ own parameters.
 - Method: Immunoinhibition | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Creatine Kinase MB (CK-MB) U/L; numeric
+  - Creatine Kinase MB (CK-MB) U/L; ref Adult: <25 U/L; numeric
 
 #### `CREATCLEAR` — Creatinine Clearance
 
@@ -224,7 +224,7 @@ own parameters.
 - Method: Calculated | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Creatinine Clearance mL/min; numeric
+  - Creatinine Clearance mL/min; ref Adult: 90-120 mL/min; numeric
 
 #### `DBIL` — Direct Bilirubin
 
@@ -233,7 +233,7 @@ own parameters.
 - Method: Diazo | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Direct Bilirubin mg/dL; numeric
+  - Direct Bilirubin mg/dL; ref Adult: 0.0-0.3 mg/dL; numeric
 
 #### `EGFR` — Estimated GFR (eGFR)
 
@@ -242,7 +242,7 @@ own parameters.
 - Method: Calculated | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Estimated GFR (eGFR) mL/min/1.73m2; numeric
+  - Estimated GFR (eGFR) mL/min/1.73m2; ref Adult: >90 mL/min/1.73m2; numeric
 
 #### `FOLATE` — Folate
 
@@ -251,7 +251,7 @@ own parameters.
 - Method: Chemiluminescence | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Folate ng/mL; numeric
+  - Folate ng/mL; ref Adult: 3-17 ng/mL; numeric
 
 #### `GGT` — Gamma Glutamyl Transferase (GGT)
 
@@ -260,7 +260,7 @@ own parameters.
 - Method: IFCC | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Gamma Glutamyl Transferase (GGT) U/L; numeric
+  - Gamma Glutamyl Transferase (GGT) U/L; ref Adult male: 0-55 U/L; adult female: 0-38 U/L; numeric
 
 #### `GLOB` — Globulin
 
@@ -269,7 +269,7 @@ own parameters.
 - Method: Calculated | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Globulin g/dL; numeric
+  - Globulin g/dL; ref Adult: 2.0-3.5 g/dL; numeric
 
 #### `HBA1C` — Glycated Haemoglobin (HbA1c)
 
@@ -278,7 +278,7 @@ own parameters.
 - Method: — | Report type: numeric
 - Price: ₹550.00 | GST: 0%
 - Parameters (1):
-  - Glycated Haemoglobin (HbA1c) %; ref < 5.7; numeric
+  - Glycated Haemoglobin (HbA1c) %; ref Adult: <5.7% (non-diabetic); numeric
 
 #### `HDL` — HDL Cholesterol
 
@@ -287,7 +287,7 @@ own parameters.
 - Method: Direct / precipitation | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - HDL Cholesterol mg/dL; numeric
+  - HDL Cholesterol mg/dL; ref Adult male: >40 mg/dL; adult female: >50 mg/dL; numeric
 
 #### `HSCRP` — High Sensitivity CRP (hs-CRP)
 
@@ -296,7 +296,7 @@ own parameters.
 - Method: Immunoturbidimetry | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - High Sensitivity CRP (hs-CRP) mg/L; numeric
+  - High Sensitivity CRP (hs-CRP) mg/L; ref Adult: <1 low risk; 1-3 average; >3 higher risk; numeric
 
 #### `HOMOCYS` — Homocysteine
 
@@ -305,7 +305,7 @@ own parameters.
 - Method: Chemiluminescence | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Homocysteine umol/L; numeric
+  - Homocysteine umol/L; ref Adult: 5-15 umol/L; numeric
 
 #### `IBIL` — Indirect Bilirubin
 
@@ -314,7 +314,7 @@ own parameters.
 - Method: Calculated | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Indirect Bilirubin mg/dL; numeric
+  - Indirect Bilirubin mg/dL; ref Adult: 0.1-1.0 mg/dL; numeric
 
 #### `KFT` — Kidney Function Test (KFT)
 
@@ -323,15 +323,15 @@ own parameters.
 - Method: — | Report type: text
 - Price: ₹500.00 | GST: 0%
 - Parameters (9):
-  - Blood Urea mg/dL; ref 17 - 43; numeric
-  - Blood Urea Nitrogen (BUN) mg/dL; ref 8 - 20; numeric
-  - Serum Creatinine mg/dL; ref 0.6 - 1.3; numeric
-  - Uric Acid mg/dL; ref 3.5 - 7.2; numeric
-  - Sodium mmol/L; ref 135 - 145; numeric
-  - Potassium mmol/L; ref 3.5 - 5.1; numeric
-  - Chloride mmol/L; ref 98 - 107; numeric
-  - Calcium mg/dL; ref 8.5 - 10.5; numeric
-  - Phosphorus mg/dL; ref 2.5 - 4.5; numeric
+  - Blood Urea mg/dL; ref Adult: 15-40 mg/dL; numeric
+  - Blood Urea Nitrogen (BUN) mg/dL; ref Adult: 7-20 mg/dL; numeric
+  - Serum Creatinine mg/dL; ref Adult male: 0.7-1.3 mg/dL; adult female: 0.6-1.1 mg/dL; children 1-5y: 0.3-0.7; children 6-12y: 0.4-0.9 mg/dL; numeric
+  - Uric Acid mg/dL; ref Adult male: 3.5-7.2 mg/dL; adult female: 2.6-6.0 mg/dL; children: 2.0-5.5 mg/dL; numeric
+  - Sodium mmol/L; ref Adult: 135-145 mmol/L; numeric
+  - Potassium mmol/L; ref Adult: 3.5-5.1 mmol/L; numeric
+  - Chloride mmol/L; ref Adult: 98-107 mmol/L; numeric
+  - Calcium mg/dL; ref Adult: 8.6-10.2 mg/dL; children: 8.8-10.8 mg/dL; numeric
+  - Phosphorus mg/dL; ref Adult: 2.5-4.5 mg/dL; children 1-12y: 4.0-7.0 mg/dL; numeric
 
 #### `LACTATE` — Lactate
 
@@ -340,7 +340,7 @@ own parameters.
 - Method: Enzymatic | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Lactate mmol/L; numeric
+  - Lactate mmol/L; ref Adult: 0.5-2.2 mmol/L; numeric
 
 #### `LDH` — Lactate Dehydrogenase (LDH)
 
@@ -349,7 +349,7 @@ own parameters.
 - Method: IFCC | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Lactate Dehydrogenase (LDH) U/L; numeric
+  - Lactate Dehydrogenase (LDH) U/L; ref Adult: 140-280 U/L; numeric
 
 #### `LDL` — LDL Cholesterol
 
@@ -358,7 +358,7 @@ own parameters.
 - Method: Calculated / direct | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - LDL Cholesterol mg/dL; numeric
+  - LDL Cholesterol mg/dL; ref Adult: <100 mg/dL (desirable); numeric
 
 #### `LIPID` — Lipid Profile
 
@@ -367,14 +367,14 @@ own parameters.
 - Method: — | Report type: text
 - Price: ₹400.00 | GST: 0%
 - Parameters (8):
-  - Total Cholesterol mg/dL; ref < 200; numeric
-  - Triglycerides mg/dL; ref < 150; numeric
-  - HDL Cholesterol mg/dL; ref > 40; numeric
-  - LDL Cholesterol mg/dL; ref < 100; numeric
-  - VLDL Cholesterol mg/dL; ref 10 - 40; numeric
-  - Non-HDL Cholesterol mg/dL; ref < 130; numeric
-  - Total Cholesterol / HDL Ratio ratio; ref < 4.5; numeric
-  - LDL / HDL Ratio ratio; ref < 3.0; numeric
+  - Total Cholesterol mg/dL; ref Adult: <200 mg/dL (desirable); numeric
+  - Triglycerides mg/dL; ref Adult: <150 mg/dL; numeric
+  - HDL Cholesterol mg/dL; ref Adult male: >40 mg/dL; adult female: >50 mg/dL; numeric
+  - LDL Cholesterol mg/dL; ref Adult: <100 mg/dL (desirable); numeric
+  - VLDL Cholesterol mg/dL; ref Adult: 5-40 mg/dL; numeric
+  - Non-HDL Cholesterol mg/dL; ref Adult: <130 mg/dL; numeric
+  - Total Cholesterol / HDL Ratio ratio; ref Adult: <4.5 (lab-specific); numeric
+  - LDL / HDL Ratio ratio; ref Adult: <3.0 (lab-specific); numeric
 
 #### `LPA` — Lipoprotein(a)
 
@@ -383,7 +383,7 @@ own parameters.
 - Method: Immunoturbidimetry | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Lipoprotein(a) mg/dL; numeric
+  - Lipoprotein(a) mg/dL; ref Adult: <30 mg/dL; numeric
 
 #### `LFT` — Liver Function Test (LFT)
 
@@ -392,17 +392,17 @@ own parameters.
 - Method: — | Report type: text
 - Price: ₹500.00 | GST: 0%
 - Parameters (11):
-  - Bilirubin Total mg/dL; ref 0.2 - 1.2; numeric
-  - Bilirubin Direct mg/dL; ref 0.0 - 0.3; numeric
-  - Bilirubin Indirect mg/dL; ref 0.1 - 1.0; numeric
-  - SGOT (AST) U/L; ref 5 - 40; numeric
-  - SGPT (ALT) U/L; ref 5 - 41; numeric
-  - Alkaline Phosphatase U/L; ref 40 - 130; numeric
-  - Gamma GT (GGT) U/L; ref 0 - 50; numeric
-  - Total Protein g/dL; ref 6.0 - 8.3; numeric
-  - Albumin g/dL; ref 3.5 - 5.2; numeric
-  - Globulin g/dL; ref 2.0 - 3.5; numeric
-  - Albumin / Globulin Ratio ratio; ref 1.0 - 2.2; numeric
+  - Bilirubin Total mg/dL; ref Adult: 0.2-1.2 mg/dL; numeric
+  - Bilirubin Direct mg/dL; ref Adult: 0.0-0.3 mg/dL; numeric
+  - Bilirubin Indirect mg/dL; ref Adult: 0.1-1.0 mg/dL; numeric
+  - SGOT (AST) U/L; ref Adult: 5-40 U/L; numeric
+  - SGPT (ALT) U/L; ref Adult: 5-41 U/L; numeric
+  - Alkaline Phosphatase U/L; ref Adult: 40-130 U/L; children 1-12y: 100-400 U/L; adolescents: higher; numeric
+  - Gamma GT (GGT) U/L; ref Adult male: 0-55 U/L; adult female: 0-38 U/L; numeric
+  - Total Protein g/dL; ref Adult: 6.0-8.3 g/dL; numeric
+  - Albumin g/dL; ref Adult: 3.5-5.2 g/dL; numeric
+  - Globulin g/dL; ref Adult: 2.0-3.5 g/dL; numeric
+  - Albumin / Globulin Ratio ratio; ref Adult: 1.0-2.2; numeric
 
 #### `MG` — Magnesium
 
@@ -411,7 +411,7 @@ own parameters.
 - Method: Xylidyl blue | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Magnesium mg/dL; numeric
+  - Magnesium mg/dL; ref Adult: 1.7-2.2 mg/dL; numeric
 
 #### `NONHDL` — Non-HDL Cholesterol
 
@@ -420,7 +420,7 @@ own parameters.
 - Method: Calculated | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Non-HDL Cholesterol mg/dL; numeric
+  - Non-HDL Cholesterol mg/dL; ref Adult: <130 mg/dL; numeric
 
 #### `NTPROBNP` — NT-proBNP
 
@@ -429,7 +429,7 @@ own parameters.
 - Method: Chemiluminescence | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - NT-proBNP pg/mL; numeric
+  - NT-proBNP pg/mL; ref Adult: <125 pg/mL (<75 years); age-adjusted; numeric
 
 #### `PHOS` — Phosphorus
 
@@ -438,7 +438,7 @@ own parameters.
 - Method: Molybdate | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Phosphorus mg/dL; numeric
+  - Phosphorus mg/dL; ref Adult: 2.5-4.5 mg/dL; children 1-12y: 4.0-7.0 mg/dL; numeric
 
 #### `K` — Potassium
 
@@ -447,7 +447,7 @@ own parameters.
 - Method: ISE | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Potassium mmol/L; numeric
+  - Potassium mmol/L; ref Adult: 3.5-5.1 mmol/L; numeric
 
 #### `AMYLASE` — Serum Amylase
 
@@ -456,7 +456,7 @@ own parameters.
 - Method: Enzymatic | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Serum Amylase U/L; numeric
+  - Serum Amylase U/L; ref Adult: 30-110 U/L; numeric
 
 #### `CREAT` — Serum Creatinine
 
@@ -465,7 +465,7 @@ own parameters.
 - Method: Jaffe / enzymatic | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Serum Creatinine mg/dL; numeric
+  - Serum Creatinine mg/dL; ref Adult male: 0.7-1.3 mg/dL; adult female: 0.6-1.1 mg/dL; children 1-5y: 0.3-0.7; children 6-12y: 0.4-0.9 mg/dL; numeric
 
 #### `FERRITIN` — Serum Ferritin
 
@@ -474,7 +474,7 @@ own parameters.
 - Method: Chemiluminescence | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Serum Ferritin ng/mL; numeric
+  - Serum Ferritin ng/mL; ref Adult male: 30-400 ng/mL; adult female: 15-150 ng/mL; numeric
 
 #### `IRON` — Serum Iron
 
@@ -483,7 +483,7 @@ own parameters.
 - Method: Ferrozine | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Serum Iron ug/dL; numeric
+  - Serum Iron ug/dL; ref Adult male: 65-175 ug/dL; adult female: 50-170 ug/dL; numeric
 
 #### `LIPASE` — Serum Lipase
 
@@ -492,7 +492,7 @@ own parameters.
 - Method: Enzymatic | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Serum Lipase U/L; numeric
+  - Serum Lipase U/L; ref Adult: 0-160 U/L; numeric
 
 #### `URIC` — Serum Uric Acid
 
@@ -501,7 +501,7 @@ own parameters.
 - Method: Uricase | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Serum Uric Acid mg/dL; numeric
+  - Serum Uric Acid mg/dL; ref Adult male: 3.5-7.2 mg/dL; adult female: 2.6-6.0 mg/dL; children: 2.0-5.5 mg/dL; numeric
 
 #### `SGOT` — SGOT (AST)
 
@@ -510,7 +510,7 @@ own parameters.
 - Method: IFCC | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - SGOT (AST) U/L; numeric
+  - SGOT (AST) U/L; ref Adult: 5-40 U/L; numeric
 
 #### `SGPT` — SGPT (ALT)
 
@@ -519,7 +519,7 @@ own parameters.
 - Method: IFCC | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - SGPT (ALT) U/L; numeric
+  - SGPT (ALT) U/L; ref Adult: 5-41 U/L; numeric
 
 #### `NA` — Sodium
 
@@ -528,7 +528,7 @@ own parameters.
 - Method: ISE | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Sodium mmol/L; numeric
+  - Sodium mmol/L; ref Adult: 135-145 mmol/L; numeric
 
 #### `TSH` — Thyroid Stimulating Hormone
 
@@ -537,7 +537,7 @@ own parameters.
 - Method: — | Report type: numeric
 - Price: ₹250.00 | GST: 0%
 - Parameters (1):
-  - Thyroid Stimulating Hormone mIU/L; ref 0.4 - 4.0; numeric
+  - Thyroid Stimulating Hormone mIU/L; ref Adult: 0.4-4.0 mIU/L; numeric
 
 #### `TBIL` — Total Bilirubin
 
@@ -546,7 +546,7 @@ own parameters.
 - Method: Diazo | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Total Bilirubin mg/dL; numeric
+  - Total Bilirubin mg/dL; ref Adult: 0.2-1.2 mg/dL; numeric
 
 #### `CHOL` — Total Cholesterol
 
@@ -555,7 +555,7 @@ own parameters.
 - Method: Enzymatic | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Total Cholesterol mg/dL; numeric
+  - Total Cholesterol mg/dL; ref Adult: <200 mg/dL (desirable); numeric
 
 #### `TIBC` — Total Iron Binding Capacity (TIBC)
 
@@ -564,7 +564,7 @@ own parameters.
 - Method: Saturation / calculated | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Total Iron Binding Capacity (TIBC) ug/dL; numeric
+  - Total Iron Binding Capacity (TIBC) ug/dL; ref Adult: 250-450 ug/dL; numeric
 
 #### `TP` — Total Protein
 
@@ -573,7 +573,7 @@ own parameters.
 - Method: Biuret | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Total Protein g/dL; numeric
+  - Total Protein g/dL; ref Adult: 6.0-8.3 g/dL; numeric
 
 #### `TG` — Triglycerides
 
@@ -582,7 +582,7 @@ own parameters.
 - Method: Enzymatic | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Triglycerides mg/dL; numeric
+  - Triglycerides mg/dL; ref Adult: <150 mg/dL; numeric
 
 #### `TROPI` — Troponin I
 
@@ -591,7 +591,7 @@ own parameters.
 - Method: Chemiluminescence | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Troponin I ng/mL; numeric
+  - Troponin I ng/mL; ref Adult: <0.04 ng/mL; numeric
 
 #### `TROPT` — Troponin T
 
@@ -600,7 +600,7 @@ own parameters.
 - Method: Chemiluminescence | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Troponin T ng/mL; numeric
+  - Troponin T ng/mL; ref Adult: <14 ng/L; numeric
 
 #### `UACR` — Urine Albumin / Creatinine Ratio
 
@@ -609,7 +609,7 @@ own parameters.
 - Method: Calculated | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Urine Albumin / Creatinine Ratio mg/g; numeric
+  - Urine Albumin / Creatinine Ratio mg/g; ref Adult: <30 mg/g; numeric
 
 #### `MICROALB` — Urine Microalbumin
 
@@ -618,7 +618,7 @@ own parameters.
 - Method: Immunoturbidimetry | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Urine Microalbumin mg/L; numeric
+  - Urine Microalbumin mg/L; ref Adult: <30 mg/L; numeric
 
 #### `B12` — Vitamin B12
 
@@ -627,7 +627,7 @@ own parameters.
 - Method: Chemiluminescence | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Vitamin B12 pg/mL; numeric
+  - Vitamin B12 pg/mL; ref Adult: 200-900 pg/mL; numeric
 
 #### `VITD` — Vitamin D (25-OH)
 
@@ -636,7 +636,7 @@ own parameters.
 - Method: Chemiluminescence | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Vitamin D (25-OH) ng/mL; numeric
+  - Vitamin D (25-OH) ng/mL; ref Adult: 30-100 ng/mL (sufficiency; lab-specific); numeric
 
 #### `VLDL` — VLDL Cholesterol
 
@@ -645,7 +645,7 @@ own parameters.
 - Method: Calculated | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - VLDL Cholesterol mg/dL; numeric
+  - VLDL Cholesterol mg/dL; ref Adult: 5-40 mg/dL; numeric
 
 ### Clinical Pathology
 
@@ -656,13 +656,13 @@ own parameters.
 - Method: Biochemistry and cytology | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (7):
-  - Appearance; text
-  - Protein g/dL; numeric
-  - Glucose mg/dL; numeric
-  - Cell Count /cmm; numeric
-  - Polymorphs %; numeric
-  - Lymphocytes %; numeric
-  - Serum-Ascites Albumin Gradient g/dL; numeric
+  - Appearance; ref Clear / straw-coloured; text
+  - Protein g/dL; ref Transudate <2.5 g/dL; exudate >=2.5 g/dL; numeric
+  - Glucose mg/dL; ref 70-100 mg/dL; numeric
+  - Cell Count /cmm; ref Fluid-specific; report differential; numeric
+  - Polymorphs %; ref Fluid-specific; report differential; numeric
+  - Lymphocytes %; ref Fluid-specific; report differential; numeric
+  - Serum-Ascites Albumin Gradient g/dL; ref >=1.1 g/dL suggests portal hypertension; numeric
 
 #### `CSFA` — CSF Analysis
 
@@ -671,14 +671,14 @@ own parameters.
 - Method: Biochemistry, cytology and microbiology | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (8):
-  - Appearance; text
-  - Protein mg/dL; numeric
-  - Glucose mg/dL; numeric
-  - Cell Count /cmm; numeric
-  - Polymorphs %; numeric
-  - Lymphocytes %; numeric
-  - Chloride mmol/L; numeric
-  - ADA U/L; numeric
+  - Appearance; ref Clear, colourless; text
+  - Protein mg/dL; ref 15-45 mg/dL; numeric
+  - Glucose mg/dL; ref 40-70 mg/dL; numeric
+  - Cell Count /cmm; ref 0-5 /cmm; numeric
+  - Polymorphs %; ref 0-5%; numeric
+  - Lymphocytes %; ref 0-5% (normal CSF); numeric
+  - Chloride mmol/L; ref 118-132 mmol/L; numeric
+  - ADA U/L; ref <10 U/L (lab-specific); numeric
 
 #### `CALPRO` — Fecal Calprotectin
 
@@ -687,7 +687,7 @@ own parameters.
 - Method: ELISA | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Fecal Calprotectin ug/g; numeric
+  - Fecal Calprotectin ug/g; ref Adult: <50 ug/g; numeric
 
 #### `PLEURA` — Pleural Fluid Analysis
 
@@ -696,14 +696,14 @@ own parameters.
 - Method: Biochemistry and cytology | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (8):
-  - Appearance; text
-  - Protein g/dL; numeric
-  - Glucose mg/dL; numeric
-  - Cell Count /cmm; numeric
-  - Polymorphs %; numeric
-  - Lymphocytes %; numeric
-  - LDH U/L; numeric
-  - ADA U/L; numeric
+  - Appearance; ref Clear / straw-coloured; text
+  - Protein g/dL; ref Transudate <3.0 g/dL; exudate >=3.0 g/dL; numeric
+  - Glucose mg/dL; ref 60-100 mg/dL; numeric
+  - Cell Count /cmm; ref Fluid-specific; report differential; numeric
+  - Polymorphs %; ref Fluid-specific; report differential; numeric
+  - Lymphocytes %; ref Fluid-specific; report differential; numeric
+  - LDH U/L; ref Fluid-specific; compare with serum; numeric
+  - ADA U/L; ref <10 U/L (lab-specific); numeric
 
 #### `SEMEN` — Semen Analysis
 
@@ -712,14 +712,14 @@ own parameters.
 - Method: Macroscopy and microscopy | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (8):
-  - Volume mL; numeric
-  - pH; numeric
-  - Sperm Count million/mL; numeric
-  - Total Motility %; numeric
-  - Progressive Motility %; numeric
-  - Normal Morphology %; numeric
-  - Leucocytes million/mL; numeric
-  - Liquefaction Time minutes; numeric
+  - Volume mL; ref >=1.5 mL; numeric
+  - pH; ref >=7.2; numeric
+  - Sperm Count million/mL; ref >=15 million/mL; numeric
+  - Total Motility %; ref >=40%; numeric
+  - Progressive Motility %; ref >=32%; numeric
+  - Normal Morphology %; ref >=4% normal forms; numeric
+  - Leucocytes million/mL; ref <1 million/mL; numeric
+  - Liquefaction Time minutes; ref <=60 minutes; numeric
 
 #### `SOB` — Stool Occult Blood
 
@@ -728,7 +728,7 @@ own parameters.
 - Method: Immunochromatography | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Stool Occult Blood; text
+  - Stool Occult Blood; ref Negative; text
 
 #### `OVA` — Stool Ova and Cyst
 
@@ -737,8 +737,8 @@ own parameters.
 - Method: Microscopy | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (2):
-  - Ova; text
-  - Cyst; text
+  - Ova; ref Not seen; text
+  - Cyst; ref Not seen; text
 
 #### `SRED` — Stool Reducing Substances
 
@@ -747,7 +747,7 @@ own parameters.
 - Method: Benedict method | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Stool Reducing Substances; text
+  - Stool Reducing Substances; ref Negative; text
 
 #### `STOOL` — Stool Routine Examination
 
@@ -756,12 +756,12 @@ own parameters.
 - Method: Macroscopy and microscopy | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (6):
-  - Colour; text
-  - Consistency; text
-  - Ova / Cyst; text
-  - Occult Blood; text
-  - Pus Cells /hpf; numeric
-  - Epithelial Cells /hpf; numeric
+  - Colour; ref Brown; text
+  - Consistency; ref Formed; text
+  - Ova / Cyst; ref Not seen; text
+  - Occult Blood; ref Negative; text
+  - Pus Cells /hpf; ref 0-5 /hpf; numeric
+  - Epithelial Cells /hpf; ref 0-5 /hpf; numeric
 
 #### `SYNOVIAL` — Synovial Fluid Analysis
 
@@ -770,12 +770,12 @@ own parameters.
 - Method: Biochemistry and microscopy | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (6):
-  - Appearance; text
-  - Leucocyte Count /cmm; numeric
-  - Polymorphs %; numeric
-  - Protein g/dL; numeric
-  - Glucose mg/dL; numeric
-  - Crystals; text
+  - Appearance; ref Clear, viscous; text
+  - Leucocyte Count /cmm; ref <200 /cmm; numeric
+  - Polymorphs %; ref <25%; numeric
+  - Protein g/dL; ref <3.5 g/dL; numeric
+  - Glucose mg/dL; ref 70-100 mg/dL; numeric
+  - Crystals; ref None seen; text
 
 #### `UBIL` — Urine Bilirubin
 
@@ -784,7 +784,7 @@ own parameters.
 - Method: Dipstick | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Urine Bilirubin; text
+  - Urine Bilirubin; ref Negative; text
 
 #### `UGLUC` — Urine Glucose
 
@@ -793,7 +793,7 @@ own parameters.
 - Method: Dipstick | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Urine Glucose; text
+  - Urine Glucose; ref Negative; text
 
 #### `UKET` — Urine Ketones
 
@@ -802,7 +802,7 @@ own parameters.
 - Method: Dipstick | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Urine Ketones; text
+  - Urine Ketones; ref Negative; text
 
 #### `ULE` — Urine Leukocyte Esterase
 
@@ -811,7 +811,7 @@ own parameters.
 - Method: Dipstick | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Urine Leukocyte Esterase; text
+  - Urine Leukocyte Esterase; ref Negative; text
 
 #### `UMICRO` — Urine Microscopy
 
@@ -820,12 +820,12 @@ own parameters.
 - Method: Microscopy | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (6):
-  - Pus Cells /hpf; numeric
-  - Red Blood Cells /hpf; numeric
-  - Epithelial Cells /hpf; numeric
-  - Casts; text
-  - Crystals; text
-  - Bacteria; text
+  - Pus Cells /hpf; ref 0-5 /hpf; numeric
+  - Red Blood Cells /hpf; ref 0-2 /hpf; numeric
+  - Epithelial Cells /hpf; ref 0-5 /hpf; numeric
+  - Casts; ref None / occasional hyaline; text
+  - Crystals; ref None seen; text
+  - Bacteria; ref Not seen; text
 
 #### `UNIT` — Urine Nitrite
 
@@ -834,7 +834,7 @@ own parameters.
 - Method: Dipstick | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Urine Nitrite; text
+  - Urine Nitrite; ref Negative; text
 
 #### `UPREG` — Urine Pregnancy Test (hCG)
 
@@ -843,7 +843,7 @@ own parameters.
 - Method: Immunochromatography | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Urine Pregnancy Test (hCG); text
+  - Urine Pregnancy Test (hCG); ref Negative; text
 
 #### `UPROT` — Urine Protein
 
@@ -852,7 +852,7 @@ own parameters.
 - Method: Dipstick | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Urine Protein; text
+  - Urine Protein; ref Negative / trace; text
 
 #### `URINE` — Urine Routine Examination
 
@@ -861,11 +861,11 @@ own parameters.
 - Method: Dipstick and microscopy | Report type: text
 - Price: ₹150.00 | GST: 0%
 - Parameters (18):
-  - Colour; ref Pale yellow; text
+  - Colour; ref Pale yellow to amber; text
   - Appearance; ref Clear; text
-  - pH; ref 4.6 - 8.0; numeric
-  - Specific Gravity; ref 1.005 - 1.030; numeric
-  - Protein; ref Negative; text
+  - pH; ref Urine: 4.6-8.0; numeric
+  - Specific Gravity; ref 1.005-1.030; numeric
+  - Protein; ref Negative / trace; text
   - Glucose; ref Negative; text
   - Ketones; ref Negative; text
   - Blood; ref Negative; text
@@ -873,12 +873,12 @@ own parameters.
   - Urobilinogen; ref Normal; text
   - Nitrite; ref Negative; text
   - Leucocyte Esterase; ref Negative; text
-  - Pus Cells /hpf; ref 0 - 5; numeric
-  - Red Blood Cells /hpf; ref 0 - 2; numeric
-  - Epithelial Cells /hpf; ref Occasional; text
-  - Casts /lpf; ref Absent; text
-  - Crystals /hpf; ref Absent; text
-  - Bacteria /hpf; ref Absent; text
+  - Pus Cells /hpf; ref 0-5 /hpf; numeric
+  - Red Blood Cells /hpf; ref 0-2 /hpf; numeric
+  - Epithelial Cells /hpf; ref 0-5 /hpf; text
+  - Casts /lpf; ref None / occasional hyaline; text
+  - Crystals /hpf; ref None seen; text
+  - Bacteria /hpf; ref Not seen; text
 
 #### `UURO` — Urine Urobilinogen
 
@@ -887,7 +887,7 @@ own parameters.
 - Method: Dipstick | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Urine Urobilinogen; text
+  - Urine Urobilinogen; ref Normal; text
 
 ### Cytology
 
@@ -898,9 +898,9 @@ own parameters.
 - Method: Cytology | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (3):
-  - Site; text
-  - Cytology Findings; text
-  - Diagnosis; text
+  - Site; ref Not applicable (descriptive report); text
+  - Cytology Findings; ref No diagnostic abnormality / descriptive report; text
+  - Diagnosis; ref Not applicable (descriptive report); text
 
 #### `FLUIDCYT` — Fluid Cytology
 
@@ -909,9 +909,9 @@ own parameters.
 - Method: Cytology | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (3):
-  - Specimen; text
-  - Cytology Findings; text
-  - Diagnosis; text
+  - Specimen; ref Not applicable (descriptive report); text
+  - Cytology Findings; ref No diagnostic abnormality / descriptive report; text
+  - Diagnosis; ref Not applicable (descriptive report); text
 
 #### `PAP` — Pap Smear
 
@@ -920,9 +920,9 @@ own parameters.
 - Method: Cytology | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (3):
-  - Specimen Adequacy; text
-  - Bethesda Interpretation; text
-  - Recommendation; text
+  - Specimen Adequacy; ref Satisfactory for evaluation; text
+  - Bethesda Interpretation; ref Negative for intraepithelial lesion or malignancy; text
+  - Recommendation; ref Not applicable (descriptive report); text
 
 #### `SPUTUMCYT` — Sputum Cytology
 
@@ -931,9 +931,9 @@ own parameters.
 - Method: Cytology | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (3):
-  - Specimen; text
-  - Cytology Findings; text
-  - Diagnosis; text
+  - Specimen; ref Not applicable (descriptive report); text
+  - Cytology Findings; ref No diagnostic abnormality / descriptive report; text
+  - Diagnosis; ref Not applicable (descriptive report); text
 
 #### `URINECYT` — Urine Cytology
 
@@ -942,9 +942,9 @@ own parameters.
 - Method: Cytology | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (3):
-  - Specimen; text
-  - Cytology Findings; text
-  - Diagnosis; text
+  - Specimen; ref Not applicable (descriptive report); text
+  - Cytology Findings; ref No diagnostic abnormality / descriptive report; text
+  - Diagnosis; ref Not applicable (descriptive report); text
 
 ### Endocrinology
 
@@ -955,7 +955,7 @@ own parameters.
 - Method: Chemiluminescence | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - ACTH pg/mL; numeric
+  - ACTH pg/mL; ref Adult morning: 7-63 pg/mL; numeric
 
 #### `ALDO` — Aldosterone
 
@@ -964,7 +964,7 @@ own parameters.
 - Method: Chemiluminescence | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Aldosterone ng/dL; numeric
+  - Aldosterone ng/dL; ref Adult upright: 3-16 ng/dL (lab-specific); numeric
 
 #### `ATG` — Anti-Thyroglobulin Antibody
 
@@ -973,7 +973,7 @@ own parameters.
 - Method: Chemiluminescence | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Anti-Thyroglobulin Antibody IU/mL; numeric
+  - Anti-Thyroglobulin Antibody IU/mL; ref Adult: <40 IU/mL; numeric
 
 #### `ATPO` — Anti-Thyroid Peroxidase Antibody
 
@@ -982,7 +982,7 @@ own parameters.
 - Method: Chemiluminescence | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Anti-Thyroid Peroxidase Antibody IU/mL; numeric
+  - Anti-Thyroid Peroxidase Antibody IU/mL; ref Adult: <35 IU/mL; numeric
 
 #### `BHCG` — Beta Human Chorionic Gonadotropin
 
@@ -991,7 +991,7 @@ own parameters.
 - Method: Chemiluminescence | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Beta Human Chorionic Gonadotropin mIU/mL; numeric
+  - Beta Human Chorionic Gonadotropin mIU/mL; ref Non-pregnant adult: <5 mIU/mL; pregnancy interpreted by gestational age; numeric
 
 #### `CPEP` — C-Peptide
 
@@ -1000,7 +1000,7 @@ own parameters.
 - Method: Chemiluminescence | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - C-Peptide ng/mL; numeric
+  - C-Peptide ng/mL; ref Adult: 0.5-2.0 ng/mL; numeric
 
 #### `CORT` — Cortisol
 
@@ -1009,7 +1009,7 @@ own parameters.
 - Method: Chemiluminescence | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Cortisol ug/dL; numeric
+  - Cortisol ug/dL; ref Adult morning: 5-25 ug/dL; evening lower; numeric
 
 #### `E2` — Estradiol
 
@@ -1018,7 +1018,7 @@ own parameters.
 - Method: Chemiluminescence | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Estradiol pg/mL; numeric
+  - Estradiol pg/mL; ref Adult male: 10-40 pg/mL; adult female cycle/age-specific; numeric
 
 #### `FSH` — Follicle Stimulating Hormone (FSH)
 
@@ -1027,7 +1027,7 @@ own parameters.
 - Method: Chemiluminescence | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Follicle Stimulating Hormone (FSH) mIU/mL; numeric
+  - Follicle Stimulating Hormone (FSH) mIU/mL; ref Adult male: 1.4-12.4 mIU/mL; adult female cycle/age-specific; numeric
 
 #### `FT3` — Free T3
 
@@ -1036,7 +1036,7 @@ own parameters.
 - Method: Chemiluminescence | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Free T3 pg/mL; numeric
+  - Free T3 pg/mL; ref Adult: 2.3-4.2 pg/mL; numeric
 
 #### `FT4` — Free T4
 
@@ -1045,7 +1045,7 @@ own parameters.
 - Method: Chemiluminescence | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Free T4 ng/dL; numeric
+  - Free T4 ng/dL; ref Adult: 0.8-1.8 ng/dL; numeric
 
 #### `GH` — Growth Hormone
 
@@ -1054,7 +1054,7 @@ own parameters.
 - Method: Chemiluminescence | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Growth Hormone ng/mL; numeric
+  - Growth Hormone ng/mL; ref Adult random: <5 ng/mL (dynamic testing lab-specific); numeric
 
 #### `INSULIN` — Insulin
 
@@ -1063,7 +1063,7 @@ own parameters.
 - Method: Chemiluminescence | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Insulin uIU/mL; numeric
+  - Insulin uIU/mL; ref Adult fasting: 2-25 uIU/mL; numeric
 
 #### `IGF1` — Insulin-like Growth Factor 1 (IGF-1)
 
@@ -1072,7 +1072,7 @@ own parameters.
 - Method: Chemiluminescence | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Insulin-like Growth Factor 1 (IGF-1) ng/mL; numeric
+  - Insulin-like Growth Factor 1 (IGF-1) ng/mL; ref Age/sex-specific; report against reference chart; numeric
 
 #### `LH` — Luteinising Hormone (LH)
 
@@ -1081,7 +1081,7 @@ own parameters.
 - Method: Chemiluminescence | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Luteinising Hormone (LH) mIU/mL; numeric
+  - Luteinising Hormone (LH) mIU/mL; ref Adult male: 1.5-9.3 mIU/mL; adult female cycle/age-specific; numeric
 
 #### `PTH` — Parathyroid Hormone (PTH)
 
@@ -1090,7 +1090,7 @@ own parameters.
 - Method: Chemiluminescence | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Parathyroid Hormone (PTH) pg/mL; numeric
+  - Parathyroid Hormone (PTH) pg/mL; ref Adult: 15-65 pg/mL; numeric
 
 #### `PROG` — Progesterone
 
@@ -1099,7 +1099,7 @@ own parameters.
 - Method: Chemiluminescence | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Progesterone ng/mL; numeric
+  - Progesterone ng/mL; ref Adult male: <1 ng/mL; adult female follicular <1, luteal 5-20 ng/mL; numeric
 
 #### `PRL` — Prolactin
 
@@ -1108,7 +1108,7 @@ own parameters.
 - Method: Chemiluminescence | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Prolactin ng/mL; numeric
+  - Prolactin ng/mL; ref Adult male: 4-15 ng/mL; adult female: 5-25 ng/mL; numeric
 
 #### `RENIN` — Renin
 
@@ -1117,7 +1117,7 @@ own parameters.
 - Method: Chemiluminescence | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Renin ng/mL/hr; numeric
+  - Renin ng/mL/hr; ref Adult upright: 0.2-2.8 ng/mL/hr (lab-specific); numeric
 
 #### `TESTO` — Testosterone
 
@@ -1126,7 +1126,7 @@ own parameters.
 - Method: Chemiluminescence | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Testosterone ng/dL; numeric
+  - Testosterone ng/dL; ref Adult male: 300-1000 ng/dL; adult female: 15-70 ng/dL; numeric
 
 #### `T3` — Total T3
 
@@ -1135,7 +1135,7 @@ own parameters.
 - Method: Chemiluminescence | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Total T3 ng/dL; numeric
+  - Total T3 ng/dL; ref Adult: 80-200 ng/dL; numeric
 
 #### `T4` — Total T4
 
@@ -1144,7 +1144,7 @@ own parameters.
 - Method: Chemiluminescence | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Total T4 ug/dL; numeric
+  - Total T4 ug/dL; ref Adult: 5-12 ug/dL; numeric
 
 ### Haematology
 
@@ -1155,7 +1155,7 @@ own parameters.
 - Method: Coagulometer | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Activated Partial Thromboplastin Time (APTT) seconds; numeric
+  - Activated Partial Thromboplastin Time (APTT) seconds; ref Adult: 25-35 seconds; numeric
 
 #### `BGRH` — Blood Group and Rh Factor
 
@@ -1164,8 +1164,8 @@ own parameters.
 - Method: Slide agglutination | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (2):
-  - ABO Blood Group; text
-  - Rh Factor; text
+  - ABO Blood Group; ref Not applicable (report ABO group); text
+  - Rh Factor; ref Not applicable (report positive/negative); text
 
 #### `CBC` — Complete Blood Count (CBC)
 
@@ -1174,20 +1174,20 @@ own parameters.
 - Method: Automated analyser | Report type: numeric
 - Price: ₹300.00 | GST: 0%
 - Parameters (14):
-  - Haemoglobin g/dL; ref 12.0 - 16.0 (adult); numeric
-  - Total Leukocyte Count cells/cmm; ref 4,000 - 11,000; numeric
-  - Platelet Count cells/cmm; ref 1,50,000 - 4,50,000; numeric
-  - RBC Count million/cmm; ref 4.2 - 5.9 (adult); numeric
-  - Packed Cell Volume (PCV) %; ref 36 - 46 (adult); numeric
-  - Mean Corpuscular Volume (MCV) fL; ref 80 - 100; numeric
-  - Mean Corpuscular Haemoglobin (MCH) pg; ref 27 - 32; numeric
-  - Mean Corpuscular Hb Concentration (MCHC) g/dL; ref 32 - 36; numeric
-  - Red Cell Distribution Width (RDW) %; ref 11.5 - 14.5; numeric
-  - Neutrophils %; ref 40 - 70; numeric
-  - Lymphocytes %; ref 20 - 40; numeric
-  - Eosinophils %; ref 1 - 6; numeric
-  - Monocytes %; ref 2 - 10; numeric
-  - Basophils %; ref 0 - 2; numeric
+  - Haemoglobin g/dL; ref Adult male: 13.0-17.0 g/dL; adult female: 12.0-15.0 g/dL; children 1-5y: 11.0-14.0 g/dL; children 6-12y: 11.5-15.5 g/dL; numeric
+  - Total Leukocyte Count cells/cmm; ref Adult: 4,000-11,000 /cmm; numeric
+  - Platelet Count cells/cmm; ref Adult: 1,50,000-4,50,000 /cmm; numeric
+  - RBC Count million/cmm; ref Adult male: 4.5-5.9 million/cmm; adult female: 4.1-5.1 million/cmm; children 1-5y: 4.0-5.5; children 6-12y: 4.0-5.2 million/cmm; numeric
+  - Packed Cell Volume (PCV) %; ref Adult male: 40-52%; adult female: 36-48%; children 1-5y: 33-42%; children 6-12y: 35-45%; numeric
+  - Mean Corpuscular Volume (MCV) fL; ref Adult: 80-100 fL; numeric
+  - Mean Corpuscular Haemoglobin (MCH) pg; ref Adult: 27-32 pg; numeric
+  - Mean Corpuscular Hb Concentration (MCHC) g/dL; ref Adult: 32-36 g/dL; numeric
+  - Red Cell Distribution Width (RDW) %; ref Adult: 11.5-14.5%; numeric
+  - Neutrophils %; ref Adult: 40-70%; numeric
+  - Lymphocytes %; ref Adult blood: 20-40%; numeric
+  - Eosinophils %; ref Adult: 1-6%; numeric
+  - Monocytes %; ref Adult: 2-10%; numeric
+  - Basophils %; ref Adult: 0-2%; numeric
 
 #### `CROSS` — Crossmatch
 
@@ -1196,7 +1196,7 @@ own parameters.
 - Method: Tube method | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Crossmatch; text
+  - Crossmatch; ref Compatible; text
 
 #### `DDIMER` — D-Dimer
 
@@ -1205,7 +1205,7 @@ own parameters.
 - Method: Immunoturbidimetry | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - D-Dimer ng/mL; numeric
+  - D-Dimer ng/mL; ref Adult: <500 ng/mL FEU; numeric
 
 #### `DC` — Differential Leucocyte Count (DLC)
 
@@ -1214,11 +1214,11 @@ own parameters.
 - Method: Microscopy | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (5):
-  - Neutrophils %; numeric
-  - Lymphocytes %; numeric
-  - Eosinophils %; numeric
-  - Monocytes %; numeric
-  - Basophils %; numeric
+  - Neutrophils %; ref Adult: 40-70%; numeric
+  - Lymphocytes %; ref Adult blood: 20-40%; numeric
+  - Eosinophils %; ref Adult: 1-6%; numeric
+  - Monocytes %; ref Adult: 2-10%; numeric
+  - Basophils %; ref Adult: 0-2%; numeric
 
 #### `DCT` — Direct Coombs Test (DAT)
 
@@ -1227,7 +1227,7 @@ own parameters.
 - Method: Agglutination | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Direct Coombs Test (DAT); text
+  - Direct Coombs Test (DAT); ref Negative; text
 
 #### `ESR` — Erythrocyte Sedimentation Rate (ESR)
 
@@ -1236,7 +1236,7 @@ own parameters.
 - Method: Westergren | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Erythrocyte Sedimentation Rate (ESR) mm/hr; numeric
+  - Erythrocyte Sedimentation Rate (ESR) mm/hr; ref Adult male: 0-15 mm/hr; adult female: 0-20 mm/hr; age-related increase possible; numeric
 
 #### `FIB` — Fibrinogen
 
@@ -1245,7 +1245,7 @@ own parameters.
 - Method: Clauss method | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Fibrinogen mg/dL; numeric
+  - Fibrinogen mg/dL; ref Adult: 200-400 mg/dL; numeric
 
 #### `G6PD` — G6PD Enzyme Activity
 
@@ -1254,7 +1254,7 @@ own parameters.
 - Method: Enzymatic | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - G6PD Enzyme Activity U/g Hb; numeric
+  - G6PD Enzyme Activity U/g Hb; ref Adult: 8-18 U/g Hb; numeric
 
 #### `HB` — Haemoglobin
 
@@ -1263,7 +1263,7 @@ own parameters.
 - Method: Automated analyser | Report type: numeric
 - Price: ₹100.00 | GST: 0%
 - Parameters (1):
-  - Haemoglobin g/dL; ref 12 - 16; numeric
+  - Haemoglobin g/dL; ref Adult male: 13.0-17.0 g/dL; adult female: 12.0-15.0 g/dL; children 1-5y: 11.0-14.0 g/dL; children 6-12y: 11.5-15.5 g/dL; numeric
 
 #### `HBELEC` — Haemoglobin Electrophoresis
 
@@ -1272,8 +1272,8 @@ own parameters.
 - Method: Electrophoresis | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (2):
-  - Haemoglobin Pattern; text
-  - Interpretation; text
+  - Haemoglobin Pattern; ref Normal: HbA >95%, HbA2 2-3%, HbF <1% (age-specific in infants); text
+  - Interpretation; ref Normal haemoglobin pattern; text
 
 #### `ICT` — Indirect Coombs Test (IAT)
 
@@ -1282,7 +1282,7 @@ own parameters.
 - Method: Agglutination | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Indirect Coombs Test (IAT); text
+  - Indirect Coombs Test (IAT); ref Negative; text
 
 #### `MPS` — Malaria Parasite Smear
 
@@ -1291,11 +1291,11 @@ own parameters.
 - Method: Thick and thin smear | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (5):
-  - Parasite Species; text
-  - Parasite Stage; text
-  - Parasite Density /uL; numeric
-  - RBC Parasitised %; numeric
-  - Interpretation; text
+  - Parasite Species; ref No parasites seen; text
+  - Parasite Stage; ref Not applicable (no parasites seen); text
+  - Parasite Density /uL; ref 0/uL (no parasites seen); numeric
+  - RBC Parasitised %; ref 0%; numeric
+  - Interpretation; ref Negative for malaria parasites; text
 
 #### `MCH` — Mean Corpuscular Haemoglobin (MCH)
 
@@ -1304,7 +1304,7 @@ own parameters.
 - Method: Automated analyser | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Mean Corpuscular Haemoglobin (MCH) pg; numeric
+  - Mean Corpuscular Haemoglobin (MCH) pg; ref Adult: 27-32 pg; numeric
 
 #### `MCHC` — Mean Corpuscular Haemoglobin Concentration (MCHC)
 
@@ -1313,7 +1313,7 @@ own parameters.
 - Method: Automated analyser | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Mean Corpuscular Haemoglobin Concentration (MCHC) g/dL; numeric
+  - Mean Corpuscular Haemoglobin Concentration (MCHC) g/dL; ref Adult: 32-36 g/dL; numeric
 
 #### `MCV` — Mean Corpuscular Volume (MCV)
 
@@ -1322,7 +1322,7 @@ own parameters.
 - Method: Automated analyser | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Mean Corpuscular Volume (MCV) fL; numeric
+  - Mean Corpuscular Volume (MCV) fL; ref Adult: 80-100 fL; numeric
 
 #### `PCV` — Packed Cell Volume (PCV/HCT)
 
@@ -1331,7 +1331,7 @@ own parameters.
 - Method: Automated analyser | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Packed Cell Volume (PCV/HCT) %; numeric
+  - Packed Cell Volume (PCV/HCT) %; ref Adult male: 40-52%; adult female: 36-48%; children 1-5y: 33-42%; children 6-12y: 35-45%; numeric
 
 #### `PSMEAR` — Peripheral Blood Smear
 
@@ -1340,10 +1340,10 @@ own parameters.
 - Method: Microscopy | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (4):
-  - RBC Morphology; text
-  - WBC Morphology; text
-  - Platelet Morphology; text
-  - Impression; text
+  - RBC Morphology; ref Normocytic, normochromic; text
+  - WBC Morphology; ref Normal / no significant abnormality; text
+  - Platelet Morphology; ref Normal / no significant abnormality; text
+  - Impression; ref No significant haematological abnormality; text
 
 #### `PLT` — Platelet Count
 
@@ -1352,7 +1352,7 @@ own parameters.
 - Method: Automated analyser | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Platelet Count cells/cmm; numeric
+  - Platelet Count cells/cmm; ref Adult: 1,50,000-4,50,000 /cmm; numeric
 
 #### `PTINR` — Prothrombin Time / INR (PT/INR)
 
@@ -1361,8 +1361,8 @@ own parameters.
 - Method: Coagulometer | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (2):
-  - Prothrombin Time seconds; numeric
-  - INR ratio; numeric
+  - Prothrombin Time seconds; ref Adult: 11-13.5 seconds; numeric
+  - INR ratio; ref Adult untreated: 0.8-1.2; numeric
 
 #### `RDW` — Red Cell Distribution Width (RDW)
 
@@ -1371,7 +1371,7 @@ own parameters.
 - Method: Automated analyser | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Red Cell Distribution Width (RDW) %; numeric
+  - Red Cell Distribution Width (RDW) %; ref Adult: 11.5-14.5%; numeric
 
 #### `RETIC` — Reticulocyte Count
 
@@ -1380,7 +1380,7 @@ own parameters.
 - Method: Supravital stain | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Reticulocyte Count %; numeric
+  - Reticulocyte Count %; ref Adult: 0.5-2.5%; numeric
 
 #### `SICKLE` — Sickling Test
 
@@ -1389,7 +1389,7 @@ own parameters.
 - Method: Sodium metabisulphite | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Sickling Test; text
+  - Sickling Test; ref Negative; text
 
 #### `TC` — Total Leucocyte Count (TLC)
 
@@ -1398,7 +1398,7 @@ own parameters.
 - Method: Automated analyser | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Total Leucocyte Count (TLC) cells/cmm; numeric
+  - Total Leucocyte Count (TLC) cells/cmm; ref Adult: 4,000-11,000 /cmm; numeric
 
 ### Histopathology
 
@@ -1409,11 +1409,11 @@ own parameters.
 - Method: Histopathology | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (5):
-  - Specimen; text
-  - Gross Examination; text
-  - Microscopic Examination; text
-  - Diagnosis; text
-  - Comment; text
+  - Specimen; ref Not applicable (descriptive report); text
+  - Gross Examination; ref Not applicable (descriptive report); text
+  - Microscopic Examination; ref Not applicable (descriptive report); text
+  - Diagnosis; ref Not applicable (descriptive report); text
+  - Comment; ref Not applicable (descriptive report); text
 
 #### `BIOPSY` — Biopsy - Small
 
@@ -1422,11 +1422,11 @@ own parameters.
 - Method: Histopathology | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (5):
-  - Specimen; text
-  - Gross Examination; text
-  - Microscopic Examination; text
-  - Diagnosis; text
-  - Comment; text
+  - Specimen; ref Not applicable (descriptive report); text
+  - Gross Examination; ref Not applicable (descriptive report); text
+  - Microscopic Examination; ref Not applicable (descriptive report); text
+  - Diagnosis; ref Not applicable (descriptive report); text
+  - Comment; ref Not applicable (descriptive report); text
 
 #### `BMA` — Bone Marrow Aspiration
 
@@ -1435,10 +1435,10 @@ own parameters.
 - Method: Haematology / histopathology | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (4):
-  - Specimen; text
-  - Cellularity; text
-  - Morphology; text
-  - Impression; text
+  - Specimen; ref Not applicable (descriptive report); text
+  - Cellularity; ref Normocellular marrow for age; text
+  - Morphology; ref Normal / descriptive; text
+  - Impression; ref Not applicable (descriptive report); text
 
 #### `IHC` — Immunohistochemistry (IHC)
 
@@ -1447,9 +1447,9 @@ own parameters.
 - Method: IHC | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (3):
-  - Marker(s); text
-  - Result; text
-  - Interpretation; text
+  - Marker(s); ref Not applicable (descriptive report); text
+  - Result; ref Negative / not detected (qualitative); text
+  - Interpretation; ref Not applicable (clinical interpretation); text
 
 #### `SPECIAL` — Special Stain
 
@@ -1458,9 +1458,9 @@ own parameters.
 - Method: Histochemistry | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (3):
-  - Stain; text
-  - Result; text
-  - Interpretation; text
+  - Stain; ref Not applicable (descriptive report); text
+  - Result; ref Negative / not detected (qualitative); text
+  - Interpretation; ref Not applicable (clinical interpretation); text
 
 ### Microbiology
 
@@ -1471,8 +1471,8 @@ own parameters.
 - Method: Ziehl-Neelsen | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (2):
-  - AFB Result; text
-  - Grading; text
+  - AFB Result; ref Negative (no AFB seen); text
+  - Grading; ref Negative / grading reported if positive; text
 
 #### `CULTUREAS` — Antibiotic Sensitivity
 
@@ -1481,8 +1481,8 @@ own parameters.
 - Method: Disc diffusion / MIC | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (2):
-  - Organism Isolated; text
-  - Antibiotic Sensitivity; text
+  - Organism Isolated; ref No growth / no pathogen isolated; text
+  - Antibiotic Sensitivity; ref Reported as susceptible / intermediate / resistant; text
 
 #### `BLOODC` — Blood Culture
 
@@ -1491,9 +1491,9 @@ own parameters.
 - Method: Automated culture | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (3):
-  - Organism Isolated; text
-  - Colony Count; text
-  - Antibiotic Sensitivity; text
+  - Organism Isolated; ref No growth / no pathogen isolated; text
+  - Colony Count; ref No significant growth; text
+  - Antibiotic Sensitivity; ref Reported as susceptible / intermediate / resistant; text
 
 #### `CSFC` — CSF Culture
 
@@ -1502,9 +1502,9 @@ own parameters.
 - Method: Culture and sensitivity | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (3):
-  - Organism Isolated; text
-  - Colony Count; text
-  - Antibiotic Sensitivity; text
+  - Organism Isolated; ref No growth / no pathogen isolated; text
+  - Colony Count; ref No significant growth; text
+  - Antibiotic Sensitivity; ref Reported as susceptible / intermediate / resistant; text
 
 #### `FUNGC` — Fungal Culture
 
@@ -1513,9 +1513,9 @@ own parameters.
 - Method: Culture | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (3):
-  - Organism Isolated; text
-  - Colony Count; text
-  - Antibiotic Sensitivity; text
+  - Organism Isolated; ref No growth / no pathogen isolated; text
+  - Colony Count; ref No significant growth; text
+  - Antibiotic Sensitivity; ref Reported as susceptible / intermediate / resistant; text
 
 #### `GRAM` — Gram Stain
 
@@ -1524,8 +1524,8 @@ own parameters.
 - Method: Microscopy | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (2):
-  - Gram Stain Result; text
-  - Organism Seen; text
+  - Gram Stain Result; ref No organisms seen; text
+  - Organism Seen; ref None seen; text
 
 #### `HPSA` — Helicobacter pylori Stool Antigen
 
@@ -1534,7 +1534,7 @@ own parameters.
 - Method: Immunochromatography | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Helicobacter pylori Stool Antigen; text
+  - Helicobacter pylori Stool Antigen; ref Negative; text
 
 #### `KOH` — KOH Mount
 
@@ -1543,8 +1543,8 @@ own parameters.
 - Method: Microscopy | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (2):
-  - KOH Result; text
-  - Fungal Elements; text
+  - KOH Result; ref No fungal elements seen; text
+  - Fungal Elements; ref Not seen; text
 
 #### `MRSA` — MRSA Screen
 
@@ -1553,8 +1553,8 @@ own parameters.
 - Method: Culture | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (2):
-  - MRSA Screen Result; text
-  - Organism Isolated; text
+  - MRSA Screen Result; ref Not detected; text
+  - Organism Isolated; ref No growth / no pathogen isolated; text
 
 #### `PUSC` — Pus Culture
 
@@ -1563,9 +1563,9 @@ own parameters.
 - Method: Culture and sensitivity | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (3):
-  - Organism Isolated; text
-  - Colony Count; text
-  - Antibiotic Sensitivity; text
+  - Organism Isolated; ref No growth / no pathogen isolated; text
+  - Colony Count; ref No significant growth; text
+  - Antibiotic Sensitivity; ref Reported as susceptible / intermediate / resistant; text
 
 #### `SPUTUMC` — Sputum Culture
 
@@ -1574,9 +1574,9 @@ own parameters.
 - Method: Culture and sensitivity | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (3):
-  - Organism Isolated; text
-  - Colony Count; text
-  - Antibiotic Sensitivity; text
+  - Organism Isolated; ref No growth / no pathogen isolated; text
+  - Colony Count; ref No significant growth; text
+  - Antibiotic Sensitivity; ref Reported as susceptible / intermediate / resistant; text
 
 #### `STOOLC` — Stool Culture
 
@@ -1585,9 +1585,9 @@ own parameters.
 - Method: Culture and sensitivity | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (3):
-  - Organism Isolated; text
-  - Colony Count; text
-  - Antibiotic Sensitivity; text
+  - Organism Isolated; ref No growth / no pathogen isolated; text
+  - Colony Count; ref No significant growth; text
+  - Antibiotic Sensitivity; ref Reported as susceptible / intermediate / resistant; text
 
 #### `THROATC` — Throat Swab Culture
 
@@ -1596,9 +1596,9 @@ own parameters.
 - Method: Culture and sensitivity | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (3):
-  - Organism Isolated; text
-  - Colony Count; text
-  - Antibiotic Sensitivity; text
+  - Organism Isolated; ref No growth / no pathogen isolated; text
+  - Colony Count; ref No significant growth; text
+  - Antibiotic Sensitivity; ref Reported as susceptible / intermediate / resistant; text
 
 #### `URINEC` — Urine Culture
 
@@ -1607,9 +1607,9 @@ own parameters.
 - Method: Culture and sensitivity | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (3):
-  - Organism Isolated; text
-  - Colony Count; text
-  - Antibiotic Sensitivity; text
+  - Organism Isolated; ref No growth / no pathogen isolated; text
+  - Colony Count; ref No significant growth; text
+  - Antibiotic Sensitivity; ref Reported as susceptible / intermediate / resistant; text
 
 #### `VRE` — VRE Screen
 
@@ -1618,8 +1618,8 @@ own parameters.
 - Method: Culture | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (2):
-  - VRE Screen Result; text
-  - Organism Isolated; text
+  - VRE Screen Result; ref Not detected; text
+  - Organism Isolated; ref No growth / no pathogen isolated; text
 
 #### `WOUNDC` — Wound Swab Culture
 
@@ -1628,9 +1628,9 @@ own parameters.
 - Method: Culture and sensitivity | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (3):
-  - Organism Isolated; text
-  - Colony Count; text
-  - Antibiotic Sensitivity; text
+  - Organism Isolated; ref No growth / no pathogen isolated; text
+  - Colony Count; ref No significant growth; text
+  - Antibiotic Sensitivity; ref Reported as susceptible / intermediate / resistant; text
 
 ### Molecular Diagnostics
 
@@ -1641,7 +1641,7 @@ own parameters.
 - Method: Real-time PCR | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - CMV DNA copies/mL; numeric
+  - CMV DNA copies/mL; ref Not detected; numeric
 
 #### `EBVDNA` — EBV DNA
 
@@ -1650,7 +1650,7 @@ own parameters.
 - Method: Real-time PCR | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - EBV DNA copies/mL; numeric
+  - EBV DNA copies/mL; ref Not detected; numeric
 
 #### `HBVDNA` — Hepatitis B Viral Load (HBV DNA)
 
@@ -1659,7 +1659,7 @@ own parameters.
 - Method: Real-time PCR | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Hepatitis B Viral Load (HBV DNA) IU/mL; numeric
+  - Hepatitis B Viral Load (HBV DNA) IU/mL; ref Not detected / below limit of quantification; numeric
 
 #### `HCVRNA` — Hepatitis C Viral Load (HCV RNA)
 
@@ -1668,7 +1668,7 @@ own parameters.
 - Method: Real-time PCR | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Hepatitis C Viral Load (HCV RNA) IU/mL; numeric
+  - Hepatitis C Viral Load (HCV RNA) IU/mL; ref Not detected / below limit of quantification; numeric
 
 #### `HPVDNA` — HPV DNA
 
@@ -1677,7 +1677,7 @@ own parameters.
 - Method: PCR | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - HPV DNA; text
+  - HPV DNA; ref Not detected; text
 
 #### `TBPCR` — Tuberculosis PCR
 
@@ -1686,7 +1686,7 @@ own parameters.
 - Method: PCR | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Tuberculosis PCR; text
+  - Tuberculosis PCR; ref Not detected; text
 
 ### Serology
 
@@ -1697,7 +1697,7 @@ own parameters.
 - Method: ELISA | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Anti-dsDNA IU/mL; numeric
+  - Anti-dsDNA IU/mL; ref Adult: <30 IU/mL (negative); numeric
 
 #### `ASO` — Anti-Streptolysin O (ASO)
 
@@ -1706,7 +1706,7 @@ own parameters.
 - Method: Immunoturbidimetry | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Anti-Streptolysin O (ASO) IU/mL; numeric
+  - Anti-Streptolysin O (ASO) IU/mL; ref Adult: <200 IU/mL; numeric
 
 #### `ANA` — Antinuclear Antibody (ANA)
 
@@ -1715,8 +1715,8 @@ own parameters.
 - Method: Immunofluorescence / ELISA | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (2):
-  - ANA Pattern; text
-  - ANA Titre; text
+  - ANA Pattern; ref Negative / no significant pattern; text
+  - ANA Titre; ref Negative (<1:40); report titre if positive; text
 
 #### `BRUCELLA` — Brucella Agglutination
 
@@ -1725,7 +1725,7 @@ own parameters.
 - Method: Agglutination | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Brucella Agglutination; text
+  - Brucella Agglutination; ref Negative (<1:80); text
 
 #### `CRP` — C-Reactive Protein (CRP)
 
@@ -1734,7 +1734,7 @@ own parameters.
 - Method: Immunoturbidimetry | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - C-Reactive Protein (CRP) mg/L; numeric
+  - C-Reactive Protein (CRP) mg/L; ref Adult: <5 mg/L; numeric
 
 #### `C3` — Complement C3
 
@@ -1743,7 +1743,7 @@ own parameters.
 - Method: Immunoturbidimetry | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Complement C3 mg/dL; numeric
+  - Complement C3 mg/dL; ref Adult: 90-180 mg/dL; numeric
 
 #### `C4` — Complement C4
 
@@ -1752,7 +1752,7 @@ own parameters.
 - Method: Immunoturbidimetry | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Complement C4 mg/dL; numeric
+  - Complement C4 mg/dL; ref Adult: 10-40 mg/dL; numeric
 
 #### `DENGUE` — Dengue NS1 / IgM / IgG
 
@@ -1761,9 +1761,9 @@ own parameters.
 - Method: ELISA / rapid | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (3):
-  - Dengue NS1 Antigen; text
-  - Dengue IgM Antibody; text
-  - Dengue IgG Antibody; text
+  - Dengue NS1 Antigen; ref Negative; text
+  - Dengue IgM Antibody; ref Negative; text
+  - Dengue IgG Antibody; ref Negative; text
 
 #### `HPYL` — Helicobacter pylori IgG
 
@@ -1772,7 +1772,7 @@ own parameters.
 - Method: ELISA | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Helicobacter pylori IgG; text
+  - Helicobacter pylori IgG; ref Negative; text
 
 #### `HBSAG` — Hepatitis B Surface Antigen (HBsAg)
 
@@ -1781,7 +1781,7 @@ own parameters.
 - Method: ELISA / rapid | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Hepatitis B Surface Antigen (HBsAg); text
+  - Hepatitis B Surface Antigen (HBsAg); ref Non-reactive; text
 
 #### `HCV` — Hepatitis C Antibody
 
@@ -1790,7 +1790,7 @@ own parameters.
 - Method: ELISA / rapid | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Hepatitis C Antibody; text
+  - Hepatitis C Antibody; ref Non-reactive; text
 
 #### `HIV` — HIV 1 and 2 Antibodies
 
@@ -1799,7 +1799,7 @@ own parameters.
 - Method: ELISA / rapid | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - HIV 1 and 2 Antibodies; text
+  - HIV 1 and 2 Antibodies; ref Non-reactive; text
 
 #### `LEPTO` — Leptospira IgM
 
@@ -1808,7 +1808,7 @@ own parameters.
 - Method: ELISA / rapid | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Leptospira IgM; text
+  - Leptospira IgM; ref Negative; text
 
 #### `MPAG` — Malaria Antigen (Pf/Pan)
 
@@ -1817,9 +1817,9 @@ own parameters.
 - Method: Rapid immunochromatography | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (3):
-  - Pf Antigen; text
-  - Pan Antigen; text
-  - Interpretation; text
+  - Pf Antigen; ref Negative; text
+  - Pan Antigen; ref Negative; text
+  - Interpretation; ref Negative; text
 
 #### `RF` — Rheumatoid Factor (RF)
 
@@ -1828,7 +1828,7 @@ own parameters.
 - Method: Immunoturbidimetry | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Rheumatoid Factor (RF) IU/mL; numeric
+  - Rheumatoid Factor (RF) IU/mL; ref Adult: <20 IU/mL; numeric
 
 #### `IGRA` — TB Interferon Gamma Release Assay
 
@@ -1837,7 +1837,7 @@ own parameters.
 - Method: IGRA | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - TB Interferon Gamma Release Assay; text
+  - TB Interferon Gamma Release Assay; ref Negative; text
 
 #### `TPHA` — TPHA
 
@@ -1846,8 +1846,8 @@ own parameters.
 - Method: Agglutination | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (2):
-  - TPHA Result; text
-  - TPHA Titre; text
+  - TPHA Result; ref Non-reactive; text
+  - TPHA Titre; ref Non-reactive; text
 
 #### `TYPHI` — Typhoid IgM
 
@@ -1856,7 +1856,7 @@ own parameters.
 - Method: ELISA / rapid | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
-  - Typhoid IgM; text
+  - Typhoid IgM; ref Negative; text
 
 #### `VDRL` — VDRL
 
@@ -1865,8 +1865,8 @@ own parameters.
 - Method: Flocculation | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (2):
-  - VDRL Result; text
-  - VDRL Titre; text
+  - VDRL Result; ref Non-reactive; text
+  - VDRL Titre; ref Non-reactive; text
 
 #### `WIDAL` — Widal Test
 
@@ -1875,14 +1875,14 @@ own parameters.
 - Method: Agglutination | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (8):
-  - S. typhi O; text
-  - S. typhi H; text
-  - S. paratyphi AH; text
-  - S. paratyphi BH; text
-  - S. paratyphi AO; text
-  - S. paratyphi BO; text
-  - S. typhi Vi; text
-  - Interpretation; text
+  - S. typhi O; ref Negative (<1:80); text
+  - S. typhi H; ref Negative (<1:80); text
+  - S. paratyphi AH; ref Negative (<1:80); text
+  - S. paratyphi BH; ref Negative (<1:80); text
+  - S. paratyphi AO; ref Negative (<1:80); text
+  - S. paratyphi BO; ref Negative (<1:80); text
+  - S. typhi Vi; ref Negative (<1:80); text
+  - Interpretation; ref Negative / no significant agglutination; text
 
 ## X-ray / Radiography
 

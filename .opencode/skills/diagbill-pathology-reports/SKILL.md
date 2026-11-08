@@ -47,8 +47,8 @@ every active tenant. Seeding is additive and idempotent:
 - matches by stable seed id, code and case-insensitive name
 - preserves custom tests
 - does not resurrect renamed or deleted starter tests
-- new entries ship with 0% GST, price 0 and blank reference intervals
-- labs must set prices and validate reference intervals before billing or clinical use
+- new entries ship with 0% GST, price 0 and filled starter reference intervals
+- labs must set prices and validate references (including sex/age variants) before billing or clinical use
 - this is a broad routine/specialty library, not a claim that every possible esoteric test exists
 
 `src/db/starterParameters.ts` seeds 371 pathology parameter templates after the test catalogue:
@@ -65,7 +65,9 @@ every active tenant. Seeding is additive and idempotent:
 - complex reports split optional subfields for malaria, VDRL/TPHA titre, peripheral smear,
   histopathology, cytology, IHC/special stains and MRSA/VRE screens
 - a previously seeded generic parameter is removed only when no report value references it
-- new panel reference intervals are blank and must be validated locally
+- `starterReferences.ts` fills all 371 references, including sex/age variant text; seeding is versioned
+  per tenant and starter-owned parameter updates do not touch custom parameters
+- reference text and numeric abnormal limits are independent; validate sex/age-specific flags locally
 
 `src/db/starterPackages.ts` seeds 27 combined health-check packages from pathology and X-ray tests.
 Packages are price/name wrappers; each item keeps its own parameters/report workflow. Seeding matches

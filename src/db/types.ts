@@ -185,6 +185,7 @@ export interface ExpenseRow extends SyncCols {
   mode: "cash" | "upi" | "card" | "bank";
   bill_no: string;
   note: string;
+  modules: string;
   created_by: string;
 }
 
