@@ -29,6 +29,7 @@ interface ParameterForReference {
   name: string;
   unit: string;
   report_type: string;
+  ref_range: string;
 }
 
 export const STARTER_REFERENCE_VERSION = 3;
@@ -472,7 +473,8 @@ export async function ensureStarterReferences(
       "SELECT value FROM meta WHERE key = ?",
       [versionKey]
     );
-    if (version[0]?.value === String(STARTER_REFERENCE_VERSION)) continue;
+    const isCurrentVersion =
+      version[0]?.value === String(STARTER_REFERENCE_VERSION);
 
     const tests = await store.all<TestForReference>(
       `SELECT id, code, name, category, department
@@ -483,7 +485,7 @@ export async function ensureStarterReferences(
     const testById = new Map(tests.map((test) => [test.id, test]));
 
     const parameters = await store.all<ParameterForReference>(
-      `SELECT id, test_id, name, unit, report_type
+      `SELECT id, test_id, name, unit, report_type, ref_range
        FROM test_parameters
        WHERE tenant_id = ? AND deleted = 0
          AND (id LIKE 'tp-%' OR id LIKE 'param-seed-%')`,
@@ -492,6 +494,9 @@ export async function ensureStarterReferences(
 
     let failed = false;
     for (const parameter of parameters) {
+      // Once the version is current, only repair genuinely blank starter
+      // references. Do not overwrite a laboratory's edited reference on boot.
+      if (isCurrentVersion && parameter.ref_range.trim()) continue;
       const test = testById.get(parameter.test_id);
       if (!test) continue;
       const reference = referenceFor(test, parameter);
@@ -511,7 +516,7 @@ export async function ensureStarterReferences(
       }
     }
 
-    if (!failed) {
+    if (!failed && !isCurrentVersion) {
       await store.run(
         `INSERT INTO meta (key, value) VALUES (?, ?)
          ON CONFLICT(key) DO UPDATE SET value = excluded.value`,
@@ -519,7 +524,7 @@ export async function ensureStarterReferences(
       );
     }
     console.info(
-      `Starter references: updated ${parameters.length} parameter(s) for tenant ${tenant.id}`
+      `Starter references: checked ${parameters.length} parameter(s) for tenant ${tenant.id}`
     );
   }
 }
