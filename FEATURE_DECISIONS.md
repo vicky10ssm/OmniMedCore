@@ -599,6 +599,16 @@ The second deployment exists. `npm run build` makes the terminal (editing) app; 
 - The expenses list, search, module filter and CSV export include the attribution.
 - Operators can add and view expenses as before; admin/operator visibility rules are unchanged.
 
+## Combined vs per-test invoice printing - built
+
+- Multi-test invoices in Reports ready to print offer **Combined** and **Each test**.
+- Combined opens one report containing every completed pathology test on the invoice.
+- Each test opens a chooser listing completed pathology tests; each Print action opens the same
+  single-test report preview with only that order.
+- The ready list now shows all matching bills in a scrollable list rather than the first eight.
+- Completed pathology rows also have a direct Print action, independent of invoice-wide readiness.
+- No schema change.
+
 ## Single-test report printing and multi-page pagination - built
 
 - Completed pathology rows in Reports have a **Print** action. It passes the report-order id so the
