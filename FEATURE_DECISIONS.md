@@ -599,6 +599,15 @@ The second deployment exists. `npm run build` makes the terminal (editing) app; 
 - The expenses list, search, module filter and CSV export include the attribution.
 - Operators can add and view expenses as before; admin/operator visibility rules are unchanged.
 
+## Custom dashboard date range - built
+
+- The Dashboard range selector includes **Custom range** alongside Today/7/30/90 days.
+- The custom controls use native date inputs with start/end and an Apply button.
+- The range label shows both dates, e.g. `01 Nov 2026 – 05 Nov 2026`.
+- Start must be on or before end; neither date can be later than today.
+- Custom range works with all six tabs, CSV filename and print.
+- No schema change is required.
+
 ## Local CSV pending badge - fixed
 
 - The sidebar pending badge must use `local_export_queue.exported_at IS NULL`, not the legacy

@@ -50,7 +50,7 @@ Dashboard, Settings, Compliance or the Expenses profitability card.
 - Hospital admissions, ward/bed, discharge summary and generic IPD service charges/payments/printing
 - Pharmacy medicine, batch/expiry stock, receipt, dispensing, GST receipt and cancellation
 - Expenses with multi-module attribution (Pathology, X-ray, Pharmacy, Hospital, General/shared), audit evidence and a read-only monitoring build
-- Administrator dashboard with live local Overview, Billing, Diagnostics, Expenses, Pharmacy and Hospital views, 1/7/30/90-day ranges, dependency-free charts, CSV export and print
+- Administrator dashboard with live local Overview, Billing, Diagnostics, Expenses, Pharmacy and Hospital views, preset 1/7/30/90-day and custom date ranges, dependency-free charts, CSV export and print
 - SQLCipher-encrypted desktop database with the key held in Windows Credential Manager
 - Daily encrypted snapshots with 7/4/12 retention, optional USB/OneDrive copy, manual backup and validated restore
 - Signed Diagnostics/Pharmacy/Hospital/Complete/Custom licences with tenant/hardware fingerprint binding,

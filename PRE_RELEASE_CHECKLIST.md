@@ -182,6 +182,9 @@ Record accession/sample IDs for both blocked and allowed disposal cases.
 
 - [ ] Admin sees Overview, Billing, Diagnostics, Expenses, Pharmacy and Hospital tabs
 - [ ] Today, Last 7 days, Last 30 days and Last 90 days all load without error
+- [ ] Custom range accepts start/end dates and applies after Apply
+- [ ] Custom range rejects start dates after end dates
+- [ ] Custom range label, CSV filename and print reflect the selected dates
 - [ ] Empty ranges show "No activity" / empty-state text instead of broken charts
 - [ ] Overview collected, billed, dues, expenses and cash-profit values agree with source screens
 - [ ] Billing payment mix, dues ageing and top-test revenue agree with invoices/payments

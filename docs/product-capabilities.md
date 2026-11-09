@@ -33,7 +33,7 @@ Status meanings: **Ready**, **Pilot**, **Partial**, **Not available**, **Externa
 | Doctor/referral commissions | Not available | No Commissions tab/module, no commission rules in Doctors, and no new accrual/payouts; legacy rows are retained but not displayed |
 | Expenses | Ready | Categories, payment mode, bill number, notes, monthly categories and multi-module attribution (Pathology, X-ray, Pharmacy, Hospital, General/shared); shared expenses are tagged, not split |
 | Financial dashboard | Ready | Administrator dashboard with live local collection, billing, dues, expenses and cash-profit views |
-| Operations dashboard | Ready | Six in-app tabs (Overview, Billing, Diagnostics, Expenses, Pharmacy, Hospital), 1/7/30/90-day ranges, dependency-free charts, daily CSV export and print; no cloud dependency |
+| Operations dashboard | Ready | Six in-app tabs (Overview, Billing, Diagnostics, Expenses, Pharmacy, Hospital), preset 1/7/30/90-day ranges plus custom start/end dates, dependency-free charts, daily CSV export and print; no cloud dependency |
 | CSV export | Ready | Formula-injection guarded invoice export; confirm exact export list in demo |
 | Accounting/Tally integration | Not available | No Tally import/export or ledger posting |
 | Payroll | Not available | Salary can only be logged manually as an expense |
