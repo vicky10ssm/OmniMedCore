@@ -160,7 +160,10 @@ export default function Reports() {
   const [radiologists, setRadiologists] = useState<RadiologistRow[]>([]);
   const [selectedRadiologistId, setSelectedRadiologistId] = useState("");
 
-  const [printingInvoice, setPrintingInvoice] = useState<string | null>(null);
+  const [printingInvoice, setPrintingInvoice] = useState<{
+    invoiceId: string;
+    orderId?: string;
+  } | null>(null);
   const [printingXray, setPrintingXray] = useState<WorkRow | null>(null);
   const [historyFor, setHistoryFor] = useState<WorkRow | null>(null);
   const [historyRows, setHistoryRows] = useState<HistoryRow[]>([]);
@@ -895,6 +898,21 @@ export default function Reports() {
                               Print X-ray
                             </Btn>
                           )}
+                          {!monitor &&
+                            r.status === "done" &&
+                            r.test_category === "Pathology" && (
+                              <Btn
+                                variant="ghost"
+                                onClick={() =>
+                                  setPrintingInvoice({
+                                    invoiceId: r.invoice_id,
+                                    orderId: r.id,
+                                  })
+                                }
+                              >
+                                Print
+                              </Btn>
+                            )}
                           {!monitor && r.status !== "rejected" && (
                             <Btn
                               variant={r.status === "pending" ? "primary" : "outline"}
@@ -962,7 +980,9 @@ export default function Reports() {
                     <Btn
                       variant="ghost"
                       className="shrink-0"
-                      onClick={() => setPrintingInvoice(p.invoiceId)}
+                      onClick={() =>
+                        setPrintingInvoice({ invoiceId: p.invoiceId })
+                      }
                     >
                       <Icon name="printer" className="h-4 w-4" /> Print
                     </Btn>
@@ -1362,7 +1382,8 @@ export default function Reports() {
 
       {printingInvoice && (
         <ReportPrint
-          invoiceId={printingInvoice}
+          invoiceId={printingInvoice.invoiceId}
+          reportOrderId={printingInvoice.orderId}
           onClose={() => setPrintingInvoice(null)}
         />
       )}
@@ -1381,9 +1402,11 @@ export default function Reports() {
 
 function ReportPrint({
   invoiceId,
+  reportOrderId,
   onClose,
 }: {
   invoiceId: string;
+  reportOrderId?: string;
   onClose: () => void;
 }) {
   const [orders, setOrders] = useState<WorkRow[]>([]);
@@ -1424,7 +1447,12 @@ function ReportPrint({
          ORDER BY ro.created_at`,
         [invoiceId, ...tenantParams, ...tenantParams, ...tenantParams]
       );
-      const printableOrders = list.filter((order) => !isRadiologyReport(order));
+      const selectedOrders = reportOrderId
+        ? list.filter((order) => order.id === reportOrderId)
+        : list;
+      const printableOrders = selectedOrders.filter(
+        (order) => !isRadiologyReport(order)
+      );
       setOrders(printableOrders);
       const map: Record<string, ReportParameterRow[]> = {};
       for (const o of printableOrders) {
@@ -1485,7 +1513,7 @@ function ReportPrint({
   const showSignature = shouldPrintReportSignature(lab);
 
   return (
-    <div className="fixed inset-0 z-40 overflow-y-auto bg-slate-900/50 p-0 sm:p-6">
+    <div className="print-modal fixed inset-0 z-40 overflow-y-auto bg-slate-900/50 p-0 sm:p-6">
       <PrintPageStyle config={printConfig} />
       <div className="mx-auto w-full max-w-3xl">
         <div className="no-print flex items-center justify-between gap-2 rounded-t-xl bg-white px-4 py-2.5">
@@ -1750,7 +1778,7 @@ function XrayReportPrint({
   const showSignature = shouldPrintReportSignature(lab);
 
   return (
-    <div className="fixed inset-0 z-40 overflow-y-auto bg-slate-900/50 p-0 sm:p-6">
+    <div className="print-modal fixed inset-0 z-40 overflow-y-auto bg-slate-900/50 p-0 sm:p-6">
       <PrintPageStyle config={printConfig} />
       <div className="mx-auto w-full max-w-3xl">
         <div className="no-print flex items-center justify-between gap-2 rounded-t-xl bg-white px-4 py-2.5">

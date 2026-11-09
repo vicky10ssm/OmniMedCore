@@ -86,8 +86,27 @@ body {
     margin: 0;
   }
 
+  html,
+  body,
+  #root {
+    height: auto !important;
+    overflow: visible !important;
+  }
+
   body {
     background: #fff;
+  }
+
+  main {
+    height: auto !important;
+    overflow: visible !important;
+    padding: 0 !important;
+  }
+
+  main > div {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
   }
 
   body * {
@@ -99,15 +118,46 @@ body {
     visibility: visible;
   }
 
+  /* Keep printable content in normal flow so long reports can paginate.
+     The old absolute positioning clipped everything after page one. */
   .print-area {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    margin: 0;
-    padding: 0;
+    position: static !important;
+    left: auto !important;
+    top: auto !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
     border: 0;
     box-shadow: none;
+  }
+
+  .print-modal {
+    position: static !important;
+    overflow: visible !important;
+    background: transparent !important;
+    padding: 0 !important;
+  }
+
+  .print-modal > div {
+    width: auto !important;
+    max-width: none !important;
+    margin: 0 !important;
+  }
+
+  thead {
+    display: table-header-group;
+  }
+
+  tfoot {
+    display: table-footer-group;
+  }
+
+  .print-area h1,
+  .print-area h2,
+  .print-area h3,
+  .print-area h4 {
+    break-after: avoid;
   }
 
   .no-print {

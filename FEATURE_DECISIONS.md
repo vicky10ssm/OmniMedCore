@@ -599,6 +599,18 @@ The second deployment exists. `npm run build` makes the terminal (editing) app; 
 - The expenses list, search, module filter and CSV export include the attribution.
 - Operators can add and view expenses as before; admin/operator visibility rules are unchanged.
 
+## Single-test report printing and multi-page pagination - built
+
+- Completed pathology rows in Reports have a **Print** action. It passes the report-order id so the
+  preview/print contains only that test, even if other tests on the invoice are pending.
+- The ready-to-print invoice list remains the combined report and appears only when every test on the
+  bill is done.
+- Print CSS keeps `.print-area` in normal document flow, neutralises fixed modal/layout containers,
+  repeats table headers and keeps rows from splitting.
+- Long reports now paginate across A4 pages rather than clipping after page one.
+- Pre-printed letterhead margins still apply to every page.
+- No schema change.
+
 ## Custom dashboard date range - built
 
 - The Dashboard range selector includes **Custom range** alongside Today/7/30/90 days.

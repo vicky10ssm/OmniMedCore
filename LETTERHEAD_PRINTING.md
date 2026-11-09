@@ -59,8 +59,8 @@ printer driver scales the page, the margins will drift.
 
 ## Limits
 
-- Only the first page of a multi-page report can sit on the pre-printed design; continuation pages use
-  the same margins on plain paper.
+- Multi-page reports are supported and paginate normally. Only the first page sits on the pre-printed
+  design; continuation pages use the same margins on plain paper, so use blank/plain continuation sheets.
 - The application does not detect the physical letterhead or calibrate the printer automatically.
 - A scanned letterhead image is not embedded into the PDF/report; the mode reserves space for real
   stationery.
