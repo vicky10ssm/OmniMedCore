@@ -1,5 +1,6 @@
-// Settings: lab profile (letterhead + GSTIN), pathologist signature, invoice
-// numbering, user accounts and device identity.
+// Settings: lab profile (letterhead + GSTIN), invoice numbering, user accounts,
+// branding, licensing and device identity. Radiologists and Pathologists have
+// their own administrator sections under Diagnostics.
 //
 // Settings is administrator-only: the terminal navigation hides it from
 // operators and the route guard blocks direct URLs. Everything
@@ -34,7 +35,6 @@ import {
 } from "../db/tauriStorage";
 import SyncSettings from "./SyncSettings";
 import BackupSettings from "./BackupSettings";
-import RadiologistsSettings from "./RadiologistsSettings";
 import type { UserRow } from "../db/types";
 import {
   generateRecoveryCodes,
@@ -61,8 +61,6 @@ interface ProfileForm {
   lab_address: string;
   lab_phone: string;
   lab_gstin: string;
-  pathologist_name: string;
-  pathologist_qualification: string;
   xray_disclaimer: string;
   invoice_prefix: string;
   device_code: string;
@@ -87,8 +85,6 @@ const PROFILE_KEYS: (keyof ProfileForm)[] = [
   "lab_address",
   "lab_phone",
   "lab_gstin",
-  "pathologist_name",
-  "pathologist_qualification",
   "xray_disclaimer",
   "invoice_prefix",
   "device_code",
@@ -113,8 +109,6 @@ const EMPTY: ProfileForm = {
   lab_address: "",
   lab_phone: "",
   lab_gstin: "",
-  pathologist_name: "",
-  pathologist_qualification: "",
   xray_disclaimer:
     "This report is based on the information available at the time of examination. It is not a substitute for clinical correlation or further investigation.",
   invoice_prefix: "INV-",
@@ -141,7 +135,7 @@ export default function Settings() {
   const isAdmin = user?.role === "admin";
 
   const [tab, setTab] = useState<
-    "lab" | "radiologists" | "modules" | "license" | "users" | "device"
+    "lab" | "modules" | "license" | "users" | "device"
   >("lab");
   const [desktopInfo, setDesktopInfo] = useState<DatabaseInfo | null>(null);
   const [encryptionInfo, setEncryptionInfo] = useState<DatabaseEncryptionInfo | null>(null);
@@ -542,7 +536,6 @@ export default function Settings() {
 
   const tabs: [typeof tab, string][] = [
     ["lab", "Centre profile"],
-    ["radiologists", "Radiologists"],
     ["modules", "Modules & logo"],
     ["license", "Licence"],
     ["users", "Users"],
@@ -799,49 +792,11 @@ export default function Settings() {
               </div>
 
               <div className="border-t border-slate-200 pt-4">
-                <h2 className="mb-3 text-sm font-semibold">
-                  Pathologist signature
-                </h2>
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <Labeled label="Name">
-                    <TextInput
-                      value={form.pathologist_name}
-                      disabled={!isAdmin}
-                      onChange={(e) =>
-                        setForm({ ...form, pathologist_name: e.target.value })
-                      }
-                      placeholder="Dr. S. Rao"
-                    />
-                  </Labeled>
-                  <Labeled label="Qualification">
-                    <TextInput
-                      value={form.pathologist_qualification}
-                      disabled={!isAdmin}
-                      onChange={(e) =>
-                        setForm({
-                          ...form,
-                          pathologist_qualification: e.target.value,
-                        })
-                      }
-                      placeholder="MD (Pathology)"
-                    />
-                  </Labeled>
-                </div>
-              </div>
-
-              <div className="border-t border-slate-200 pt-4">
                 <h2 className="mb-3 text-sm font-semibold">X-ray report</h2>
                 <div className="mb-3 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-600">
-                  Radiologist names and scanned signature images are managed in
-                  the{" "}
-                  <button
-                    type="button"
-                    className="font-medium text-teal-700 hover:underline"
-                    onClick={() => setTab("radiologists")}
-                  >
-                    Radiologists
-                  </button>{" "}
-                  tab. Operators select one when issuing an X-ray report.
+                  Radiologist names and scanned signature images are managed in the
+                  Radiologists section under Diagnostics. Operators select one when
+                  issuing an X-ray report.
                 </div>
                 <Labeled
                   label="X-ray report disclaimer"
@@ -1036,10 +991,6 @@ export default function Settings() {
             )}
           </Card>
         </div>
-      )}
-
-      {tab === "radiologists" && (
-        <RadiologistsSettings canEdit={isAdmin} />
       )}
 
       {tab === "modules" && (

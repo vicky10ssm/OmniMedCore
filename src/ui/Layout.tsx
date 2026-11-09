@@ -54,6 +54,20 @@ const NAV: NavItem[] = [
   { to: "/reports", label: "Reports", icon: "flask", moduleId: "reports" },
   { to: "/tests", label: "Tests & Packages", icon: "chart", moduleId: "tests" },
   { to: "/doctors", label: "Doctors", icon: "stethoscope", moduleId: "doctors" },
+  {
+    to: "/radiologists",
+    label: "Radiologists",
+    icon: "users",
+    moduleId: "reports",
+    adminOnly: true,
+  },
+  {
+    to: "/pathologists",
+    label: "Pathologists",
+    icon: "flask",
+    moduleId: "reports",
+    adminOnly: true,
+  },
   { to: "/pharmacy", label: "Pharmacy", icon: "flask", section: "Pharmacy", moduleId: "pharmacy" },
   { to: "/expenses", label: "Expenses", icon: "wallet", section: "Money", moduleId: "expenses" },
   {

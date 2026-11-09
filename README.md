@@ -28,8 +28,9 @@ Effective modules are:
 licensed modules ∩ clinic-enabled modules
 ```
 
-Dashboard and Settings are administrator-only. Terminal operators work from Expenses and do not see the
-Dashboard, Settings, Compliance or the Expenses profitability card.
+Dashboard, Settings, Radiologists, Pathologists and Compliance are administrator-only. Terminal operators
+work from Expenses and do not see the Dashboard, Settings, professional catalogue, Compliance or the
+Expenses profitability card.
 
 ## Current capabilities
 
@@ -53,6 +54,7 @@ Dashboard, Settings, Compliance or the Expenses profitability card.
 - Pharmacy medicine, batch/expiry stock, receipt, dispensing, GST receipt and cancellation
 - Expenses with multi-module attribution (Pathology, X-ray, Pharmacy, Hospital, General/shared), audit evidence and a read-only monitoring build
 - Administrator dashboard with live local Overview, Billing, Diagnostics, Expenses, Pharmacy and Hospital views, preset 1/7/30/90-day and custom date ranges, dependency-free charts, CSV export and print
+- Administrator-only Radiologists and Pathologists sections under Diagnostics for report signatures and reporting pathologist identity
 - SQLCipher-encrypted desktop database with the key held in Windows Credential Manager
 - Daily encrypted snapshots with 7/4/12 retention, optional USB/OneDrive copy, manual backup and validated restore
 - Signed Diagnostics/Pharmacy/Hospital/Complete/Custom licences with tenant/hardware fingerprint binding,

@@ -75,7 +75,9 @@ Do not invent a second list of module names in another file or duplicate JSON pa
 
 ## Radiologist signatures
 
-- Administrators manage multiple radiologist records under Settings -> Radiologists.
+- Administrators manage multiple radiologist records under **Diagnostics -> Radiologists**.
+- Administrators manage the reporting pathologist name and qualification under **Diagnostics ->
+  Pathologists**. These sections are admin-only and moved out of Settings.
 - Each `radiologists` row is tenant-scoped and stores name, qualification, signature data URL, active
   state and sort order. The image limit is the same PNG/JPEG/WebP 500 KB rule as the logo.
 - Operators select an active radiologist with a signature when entering/releasing an X-ray report.

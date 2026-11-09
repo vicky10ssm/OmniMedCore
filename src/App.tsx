@@ -22,6 +22,8 @@ import Dashboard from "./pages/Dashboard";
 import Patients from "./pages/Patients";
 import Tests from "./pages/Tests";
 import Doctors from "./pages/Doctors";
+import Radiologists from "./pages/Radiologists";
+import Pathologists from "./pages/Pathologists";
 import Billing from "./pages/Billing";
 import Invoices from "./pages/Invoices";
 import InvoiceView from "./pages/InvoiceView";
@@ -244,6 +246,28 @@ const terminalRoutes = [
     element={
       <ModuleGate moduleId="doctors">
         <Doctors />
+      </ModuleGate>
+    }
+  />,
+  <Route
+    key="radiologists"
+    path="/radiologists"
+    element={
+      <ModuleGate moduleId="reports">
+        <AdminOnly>
+          <Radiologists />
+        </AdminOnly>
+      </ModuleGate>
+    }
+  />,
+  <Route
+    key="pathologists"
+    path="/pathologists"
+    element={
+      <ModuleGate moduleId="reports">
+        <AdminOnly>
+          <Pathologists />
+        </AdminOnly>
       </ModuleGate>
     }
   />,

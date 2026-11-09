@@ -1,7 +1,7 @@
 # OmniMed Core architecture and local export design
 
 Last updated: 9 November 2026  
-Current product version: `0.18.1`  
+Current product version: `0.19.0`  
 Current schema: `24`
 
 ## 1. Status and scope
@@ -100,8 +100,12 @@ OmniMed Core is a multi-vertical product; a tenant enables only the modules it o
   see [DASHBOARD.md](../DASHBOARD.md).
 - Diagnostics: tests/packages, sample chain, result entry, amendments, pathology report printing, and
   X-ray/radiology reports with clinical history, findings, impression and a configurable disclaimer.
-- Radiologist catalogue: tenant-scoped names, qualifications and signature images selected at X-ray
-  entry; the chosen snapshot is stored on `report_orders` so issued reports are immutable.
+- Radiologist catalogue: tenant-scoped names, qualifications and signature images managed in the
+  administrator-only **Diagnostics -> Radiologists** section and selected at X-ray entry; the chosen
+  snapshot is stored on `report_orders` so issued reports are immutable.
+- Pathologist profile: the reporting pathologist name and qualification are managed in the
+  administrator-only **Diagnostics -> Pathologists** section and used as the printed-report fallback
+  when no verifying user name is available.
 - Starter test catalogue: 184 pathology and 43 X-ray entries seeded additively per tenant at boot;
   custom/renamed/deleted tests are preserved, and new entries require local pricing/reference validation.
 - Reference intervals: 377 pathology parameters are seeded with adult ranges and sex/age variants in the

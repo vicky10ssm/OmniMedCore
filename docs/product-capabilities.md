@@ -55,7 +55,8 @@ Status meanings: **Ready**, **Pilot**, **Partial**, **Not available**, **Externa
 | Single-test reporting | Ready | Multi-test invoices offer **Combined** or **Each test** printing; the Each test chooser lists completed pathology tests with individual Print actions. A completed test can also print immediately from its row, even when other tests on the same invoice are pending |
 | Report sections | Ready | Parameter templates carry printable section headings; CBC is split into Complete Blood Count and Differential Leucocyte Count, LFT into Bilirubin/Liver Enzymes/Proteins, KFT into Renal Profile/Electrolytes/Minerals, and urine into Physical/Chemical/Microscopy |
 | X-ray report workflow | Ready | Clinical history, radiologist findings, impression and configurable disclaimer |
-| Radiologist signature catalogue | Ready | Admin uploads multiple names, qualifications and scanned signatures; operator selects one per report |
+| Radiologist signature catalogue | Ready | Dedicated administrator Radiologists section; upload multiple names, qualifications and scanned signatures; operator selects one per report |
+| Pathologist profile | Ready | Dedicated administrator Pathologists section for the reporting pathologist name and qualification; the verifying user name is still used first |
 | X-ray letterhead printing | Ready | A4 report with logo/clinic header, patient details, findings, impression, signature image, name/qualification and bottom disclaimer |
 | Signature snapshot on issued reports | Ready | Selected radiologist snapshot is stored on the report; catalogue edits/deletions do not alter history |
 | Critical-value notification | Not available | No critical-limit workflow/read-back log yet |

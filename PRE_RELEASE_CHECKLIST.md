@@ -166,7 +166,9 @@ Record accession/sample IDs for both blocked and allowed disposal cases.
 
 ## Roles and privacy verification
 
-- [ ] Admin sees Dashboard, Settings, Compliance and Expenses profitability summary
+- [ ] Admin sees Dashboard, Settings, Radiologists, Pathologists, Compliance and Expenses profitability summary
+- [ ] Radiologists and Pathologists are under Diagnostics and absent from Settings tabs/forms
+- [ ] Operator cannot see or open Radiologists/Pathologists routes
 - [ ] Operator can add/view Expenses
 - [ ] Operator cannot see Dashboard, Settings or Compliance navigation
 - [ ] Operator direct `#/` redirects to Expenses
