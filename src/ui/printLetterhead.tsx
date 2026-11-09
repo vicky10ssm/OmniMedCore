@@ -109,13 +109,20 @@ export function PrintLetterheadHint({
 }: {
   config: PrintLetterheadConfig;
 }) {
-  if (config.mode !== "preprinted") return null;
   return (
     <p className="no-print text-[11px] leading-4 text-slate-500">
-      Pre-printed letterhead mode: the built-in centre header is hidden. Page margins:
-      top {config.topMm} mm, right {config.rightMm} mm, bottom {config.bottomMm} mm,
-      left {config.leftMm} mm. In the print dialog, choose A4, actual size, and turn off
-      browser headers and footers.
+      {config.mode === "preprinted" ? (
+        <>
+          Pre-printed letterhead mode: the built-in centre header is hidden. Page
+          margins: top {config.topMm} mm, right {config.rightMm} mm, bottom{" "}
+          {config.bottomMm} mm, left {config.leftMm} mm.{" "}
+        </>
+      ) : (
+        "Print tip: "
+      )}
+      In the print dialog choose A4 and actual size, and turn off{" "}
+      <b>Headers and footers</b>. The browser adds the tauri.localhost URL at the
+      bottom; it is not part of the report.
     </p>
   );
 }

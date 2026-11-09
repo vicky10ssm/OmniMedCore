@@ -599,6 +599,15 @@ The second deployment exists. `npm run build` makes the terminal (editing) app; 
 - The expenses list, search, module filter and CSV export include the attribution.
 - Operators can add and view expenses as before; admin/operator visibility rules are unchanged.
 
+## Clean print layout and browser footer guidance - fixed
+
+- The report modal adds `printing-report` to `document.body`.
+- Print CSS removes all unrelated page children from layout so the hidden Reports page cannot create
+  blank space or blank pages before the printable sheet.
+- Browser/WebView2 headers and footers are outside the app's printable document. The print preview now
+  always tells the user to turn off **Headers and footers** to remove the `tauri.localhost` URL line.
+- No schema change.
+
 ## Combined vs per-test invoice printing - built
 
 - Multi-test invoices in Reports ready to print offer **Combined** and **Each test**.

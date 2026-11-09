@@ -3,6 +3,27 @@
 All notable changes to OmniMed Core are recorded here. This project follows semantic versioning once
 production releases begin.
 
+## [0.18.1] - 2026-11-09
+
+### Fixed
+
+- Removed the large blank space before report printouts caused by the hidden Reports page
+  continuing to occupy print layout before the print modal.
+- Report and X-ray print modals now mark the body as printing and hide unrelated page content
+  from the print layout.
+- Added an always-visible print tip: choose A4, actual size, and turn off **Headers and footers**.
+  The `tauri.localhost/...` line is added by the WebView2 print dialog, not by the report.
+
+### Database
+
+- No schema change. Schema remains **24**.
+
+### Verified
+
+- Report print CSS no longer leaves the hidden Reports page in the print flow.
+- Combined, single-test, X-ray and invoice printing use the same print hint.
+- `npm run check`, terminal build, monitor build and Rust tests pass.
+
 ## [0.18.0] - 2026-11-09
 
 ### Added

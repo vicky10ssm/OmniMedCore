@@ -145,6 +145,12 @@ body {
     margin: 0 !important;
   }
 
+  /* The report modal lives inside the Reports page. Remove the hidden page
+     content from print layout so it cannot create blank pages before the sheet. */
+  body.printing-report main > div > *:not(.print-modal) {
+    display: none !important;
+  }
+
   thead {
     display: table-header-group;
   }
