@@ -28,7 +28,7 @@ Status meanings: **Ready**, **Pilot**, **Partial**, **Not available**, **Externa
 | Dues register | Ready | Outstanding bills, ageing/follow-up views and payment collection |
 | Invoice cancellation | Ready | Reasoned cancellation, history retained |
 | Invoice numbering | Ready | Tenant/terminal-aware block allocation and optional device code |
-| A4 and 80 mm invoice print | Ready | Browser print layouts |
+| A4 and 80 mm invoice print | Ready | Browser print layouts; A4 invoice header can be built-in or pre-printed centre letterhead with configurable top/bottom/side margins |
 | PDF download | Ready/Pilot | Browser-generated document output; verify printer/browser on buyer hardware |
 | Doctor/referral commissions | Not available | No Commissions tab/module, no commission rules in Doctors, and no new accrual/payouts; legacy rows are retained but not displayed |
 | Expenses | Ready | Categories, payment mode, bill number, notes, monthly categories and multi-module attribution (Pathology, X-ray, Pharmacy, Hospital, General/shared); shared expenses are tagged, not split |
@@ -51,7 +51,7 @@ Status meanings: **Ready**, **Pilot**, **Partial**, **Not available**, **Externa
 | Draft/verify workflow | Ready | Draft and verified statuses; release requires authority |
 | Report amendments | Ready | Issued results cannot return to draft; amendment reason and prior revision retained |
 | Sample release gate | Ready | Pathology release requires an accepted linked sample |
-| Report letterhead printing | Ready | Lab identity, patient/doctor, sample ID, authorizer, version |
+| Report letterhead printing | Ready | Lab identity, patient/doctor, sample ID, authorizer, version; optional pre-printed centre letterhead mode hides the built-in header and reserves configurable page margins |
 | X-ray report workflow | Ready | Clinical history, radiologist findings, impression and configurable disclaimer |
 | Radiologist signature catalogue | Ready | Admin uploads multiple names, qualifications and scanned signatures; operator selects one per report |
 | X-ray letterhead printing | Ready | A4 report with logo/clinic header, patient details, findings, impression, signature image, name/qualification and bottom disclaimer |

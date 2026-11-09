@@ -3,6 +3,42 @@
 All notable changes to OmniMed Core are recorded here. This project follows semantic versioning once
 production releases begin.
 
+## [0.12.0] - 2026-11-09
+
+### Added
+
+- Added **pre-printed letterhead mode** for A4 documents. Administrators choose between the built-in
+  OmniMed header and the centre's own pre-printed stationery under **Settings -> Centre profile ->
+  Pre-printed letterhead**.
+- Reports and A4 invoices have independent header choices, so either can use pre-printed stationery
+  without changing the other.
+- Added configurable A4 page margins: top, bottom, left and right in millimetres. Defaults are 45 mm
+  top, 18 mm bottom and 12 mm sides.
+- In pre-printed mode, the built-in centre name, address, logo, phone, GSTIN and accreditation block
+  are hidden on print. Document title/number/date, patient details, results/findings and signatures
+  still print.
+- Applied the mode to pathology reports, X-ray reports and A4 GST invoices.
+- Added an on-screen pre-printed mode hint and print-dialog guidance.
+- Added `LETTERHEAD_PRINTING.md` with measurement, alignment and print-dialog steps.
+
+### Changed
+
+- Thermal 80 mm receipts remain unchanged and continue to print the centre identity even when A4
+  pre-printed mode is enabled.
+- The saved margins are applied with a print-only `@page` rule; no schema change is required.
+
+### Database
+
+- No schema change. Schema remains **22**.
+
+### Verified
+
+- Settings loads and saves the print mode and margin fields with validation.
+- Invoice print preview exposes the pre-printed style, margin rule and hidden built-in header.
+- Report and X-ray print views use the same tenant print configuration.
+- Thermal-print CSS explicitly restores the centre identity.
+- `npm run check`, terminal build, monitor build and Rust tests pass.
+
 ## [0.11.0] - 2026-11-09
 
 ### Added

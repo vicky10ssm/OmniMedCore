@@ -35,6 +35,7 @@ Dashboard, Settings, Compliance or the Expenses profitability card.
 
 - Patient registration, search and shared patient identity
 - GST billing, invoices, payments, dues, cancellation and A4/80 mm printing
+- A4 reports and invoices can independently print with the built-in centre header or on the centre's own pre-printed letterhead with configurable margins
 - Test/package catalogue with GST and specimen metadata
 - Broad starter library: 184 pathology tests and 43 X-ray/radiography exams, with editable prices and reference intervals
 - 371 starter pathology parameter templates; every pathology test has a result parameter, filled reference intervals, sex/age variants where relevant, and complex-report subfields
@@ -179,6 +180,7 @@ See [SECURITY.md](SECURITY.md).
 - [CLIENT_INSTALLATION_RUNBOOK.md](CLIENT_INSTALLATION_RUNBOOK.md) - end-to-end offline client installation, backup, local CSV export, acceptance and rollback
 - [LOCAL_CSV_EXPORT.md](LOCAL_CSV_EXPORT.md) - Google Drive transaction outbox, full all-module snapshots, masking, secret exclusions and retry behavior
 - [DASHBOARD.md](DASHBOARD.md) - in-app administrator dashboard metrics, views, export/print and limits
+- [LETTERHEAD_PRINTING.md](LETTERHEAD_PRINTING.md) - printing A4 invoices and reports on pre-printed centre stationery
 - [GOOGLE_DASHBOARD.md](GOOGLE_DASHBOARD.md) - optional external Google Sheets/BigQuery/Looker Studio dashboard on exported CSVs
 - [BACKUP_RESTORE.md](BACKUP_RESTORE.md) - local snapshots, retention, optional USB/OneDrive copy and restore
 - [ENCRYPTION.md](ENCRYPTION.md) - SQLCipher, Windows Credential Manager key storage and migration

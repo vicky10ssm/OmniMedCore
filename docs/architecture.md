@@ -1,7 +1,7 @@
 # OmniMed Core architecture and local export design
 
 Last updated: 9 November 2026  
-Current product version: `0.11.0`  
+Current product version: `0.12.0`  
 Current schema: `22`
 
 ## 1. Status and scope
@@ -115,7 +115,9 @@ OmniMed Core is a multi-vertical product; a tenant enables only the modules it o
   transactional stock deduction.
 - Compliance: sample/report/consent evidence, audit page, offline ABDM draft.
 - Settings: administrator-only centre identity, branding/logo, vertical/module visibility, users,
-  numbering and terminal configuration.
+  numbering and terminal configuration. A4 document printing can use the built-in centre header or a
+  pre-printed letterhead with tenant-configured page margins; see
+  [LETTERHEAD_PRINTING.md](../LETTERHEAD_PRINTING.md).
 - Monitor: read-only dashboard, invoices, dues, reports, admissions, pharmacy and money views; the
   dashboard shares the terminal queries but exposes no write controls.
 

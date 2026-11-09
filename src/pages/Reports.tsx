@@ -25,6 +25,13 @@ import { getSettings } from "../db/settings";
 import { printA4 } from "../db/print";
 import { getCurrentTenantId, tenantAnd, tenantAndOn } from "../db/tenant";
 import { UpdateExecutionTimestamp } from "../licensing/executionClock";
+import {
+  PrintLetterheadHint,
+  PrintPageStyle,
+  PRINT_LETTERHEAD_KEYS,
+  printLetterheadHideClass,
+  readPrintLetterhead,
+} from "../ui/printLetterhead";
 import AbdmExport from "./AbdmExport";
 import {
   Btn,
@@ -1432,6 +1439,7 @@ function ReportPrint({
           "accreditation_number",
           "accreditation_valid_until",
           "logo_data",
+          ...PRINT_LETTERHEAD_KEYS,
         ])
       );
       setReady(true);
@@ -1451,9 +1459,11 @@ function ReportPrint({
     orders.find((o) => o.verified_by_name)?.verified_by_name ||
     lab.pathologist_name ||
     "Authorized signatory";
+  const printConfig = readPrintLetterhead(lab);
 
   return (
     <div className="fixed inset-0 z-40 overflow-y-auto bg-slate-900/50 p-0 sm:p-6">
+      <PrintPageStyle config={printConfig} />
       <div className="mx-auto w-full max-w-3xl">
         <div className="no-print flex items-center justify-between gap-2 rounded-t-xl bg-white px-4 py-2.5">
           <span className="text-sm font-medium">Report preview</span>
@@ -1465,9 +1475,13 @@ function ReportPrint({
           </div>
         </div>
 
+        <div className="no-print bg-white px-4 pb-2">
+          <PrintLetterheadHint config={printConfig} />
+        </div>
+
         <div className="print-area bg-white p-8 shadow-xl sm:rounded-b-xl print:shadow-none">
           <div className="flex items-start justify-between gap-6 border-b border-slate-300 pb-3">
-            <div className="flex items-start gap-3">
+            <div className={`flex items-start gap-3 ${printLetterheadHideClass(printConfig)}`}>
               {lab.logo_data && (
                 <img
                   src={lab.logo_data}
@@ -1498,7 +1512,7 @@ function ReportPrint({
                 )}
               </div>
             </div>
-            <div className="text-right text-xs text-slate-600">
+            <div className="ml-auto text-right text-xs text-slate-600">
               <p className="text-sm font-bold uppercase tracking-widest">
                 {reportVersion > 1 ? "Amended Report" : "Report"}
               </p>
@@ -1655,6 +1669,7 @@ function XrayReportPrint({
           "radiologist_qualification",
           "xray_disclaimer",
           "logo_data",
+          ...PRINT_LETTERHEAD_KEYS,
         ])
       );
       setReady(true);
@@ -1682,9 +1697,11 @@ function XrayReportPrint({
   const findings = order.findings_text?.trim() || "";
   const impression = order.impression_text?.trim() || "";
   const clinicalHistory = order.clinical_history?.trim() || "";
+  const printConfig = readPrintLetterhead(lab);
 
   return (
     <div className="fixed inset-0 z-40 overflow-y-auto bg-slate-900/50 p-0 sm:p-6">
+      <PrintPageStyle config={printConfig} />
       <div className="mx-auto w-full max-w-3xl">
         <div className="no-print flex items-center justify-between gap-2 rounded-t-xl bg-white px-4 py-2.5">
           <span className="text-sm font-medium">X-ray report preview</span>
@@ -1696,9 +1713,13 @@ function XrayReportPrint({
           </div>
         </div>
 
+        <div className="no-print bg-white px-4 pb-2">
+          <PrintLetterheadHint config={printConfig} />
+        </div>
+
         <div className="print-area bg-white p-8 shadow-xl sm:rounded-b-xl print:shadow-none">
           <div className="flex items-start justify-between gap-6 border-b border-slate-300 pb-3">
-            <div className="flex items-start gap-3">
+            <div className={`flex items-start gap-3 ${printLetterheadHideClass(printConfig)}`}>
               {lab.logo_data && (
                 <img
                   src={lab.logo_data}
@@ -1721,7 +1742,7 @@ function XrayReportPrint({
                 </p>
               </div>
             </div>
-            <div className="text-right text-xs text-slate-600">
+            <div className="ml-auto text-right text-xs text-slate-600">
               <p className="text-sm font-bold uppercase tracking-widest">X-Ray Report</p>
               <p className="num mt-0.5">{order.invoice_no}</p>
               <p>Exam: {order.test_name}</p>

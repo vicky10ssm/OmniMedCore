@@ -73,6 +73,12 @@ interface ProfileForm {
   accreditation_body: string;
   accreditation_number: string;
   accreditation_valid_until: string;
+  print_letterhead_mode: string;
+  print_invoice_letterhead_mode: string;
+  print_margin_top_mm: string;
+  print_margin_right_mm: string;
+  print_margin_bottom_mm: string;
+  print_margin_left_mm: string;
 }
 
 const PROFILE_KEYS: (keyof ProfileForm)[] = [
@@ -92,6 +98,12 @@ const PROFILE_KEYS: (keyof ProfileForm)[] = [
   "accreditation_body",
   "accreditation_number",
   "accreditation_valid_until",
+  "print_letterhead_mode",
+  "print_invoice_letterhead_mode",
+  "print_margin_top_mm",
+  "print_margin_right_mm",
+  "print_margin_bottom_mm",
+  "print_margin_left_mm",
 ];
 
 const EMPTY: ProfileForm = {
@@ -112,6 +124,12 @@ const EMPTY: ProfileForm = {
   accreditation_body: "",
   accreditation_number: "",
   accreditation_valid_until: "",
+  print_letterhead_mode: "built_in",
+  print_invoice_letterhead_mode: "built_in",
+  print_margin_top_mm: "45",
+  print_margin_right_mm: "12",
+  print_margin_bottom_mm: "18",
+  print_margin_left_mm: "12",
 };
 
 export default function Settings() {
@@ -225,6 +243,23 @@ export default function Settings() {
       !/^\d{4}-\d{2}-\d{2}$/.test(form.accreditation_valid_until.trim())
     ) {
       return setError("Accreditation valid-until date should be YYYY-MM-DD");
+    }
+    if (
+      form.print_letterhead_mode === "preprinted" ||
+      form.print_invoice_letterhead_mode === "preprinted"
+    ) {
+      const margins: [keyof ProfileForm, string, number, number][] = [
+        ["print_margin_top_mm", "Top margin", 5, 80],
+        ["print_margin_right_mm", "Right margin", 0, 40],
+        ["print_margin_bottom_mm", "Bottom margin", 0, 60],
+        ["print_margin_left_mm", "Left margin", 0, 40],
+      ];
+      for (const [key, label, min, max] of margins) {
+        const value = Number.parseFloat(form[key]);
+        if (!Number.isFinite(value) || value < min || value > max) {
+          return setError(`${label} should be between ${min} and ${max} mm`);
+        }
+      }
     }
     setBusy(true);
     setError("");
@@ -598,6 +633,140 @@ export default function Settings() {
               </div>
 
               <div className="border-t border-slate-200 pt-4">
+                <h2 className="mb-1 text-sm font-semibold">
+                  Pre-printed letterhead
+                </h2>
+                <p className="mb-3 text-xs text-slate-500">
+                  Reports and invoices can use different A4 stationery. Pre-printed
+                  mode hides the built-in centre/logo header and reserves blank margins
+                  for your letterhead.
+                </p>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <Labeled
+                    label="A4 report header"
+                    hint="Pathology and X-ray reports."
+                  >
+                    <Select
+                      value={form.print_letterhead_mode}
+                      disabled={!isAdmin}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          print_letterhead_mode: e.target.value,
+                        })
+                      }
+                    >
+                      <option value="built_in">Built-in OmniMed header</option>
+                      <option value="preprinted">Pre-printed centre letterhead</option>
+                    </Select>
+                  </Labeled>
+                  <Labeled
+                    label="A4 invoice header"
+                    hint="Tax invoices printed on A4 paper."
+                  >
+                    <Select
+                      value={form.print_invoice_letterhead_mode}
+                      disabled={!isAdmin}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          print_invoice_letterhead_mode: e.target.value,
+                        })
+                      }
+                    >
+                      <option value="built_in">Built-in OmniMed header</option>
+                      <option value="preprinted">Pre-printed centre letterhead</option>
+                    </Select>
+                  </Labeled>
+                </div>
+                {(form.print_letterhead_mode === "preprinted" ||
+                  form.print_invoice_letterhead_mode === "preprinted") && (
+                  <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                    <Labeled
+                      label="Top margin (mm)"
+                      hint="Space reserved below the pre-printed header."
+                    >
+                      <TextInput
+                        type="number"
+                        min="5"
+                        max="80"
+                        step="0.5"
+                        value={form.print_margin_top_mm}
+                        disabled={!isAdmin}
+                        onChange={(e) =>
+                          setForm({
+                            ...form,
+                            print_margin_top_mm: e.target.value,
+                          })
+                        }
+                      />
+                    </Labeled>
+                    <Labeled
+                      label="Bottom margin (mm)"
+                      hint="Keep clear of the pre-printed footer."
+                    >
+                      <TextInput
+                        type="number"
+                        min="0"
+                        max="60"
+                        step="0.5"
+                        value={form.print_margin_bottom_mm}
+                        disabled={!isAdmin}
+                        onChange={(e) =>
+                          setForm({
+                            ...form,
+                            print_margin_bottom_mm: e.target.value,
+                          })
+                        }
+                      />
+                    </Labeled>
+                    <Labeled label="Left margin (mm)">
+                      <TextInput
+                        type="number"
+                        min="0"
+                        max="40"
+                        step="0.5"
+                        value={form.print_margin_left_mm}
+                        disabled={!isAdmin}
+                        onChange={(e) =>
+                          setForm({
+                            ...form,
+                            print_margin_left_mm: e.target.value,
+                          })
+                        }
+                      />
+                    </Labeled>
+                    <Labeled label="Right margin (mm)">
+                      <TextInput
+                        type="number"
+                        min="0"
+                        max="40"
+                        step="0.5"
+                        value={form.print_margin_right_mm}
+                        disabled={!isAdmin}
+                        onChange={(e) =>
+                          setForm({
+                            ...form,
+                            print_margin_right_mm: e.target.value,
+                          })
+                        }
+                      />
+                    </Labeled>
+                  </div>
+                )}
+                {(form.print_letterhead_mode === "preprinted" ||
+                  form.print_invoice_letterhead_mode === "preprinted") && (
+                  <p className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs leading-5 text-amber-900">
+                    Measure from the paper edge. In the print dialog choose A4, 100%
+                    / actual size, and switch off browser headers and footers. Print one
+                    document on a blank sheet first, hold it against your letterhead and
+                    adjust the top margin until the first content line clears the
+                    pre-printed header.
+                  </p>
+                )}
+              </div>
+
+              <div className="border-t border-slate-200 pt-4">
                 <h2 className="mb-3 text-sm font-semibold">
                   Pathologist signature
                 </h2>
@@ -825,6 +994,14 @@ export default function Settings() {
             <p className="mt-3 text-xs text-slate-400">
               These details appear on every GST invoice and printed report.
             </p>
+            {(form.print_letterhead_mode === "preprinted" ||
+              form.print_invoice_letterhead_mode === "preprinted") && (
+              <p className="mt-2 rounded-lg bg-teal-50 px-3 py-2 text-xs text-teal-800">
+                Pre-printed mode: the built-in name, address and logo are hidden on the
+                affected A4 documents. Content begins{" "}
+                {form.print_margin_top_mm || "45"} mm below the page edge.
+              </p>
+            )}
           </Card>
         </div>
       )}
