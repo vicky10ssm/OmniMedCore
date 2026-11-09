@@ -185,6 +185,20 @@ Record accession/sample IDs for both blocked and allowed disposal cases.
 - [ ] Monitor shows the dashboard read-only with no write controls
 - [ ] `npm run check`, terminal build, monitor build and Rust tests pass
 
+## Pre-printed letterhead verification
+
+- [ ] Settings -> Centre profile saves built-in vs pre-printed A4 mode
+- [ ] Pre-printed mode accepts valid margins and rejects negative/out-of-range values
+- [ ] A pathology report hides the built-in identity header on A4 print
+- [ ] An X-ray report hides the built-in identity header on A4 print
+- [ ] An A4 invoice hides the built-in identity header on A4 print
+- [ ] Document title, invoice/report number, date, patient details and clinical lines still print
+- [ ] The first content line clears the pre-printed header at the configured top margin
+- [ ] Bottom margin keeps the footer/signature clear of pre-printed stationery
+- [ ] Thermal 80 mm receipt still shows the centre identity
+- [ ] Windows print dialog is set to A4, 100%, headers/footers off
+- [ ] Built-in-header mode prints normally when pre-printed mode is off
+
 ## Licensing verification
 
 If the release changes licensing or starts a new edition:

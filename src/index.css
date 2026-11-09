@@ -114,6 +114,19 @@ body {
     display: none !important;
   }
 
+  /* Pre-printed letterhead mode: keep the configured page margins and hide the
+     built-in centre identity block, so a report/invoice can be printed on the
+     centre's own stationery without a duplicate header. */
+  .print-letterhead-hide {
+    display: none !important;
+  }
+
+  /* A thermal receipt still needs the centre identity, even when the tenant
+     normally prints A4 documents on pre-printed letterhead. */
+  html[data-print="thermal"] .print-letterhead-hide {
+    display: flex !important;
+  }
+
   /* Keep table rows and totals from splitting across pages */
   tr,
   .print-area dl {

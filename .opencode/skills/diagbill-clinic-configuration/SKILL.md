@@ -67,6 +67,10 @@ Do not invent a second list of module names in another file or duplicate JSON pa
   automatically.
 - Keep the printed logo height constrained (`max-h-16`, `max-w-28`) so letterheads and thermal print
   do not break layout.
+- Settings -> Centre profile can switch A4 output between the built-in header and a pre-printed centre
+  letterhead. Pre-printed mode hides the built-in identity block and applies tenant-configured page
+  margins to invoices, pathology reports and X-ray reports. Thermal receipts keep the identity.
+  See `LETTERHEAD_PRINTING.md`.
 
 ## Radiologist signatures
 
@@ -100,6 +104,8 @@ Do not invent a second list of module names in another file or duplicate JSON pa
 6. Upload PNG/JPEG/WebP under 500 KB; verify sidebar, invoice print and report print.
 7. Try an unsupported type and a file over 500 KB; both must be rejected.
 8. Remove the logo and verify fallback marks on screen and in print.
+9. Switch to pre-printed A4 mode; verify the built-in header is hidden and configured margins apply to
+   invoice, pathology report and X-ray print, while thermal receipt output is unchanged.
 9. Upload two radiologist signatures, select one on an X-ray report and verify the printed image.
 10. Deactivate one radiologist; confirm new reports cannot select it while an issued report still prints.
 11. Inspect `settings` and `radiologists` rows to confirm tenant scoping.

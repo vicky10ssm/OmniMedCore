@@ -26,6 +26,13 @@ import {
   Select,
   TextInput,
 } from "../ui/kit";
+import {
+  PrintLetterheadHint,
+  PrintPageStyle,
+  PRINT_LETTERHEAD_KEYS,
+  printLetterheadHideClass,
+  readInvoicePrintLetterhead,
+} from "../ui/printLetterhead";
 import { StatusPill } from "./Invoices";
 
 const MODES: { value: PaymentMode; label: string }[] = [
@@ -101,6 +108,7 @@ export default function InvoiceView() {
         "lab_phone",
         "lab_gstin",
         "logo_data",
+        ...PRINT_LETTERHEAD_KEYS,
       ])
     );
     setLoaded(true);
@@ -120,6 +128,7 @@ export default function InvoiceView() {
 
   const paid = payments.reduce((s, p) => s + p.amount_paise, 0);
   const balance = invoice ? Math.max(0, invoice.total_paise - paid) : 0;
+  const printConfig = readInvoicePrintLetterhead(lab);
 
   const openPayment = () => {
     setPayAmount((balance / 100).toFixed(2));
@@ -191,6 +200,7 @@ export default function InvoiceView() {
 
   return (
     <>
+      <PrintPageStyle config={printConfig} />
       <div className="no-print">
         <PageHeader
           title={`Invoice ${invoice.invoice_no}`}
@@ -221,6 +231,7 @@ export default function InvoiceView() {
             </>
           }
         />
+        <PrintLetterheadHint config={printConfig} />
         <div className="mb-4 flex flex-wrap items-center gap-3 text-sm">
           <StatusPill status={invoice.status} />
           <span className="text-slate-500">
@@ -238,7 +249,7 @@ export default function InvoiceView() {
       {/* Printable invoice */}
       <div className="print-area mx-auto max-w-3xl rounded-xl border border-slate-200 bg-white p-8 shadow-sm print:max-w-none print:rounded-none print:border-0 print:p-0 print:shadow-none">
         <div className="flex items-start justify-between gap-6 border-b border-slate-300 pb-4">
-          <div className="flex items-start gap-3">
+          <div className={`flex items-start gap-3 ${printLetterheadHideClass(printConfig)}`}>
             {lab.logo_data && (
               <img
                 src={lab.logo_data}
@@ -261,7 +272,7 @@ export default function InvoiceView() {
               </p>
             </div>
           </div>
-          <div className="text-right">
+          <div className="ml-auto text-right">
             <p className="text-sm font-bold uppercase tracking-widest text-slate-700">
               Tax Invoice
             </p>

@@ -599,6 +599,20 @@ The second deployment exists. `npm run build` makes the terminal (editing) app; 
 - The expenses list, search, module filter and CSV export include the attribution.
 - Operators can add and view expenses as before; admin/operator visibility rules are unchanged.
 
+## Pre-printed letterhead printing - built
+
+- Settings -> Centre profile has independent A4 header modes for reports and invoices: built-in
+  OmniMed header or pre-printed centre letterhead.
+- Pre-printed mode hides the built-in centre name, address, logo, phone, GSTIN and accreditation block
+  on the affected A4 documents. Document metadata and patient/clinical content remain.
+- Top, bottom, left and right page margins are tenant settings. Defaults are 45 mm / 18 mm / 12 mm /
+  12 mm and can be adjusted after a test print.
+- A dynamically rendered `@page` rule applies the saved margins only while the print view is mounted.
+- Thermal 80 mm receipts are unaffected and keep the centre identity.
+- The application cannot force the Windows print dialog to disable browser headers/footers or disable
+  printer-driver scaling; the setup guide covers those steps.
+- No schema change is required; settings are stored in the existing key/value settings table.
+
 ## In-app administrator dashboard - built
 
 - The administrator dashboard is the primary reporting surface and reads the terminal's live, tenant-scoped
