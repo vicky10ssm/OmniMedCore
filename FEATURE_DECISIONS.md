@@ -599,6 +599,14 @@ The second deployment exists. `npm run build` makes the terminal (editing) app; 
 - The expenses list, search, module filter and CSV export include the attribution.
 - Operators can add and view expenses as before; admin/operator visibility rules are unchanged.
 
+## Dedicated Radiologists and Pathologists sections - built
+
+- Radiologists management moved from Settings to **Diagnostics -> Radiologists**.
+- Pathologists profile moved from Settings -> Centre profile to **Diagnostics -> Pathologists**.
+- Both routes are admin-only and gated by the Reports module.
+- Settings no longer imports the radiologist catalogue or writes pathologist profile keys.
+- No schema change; existing tenant-scoped data is reused.
+
 ## Clean print layout and browser footer guidance - fixed
 
 - The report modal adds `printing-report` to `document.body`.

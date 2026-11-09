@@ -3,6 +3,36 @@
 All notable changes to OmniMed Core are recorded here. This project follows semantic versioning once
 production releases begin.
 
+## [0.19.0] - 2026-11-09
+
+### Added
+
+- Added dedicated administrator sections under **Diagnostics**:
+  - **Radiologists** — name, qualification, signature image, active state and ordering
+  - **Pathologists** — reporting pathologist name and qualification used on pathology reports
+- Both sections are available only to administrators and require the Reports module.
+
+### Changed
+
+- Moved radiologist catalogue management out of Settings.
+- Moved the pathologist profile out of Settings -> Centre profile.
+- Settings keeps centre identity, letterhead, pre-printed printing, X-ray disclaimer, numbering,
+  modules, licensing, users and device/sync.
+- Removed the old Radiologists tab and Pathologist signature fields from Settings to avoid duplicate
+  editing.
+
+### Database
+
+- No schema change. Schema remains **24**.
+
+### Verified
+
+- Radiologists and Pathologists appear in the Diagnostics navigation for administrators.
+- Both pages load and save their existing tenant-scoped data.
+- Settings no longer contains the Radiologists tab or Pathologist signature fields.
+- Operator navigation and direct routes remain blocked.
+- `npm run check`, terminal build, monitor build and Rust tests pass.
+
 ## [0.18.1] - 2026-11-09
 
 ### Fixed

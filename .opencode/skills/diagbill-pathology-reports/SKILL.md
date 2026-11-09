@@ -31,7 +31,7 @@ Use this skill for parameter-based pathology reports and the current diagnostic-
   do not rely on a disabled button alone.
 - Numeric limits drive low/high/abnormal flags. Displayed reference text and numeric limits are related but independently stored; edit both deliberately.
 - A report becomes printable only when every order on that invoice is `done`. Parameter rows print under their test heading with result, unit, reference range, and abnormal indication.
-- X-ray reports use the radiology form, not the parameter table. Administrators maintain multiple radiologists (name, qualification, signature image) under Settings -> Radiologists.
+- X-ray reports use the radiology form, not the parameter table. Administrators maintain multiple radiologists (name, qualification, signature image) under **Diagnostics -> Radiologists** and the reporting pathologist profile under **Diagnostics -> Pathologists**.
 - X-ray release requires selecting an active radiologist with a signature image. The report stores the radiologist id/name/qualification/signature snapshot; printing uses that snapshot so later catalogue edits or deletions cannot rewrite an issued report.
 - Inactive/deleted radiologists already captured on a report remain available as an inactive historical choice when amending, and their saved signature remains printable.
 

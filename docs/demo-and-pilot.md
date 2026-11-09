@@ -93,7 +93,7 @@ Then frame the demo around those answers.
 - Amend with a reason.
 - Show History with prior revision preserved.
 - Print preview: sample ID, authorizer, version, reference intervals.
-- Show **Settings → Radiologists**, where an administrator uploads multiple signature images.
+- Show **Diagnostics -> Radiologists**, where an administrator uploads multiple signature images.
 - Open an X-ray order, enter clinical history/findings/impression, select the issuing radiologist,
   release it, and preview the radiology letterhead with the saved signature image and configured
   disclaimer.
