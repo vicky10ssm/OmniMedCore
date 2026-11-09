@@ -14,9 +14,14 @@ Open **Settings -> Centre profile -> Pre-printed letterhead** as an administrato
 | Top margin | Blank space reserved below the pre-printed header |
 | Bottom margin | Blank space kept above the pre-printed footer |
 | Left / right margins | Blank side margins for the stationery |
+| Signature block on printed reports | Show or hide the pathologist/radiologist signature block |
 
 The defaults are 45 mm top, 12 mm left/right and 18 mm bottom. They are only starting values. Measure
 the actual clear area of your letterhead from the paper edge and adjust them.
+
+If your letterhead already carries the pathologist/radiologist signature, set **Signature block on
+printed reports** to **Hide signature block**. This removes the name, qualification, signature image and
+report-release line from the printed report while keeping the signature stored on the report record.
 
 ## What changes in pre-printed mode
 

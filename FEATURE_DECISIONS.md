@@ -611,6 +611,10 @@ The second deployment exists. `npm run build` makes the terminal (editing) app; 
 - Thermal 80 mm receipts are unaffected and keep the centre identity.
 - The application cannot force the Windows print dialog to disable browser headers/footers or disable
   printer-driver scaling; the setup guide covers those steps.
+- A separate setting shows or hides the printed report signature block (name, qualification, signature
+  image and report-release line). The stored report signature is retained either way.
+- Report/invoice number, version and date are printed on one horizontal line to avoid breaking the
+  pre-printed letterhead layout.
 - No schema change is required; settings are stored in the existing key/value settings table.
 
 ## In-app administrator dashboard - built

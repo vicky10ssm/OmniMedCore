@@ -79,6 +79,7 @@ interface ProfileForm {
   print_margin_right_mm: string;
   print_margin_bottom_mm: string;
   print_margin_left_mm: string;
+  print_report_signature: string;
 }
 
 const PROFILE_KEYS: (keyof ProfileForm)[] = [
@@ -104,6 +105,7 @@ const PROFILE_KEYS: (keyof ProfileForm)[] = [
   "print_margin_right_mm",
   "print_margin_bottom_mm",
   "print_margin_left_mm",
+  "print_report_signature",
 ];
 
 const EMPTY: ProfileForm = {
@@ -130,6 +132,7 @@ const EMPTY: ProfileForm = {
   print_margin_right_mm: "12",
   print_margin_bottom_mm: "18",
   print_margin_left_mm: "12",
+  print_report_signature: "1",
 };
 
 export default function Settings() {
@@ -764,6 +767,35 @@ export default function Settings() {
                     pre-printed header.
                   </p>
                 )}
+              </div>
+
+              <div className="border-t border-slate-200 pt-4">
+                <h2 className="mb-1 text-sm font-semibold">
+                  Printed report signature
+                </h2>
+                <p className="mb-3 text-xs text-slate-500">
+                  Choose whether A4 pathology and X-ray reports print the authorizer or
+                  radiologist signature block. Hide it when your pre-printed letterhead
+                  already carries the relevant signature.
+                </p>
+                <Labeled
+                  label="Signature block on printed reports"
+                  hint="Hides the name, qualification, signature image and report-release line on the printed report. The signature remains stored on the report."
+                >
+                  <Select
+                    value={form.print_report_signature}
+                    disabled={!isAdmin}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        print_report_signature: e.target.value,
+                      })
+                    }
+                  >
+                    <option value="1">Show signature block</option>
+                    <option value="0">Hide signature block</option>
+                  </Select>
+                </Labeled>
               </div>
 
               <div className="border-t border-slate-200 pt-4">

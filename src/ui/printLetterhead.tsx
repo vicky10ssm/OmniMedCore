@@ -10,6 +10,8 @@ export interface PrintLetterheadConfig {
   leftMm: number;
 }
 
+export const REPORT_SIGNATURE_KEY = "print_report_signature";
+
 export const PRINT_LETTERHEAD_KEYS = [
   "print_letterhead_mode",
   "print_invoice_letterhead_mode",
@@ -17,6 +19,7 @@ export const PRINT_LETTERHEAD_KEYS = [
   "print_margin_right_mm",
   "print_margin_bottom_mm",
   "print_margin_left_mm",
+  REPORT_SIGNATURE_KEY,
 ] as const;
 
 type LetterheadModeKey =
@@ -92,6 +95,13 @@ export function PrintPageStyle({ config }: { config: PrintLetterheadConfig }) {
 
 export function printLetterheadHideClass(config: PrintLetterheadConfig): string {
   return config.mode === "preprinted" ? "print-letterhead-hide" : "";
+}
+
+/** Defaults to showing the report signatory block. */
+export function shouldPrintReportSignature(
+  settings: Record<string, string>
+): boolean {
+  return settings[REPORT_SIGNATURE_KEY] !== "0";
 }
 
 export function PrintLetterheadHint({

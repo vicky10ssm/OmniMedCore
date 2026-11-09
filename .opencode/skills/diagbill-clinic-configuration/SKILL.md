@@ -70,7 +70,8 @@ Do not invent a second list of module names in another file or duplicate JSON pa
 - Settings -> Centre profile can switch A4 output between the built-in header and a pre-printed centre
   letterhead. Pre-printed mode hides the built-in identity block and applies tenant-configured page
   margins to invoices, pathology reports and X-ray reports. Thermal receipts keep the identity.
-  See `LETTERHEAD_PRINTING.md`.
+  A separate setting shows or hides the printed report signature block when stationery already carries
+  the signature. See `LETTERHEAD_PRINTING.md`.
 
 ## Radiologist signatures
 

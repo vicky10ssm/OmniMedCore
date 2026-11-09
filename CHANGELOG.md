@@ -3,6 +3,36 @@
 All notable changes to OmniMed Core are recorded here. This project follows semantic versioning once
 production releases begin.
 
+## [0.13.0] - 2026-11-09
+
+### Added
+
+- Added a **Printed report signature** setting under **Settings -> Centre profile**:
+  - **Show signature block** (default)
+  - **Hide signature block**
+- Hiding the block removes the authorizer/radiologist name, qualification, signature image and
+  report-release line from A4 pathology and X-ray reports. The signature remains stored on the report.
+- The setting is useful when the centre's pre-printed letterhead already carries the relevant signature.
+
+### Changed
+
+- Report number, version and report date now print on one horizontal line, for example
+  `INV-A-0001 · Version 1 · 09 Nov 2026`.
+- A4 invoice number and invoice date now print horizontally on one line.
+- X-ray report number, exam and study date are arranged more compactly for pre-printed stationery.
+
+### Database
+
+- No schema change. Schema remains **22**.
+
+### Verified
+
+- Settings loads and saves show/hide signature choice.
+- Pathology and X-ray print views honor the setting.
+- Report/invoice metadata renders horizontally with no line-per-field layout.
+- Built-in and pre-printed letterhead modes continue to work.
+- `npm run check`, terminal build, monitor build and Rust tests pass.
+
 ## [0.12.0] - 2026-11-09
 
 ### Added

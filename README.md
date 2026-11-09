@@ -36,6 +36,7 @@ Dashboard, Settings, Compliance or the Expenses profitability card.
 - Patient registration, search and shared patient identity
 - GST billing, invoices, payments, dues, cancellation and A4/80 mm printing
 - A4 reports and invoices can independently print with the built-in centre header or on the centre's own pre-printed letterhead with configurable margins
+- Printed report signatures can be shown or hidden when the pre-printed stationery already carries the signature
 - Test/package catalogue with GST and specimen metadata
 - Broad starter library: 184 pathology tests and 43 X-ray/radiography exams, with editable prices and reference intervals
 - 371 starter pathology parameter templates; every pathology test has a result parameter, filled reference intervals, sex/age variants where relevant, and complex-report subfields
