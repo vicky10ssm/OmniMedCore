@@ -266,6 +266,7 @@ export interface TestParameterRow extends SyncCols {
   id: string;
   test_id: string;
   name: string;
+  section_name: string;
   sort_order: number;
   unit: string;
   ref_range: string;
@@ -282,6 +283,7 @@ export interface ReportParameterRow extends SyncCols {
   report_order_id: string;
   parameter_id: string;
   parameter_name: string;
+  section_name: string;
   unit: string;
   ref_range: string;
   ref_min: number | null;

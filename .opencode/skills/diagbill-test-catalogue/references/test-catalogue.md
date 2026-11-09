@@ -30,19 +30,19 @@ own parameters.
 - Method: Blood gas analyser | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (13):
-  - pH; ref Adult arterial: 7.35-7.45; numeric
-  - pCO2 mmHg; ref Adult arterial: 35-45 mmHg; numeric
-  - pO2 mmHg; ref Adult arterial: 80-100 mmHg; numeric
-  - HCO3 mmol/L; ref Adult arterial: 22-26 mmol/L; numeric
-  - Base Excess mmol/L; ref Adult arterial: -2 to +2 mmol/L; numeric
-  - O2 Saturation %; ref Adult arterial: 95-100%; numeric
-  - Lactate mmol/L; ref Adult: 0.5-2.2 mmol/L; numeric
-  - Sodium mmol/L; ref Adult: 135-145 mmol/L; numeric
-  - Potassium mmol/L; ref Adult: 3.5-5.1 mmol/L; numeric
-  - Ionised Calcium mmol/L; ref Adult: 1.15-1.30 mmol/L; numeric
-  - Glucose mg/dL; ref Adult fasting: 70-100 mg/dL; numeric
-  - FiO2 %; ref Room air: 21%; numeric
-  - Interpretation; ref Not applicable (clinical interpretation); text
+  - [Acid-Base & Oxygenation] pH; ref Adult arterial: 7.35-7.45; numeric
+  - [Acid-Base & Oxygenation] pCO2 mmHg; ref Adult arterial: 35-45 mmHg; numeric
+  - [Acid-Base & Oxygenation] pO2 mmHg; ref Adult arterial: 80-100 mmHg; numeric
+  - [Acid-Base & Oxygenation] HCO3 mmol/L; ref Adult arterial: 22-26 mmol/L; numeric
+  - [Acid-Base & Oxygenation] Base Excess mmol/L; ref Adult arterial: -2 to +2 mmol/L; numeric
+  - [Acid-Base & Oxygenation] O2 Saturation %; ref Adult arterial: 95-100%; numeric
+  - [Metabolites] Lactate mmol/L; ref Adult: 0.5-2.2 mmol/L; numeric
+  - [Electrolytes] Sodium mmol/L; ref Adult: 135-145 mmol/L; numeric
+  - [Electrolytes] Potassium mmol/L; ref Adult: 3.5-5.1 mmol/L; numeric
+  - [Electrolytes] Ionised Calcium mmol/L; ref Adult: 1.15-1.30 mmol/L; numeric
+  - [Metabolites] Glucose mg/dL; ref Adult fasting: 70-100 mg/dL; numeric
+  - [Oxygenation] FiO2 %; ref Room air: 21%; numeric
+  - [Interpretation] Interpretation; ref Not applicable (clinical interpretation); text
 
 ### Clinical Biochemistry
 
@@ -323,15 +323,15 @@ own parameters.
 - Method: — | Report type: text
 - Price: ₹500.00 | GST: 0%
 - Parameters (9):
-  - Blood Urea mg/dL; ref Adult: 15-40 mg/dL; numeric
-  - Blood Urea Nitrogen (BUN) mg/dL; ref Adult: 7-20 mg/dL; numeric
-  - Serum Creatinine mg/dL; ref Adult male: 0.7-1.3 mg/dL; adult female: 0.6-1.1 mg/dL; children 1-5y: 0.3-0.7; children 6-12y: 0.4-0.9 mg/dL; numeric
-  - Uric Acid mg/dL; ref Adult male: 3.5-7.2 mg/dL; adult female: 2.6-6.0 mg/dL; children: 2.0-5.5 mg/dL; numeric
-  - Sodium mmol/L; ref Adult: 135-145 mmol/L; numeric
-  - Potassium mmol/L; ref Adult: 3.5-5.1 mmol/L; numeric
-  - Chloride mmol/L; ref Adult: 98-107 mmol/L; numeric
-  - Calcium mg/dL; ref Adult: 8.6-10.2 mg/dL; children: 8.8-10.8 mg/dL; numeric
-  - Phosphorus mg/dL; ref Adult: 2.5-4.5 mg/dL; children 1-12y: 4.0-7.0 mg/dL; numeric
+  - [Renal Profile] Blood Urea mg/dL; ref Adult: 15-40 mg/dL; numeric
+  - [Renal Profile] Blood Urea Nitrogen (BUN) mg/dL; ref Adult: 7-20 mg/dL; numeric
+  - [Renal Profile] Serum Creatinine mg/dL; ref Adult male: 0.7-1.3 mg/dL; adult female: 0.6-1.1 mg/dL; children 1-5y: 0.3-0.7; children 6-12y: 0.4-0.9 mg/dL; numeric
+  - [Renal Profile] Uric Acid mg/dL; ref Adult male: 3.5-7.2 mg/dL; adult female: 2.6-6.0 mg/dL; children: 2.0-5.5 mg/dL; numeric
+  - [Electrolytes] Sodium mmol/L; ref Adult: 135-145 mmol/L; numeric
+  - [Electrolytes] Potassium mmol/L; ref Adult: 3.5-5.1 mmol/L; numeric
+  - [Electrolytes] Chloride mmol/L; ref Adult: 98-107 mmol/L; numeric
+  - [Minerals] Calcium mg/dL; ref Adult: 8.6-10.2 mg/dL; children: 8.8-10.8 mg/dL; numeric
+  - [Minerals] Phosphorus mg/dL; ref Adult: 2.5-4.5 mg/dL; children 1-12y: 4.0-7.0 mg/dL; numeric
 
 #### `LACTATE` — Lactate
 
@@ -367,14 +367,14 @@ own parameters.
 - Method: — | Report type: text
 - Price: ₹400.00 | GST: 0%
 - Parameters (8):
-  - Total Cholesterol mg/dL; ref Adult: <200 mg/dL (desirable); numeric
-  - Triglycerides mg/dL; ref Adult: <150 mg/dL; numeric
-  - HDL Cholesterol mg/dL; ref Adult male: >40 mg/dL; adult female: >50 mg/dL; numeric
-  - LDL Cholesterol mg/dL; ref Adult: <100 mg/dL (desirable); numeric
-  - VLDL Cholesterol mg/dL; ref Adult: 5-40 mg/dL; numeric
-  - Non-HDL Cholesterol mg/dL; ref Adult: <130 mg/dL; numeric
-  - Total Cholesterol / HDL Ratio ratio; ref Adult: <4.5 (lab-specific); numeric
-  - LDL / HDL Ratio ratio; ref Adult: <3.0 (lab-specific); numeric
+  - [Lipid Profile] Total Cholesterol mg/dL; ref Adult: <200 mg/dL (desirable); numeric
+  - [Lipid Profile] Triglycerides mg/dL; ref Adult: <150 mg/dL; numeric
+  - [Lipid Profile] HDL Cholesterol mg/dL; ref Adult male: >40 mg/dL; adult female: >50 mg/dL; numeric
+  - [Lipid Profile] LDL Cholesterol mg/dL; ref Adult: <100 mg/dL (desirable); numeric
+  - [Lipid Profile] VLDL Cholesterol mg/dL; ref Adult: 5-40 mg/dL; numeric
+  - [Lipid Profile] Non-HDL Cholesterol mg/dL; ref Adult: <130 mg/dL; numeric
+  - [Lipid Profile] Total Cholesterol / HDL Ratio ratio; ref Adult: <4.5 (lab-specific); numeric
+  - [Lipid Profile] LDL / HDL Ratio ratio; ref Adult: <3.0 (lab-specific); numeric
 
 #### `LPA` — Lipoprotein(a)
 
@@ -392,17 +392,17 @@ own parameters.
 - Method: — | Report type: text
 - Price: ₹500.00 | GST: 0%
 - Parameters (11):
-  - Bilirubin Total mg/dL; ref Adult: 0.2-1.2 mg/dL; numeric
-  - Bilirubin Direct mg/dL; ref Adult: 0.0-0.3 mg/dL; numeric
-  - Bilirubin Indirect mg/dL; ref Adult: 0.1-1.0 mg/dL; numeric
-  - SGOT (AST) U/L; ref Adult: 5-40 U/L; numeric
-  - SGPT (ALT) U/L; ref Adult: 5-41 U/L; numeric
-  - Alkaline Phosphatase U/L; ref Adult: 40-130 U/L; children 1-12y: 100-400 U/L; adolescents: higher; numeric
-  - Gamma GT (GGT) U/L; ref Adult male: 0-55 U/L; adult female: 0-38 U/L; numeric
-  - Total Protein g/dL; ref Adult: 6.0-8.3 g/dL; numeric
-  - Albumin g/dL; ref Adult: 3.5-5.2 g/dL; numeric
-  - Globulin g/dL; ref Adult: 2.0-3.5 g/dL; numeric
-  - Albumin / Globulin Ratio ratio; ref Adult: 1.0-2.2; numeric
+  - [Bilirubin] Bilirubin Total mg/dL; ref Adult: 0.2-1.2 mg/dL; numeric
+  - [Bilirubin] Bilirubin Direct mg/dL; ref Adult: 0.0-0.3 mg/dL; numeric
+  - [Bilirubin] Bilirubin Indirect mg/dL; ref Adult: 0.1-1.0 mg/dL; numeric
+  - [Liver Enzymes] SGOT (AST) U/L; ref Adult: 5-40 U/L; numeric
+  - [Liver Enzymes] SGPT (ALT) U/L; ref Adult: 5-41 U/L; numeric
+  - [Liver Enzymes] Alkaline Phosphatase U/L; ref Adult: 40-130 U/L; children 1-12y: 100-400 U/L; adolescents: higher; numeric
+  - [Liver Enzymes] Gamma GT (GGT) U/L; ref Adult male: 0-55 U/L; adult female: 0-38 U/L; numeric
+  - [Proteins] Total Protein g/dL; ref Adult: 6.0-8.3 g/dL; numeric
+  - [Proteins] Albumin g/dL; ref Adult: 3.5-5.2 g/dL; numeric
+  - [Proteins] Globulin g/dL; ref Adult: 2.0-3.5 g/dL; numeric
+  - [Proteins] Albumin / Globulin Ratio ratio; ref Adult: 1.0-2.2; numeric
 
 #### `MG` — Magnesium
 
@@ -656,13 +656,13 @@ own parameters.
 - Method: Biochemistry and cytology | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (7):
-  - Appearance; ref Clear / straw-coloured; text
-  - Protein g/dL; ref Transudate <2.5 g/dL; exudate >=2.5 g/dL; numeric
-  - Glucose mg/dL; ref 70-100 mg/dL; numeric
-  - Cell Count /cmm; ref Fluid-specific; report differential; numeric
-  - Polymorphs %; ref Fluid-specific; report differential; numeric
-  - Lymphocytes %; ref Fluid-specific; report differential; numeric
-  - Serum-Ascites Albumin Gradient g/dL; ref >=1.1 g/dL suggests portal hypertension; numeric
+  - [Physical & Chemical] Appearance; ref Clear / straw-coloured; text
+  - [Physical & Chemical] Protein g/dL; ref Transudate <2.5 g/dL; exudate >=2.5 g/dL; numeric
+  - [Physical & Chemical] Glucose mg/dL; ref 70-100 mg/dL; numeric
+  - [Microscopy] Cell Count /cmm; ref Fluid-specific; report differential; numeric
+  - [Microscopy] Polymorphs %; ref Fluid-specific; report differential; numeric
+  - [Microscopy] Lymphocytes %; ref Fluid-specific; report differential; numeric
+  - [Special Tests] Serum-Ascites Albumin Gradient g/dL; ref >=1.1 g/dL suggests portal hypertension; numeric
 
 #### `CSFA` — CSF Analysis
 
@@ -671,14 +671,14 @@ own parameters.
 - Method: Biochemistry, cytology and microbiology | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (8):
-  - Appearance; ref Clear, colourless; text
-  - Protein mg/dL; ref 15-45 mg/dL; numeric
-  - Glucose mg/dL; ref 40-70 mg/dL; numeric
-  - Cell Count /cmm; ref 0-5 /cmm; numeric
-  - Polymorphs %; ref 0-5%; numeric
-  - Lymphocytes %; ref 0-5% (normal CSF); numeric
-  - Chloride mmol/L; ref 118-132 mmol/L; numeric
-  - ADA U/L; ref <10 U/L (lab-specific); numeric
+  - [Physical & Chemical] Appearance; ref Clear, colourless; text
+  - [Physical & Chemical] Protein mg/dL; ref 15-45 mg/dL; numeric
+  - [Physical & Chemical] Glucose mg/dL; ref 40-70 mg/dL; numeric
+  - [Microscopy] Cell Count /cmm; ref 0-5 /cmm; numeric
+  - [Microscopy] Polymorphs %; ref 0-5%; numeric
+  - [Microscopy] Lymphocytes %; ref 0-5% (normal CSF); numeric
+  - [Special Tests] Chloride mmol/L; ref 118-132 mmol/L; numeric
+  - [Special Tests] ADA U/L; ref <10 U/L (lab-specific); numeric
 
 #### `CALPRO` — Fecal Calprotectin
 
@@ -696,14 +696,14 @@ own parameters.
 - Method: Biochemistry and cytology | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (8):
-  - Appearance; ref Clear / straw-coloured; text
-  - Protein g/dL; ref Transudate <3.0 g/dL; exudate >=3.0 g/dL; numeric
-  - Glucose mg/dL; ref 60-100 mg/dL; numeric
-  - Cell Count /cmm; ref Fluid-specific; report differential; numeric
-  - Polymorphs %; ref Fluid-specific; report differential; numeric
-  - Lymphocytes %; ref Fluid-specific; report differential; numeric
-  - LDH U/L; ref Fluid-specific; compare with serum; numeric
-  - ADA U/L; ref <10 U/L (lab-specific); numeric
+  - [Physical & Chemical] Appearance; ref Clear / straw-coloured; text
+  - [Physical & Chemical] Protein g/dL; ref Transudate <3.0 g/dL; exudate >=3.0 g/dL; numeric
+  - [Physical & Chemical] Glucose mg/dL; ref 60-100 mg/dL; numeric
+  - [Microscopy] Cell Count /cmm; ref Fluid-specific; report differential; numeric
+  - [Microscopy] Polymorphs %; ref Fluid-specific; report differential; numeric
+  - [Microscopy] Lymphocytes %; ref Fluid-specific; report differential; numeric
+  - [Special Tests] LDH U/L; ref Fluid-specific; compare with serum; numeric
+  - [Special Tests] ADA U/L; ref <10 U/L (lab-specific); numeric
 
 #### `SEMEN` — Semen Analysis
 
@@ -712,14 +712,14 @@ own parameters.
 - Method: Macroscopy and microscopy | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (8):
-  - Volume mL; ref >=1.5 mL; numeric
-  - pH; ref >=7.2; numeric
-  - Sperm Count million/mL; ref >=15 million/mL; numeric
-  - Total Motility %; ref >=40%; numeric
-  - Progressive Motility %; ref >=32%; numeric
-  - Normal Morphology %; ref >=4% normal forms; numeric
-  - Leucocytes million/mL; ref <1 million/mL; numeric
-  - Liquefaction Time minutes; ref <=60 minutes; numeric
+  - [Physical Examination] Volume mL; ref >=1.5 mL; numeric
+  - [Physical Examination] pH; ref >=7.2; numeric
+  - [Sperm Analysis] Sperm Count million/mL; ref >=15 million/mL; numeric
+  - [Sperm Analysis] Total Motility %; ref >=40%; numeric
+  - [Sperm Analysis] Progressive Motility %; ref >=32%; numeric
+  - [Sperm Analysis] Normal Morphology %; ref >=4% normal forms; numeric
+  - [Sperm Analysis] Leucocytes million/mL; ref <1 million/mL; numeric
+  - [Physical Examination] Liquefaction Time minutes; ref <=60 minutes; numeric
 
 #### `SOB` — Stool Occult Blood
 
@@ -737,8 +737,8 @@ own parameters.
 - Method: Microscopy | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (2):
-  - Ova; ref Not seen; text
-  - Cyst; ref Not seen; text
+  - [Stool Ova and Cyst] Ova; ref Not seen; text
+  - [Stool Ova and Cyst] Cyst; ref Not seen; text
 
 #### `SRED` — Stool Reducing Substances
 
@@ -756,12 +756,12 @@ own parameters.
 - Method: Macroscopy and microscopy | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (6):
-  - Colour; ref Brown; text
-  - Consistency; ref Formed; text
-  - Ova / Cyst; ref Not seen; text
-  - Occult Blood; ref Negative; text
-  - Pus Cells /hpf; ref 0-5 /hpf; numeric
-  - Epithelial Cells /hpf; ref 0-5 /hpf; numeric
+  - [Physical Examination] Colour; ref Brown; text
+  - [Physical Examination] Consistency; ref Formed; text
+  - [Microscopy] Ova / Cyst; ref Not seen; text
+  - [Occult Blood] Occult Blood; ref Negative; text
+  - [Microscopy] Pus Cells /hpf; ref 0-5 /hpf; numeric
+  - [Microscopy] Epithelial Cells /hpf; ref 0-5 /hpf; numeric
 
 #### `SYNOVIAL` — Synovial Fluid Analysis
 
@@ -770,12 +770,12 @@ own parameters.
 - Method: Biochemistry and microscopy | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (6):
-  - Appearance; ref Clear, viscous; text
-  - Leucocyte Count /cmm; ref <200 /cmm; numeric
-  - Polymorphs %; ref <25%; numeric
-  - Protein g/dL; ref <3.5 g/dL; numeric
-  - Glucose mg/dL; ref 70-100 mg/dL; numeric
-  - Crystals; ref None seen; text
+  - [Physical & Chemical] Appearance; ref Clear, viscous; text
+  - [Microscopy] Leucocyte Count /cmm; ref <200 /cmm; numeric
+  - [Microscopy] Polymorphs %; ref <25%; numeric
+  - [Physical & Chemical] Protein g/dL; ref <3.5 g/dL; numeric
+  - [Physical & Chemical] Glucose mg/dL; ref 70-100 mg/dL; numeric
+  - [Microscopy] Crystals; ref None seen; text
 
 #### `UBIL` — Urine Bilirubin
 
@@ -820,12 +820,12 @@ own parameters.
 - Method: Microscopy | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (6):
-  - Pus Cells /hpf; ref 0-5 /hpf; numeric
-  - Red Blood Cells /hpf; ref 0-2 /hpf; numeric
-  - Epithelial Cells /hpf; ref 0-5 /hpf; numeric
-  - Casts; ref None / occasional hyaline; text
-  - Crystals; ref None seen; text
-  - Bacteria; ref Not seen; text
+  - [Urine Microscopy] Pus Cells /hpf; ref 0-5 /hpf; numeric
+  - [Urine Microscopy] Red Blood Cells /hpf; ref 0-2 /hpf; numeric
+  - [Urine Microscopy] Epithelial Cells /hpf; ref 0-5 /hpf; numeric
+  - [Urine Microscopy] Casts; ref None / occasional hyaline; text
+  - [Urine Microscopy] Crystals; ref None seen; text
+  - [Urine Microscopy] Bacteria; ref Not seen; text
 
 #### `UNIT` — Urine Nitrite
 
@@ -861,24 +861,24 @@ own parameters.
 - Method: Dipstick and microscopy | Report type: text
 - Price: ₹150.00 | GST: 0%
 - Parameters (18):
-  - Colour; ref Pale yellow to amber; text
-  - Appearance; ref Clear; text
-  - pH; ref Urine: 4.6-8.0; numeric
-  - Specific Gravity; ref 1.005-1.030; numeric
-  - Protein; ref Negative / trace; text
-  - Glucose; ref Negative; text
-  - Ketones; ref Negative; text
-  - Blood; ref Negative; text
-  - Bilirubin; ref Negative; text
-  - Urobilinogen; ref Normal; text
-  - Nitrite; ref Negative; text
-  - Leucocyte Esterase; ref Negative; text
-  - Pus Cells /hpf; ref 0-5 /hpf; numeric
-  - Red Blood Cells /hpf; ref 0-2 /hpf; numeric
-  - Epithelial Cells /hpf; ref 0-5 /hpf; text
-  - Casts /lpf; ref None / occasional hyaline; text
-  - Crystals /hpf; ref None seen; text
-  - Bacteria /hpf; ref Not seen; text
+  - [Physical Examination] Colour; ref Pale yellow to amber; text
+  - [Physical Examination] Appearance; ref Clear; text
+  - [Chemical Examination] pH; ref Urine: 4.6-8.0; numeric
+  - [Physical Examination] Specific Gravity; ref 1.005-1.030; numeric
+  - [Chemical Examination] Protein; ref Negative / trace; text
+  - [Chemical Examination] Glucose; ref Negative; text
+  - [Chemical Examination] Ketones; ref Negative; text
+  - [Chemical Examination] Blood; ref Negative; text
+  - [Chemical Examination] Bilirubin; ref Negative; text
+  - [Chemical Examination] Urobilinogen; ref Normal; text
+  - [Chemical Examination] Nitrite; ref Negative; text
+  - [Chemical Examination] Leucocyte Esterase; ref Negative; text
+  - [Microscopy] Pus Cells /hpf; ref 0-5 /hpf; numeric
+  - [Microscopy] Red Blood Cells /hpf; ref 0-2 /hpf; numeric
+  - [Microscopy] Epithelial Cells /hpf; ref 0-5 /hpf; text
+  - [Microscopy] Casts /lpf; ref None / occasional hyaline; text
+  - [Microscopy] Crystals /hpf; ref None seen; text
+  - [Microscopy] Bacteria /hpf; ref Not seen; text
 
 #### `UURO` — Urine Urobilinogen
 
@@ -898,9 +898,9 @@ own parameters.
 - Method: Cytology | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (3):
-  - Site; ref Not applicable (descriptive report); text
-  - Cytology Findings; ref No diagnostic abnormality / descriptive report; text
-  - Diagnosis; ref Not applicable (descriptive report); text
+  - [Fine Needle Aspiration Cytology (FNAC)] Site; ref Not applicable (descriptive report); text
+  - [Fine Needle Aspiration Cytology (FNAC)] Cytology Findings; ref No diagnostic abnormality / descriptive report; text
+  - [Fine Needle Aspiration Cytology (FNAC)] Diagnosis; ref Not applicable (descriptive report); text
 
 #### `FLUIDCYT` — Fluid Cytology
 
@@ -909,9 +909,9 @@ own parameters.
 - Method: Cytology | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (3):
-  - Specimen; ref Not applicable (descriptive report); text
-  - Cytology Findings; ref No diagnostic abnormality / descriptive report; text
-  - Diagnosis; ref Not applicable (descriptive report); text
+  - [Fluid Cytology] Specimen; ref Not applicable (descriptive report); text
+  - [Fluid Cytology] Cytology Findings; ref No diagnostic abnormality / descriptive report; text
+  - [Fluid Cytology] Diagnosis; ref Not applicable (descriptive report); text
 
 #### `PAP` — Pap Smear
 
@@ -920,9 +920,9 @@ own parameters.
 - Method: Cytology | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (3):
-  - Specimen Adequacy; ref Satisfactory for evaluation; text
-  - Bethesda Interpretation; ref Negative for intraepithelial lesion or malignancy; text
-  - Recommendation; ref Not applicable (descriptive report); text
+  - [Pap Smear] Specimen Adequacy; ref Satisfactory for evaluation; text
+  - [Pap Smear] Bethesda Interpretation; ref Negative for intraepithelial lesion or malignancy; text
+  - [Pap Smear] Recommendation; ref Not applicable (descriptive report); text
 
 #### `SPUTUMCYT` — Sputum Cytology
 
@@ -931,9 +931,9 @@ own parameters.
 - Method: Cytology | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (3):
-  - Specimen; ref Not applicable (descriptive report); text
-  - Cytology Findings; ref No diagnostic abnormality / descriptive report; text
-  - Diagnosis; ref Not applicable (descriptive report); text
+  - [Sputum Cytology] Specimen; ref Not applicable (descriptive report); text
+  - [Sputum Cytology] Cytology Findings; ref No diagnostic abnormality / descriptive report; text
+  - [Sputum Cytology] Diagnosis; ref Not applicable (descriptive report); text
 
 #### `URINECYT` — Urine Cytology
 
@@ -942,9 +942,9 @@ own parameters.
 - Method: Cytology | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (3):
-  - Specimen; ref Not applicable (descriptive report); text
-  - Cytology Findings; ref No diagnostic abnormality / descriptive report; text
-  - Diagnosis; ref Not applicable (descriptive report); text
+  - [Urine Cytology] Specimen; ref Not applicable (descriptive report); text
+  - [Urine Cytology] Cytology Findings; ref No diagnostic abnormality / descriptive report; text
+  - [Urine Cytology] Diagnosis; ref Not applicable (descriptive report); text
 
 ### Endocrinology
 
@@ -1164,8 +1164,8 @@ own parameters.
 - Method: Slide agglutination | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (2):
-  - ABO Blood Group; ref Not applicable (report ABO group); text
-  - Rh Factor; ref Not applicable (report positive/negative); text
+  - [Blood Group & Rh] ABO Blood Group; ref Not applicable (report ABO group); text
+  - [Blood Group & Rh] Rh Factor; ref Not applicable (report positive/negative); text
 
 #### `CBC` — Complete Blood Count (CBC)
 
@@ -1174,26 +1174,26 @@ own parameters.
 - Method: Automated analyser | Report type: numeric
 - Price: ₹300.00 | GST: 0%
 - Parameters (20):
-  - Haemoglobin g/dL; ref Adult male: 13.0-17.0 g/dL; adult female: 12.0-15.0 g/dL; children 1-5y: 11.0-14.0 g/dL; children 6-12y: 11.5-15.5 g/dL; numeric
-  - Total Leukocyte Count cells/cmm; ref Adult: 4,000-11,000 /cmm; numeric
-  - Platelet Count cells/cmm; ref Adult: 1,50,000-4,50,000 /cmm; numeric
-  - RBC Count million/cmm; ref Adult male: 4.5-5.9 million/cmm; adult female: 4.1-5.1 million/cmm; children 1-5y: 4.0-5.5; children 6-12y: 4.0-5.2 million/cmm; numeric
-  - Haematocrit (HCT) %; ref Adult male: 40-52%; adult female: 36-48%; children 1-5y: 33-42%; children 6-12y: 35-45%; numeric
-  - Mean Corpuscular Volume (MCV) fL; ref Adult: 80-100 fL; numeric
-  - Mean Corpuscular Haemoglobin (MCH) pg; ref Adult: 27-32 pg; numeric
-  - Mean Corpuscular Hb Concentration (MCHC) g/dL; ref Adult: 32-36 g/dL; numeric
-  - RDW-CV %; ref Adult: 11.5-14.5%; numeric
-  - RDW-SD fL; ref Adult: 35-56 fL (analyser-specific); numeric
-  - Mean Platelet Volume (MPV) fL; ref Adult: 7.5-11.5 fL; numeric
-  - Platelet Distribution Width (PDW) %; ref Adult: 9-17% (analyser-specific); numeric
-  - Plateletcrit (PCT) %; ref Adult: 0.19-0.39%; numeric
-  - Platelet Large Cell Ratio (P-LCR) %; ref Adult: 13-43%; numeric
-  - Platelet Large Cell Count (P-LCC) 10^3/uL; ref Adult: 30-90 x10^3/uL; numeric
-  - Neutrophils %; ref Adult: 40-70%; numeric
-  - Lymphocytes %; ref Adult blood: 20-40%; numeric
-  - Eosinophils %; ref Adult: 1-6%; numeric
-  - Monocytes %; ref Adult: 2-10%; numeric
-  - Basophils %; ref Adult: 0-2%; numeric
+  - [Complete Blood Count] Haemoglobin g/dL; ref Adult male: 13.0-17.0 g/dL; adult female: 12.0-15.0 g/dL; children 1-5y: 11.0-14.0 g/dL; children 6-12y: 11.5-15.5 g/dL; numeric
+  - [Complete Blood Count] Total Leukocyte Count cells/cmm; ref Adult: 4,000-11,000 /cmm; numeric
+  - [Complete Blood Count] Platelet Count cells/cmm; ref Adult: 1,50,000-4,50,000 /cmm; numeric
+  - [Complete Blood Count] RBC Count million/cmm; ref Adult male: 4.5-5.9 million/cmm; adult female: 4.1-5.1 million/cmm; children 1-5y: 4.0-5.5; children 6-12y: 4.0-5.2 million/cmm; numeric
+  - [Complete Blood Count] Haematocrit (HCT) %; ref Adult male: 40-52%; adult female: 36-48%; children 1-5y: 33-42%; children 6-12y: 35-45%; numeric
+  - [Complete Blood Count] Mean Corpuscular Volume (MCV) fL; ref Adult: 80-100 fL; numeric
+  - [Complete Blood Count] Mean Corpuscular Haemoglobin (MCH) pg; ref Adult: 27-32 pg; numeric
+  - [Complete Blood Count] Mean Corpuscular Hb Concentration (MCHC) g/dL; ref Adult: 32-36 g/dL; numeric
+  - [Complete Blood Count] RDW-CV %; ref Adult: 11.5-14.5%; numeric
+  - [Complete Blood Count] RDW-SD fL; ref Adult: 35-56 fL (analyser-specific); numeric
+  - [Complete Blood Count] Mean Platelet Volume (MPV) fL; ref Adult: 7.5-11.5 fL; numeric
+  - [Complete Blood Count] Platelet Distribution Width (PDW) %; ref Adult: 9-17% (analyser-specific); numeric
+  - [Complete Blood Count] Plateletcrit (PCT) %; ref Adult: 0.19-0.39%; numeric
+  - [Complete Blood Count] Platelet Large Cell Ratio (P-LCR) %; ref Adult: 13-43%; numeric
+  - [Complete Blood Count] Platelet Large Cell Count (P-LCC) 10^3/uL; ref Adult: 30-90 x10^3/uL; numeric
+  - [Differential Leucocyte Count] Neutrophils %; ref Adult: 40-70%; numeric
+  - [Differential Leucocyte Count] Lymphocytes %; ref Adult blood: 20-40%; numeric
+  - [Differential Leucocyte Count] Eosinophils %; ref Adult: 1-6%; numeric
+  - [Differential Leucocyte Count] Monocytes %; ref Adult: 2-10%; numeric
+  - [Differential Leucocyte Count] Basophils %; ref Adult: 0-2%; numeric
 
 #### `CROSS` — Crossmatch
 
@@ -1220,11 +1220,11 @@ own parameters.
 - Method: Microscopy | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (5):
-  - Neutrophils %; ref Adult: 40-70%; numeric
-  - Lymphocytes %; ref Adult blood: 20-40%; numeric
-  - Eosinophils %; ref Adult: 1-6%; numeric
-  - Monocytes %; ref Adult: 2-10%; numeric
-  - Basophils %; ref Adult: 0-2%; numeric
+  - [Differential Leucocyte Count] Neutrophils %; ref Adult: 40-70%; numeric
+  - [Differential Leucocyte Count] Lymphocytes %; ref Adult blood: 20-40%; numeric
+  - [Differential Leucocyte Count] Eosinophils %; ref Adult: 1-6%; numeric
+  - [Differential Leucocyte Count] Monocytes %; ref Adult: 2-10%; numeric
+  - [Differential Leucocyte Count] Basophils %; ref Adult: 0-2%; numeric
 
 #### `DCT` — Direct Coombs Test (DAT)
 
@@ -1278,8 +1278,8 @@ own parameters.
 - Method: Electrophoresis | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (2):
-  - Haemoglobin Pattern; ref Normal: HbA >95%, HbA2 2-3%, HbF <1% (age-specific in infants); text
-  - Interpretation; ref Normal haemoglobin pattern; text
+  - [Haemoglobin Electrophoresis] Haemoglobin Pattern; ref Normal: HbA >95%, HbA2 2-3%, HbF <1% (age-specific in infants); text
+  - [Haemoglobin Electrophoresis] Interpretation; ref Normal haemoglobin pattern; text
 
 #### `ICT` — Indirect Coombs Test (IAT)
 
@@ -1297,11 +1297,11 @@ own parameters.
 - Method: Thick and thin smear | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (5):
-  - Parasite Species; ref No parasites seen; text
-  - Parasite Stage; ref Not applicable (no parasites seen); text
-  - Parasite Density /uL; ref 0/uL (no parasites seen); numeric
-  - RBC Parasitised %; ref 0%; numeric
-  - Interpretation; ref Negative for malaria parasites; text
+  - [Malaria Parasite Smear] Parasite Species; ref No parasites seen; text
+  - [Malaria Parasite Smear] Parasite Stage; ref Not applicable (no parasites seen); text
+  - [Malaria Parasite Smear] Parasite Density /uL; ref 0/uL (no parasites seen); numeric
+  - [Malaria Parasite Smear] RBC Parasitised %; ref 0%; numeric
+  - [Malaria Parasite Smear] Interpretation; ref Negative for malaria parasites; text
 
 #### `MCH` — Mean Corpuscular Haemoglobin (MCH)
 
@@ -1346,10 +1346,10 @@ own parameters.
 - Method: Microscopy | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (4):
-  - RBC Morphology; ref Normocytic, normochromic; text
-  - WBC Morphology; ref Normal / no significant abnormality; text
-  - Platelet Morphology; ref Normal / no significant abnormality; text
-  - Impression; ref No significant haematological abnormality; text
+  - [Peripheral Blood Smear] RBC Morphology; ref Normocytic, normochromic; text
+  - [Peripheral Blood Smear] WBC Morphology; ref Normal / no significant abnormality; text
+  - [Peripheral Blood Smear] Platelet Morphology; ref Normal / no significant abnormality; text
+  - [Peripheral Blood Smear] Impression; ref No significant haematological abnormality; text
 
 #### `PLT` — Platelet Count
 
@@ -1367,8 +1367,8 @@ own parameters.
 - Method: Coagulometer | Report type: numeric
 - Price: ₹0.00 | GST: 0%
 - Parameters (2):
-  - Prothrombin Time seconds; ref Adult: 11-13.5 seconds; numeric
-  - INR ratio; ref Adult untreated: 0.8-1.2; numeric
+  - [Coagulation Profile] Prothrombin Time seconds; ref Adult: 11-13.5 seconds; numeric
+  - [Coagulation Profile] INR ratio; ref Adult untreated: 0.8-1.2; numeric
 
 #### `RDW` — Red Cell Distribution Width (RDW)
 
@@ -1415,11 +1415,11 @@ own parameters.
 - Method: Histopathology | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (5):
-  - Specimen; ref Not applicable (descriptive report); text
-  - Gross Examination; ref Not applicable (descriptive report); text
-  - Microscopic Examination; ref Not applicable (descriptive report); text
-  - Diagnosis; ref Not applicable (descriptive report); text
-  - Comment; ref Not applicable (descriptive report); text
+  - [Biopsy - Large] Specimen; ref Not applicable (descriptive report); text
+  - [Biopsy - Large] Gross Examination; ref Not applicable (descriptive report); text
+  - [Biopsy - Large] Microscopic Examination; ref Not applicable (descriptive report); text
+  - [Biopsy - Large] Diagnosis; ref Not applicable (descriptive report); text
+  - [Biopsy - Large] Comment; ref Not applicable (descriptive report); text
 
 #### `BIOPSY` — Biopsy - Small
 
@@ -1428,11 +1428,11 @@ own parameters.
 - Method: Histopathology | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (5):
-  - Specimen; ref Not applicable (descriptive report); text
-  - Gross Examination; ref Not applicable (descriptive report); text
-  - Microscopic Examination; ref Not applicable (descriptive report); text
-  - Diagnosis; ref Not applicable (descriptive report); text
-  - Comment; ref Not applicable (descriptive report); text
+  - [Biopsy - Small] Specimen; ref Not applicable (descriptive report); text
+  - [Biopsy - Small] Gross Examination; ref Not applicable (descriptive report); text
+  - [Biopsy - Small] Microscopic Examination; ref Not applicable (descriptive report); text
+  - [Biopsy - Small] Diagnosis; ref Not applicable (descriptive report); text
+  - [Biopsy - Small] Comment; ref Not applicable (descriptive report); text
 
 #### `BMA` — Bone Marrow Aspiration
 
@@ -1441,10 +1441,10 @@ own parameters.
 - Method: Haematology / histopathology | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (4):
-  - Specimen; ref Not applicable (descriptive report); text
-  - Cellularity; ref Normocellular marrow for age; text
-  - Morphology; ref Normal / descriptive; text
-  - Impression; ref Not applicable (descriptive report); text
+  - [Bone Marrow Aspiration] Specimen; ref Not applicable (descriptive report); text
+  - [Bone Marrow Aspiration] Cellularity; ref Normocellular marrow for age; text
+  - [Bone Marrow Aspiration] Morphology; ref Normal / descriptive; text
+  - [Bone Marrow Aspiration] Impression; ref Not applicable (descriptive report); text
 
 #### `IHC` — Immunohistochemistry (IHC)
 
@@ -1453,9 +1453,9 @@ own parameters.
 - Method: IHC | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (3):
-  - Marker(s); ref Not applicable (descriptive report); text
-  - Result; ref Negative / not detected (qualitative); text
-  - Interpretation; ref Not applicable (clinical interpretation); text
+  - [Immunohistochemistry (IHC)] Marker(s); ref Not applicable (descriptive report); text
+  - [Immunohistochemistry (IHC)] Result; ref Negative / not detected (qualitative); text
+  - [Immunohistochemistry (IHC)] Interpretation; ref Not applicable (clinical interpretation); text
 
 #### `SPECIAL` — Special Stain
 
@@ -1464,9 +1464,9 @@ own parameters.
 - Method: Histochemistry | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (3):
-  - Stain; ref Not applicable (descriptive report); text
-  - Result; ref Negative / not detected (qualitative); text
-  - Interpretation; ref Not applicable (clinical interpretation); text
+  - [Special Stain] Stain; ref Not applicable (descriptive report); text
+  - [Special Stain] Result; ref Negative / not detected (qualitative); text
+  - [Special Stain] Interpretation; ref Not applicable (clinical interpretation); text
 
 ### Microbiology
 
@@ -1477,8 +1477,8 @@ own parameters.
 - Method: Ziehl-Neelsen | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (2):
-  - AFB Result; ref Negative (no AFB seen); text
-  - Grading; ref Negative / grading reported if positive; text
+  - [Acid Fast Bacilli (AFB) Smear] AFB Result; ref Negative (no AFB seen); text
+  - [Acid Fast Bacilli (AFB) Smear] Grading; ref Negative / grading reported if positive; text
 
 #### `CULTUREAS` — Antibiotic Sensitivity
 
@@ -1487,8 +1487,8 @@ own parameters.
 - Method: Disc diffusion / MIC | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (2):
-  - Organism Isolated; ref No growth / no pathogen isolated; text
-  - Antibiotic Sensitivity; ref Reported as susceptible / intermediate / resistant; text
+  - [Culture & Sensitivity] Organism Isolated; ref No growth / no pathogen isolated; text
+  - [Culture & Sensitivity] Antibiotic Sensitivity; ref Reported as susceptible / intermediate / resistant; text
 
 #### `BLOODC` — Blood Culture
 
@@ -1497,9 +1497,9 @@ own parameters.
 - Method: Automated culture | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (3):
-  - Organism Isolated; ref No growth / no pathogen isolated; text
-  - Colony Count; ref No significant growth; text
-  - Antibiotic Sensitivity; ref Reported as susceptible / intermediate / resistant; text
+  - [Culture & Sensitivity] Organism Isolated; ref No growth / no pathogen isolated; text
+  - [Culture & Sensitivity] Colony Count; ref No significant growth; text
+  - [Culture & Sensitivity] Antibiotic Sensitivity; ref Reported as susceptible / intermediate / resistant; text
 
 #### `CSFC` — CSF Culture
 
@@ -1508,9 +1508,9 @@ own parameters.
 - Method: Culture and sensitivity | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (3):
-  - Organism Isolated; ref No growth / no pathogen isolated; text
-  - Colony Count; ref No significant growth; text
-  - Antibiotic Sensitivity; ref Reported as susceptible / intermediate / resistant; text
+  - [Culture & Sensitivity] Organism Isolated; ref No growth / no pathogen isolated; text
+  - [Culture & Sensitivity] Colony Count; ref No significant growth; text
+  - [Culture & Sensitivity] Antibiotic Sensitivity; ref Reported as susceptible / intermediate / resistant; text
 
 #### `FUNGC` — Fungal Culture
 
@@ -1519,9 +1519,9 @@ own parameters.
 - Method: Culture | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (3):
-  - Organism Isolated; ref No growth / no pathogen isolated; text
-  - Colony Count; ref No significant growth; text
-  - Antibiotic Sensitivity; ref Reported as susceptible / intermediate / resistant; text
+  - [Culture & Sensitivity] Organism Isolated; ref No growth / no pathogen isolated; text
+  - [Culture & Sensitivity] Colony Count; ref No significant growth; text
+  - [Culture & Sensitivity] Antibiotic Sensitivity; ref Reported as susceptible / intermediate / resistant; text
 
 #### `GRAM` — Gram Stain
 
@@ -1530,8 +1530,8 @@ own parameters.
 - Method: Microscopy | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (2):
-  - Gram Stain Result; ref No organisms seen; text
-  - Organism Seen; ref None seen; text
+  - [Gram Stain] Gram Stain Result; ref No organisms seen; text
+  - [Gram Stain] Organism Seen; ref None seen; text
 
 #### `HPSA` — Helicobacter pylori Stool Antigen
 
@@ -1549,8 +1549,8 @@ own parameters.
 - Method: Microscopy | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (2):
-  - KOH Result; ref No fungal elements seen; text
-  - Fungal Elements; ref Not seen; text
+  - [KOH Mount] KOH Result; ref No fungal elements seen; text
+  - [KOH Mount] Fungal Elements; ref Not seen; text
 
 #### `MRSA` — MRSA Screen
 
@@ -1559,8 +1559,8 @@ own parameters.
 - Method: Culture | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (2):
-  - MRSA Screen Result; ref Not detected; text
-  - Organism Isolated; ref No growth / no pathogen isolated; text
+  - [MRSA Screen] MRSA Screen Result; ref Not detected; text
+  - [MRSA Screen] Organism Isolated; ref No growth / no pathogen isolated; text
 
 #### `PUSC` — Pus Culture
 
@@ -1569,9 +1569,9 @@ own parameters.
 - Method: Culture and sensitivity | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (3):
-  - Organism Isolated; ref No growth / no pathogen isolated; text
-  - Colony Count; ref No significant growth; text
-  - Antibiotic Sensitivity; ref Reported as susceptible / intermediate / resistant; text
+  - [Culture & Sensitivity] Organism Isolated; ref No growth / no pathogen isolated; text
+  - [Culture & Sensitivity] Colony Count; ref No significant growth; text
+  - [Culture & Sensitivity] Antibiotic Sensitivity; ref Reported as susceptible / intermediate / resistant; text
 
 #### `SPUTUMC` — Sputum Culture
 
@@ -1580,9 +1580,9 @@ own parameters.
 - Method: Culture and sensitivity | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (3):
-  - Organism Isolated; ref No growth / no pathogen isolated; text
-  - Colony Count; ref No significant growth; text
-  - Antibiotic Sensitivity; ref Reported as susceptible / intermediate / resistant; text
+  - [Culture & Sensitivity] Organism Isolated; ref No growth / no pathogen isolated; text
+  - [Culture & Sensitivity] Colony Count; ref No significant growth; text
+  - [Culture & Sensitivity] Antibiotic Sensitivity; ref Reported as susceptible / intermediate / resistant; text
 
 #### `STOOLC` — Stool Culture
 
@@ -1591,9 +1591,9 @@ own parameters.
 - Method: Culture and sensitivity | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (3):
-  - Organism Isolated; ref No growth / no pathogen isolated; text
-  - Colony Count; ref No significant growth; text
-  - Antibiotic Sensitivity; ref Reported as susceptible / intermediate / resistant; text
+  - [Culture & Sensitivity] Organism Isolated; ref No growth / no pathogen isolated; text
+  - [Culture & Sensitivity] Colony Count; ref No significant growth; text
+  - [Culture & Sensitivity] Antibiotic Sensitivity; ref Reported as susceptible / intermediate / resistant; text
 
 #### `THROATC` — Throat Swab Culture
 
@@ -1602,9 +1602,9 @@ own parameters.
 - Method: Culture and sensitivity | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (3):
-  - Organism Isolated; ref No growth / no pathogen isolated; text
-  - Colony Count; ref No significant growth; text
-  - Antibiotic Sensitivity; ref Reported as susceptible / intermediate / resistant; text
+  - [Culture & Sensitivity] Organism Isolated; ref No growth / no pathogen isolated; text
+  - [Culture & Sensitivity] Colony Count; ref No significant growth; text
+  - [Culture & Sensitivity] Antibiotic Sensitivity; ref Reported as susceptible / intermediate / resistant; text
 
 #### `URINEC` — Urine Culture
 
@@ -1613,9 +1613,9 @@ own parameters.
 - Method: Culture and sensitivity | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (3):
-  - Organism Isolated; ref No growth / no pathogen isolated; text
-  - Colony Count; ref No significant growth; text
-  - Antibiotic Sensitivity; ref Reported as susceptible / intermediate / resistant; text
+  - [Culture & Sensitivity] Organism Isolated; ref No growth / no pathogen isolated; text
+  - [Culture & Sensitivity] Colony Count; ref No significant growth; text
+  - [Culture & Sensitivity] Antibiotic Sensitivity; ref Reported as susceptible / intermediate / resistant; text
 
 #### `VRE` — VRE Screen
 
@@ -1624,8 +1624,8 @@ own parameters.
 - Method: Culture | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (2):
-  - VRE Screen Result; ref Not detected; text
-  - Organism Isolated; ref No growth / no pathogen isolated; text
+  - [VRE Screen] VRE Screen Result; ref Not detected; text
+  - [VRE Screen] Organism Isolated; ref No growth / no pathogen isolated; text
 
 #### `WOUNDC` — Wound Swab Culture
 
@@ -1634,9 +1634,9 @@ own parameters.
 - Method: Culture and sensitivity | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (3):
-  - Organism Isolated; ref No growth / no pathogen isolated; text
-  - Colony Count; ref No significant growth; text
-  - Antibiotic Sensitivity; ref Reported as susceptible / intermediate / resistant; text
+  - [Culture & Sensitivity] Organism Isolated; ref No growth / no pathogen isolated; text
+  - [Culture & Sensitivity] Colony Count; ref No significant growth; text
+  - [Culture & Sensitivity] Antibiotic Sensitivity; ref Reported as susceptible / intermediate / resistant; text
 
 ### Molecular Diagnostics
 
@@ -1721,8 +1721,8 @@ own parameters.
 - Method: Immunofluorescence / ELISA | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (2):
-  - ANA Pattern; ref Negative / no significant pattern; text
-  - ANA Titre; ref Negative (<1:40); report titre if positive; text
+  - [Antinuclear Antibody (ANA)] ANA Pattern; ref Negative / no significant pattern; text
+  - [Antinuclear Antibody (ANA)] ANA Titre; ref Negative (<1:40); report titre if positive; text
 
 #### `BRUCELLA` — Brucella Agglutination
 
@@ -1767,9 +1767,9 @@ own parameters.
 - Method: ELISA / rapid | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (3):
-  - Dengue NS1 Antigen; ref Negative; text
-  - Dengue IgM Antibody; ref Negative; text
-  - Dengue IgG Antibody; ref Negative; text
+  - [Dengue Serology] Dengue NS1 Antigen; ref Negative; text
+  - [Dengue Serology] Dengue IgM Antibody; ref Negative; text
+  - [Dengue Serology] Dengue IgG Antibody; ref Negative; text
 
 #### `HPYL` — Helicobacter pylori IgG
 
@@ -1823,9 +1823,9 @@ own parameters.
 - Method: Rapid immunochromatography | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (3):
-  - Pf Antigen; ref Negative; text
-  - Pan Antigen; ref Negative; text
-  - Interpretation; ref Negative; text
+  - [Malaria Antigen (Pf/Pan)] Pf Antigen; ref Negative; text
+  - [Malaria Antigen (Pf/Pan)] Pan Antigen; ref Negative; text
+  - [Malaria Antigen (Pf/Pan)] Interpretation; ref Negative; text
 
 #### `RF` — Rheumatoid Factor (RF)
 
@@ -1852,8 +1852,8 @@ own parameters.
 - Method: Agglutination | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (2):
-  - TPHA Result; ref Non-reactive; text
-  - TPHA Titre; ref Non-reactive; text
+  - [TPHA] TPHA Result; ref Non-reactive; text
+  - [TPHA] TPHA Titre; ref Non-reactive; text
 
 #### `TYPHI` — Typhoid IgM
 
@@ -1871,8 +1871,8 @@ own parameters.
 - Method: Flocculation | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (2):
-  - VDRL Result; ref Non-reactive; text
-  - VDRL Titre; ref Non-reactive; text
+  - [VDRL] VDRL Result; ref Non-reactive; text
+  - [VDRL] VDRL Titre; ref Non-reactive; text
 
 #### `WIDAL` — Widal Test
 
@@ -1881,14 +1881,14 @@ own parameters.
 - Method: Agglutination | Report type: text
 - Price: ₹0.00 | GST: 0%
 - Parameters (8):
-  - S. typhi O; ref Negative (<1:80); text
-  - S. typhi H; ref Negative (<1:80); text
-  - S. paratyphi AH; ref Negative (<1:80); text
-  - S. paratyphi BH; ref Negative (<1:80); text
-  - S. paratyphi AO; ref Negative (<1:80); text
-  - S. paratyphi BO; ref Negative (<1:80); text
-  - S. typhi Vi; ref Negative (<1:80); text
-  - Interpretation; ref Negative / no significant agglutination; text
+  - [Widal Agglutination] S. typhi O; ref Negative (<1:80); text
+  - [Widal Agglutination] S. typhi H; ref Negative (<1:80); text
+  - [Widal Agglutination] S. paratyphi AH; ref Negative (<1:80); text
+  - [Widal Agglutination] S. paratyphi BH; ref Negative (<1:80); text
+  - [Widal Agglutination] S. paratyphi AO; ref Negative (<1:80); text
+  - [Widal Agglutination] S. paratyphi BO; ref Negative (<1:80); text
+  - [Widal Agglutination] S. typhi Vi; ref Negative (<1:80); text
+  - [Interpretation] Interpretation; ref Negative / no significant agglutination; text
 
 ## X-ray / Radiography
 

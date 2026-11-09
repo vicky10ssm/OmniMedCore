@@ -76,6 +76,7 @@ interface ParameterEntry {
   parameterId: string;
   reportParameterId: string;
   name: string;
+  section: string;
   result: string;
   unit: string;
   refRange: string;
@@ -395,6 +396,7 @@ export default function Reports() {
           parameterId: p.id,
           reportParameterId: existing?.id ?? "",
           name: existing?.parameter_name || p.name,
+          section: existing?.section_name || p.section_name,
           result: existing?.result_text || "",
           unit: existing ? existing.unit : p.unit,
           refRange: existing ? existing.ref_range : p.ref_range,
@@ -411,6 +413,7 @@ export default function Reports() {
           parameterId: p.parameter_id,
           reportParameterId: p.id,
           name: p.parameter_name,
+          section: p.section_name,
           result: p.result_text || "",
           unit: p.unit,
           refRange: p.ref_range,
@@ -577,12 +580,13 @@ export default function Reports() {
             if (p.reportParameterId) {
               await db.run(
                 `UPDATE report_parameters
-                 SET parameter_name = ?, unit = ?, ref_range = ?, ref_min = ?, ref_max = ?,
-                     result_text = ?, result_value = ?, abnormal = ?, deleted = ?,
-                     loinc_code = ?, updated_at = ?, dirty = 1
+                 SET parameter_name = ?, section_name = ?, unit = ?, ref_range = ?,
+                     ref_min = ?, ref_max = ?, result_text = ?, result_value = ?,
+                     abnormal = ?, deleted = ?, loinc_code = ?, updated_at = ?, dirty = 1
                  WHERE id = ? ${tenantClause}`,
                 [
                   p.name,
+                  p.section.trim(),
                   p.unit.trim(),
                   p.refRange.trim(),
                   p.refMin,
@@ -600,15 +604,17 @@ export default function Reports() {
             } else {
               await db.run(
                 `INSERT INTO report_parameters
-                   (id, report_order_id, parameter_id, parameter_name, unit, ref_range,
-                    ref_min, ref_max, result_value, result_text, abnormal, loinc_code,
-                    created_at, updated_at, device_id, dirty, deleted, tenant_id)
-                 VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,1,?,?)`,
+                   (id, report_order_id, parameter_id, parameter_name, section_name,
+                    unit, ref_range, ref_min, ref_max, result_value, result_text,
+                    abnormal, loinc_code, created_at, updated_at, device_id, dirty,
+                    deleted, tenant_id)
+                 VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,1,?,?)`,
                 [
                   uuid(),
                   entering.id,
                   p.parameterId,
                   p.name,
+                  p.section.trim(),
                   p.unit.trim(),
                   p.refRange.trim(),
                   p.refMin,
@@ -1147,56 +1153,71 @@ export default function Reports() {
                       </tr>
                     </thead>
                     <tbody>
-                      {entryParameters.map((p) => {
+                      {entryParameters.map((p, index) => {
                         const flag = parameterFlag(p);
+                        const previousSection =
+                          index > 0 ? entryParameters[index - 1].section : "";
+                        const showSection = Boolean(p.section && p.section !== previousSection);
                         return (
-                          <tr key={p.parameterId} className="border-t border-slate-100">
-                            <td className="px-2 py-1.5 text-center">
-                              <input
-                                type="checkbox"
-                                checked={p.selected}
-                                onChange={(e) => updateParameter(p.parameterId, { selected: e.target.checked })}
-                                className="h-4 w-4 rounded border-slate-300 accent-teal-700"
-                                aria-label={`Include ${p.name}`}
-                              />
-                            </td>
-                            <td className="px-3 py-1.5 font-medium">
-                              {p.name}
-                              {p.selected && flag && (
-                                <span className="ml-1.5 text-[10px] font-bold uppercase text-rose-600">{flag}</span>
-                              )}
-                            </td>
-                            <td className="px-3 py-1.5">
-                              <TextInput
-                                value={p.result}
-                                onChange={(e) => updateParameter(p.parameterId, { result: e.target.value })}
-                                placeholder="Value"
-                                className="w-32"
-                                disabled={!p.selected}
-                                aria-label={`${p.name} result`}
-                              />
-                            </td>
-                            <td className="px-3 py-1.5">
-                              <TextInput
-                                value={p.unit}
-                                onChange={(e) => updateParameter(p.parameterId, { unit: e.target.value })}
-                                placeholder="Unit"
-                                className="w-28"
-                                disabled={!p.selected}
-                                aria-label={`${p.name} unit`}
-                              />
-                            </td>
-                            <td className="px-3 py-1.5">
-                              <TextInput
-                                value={p.refRange}
-                                onChange={(e) => updateParameter(p.parameterId, { refRange: e.target.value })}
-                                placeholder="Reference"
-                                className="w-36"
-                                disabled={!p.selected}
-                                aria-label={`${p.name} reference range`}
-                              />
-                            </td>
-                          </tr>
+                          <Fragment key={p.parameterId}>
+                            {showSection && (
+                              <tr className="border-t border-slate-200 bg-slate-100">
+                                <td
+                                  colSpan={5}
+                                  className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wide text-slate-600"
+                                >
+                                  {p.section}
+                                </td>
+                              </tr>
+                            )}
+                            <tr className="border-t border-slate-100">
+                              <td className="px-2 py-1.5 text-center">
+                                <input
+                                  type="checkbox"
+                                  checked={p.selected}
+                                  onChange={(e) => updateParameter(p.parameterId, { selected: e.target.checked })}
+                                  className="h-4 w-4 rounded border-slate-300 accent-teal-700"
+                                  aria-label={`Include ${p.name}`}
+                                />
+                              </td>
+                              <td className="px-3 py-1.5 font-medium">
+                                {p.name}
+                                {p.selected && flag && (
+                                  <span className="ml-1.5 text-[10px] font-bold uppercase text-rose-600">{flag}</span>
+                                )}
+                              </td>
+                              <td className="px-3 py-1.5">
+                                <TextInput
+                                  value={p.result}
+                                  onChange={(e) => updateParameter(p.parameterId, { result: e.target.value })}
+                                  placeholder="Value"
+                                  className="w-32"
+                                  disabled={!p.selected}
+                                  aria-label={`${p.name} result`}
+                                />
+                              </td>
+                              <td className="px-3 py-1.5">
+                                <TextInput
+                                  value={p.unit}
+                                  onChange={(e) => updateParameter(p.parameterId, { unit: e.target.value })}
+                                  placeholder="Unit"
+                                  className="w-28"
+                                  disabled={!p.selected}
+                                  aria-label={`${p.name} unit`}
+                                />
+                              </td>
+                              <td className="px-3 py-1.5">
+                                <TextInput
+                                  value={p.refRange}
+                                  onChange={(e) => updateParameter(p.parameterId, { refRange: e.target.value })}
+                                  placeholder="Reference"
+                                  className="w-36"
+                                  disabled={!p.selected}
+                                  aria-label={`${p.name} reference range`}
+                                />
+                              </td>
+                            </tr>
+                          </Fragment>
                         );
                       })}
                     </tbody>
@@ -1582,8 +1603,24 @@ function ReportPrint({
                           )}
                         </td>
                       </tr>
-                      {params.map((p) => (
-                        <tr key={p.id} className="border-b border-slate-100">
+                      {params.map((p, index) => {
+                        const previousSection =
+                          index > 0 ? params[index - 1].section_name : "";
+                        const showSection =
+                          Boolean(p.section_name) && p.section_name !== previousSection;
+                        return (
+                          <Fragment key={p.id}>
+                            {showSection && (
+                              <tr className="border-b border-slate-200 bg-slate-100">
+                                <td
+                                  colSpan={4}
+                                  className="py-1.5 pr-2 text-[10px] font-semibold uppercase tracking-wide text-slate-600"
+                                >
+                                  {p.section_name}
+                                </td>
+                              </tr>
+                            )}
+                            <tr className="border-b border-slate-100">
                           <td className="py-1.5 pr-2 pl-4">{p.parameter_name}</td>
                           <td className="num py-1.5 pr-2 font-semibold">
                             {p.result_text || "—"}
@@ -1595,8 +1632,10 @@ function ReportPrint({
                           </td>
                           <td className="py-1.5 pr-2 text-slate-600">{p.unit || "—"}</td>
                           <td className="py-1.5 text-slate-600">{p.ref_range || "—"}</td>
-                        </tr>
-                      ))}
+                            </tr>
+                          </Fragment>
+                        );
+                      })}
                     </Fragment>
                   );
                 }

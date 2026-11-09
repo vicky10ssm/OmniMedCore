@@ -599,6 +599,20 @@ The second deployment exists. `npm run build` makes the terminal (editing) app; 
 - The expenses list, search, module filter and CSV export include the attribution.
 - Operators can add and view expenses as before; admin/operator visibility rules are unchanged.
 
+## Report parameter sections - built
+
+- `test_parameters.section_name` and `report_parameters.section_name` are added by schema 24.
+- Report entry and A4 print group parameters by section.
+- CBC uses **Complete Blood Count** and **Differential Leucocyte Count**.
+- LFT uses Bilirubin, Liver Enzymes and Proteins.
+- KFT uses Renal Profile, Electrolytes and Minerals.
+- Urine uses Physical Examination, Chemical Examination and Microscopy.
+- Other panels use clinically sensible sections or the test name; single-analyte tests remain unsectioned.
+- `starterSections.ts` fills blank section names at boot without overwriting a section edited by the
+  laboratory. Existing report snapshots gain section labels for display while keeping their stored
+  results and parameter names.
+- The Tests -> Parameters editor exposes the section field.
+
 ## CBC analyser indices - built
 
 - The starter CBC template is expanded from 14 to 20 parameters:

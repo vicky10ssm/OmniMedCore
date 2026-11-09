@@ -1,7 +1,7 @@
 # Licensing, editions and activation
 
 Last updated: 4 November 2026<br>
-Database schema: `23`
+Database schema: `24`
 
 ## Commercial model
 

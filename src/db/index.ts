@@ -19,6 +19,7 @@ import { isMonitor } from "../app/mode";
 import { ensureDefaultTenant, getCurrentTenantId } from "./tenant";
 import { ensureStarterTests } from "./starterTests";
 import { ensureStarterParameters } from "./starterParameters";
+import { ensureStarterSections } from "./starterSections";
 import { ensureStarterPackages } from "./starterPackages";
 import { ensureStarterReferences } from "./starterReferences";
 import { isTauriRuntime } from "./tauriStorage";
@@ -176,6 +177,7 @@ class SqlJsSource implements DataSource {
     await ensureDefaultTenant(src);
     await ensureStarterTests(src);
     await ensureStarterParameters(src);
+    await ensureStarterSections(src);
     await ensureStarterReferences(src);
     await ensureStarterPackages(src);
     src.persist();
@@ -419,7 +421,9 @@ class SqlJsSource implements DataSource {
       // clinical authorization and ABDM-compatible parameter coding
       ["users", "can_authorize_reports INTEGER NOT NULL DEFAULT 0"],
       ["test_parameters", "loinc_code TEXT NOT NULL DEFAULT ''"],
+      ["test_parameters", "section_name TEXT NOT NULL DEFAULT ''"],
       ["report_parameters", "loinc_code TEXT NOT NULL DEFAULT ''"],
+      ["report_parameters", "section_name TEXT NOT NULL DEFAULT ''"],
     ];
     for (const [table, colDef] of repairs) {
       try {
