@@ -214,7 +214,7 @@ function checkTenantColumns(db, label) {
 
 function checkStarterParameters(db, label) {
   const expected = {
-    "test-cbc": 14,
+    "test-cbc": 20,
     "test-lft": 11,
     "test-kft": 9,
     "test-lipid": 8,

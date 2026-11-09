@@ -17,7 +17,7 @@ Collect:
 - Centre legal/display name, address, phone, GSTIN, logo
 - Number of terminals, Windows versions, printers
 - Users and role/report-authority matrix
-- Test/package list with prices, GST (new catalogues default to 0%), department, specimen, container, method, LOINC. A 227-entry pathology/X-ray starter library, 371 pathology parameter templates and 27 combined health-check packages are installed automatically; review package/test prices and reference intervals before go-live.
+- Test/package list with prices, GST (new catalogues default to 0%), department, specimen, container, method, LOINC. A 227-entry pathology/X-ray starter library, 377 pathology parameter templates and 27 combined health-check packages are installed automatically; review package/test prices and reference intervals before go-live.
 - Expense attribution policy: Pathology, X-ray, Pharmacy, Hospital and General/shared; decide how shared costs are tagged and reported
 - Doctor directory and contact details (no commission policy is configured)
 - Report templates and reference intervals
