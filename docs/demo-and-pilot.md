@@ -94,6 +94,8 @@ Then frame the demo around those answers.
 - Show History with prior revision preserved.
 - Print preview: sample ID, authorizer, version, reference intervals.
 - Show **Diagnostics -> Radiologists**, where an administrator uploads multiple signature images.
+- Show **Diagnostics -> Pathologists**, add two reporting pathologists with signatures, select one on a
+  pathology report, release it and verify the printed name/qualification/signature.
 - Open an X-ray order, enter clinical history/findings/impression, select the issuing radiologist,
   release it, and preview the radiology letterhead with the saved signature image and configured
   disclaimer.

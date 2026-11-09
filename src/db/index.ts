@@ -345,6 +345,7 @@ class SqlJsSource implements DataSource {
       "commission_entries",
       "report_orders",
       "radiologists",
+      "pathologists",
       "test_parameters",
       "report_parameters",
       "samples",
@@ -418,6 +419,10 @@ class SqlJsSource implements DataSource {
       ["report_orders", "approval_status TEXT NOT NULL DEFAULT 'pending'"],
       ["report_orders", "approved_by TEXT NOT NULL DEFAULT ''"],
       ["report_orders", "approved_at INTEGER"],
+      ["report_orders", "pathologist_id TEXT NOT NULL DEFAULT ''"],
+      ["report_orders", "pathologist_name TEXT NOT NULL DEFAULT ''"],
+      ["report_orders", "pathologist_qualification TEXT NOT NULL DEFAULT ''"],
+      ["report_orders", "pathologist_signature TEXT NOT NULL DEFAULT ''"],
       // clinical authorization and ABDM-compatible parameter coding
       ["users", "can_authorize_reports INTEGER NOT NULL DEFAULT 0"],
       ["test_parameters", "loinc_code TEXT NOT NULL DEFAULT ''"],

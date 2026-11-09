@@ -128,7 +128,7 @@ The snapshot includes all business tables, including:
 - `invoices`, `invoice_items`, `payments`
 - `expenses`, `expense_categories`
 - `samples`, `report_orders`, `report_parameters`, `report_result_revisions`,
-  `radiologists`
+  `radiologists`, `pathologists`
 - pharmacy stock and sales tables
 - admissions, hospital charges and hospital payments
 - audit/compliance data
@@ -231,8 +231,8 @@ dashboard.
 | `fact_hospital_charges` | `hospital_charges.csv` | IPD charges and balance |
 | `pipeline_runs` | ingestion log | Freshness, duplicates and failures |
 
-Load `radiologists` only if a report-viewer use case is explicitly approved. Do not expose signatures
-in a general business dashboard.
+Load `radiologists` or `pathologists` only if a report-viewer use case is explicitly approved. Do not
+expose signatures in a general business dashboard.
 
 ### 6.2 Key fields and conversions
 

@@ -48,7 +48,7 @@ Deliverable: signed configuration/data workbook and scope.
 - Doctors directory and contact details
 - Users, roles, 2FA and report release authority
 - Sample accession format
-- Report header/footer and the Pathologists section (reporting pathologist identity)
+- Report header/footer and the Pathologists catalogue (one or more reporting pathologists with signatures)
 - Google Drive CSV export folder and access policy, if in scope
 
 ### Phase 4 — Migration

@@ -1953,6 +1953,51 @@ export const MIGRATIONS: Migration[] = [
       ALTER TABLE report_parameters ADD COLUMN section_name TEXT NOT NULL DEFAULT '';
     `,
   },
+  {
+    version: 25,
+    name: "multiple pathologist signatures",
+    tolerant: true,
+    sql: `
+      CREATE TABLE IF NOT EXISTS pathologists (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        qualification TEXT NOT NULL DEFAULT '',
+        signature_data TEXT NOT NULL DEFAULT '',
+        is_active INTEGER NOT NULL DEFAULT 1,
+        sort_order INTEGER NOT NULL DEFAULT 0,
+        created_at INTEGER NOT NULL,
+        updated_at INTEGER NOT NULL,
+        device_id TEXT NOT NULL DEFAULT '',
+        dirty INTEGER NOT NULL DEFAULT 1,
+        deleted INTEGER NOT NULL DEFAULT 0,
+        tenant_id TEXT NOT NULL DEFAULT 'tenant-default'
+      );
+      CREATE INDEX IF NOT EXISTS idx_pathologists_tenant
+        ON pathologists(tenant_id);
+      CREATE INDEX IF NOT EXISTS idx_pathologists_active
+        ON pathologists(tenant_id, is_active, sort_order);
+
+      ALTER TABLE report_orders ADD COLUMN pathologist_id TEXT NOT NULL DEFAULT '';
+      ALTER TABLE report_orders ADD COLUMN pathologist_name TEXT NOT NULL DEFAULT '';
+      ALTER TABLE report_orders ADD COLUMN pathologist_qualification TEXT NOT NULL DEFAULT '';
+      ALTER TABLE report_orders ADD COLUMN pathologist_signature TEXT NOT NULL DEFAULT '';
+
+      INSERT INTO pathologists
+        (id, name, qualification, signature_data, is_active, sort_order,
+         created_at, updated_at, device_id, dirty, deleted, tenant_id)
+      SELECT 'pathologist-seed-' || pn.tenant_id, trim(pn.value),
+             COALESCE(pq.value, ''), '', 1, 1, 0, 0, '', 0, 0, pn.tenant_id
+      FROM settings pn
+      LEFT JOIN settings pq
+        ON pq.tenant_id = pn.tenant_id
+       AND pq.key = 'pathologist_qualification'
+      WHERE pn.key = 'pathologist_name' AND trim(pn.value) <> ''
+        AND NOT EXISTS (
+          SELECT 1 FROM pathologists p
+          WHERE p.tenant_id = pn.tenant_id AND p.deleted = 0
+        );
+    `,
+  },
 ];
 
 /** First-boot seed data: lab settings, admin user, expense categories, sample catalog. */

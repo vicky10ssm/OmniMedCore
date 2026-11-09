@@ -169,6 +169,7 @@ export const TENANT_TABLES = [
   "commission_entries",
   "report_orders",
   "radiologists",
+  "pathologists",
   "test_parameters",
   "report_parameters",
   "samples",

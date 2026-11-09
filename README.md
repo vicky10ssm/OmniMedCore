@@ -54,7 +54,7 @@ Expenses profitability card.
 - Pharmacy medicine, batch/expiry stock, receipt, dispensing, GST receipt and cancellation
 - Expenses with multi-module attribution (Pathology, X-ray, Pharmacy, Hospital, General/shared), audit evidence and a read-only monitoring build
 - Administrator dashboard with live local Overview, Billing, Diagnostics, Expenses, Pharmacy and Hospital views, preset 1/7/30/90-day and custom date ranges, dependency-free charts, CSV export and print
-- Administrator-only Radiologists and Pathologists sections under Diagnostics for report signatures and reporting pathologist identity
+- Administrator-only Radiologists and Pathologists catalogues under Diagnostics; both support multiple people with scanned signatures, and the selected person is snapshotted onto the issued report
 - SQLCipher-encrypted desktop database with the key held in Windows Credential Manager
 - Daily encrypted snapshots with 7/4/12 retention, optional USB/OneDrive copy, manual backup and validated restore
 - Signed Diagnostics/Pharmacy/Hospital/Complete/Custom licences with tenant/hardware fingerprint binding,

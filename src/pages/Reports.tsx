@@ -17,6 +17,7 @@ import type {
   ReportOrderRow,
   ReportParameterRow,
   RadiologistRow,
+  PathologistRow,
   ReportResultRevisionRow,
   SampleRow,
   TestParameterRow,
@@ -106,6 +107,28 @@ function isRadiologyReport(row: Pick<WorkRow, "test_category">): boolean {
 }
 
 /**
+ * Rebuild a pathologist choice from an issued report's saved snapshot so it
+ * stays selectable even if the catalogue row was later deactivated/deleted.
+ */
+function pathologistFromOrder(row: WorkRow): PathologistRow | null {
+  if (!row.pathologist_id) return null;
+  return {
+    id: row.pathologist_id,
+    name: row.pathologist_name || "Pathologist",
+    qualification: row.pathologist_qualification || "",
+    signature_data: row.pathologist_signature || "",
+    is_active: 0,
+    sort_order: 0,
+    created_at: row.created_at,
+    updated_at: row.updated_at,
+    device_id: row.device_id,
+    dirty: 0,
+    deleted: 0,
+    tenant_id: row.tenant_id,
+  };
+}
+
+/**
  * Keep an existing report's signature selectable even if its radiologist was
  * later deactivated or deleted. The report stores its own immutable snapshot.
  */
@@ -159,6 +182,8 @@ export default function Reports() {
   const [xrayImpression, setXrayImpression] = useState("");
   const [radiologists, setRadiologists] = useState<RadiologistRow[]>([]);
   const [selectedRadiologistId, setSelectedRadiologistId] = useState("");
+  const [pathologists, setPathologists] = useState<PathologistRow[]>([]);
+  const [selectedPathologistId, setSelectedPathologistId] = useState("");
 
   const [printingInvoice, setPrintingInvoice] = useState<{
     invoiceId: string;
@@ -254,6 +279,13 @@ export default function Reports() {
       ) ?? null,
     [radiologists, selectedRadiologistId]
   );
+  const selectedPathologist = useMemo(
+    () =>
+      pathologists.find(
+        (pathologist) => pathologist.id === selectedPathologistId
+      ) ?? null,
+    [pathologists, selectedPathologistId]
+  );
 
   const xraySignatureReady =
     !entering ||
@@ -346,6 +378,8 @@ export default function Reports() {
     setXrayImpression(r.impression_text || "");
     setRadiologists([]);
     setSelectedRadiologistId("");
+    setPathologists([]);
+    setSelectedPathologistId("");
     setError("");
 
     if (isRadiologyReport(r)) {
@@ -382,6 +416,21 @@ export default function Reports() {
     try {
       const db = await getDb();
       const [tenantClause, tenantParams] = tenantAnd();
+      const pathologistList = await db.all<PathologistRow>(
+        `SELECT * FROM pathologists
+         WHERE is_active = 1 AND deleted = 0 ${tenantClause}
+         ORDER BY sort_order, name`,
+        tenantParams
+      );
+      if (
+        r.pathologist_id &&
+        !pathologistList.some((pathologist) => pathologist.id === r.pathologist_id)
+      ) {
+        const snapshot = pathologistFromOrder(r);
+        if (snapshot) pathologistList.push(snapshot);
+      }
+      setPathologists(pathologistList);
+      setSelectedPathologistId(r.pathologist_id || "");
       const templates = await db.all<TestParameterRow>(
         `SELECT * FROM test_parameters
          WHERE test_id = ? AND is_active = 1 AND deleted = 0 ${tenantClause}
@@ -503,7 +552,7 @@ export default function Reports() {
     }
     if (radiology && markDone && !selectedRadiologist?.signature_data.trim()) {
       return setError(
-        "The selected radiologist has no signature image. Upload one in Settings → Radiologists before releasing."
+        "The selected radiologist has no signature image. Upload one in Diagnostics -> Radiologists before releasing."
       );
     }
     if (!radiology && !hasParameters && markDone && !text) {
@@ -564,6 +613,16 @@ export default function Reports() {
       const radiologistSignatureValue = radiology
         ? selectedRadiologist?.signature_data.trim() ?? ""
         : entering.radiologist_signature || "";
+      const pathologistIdValue = radiology ? "" : selectedPathologist?.id ?? "";
+      const pathologistNameValue = radiology
+        ? ""
+        : selectedPathologist?.name.trim() ?? "";
+      const pathologistQualificationValue = radiology
+        ? ""
+        : selectedPathologist?.qualification.trim() ?? "";
+      const pathologistSignatureValue = radiology
+        ? ""
+        : selectedPathologist?.signature_data.trim() ?? "";
       const combined = radiology
         ? [
             xrayFindingsValue ? `Findings:\n${xrayFindingsValue}` : "",
@@ -645,7 +704,8 @@ export default function Reports() {
           `UPDATE report_orders
            SET result_text = ?, clinical_history = ?, findings_text = ?, impression_text = ?,
                radiologist_id = ?, radiologist_name = ?, radiologist_qualification = ?,
-               radiologist_signature = ?,
+               radiologist_signature = ?, pathologist_id = ?, pathologist_name = ?,
+               pathologist_qualification = ?, pathologist_signature = ?,
                result_value = ?, abnormal = ?, status = ?,
                entered_by = ?, verified_by = ?, reported_at = ?,
                approval_status = ?, approved_by = ?, approved_at = ?,
@@ -662,6 +722,10 @@ export default function Reports() {
             radiologistNameValue,
             radiologistQualificationValue,
             radiologistSignatureValue,
+            pathologistIdValue,
+            pathologistNameValue,
+            pathologistQualificationValue,
+            pathologistSignatureValue,
             hasParameters ? null : singleNumeric,
             abnormal,
             markDone ? "done" : "pending",
@@ -1072,6 +1136,49 @@ export default function Reports() {
               )}
             </div>
 
+            {!isRadiologyReport(entering) && (
+              <div className="space-y-2">
+                <Labeled
+                  label="Reporting pathologist"
+                  hint="Optional. The selected name, qualification and signature are stored on this report."
+                >
+                  <Select
+                    value={selectedPathologistId}
+                    onChange={(e) => setSelectedPathologistId(e.target.value)}
+                  >
+                    <option value="">Use verifying user / centre default</option>
+                    {pathologists.map((pathologist) => (
+                      <option key={pathologist.id} value={pathologist.id}>
+                        {pathologist.name}
+                        {pathologist.qualification
+                          ? ` - ${pathologist.qualification}`
+                          : ""}
+                        {pathologist.is_active === 0 ? " (inactive)" : ""}
+                      </option>
+                    ))}
+                  </Select>
+                </Labeled>
+                {selectedPathologist?.signature_data && (
+                  <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
+                    <p className="mb-1 text-[11px] font-medium text-slate-500">
+                      Pathologist signature preview
+                    </p>
+                    <img
+                      src={selectedPathologist.signature_data}
+                      alt="Selected pathologist signature"
+                      className="max-h-20 max-w-56 object-contain"
+                    />
+                  </div>
+                )}
+                {pathologists.length === 0 && (
+                  <p className="rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-600">
+                    No pathologist signatures are configured. Add one under
+                    Diagnostics → Pathologists if a scanned signature should print.
+                  </p>
+                )}
+              </div>
+            )}
+
             {isRadiologyReport(entering) ? (
               <div className="space-y-3">
                 <Labeled
@@ -1145,7 +1252,7 @@ export default function Reports() {
                 {radiologists.length === 0 && (
                   <p className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">
                     No active radiologist signatures are configured. Ask an
-                    administrator to add one in Settings → Radiologists before
+                    administrator to add one in Diagnostics → Radiologists before
                     releasing an X-ray report.
                   </p>
                 )}
@@ -1153,7 +1260,7 @@ export default function Reports() {
                   !selectedRadiologist.signature_data.trim() && (
                     <p className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">
                       This radiologist has no signature image. Upload one in
-                      Settings → Radiologists before releasing.
+                      Diagnostics → Radiologists before releasing.
                     </p>
                   )}
               </div>
@@ -1546,10 +1653,19 @@ function ReportPrint({
 
   const doctorName = useDoctorName(invoice?.doctor_id ?? "");
   const reportVersion = Math.max(1, ...orders.map((o) => o.revision_no ?? 1));
+  const snapshotPathologist = orders.find((o) => o.pathologist_name);
   const authorizerName =
+    snapshotPathologist?.pathologist_name ||
     orders.find((o) => o.verified_by_name)?.verified_by_name ||
     lab.pathologist_name ||
     "Authorized signatory";
+  const authorizerQualification =
+    snapshotPathologist?.pathologist_qualification ||
+    (authorizerName === lab.pathologist_name
+      ? lab.pathologist_qualification || ""
+      : "");
+  const pathologistSignature =
+    orders.find((o) => o.pathologist_signature)?.pathologist_signature || "";
   const printConfig = readPrintLetterhead(lab);
   const showSignature = shouldPrintReportSignature(lab);
 
@@ -1743,11 +1859,16 @@ function ReportPrint({
           {showSignature && (
             <div className="mt-10 flex items-end justify-between text-[10px] text-slate-600">
               <div>
+                {pathologistSignature && (
+                  <img
+                    src={pathologistSignature}
+                    alt="Pathologist signature"
+                    className="mb-1 max-h-16 max-w-44 object-contain"
+                  />
+                )}
                 <p className="border-t border-slate-400 pt-1 font-semibold">
                   {authorizerName}
-                  {lab.pathologist_qualification && authorizerName === lab.pathologist_name
-                    ? `, ${lab.pathologist_qualification}`
-                    : ""}
+                  {authorizerQualification ? `, ${authorizerQualification}` : ""}
                 </p>
                 <p className="text-slate-500">Authorized for release</p>
               </div>

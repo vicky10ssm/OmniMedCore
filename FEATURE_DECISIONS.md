@@ -599,6 +599,22 @@ The second deployment exists. `npm run build` makes the terminal (editing) app; 
 - The expenses list, search, module filter and CSV export include the attribution.
 - Operators can add and view expenses as before; admin/operator visibility rules are unchanged.
 
+## Multiple pathologist signatures - built
+
+- `pathologists` mirrors `radiologists`: tenant-scoped name, qualification, signature data URL,
+  active state and sort order.
+- Migration 25 seeds one row from the legacy `settings.pathologist_name` / `pathologist_qualification`
+  values per tenant, only when a non-empty name exists.
+- Pathology report entry offers an optional reporting-pathologist selector. The selected
+  id/name/qualification/signature is snapshotted onto `report_orders`.
+- Printing uses the pathologist snapshot first, then the verifying user's name, then the legacy centre
+  profile. An explicit pathologist selection also prints its scanned signature.
+- Inactive/deleted pathologists already captured on a report remain selectable when amending, and their
+  saved snapshot remains printable.
+- Combined and per-test printing both read the same snapshot. On a combined report with different
+  pathologists per test, the first saved snapshot is used.
+- X-ray reporting is unchanged and still uses the radiologist catalogue.
+
 ## Dedicated Radiologists and Pathologists sections - built
 
 - Radiologists management moved from Settings to **Diagnostics -> Radiologists**.
