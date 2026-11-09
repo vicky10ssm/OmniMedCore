@@ -166,8 +166,8 @@ const TENANT_TABLES = [
   "settings", "users", "audit_log", "patients", "tests", "packages",
   "package_items", "doctors", "invoice_blocks", "invoices", "invoice_items",
   "payments", "expense_categories", "expenses", "payouts",
-  "commission_entries", "report_orders", "radiologists", "test_parameters",
-  "report_parameters", "samples", "report_result_revisions", "abdm_consents",
+  "commission_entries", "report_orders", "radiologists", "pathologists",
+  "test_parameters", "report_parameters", "samples", "report_result_revisions", "abdm_consents",
   "abdm_outbox", "admissions", "hospital_services", "hospital_charges",
   "hospital_bill_payments", "sync_queue", "sync_ack", "local_export_queue",
   "medicines", "pharmacy_batches", "pharmacy_sales", "pharmacy_sale_items",
@@ -193,8 +193,8 @@ const TABLES = [
   "settings", "users", "audit_log", "patients", "tests", "packages",
   "package_items", "doctors", "invoice_blocks", "invoices", "invoice_items",
   "payments", "expense_categories", "expenses", "payouts",
-  "commission_entries", "report_orders", "radiologists", "test_parameters",
-  "report_parameters", "samples", "report_result_revisions", "abdm_consents",
+  "commission_entries", "report_orders", "radiologists", "pathologists",
+  "test_parameters", "report_parameters", "samples", "report_result_revisions", "abdm_consents",
   "abdm_outbox", "admissions", "hospital_services", "hospital_charges",
   "hospital_bill_payments", "sync_queue", "sync_ack", "local_export_queue",
   "medicines", "pharmacy_batches", "pharmacy_sales", "pharmacy_sale_items",
@@ -278,7 +278,32 @@ scenario("fresh database: migrate + seed", () => {
   console.log(`      version=${v}, tests=${n}, tenants=${t}`);
 });
 
-// ---- Case 2a: diagnostic GST reset ------------------------------------------
+// ---- Case 2a: pathologist catalogue seeding ---------------------------------
+scenario("migration 25 seeds the pathologist catalogue from legacy settings", () => {
+  const db = freshDb();
+  migrate(db);
+  db.exec(`
+    INSERT OR REPLACE INTO settings (tenant_id, key, value, updated_at, device_id)
+    VALUES ('tenant-default', 'pathologist_name', 'Dr. Legacy Rao', 0, ''),
+           ('tenant-default', 'pathologist_qualification', 'MD (Pathology)', 0, '');
+  `);
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    db.exec("UPDATE meta SET value = '24' WHERE key = 'schema_version'");
+    migrate(db);
+  }
+  const rows = db.exec(
+    "SELECT name, qualification FROM pathologists WHERE tenant_id = 'tenant-default' AND deleted = 0"
+  );
+  const count = rows.length ? rows[0].values.length : 0;
+  if (count !== 1) throw new Error(`expected 1 seeded pathologist, got ${count}`);
+  const [name, qualification] = rows[0].values[0];
+  if (name !== "Dr. Legacy Rao" || qualification !== "MD (Pathology)") {
+    throw new Error(`unexpected seed values: ${name} / ${qualification}`);
+  }
+  console.log(`      seeded ${name} (${qualification}) once`);
+});
+
+// ---- Case 2b: diagnostic GST reset ------------------------------------------
 scenario("migration 21 resets test and package GST", () => {
   const db = freshDb();
   migrate(db);

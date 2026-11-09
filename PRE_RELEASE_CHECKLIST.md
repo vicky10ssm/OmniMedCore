@@ -169,6 +169,11 @@ Record accession/sample IDs for both blocked and allowed disposal cases.
 - [ ] Admin sees Dashboard, Settings, Radiologists, Pathologists, Compliance and Expenses profitability summary
 - [ ] Radiologists and Pathologists are under Diagnostics and absent from Settings tabs/forms
 - [ ] Operator cannot see or open Radiologists/Pathologists routes
+- [ ] Admin can add, edit, deactivate and delete multiple pathologist records with signatures
+- [ ] An existing single pathologist profile is seeded into the new catalogue after migration 25
+- [ ] A pathology report stores the selected pathologist snapshot and prints its name/qualification/signature
+- [ ] Deactivating/deleting a pathologist does not change an already issued report
+- [ ] X-ray reports still require and print the selected radiologist signature
 - [ ] Operator can add/view Expenses
 - [ ] Operator cannot see Dashboard, Settings or Compliance navigation
 - [ ] Operator direct `#/` redirects to Expenses

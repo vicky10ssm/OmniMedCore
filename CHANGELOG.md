@@ -3,6 +3,44 @@
 All notable changes to OmniMed Core are recorded here. This project follows semantic versioning once
 production releases begin.
 
+## [0.20.0] - 2026-11-09
+
+### Added
+
+- **Multiple pathologists**. The administrator **Diagnostics → Pathologists** section now works like
+  Radiologists: add one record per pathologist with name, qualification, scanned signature image,
+  active state and ordering.
+- Pathology report entry has an optional **Reporting pathologist** selector. The chosen id/name/
+  qualification/signature is snapshotted onto `report_orders`, so later catalogue edits or deletions
+  cannot rewrite an issued report.
+- Printed pathology reports use the saved pathologist snapshot first, then the verifying user's name,
+  then the legacy centre profile. The scanned signature prints in the report signature block.
+
+### Changed
+
+- The Pathologists section is now a full signature catalogue instead of a single shared profile.
+- Migration 25 seeds one pathologist row from any existing `settings.pathologist_name` /
+  `pathologist_qualification` values, then leaves the catalogue editable.
+- Combined and individual pathology report printing both honour the selected pathologist snapshot.
+- Reports-module gating and administrator-only routes are unchanged.
+
+### Database
+
+- Schema moves from **24** to **25**.
+- Adds the tenant-scoped `pathologists` table and `report_orders.pathologist_id/name/qualification/
+  signature` snapshot columns.
+- Existing reports keep empty snapshots and continue to fall back to the verifying user or centre
+  profile.
+
+### Verified
+
+- Add, edit, deactivate, reactivate and delete multiple pathologist records.
+- Existing single pathologist profile seeds into the new catalogue.
+- Pathology reports store and print the selected name, qualification and signature.
+- X-ray reports are unaffected and continue to use the radiologist catalogue.
+- Operator navigation and direct routes remain blocked.
+- `npm run check`, terminal build, monitor build and Rust tests pass.
+
 ## [0.19.0] - 2026-11-09
 
 ### Added

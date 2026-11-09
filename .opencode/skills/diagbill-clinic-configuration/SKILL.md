@@ -76,8 +76,8 @@ Do not invent a second list of module names in another file or duplicate JSON pa
 ## Radiologist signatures
 
 - Administrators manage multiple radiologist records under **Diagnostics -> Radiologists**.
-- Administrators manage the reporting pathologist name and qualification under **Diagnostics ->
-  Pathologists**. These sections are admin-only and moved out of Settings.
+- Administrators manage multiple pathologist records under **Diagnostics -> Pathologists**. These
+  sections are admin-only and moved out of Settings.
 - Each `radiologists` row is tenant-scoped and stores name, qualification, signature data URL, active
   state and sort order. The image limit is the same PNG/JPEG/WebP 500 KB rule as the logo.
 - Operators select an active radiologist with a signature when entering/releasing an X-ray report.
@@ -85,6 +85,12 @@ Do not invent a second list of module names in another file or duplicate JSON pa
   uses the snapshot, never the live catalogue.
 - Deleting/deactivating a radiologist must not alter or block printing of an already issued report.
 - Write audit events for create/update/delete. Never put the signature data URL in audit detail.
+- Pathologists use the same table shape (`pathologists`): name, qualification, signature data URL,
+  active state, sort order, device/dirty/deleted and tenant id. Migration 25 seeds one row from the
+  legacy `settings.pathologist_name` / `pathologist_qualification` values when present.
+- Operators can select an optional pathologist on a pathology report. The chosen id/name/qualification/
+  signature is snapshotted onto `report_orders`; printing uses that snapshot first, then the verifying
+  user's name, then the legacy centre profile. Catalogue edits or deletions must not rewrite history.
 
 ## Persistence and audit
 
@@ -111,8 +117,10 @@ Do not invent a second list of module names in another file or duplicate JSON pa
    invoice, pathology report and X-ray print, while thermal receipt output is unchanged.
 9. Upload two radiologist signatures, select one on an X-ray report and verify the printed image.
 10. Deactivate one radiologist; confirm new reports cannot select it while an issued report still prints.
-11. Inspect `settings` and `radiologists` rows to confirm tenant scoping.
-12. Run `npm run check`, `npm run build`, and `npm run build:monitor`.
+11. Upload two pathologist signatures, select one on a pathology report and verify the printed image
+    and name/qualification. Deactivate one and confirm an issued report still prints from its snapshot.
+12. Inspect `settings`, `radiologists` and `pathologists` rows to confirm tenant scoping.
+13. Run `npm run check`, `npm run build`, and `npm run build:monitor`.
 
 ## Limitations
 
