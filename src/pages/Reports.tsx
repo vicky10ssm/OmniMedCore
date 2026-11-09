@@ -164,6 +164,10 @@ export default function Reports() {
     invoiceId: string;
     orderId?: string;
   } | null>(null);
+  const [separateInvoice, setSeparateInvoice] = useState<{
+    invoiceId: string;
+    invoiceNo: string;
+  } | null>(null);
   const [printingXray, setPrintingXray] = useState<WorkRow | null>(null);
   const [historyFor, setHistoryFor] = useState<WorkRow | null>(null);
   const [historyRows, setHistoryRows] = useState<HistoryRow[]>([]);
@@ -965,10 +969,11 @@ export default function Reports() {
             <Card className="p-4">
               <h2 className="mb-1 text-sm font-semibold">Reports ready to print</h2>
               <p className="mb-3 text-xs text-slate-400">
-                One report per bill, once every test on it is verified.
+                Every test on the bill is verified. Print one combined report or one
+                report per test.
               </p>
-              <ul className="divide-y divide-slate-100 text-sm">
-                {printableInvoices.slice(0, 8).map((p) => (
+              <ul className="max-h-80 divide-y divide-slate-100 overflow-y-auto text-sm">
+                {printableInvoices.map((p) => (
                   <li key={p.invoiceId} className="flex items-center justify-between py-2">
                     <span className="min-w-0">
                       <span className="block truncate">{p.name}</span>
@@ -977,15 +982,31 @@ export default function Reports() {
                         {p.date}
                       </span>
                     </span>
-                    <Btn
-                      variant="ghost"
-                      className="shrink-0"
-                      onClick={() =>
-                        setPrintingInvoice({ invoiceId: p.invoiceId })
-                      }
-                    >
-                      <Icon name="printer" className="h-4 w-4" /> Print
-                    </Btn>
+                    <span className="flex shrink-0 gap-1">
+                      <Btn
+                        variant="ghost"
+                        onClick={() =>
+                          setPrintingInvoice({ invoiceId: p.invoiceId })
+                        }
+                        title="Print one combined report for the bill"
+                      >
+                        <Icon name="printer" className="h-4 w-4" /> Combined
+                      </Btn>
+                      {p.tests > 1 && (
+                        <Btn
+                          variant="ghost"
+                          onClick={() =>
+                            setSeparateInvoice({
+                              invoiceId: p.invoiceId,
+                              invoiceNo: p.invoiceNo,
+                            })
+                          }
+                          title="Print one report per test"
+                        >
+                          Each test
+                        </Btn>
+                      )}
+                    </span>
                   </li>
                 ))}
               </ul>
@@ -1388,6 +1409,21 @@ export default function Reports() {
         />
       )}
 
+      {separateInvoice && (
+        <SeparateReportList
+          invoiceId={separateInvoice.invoiceId}
+          invoiceNo={separateInvoice.invoiceNo}
+          onClose={() => setSeparateInvoice(null)}
+          onPrint={(orderId) => {
+            setSeparateInvoice(null);
+            setPrintingInvoice({
+              invoiceId: separateInvoice.invoiceId,
+              orderId,
+            });
+          }}
+        />
+      )}
+
       {printingXray && (
         <XrayReportPrint
           order={printingXray}
@@ -1516,9 +1552,9 @@ function ReportPrint({
     <div className="print-modal fixed inset-0 z-40 overflow-y-auto bg-slate-900/50 p-0 sm:p-6">
       <PrintPageStyle config={printConfig} />
       <div className="mx-auto w-full max-w-3xl">
-        <div className="no-print flex items-center justify-between gap-2 rounded-t-xl bg-white px-4 py-2.5">
+        <div className="no-print flex flex-wrap items-center justify-between gap-2 rounded-t-xl bg-white px-4 py-2.5">
           <span className="text-sm font-medium">Report preview</span>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Btn onClick={onClose}>Close</Btn>
             <Btn variant="primary" onClick={printA4}>
               <Icon name="printer" className="h-4 w-4" /> Print
@@ -1716,6 +1752,113 @@ function ReportPrint({
         </div>
       </div>
     </div>
+  );
+}
+
+function SeparateReportList({
+  invoiceId,
+  invoiceNo,
+  onClose,
+  onPrint,
+}: {
+  invoiceId: string;
+  invoiceNo: string;
+  onClose: () => void;
+  onPrint: (orderId: string) => void;
+}) {
+  const [rows, setRows] = useState<
+    {
+      id: string;
+      test_name: string;
+      patient_name: string;
+      reported_at: number;
+      test_category: string;
+    }[]
+  >([]);
+  const [loaded, setLoaded] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    void (async () => {
+      try {
+        const db = await getDb();
+        const [tenantClause, tenantParams] = tenantAndOn("ro");
+        const list = await db.all<{
+          id: string;
+          test_name: string;
+          patient_name: string;
+          reported_at: number;
+          test_category: string;
+        }>(
+          `SELECT ro.id, ro.test_name, p.name AS patient_name,
+                  COALESCE(ro.reported_at, ro.created_at) AS reported_at,
+                  COALESCE(t.category, '') AS test_category
+           FROM report_orders ro
+           JOIN invoices i ON i.id = ro.invoice_id AND i.tenant_id = ro.tenant_id
+           JOIN patients p ON p.id = ro.patient_id AND p.tenant_id = ro.tenant_id
+           LEFT JOIN tests t ON t.id = ro.test_id AND t.tenant_id = ro.tenant_id
+           WHERE ro.invoice_id = ? AND ro.deleted = 0 AND ro.status = 'done'
+             AND i.deleted = 0 AND i.status <> 'cancelled' ${tenantClause}
+           ORDER BY ro.created_at`,
+          [invoiceId, ...tenantParams]
+        );
+        setRows(list.filter((row) => !isRadiologyReport(row)));
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : "Could not load tests for printing"
+        );
+      } finally {
+        setLoaded(true);
+      }
+    })();
+  }, [invoiceId]);
+
+  return (
+    <Modal
+      open
+      title={`Print each test — ${invoiceNo}`}
+      onClose={onClose}
+      wide
+    >
+      <div className="space-y-3">
+        <p className="text-sm text-slate-500">
+          Choose a test below to preview and print its report separately. The other
+          tests on this invoice are not included.
+        </p>
+        <ErrorNote message={error} />
+        {!loaded ? (
+          <p className="py-6 text-center text-sm text-slate-400">Loading…</p>
+        ) : rows.length === 0 ? (
+          <p className="py-6 text-center text-sm text-slate-400">
+            No completed pathology tests are available for this invoice.
+          </p>
+        ) : (
+          <ul className="divide-y divide-slate-100 rounded-lg border border-slate-200">
+            {rows.map((row) => (
+              <li
+                key={row.id}
+                className="flex flex-wrap items-center justify-between gap-3 px-4 py-3"
+              >
+                <span className="min-w-0">
+                  <span className="block truncate text-sm font-medium">
+                    {row.test_name}
+                  </span>
+                  <span className="block truncate text-xs text-slate-500">
+                    {row.patient_name} · reported {formatDateTime(row.reported_at)}
+                  </span>
+                </span>
+                <Btn variant="outline" onClick={() => onPrint(row.id)}>
+                  <Icon name="printer" className="h-4 w-4" /> Print
+                </Btn>
+              </li>
+            ))}
+          </ul>
+        )}
+        <div className="flex justify-end">
+          <Btn onClick={onClose}>Close</Btn>
+        </div>
+      </div>
+    </Modal>
   );
 }
 

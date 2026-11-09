@@ -35,7 +35,7 @@ Dashboard, Settings, Compliance or the Expenses profitability card.
 
 - Patient registration, search and shared patient identity
 - GST billing, invoices, payments, dues, cancellation and A4/80 mm printing
-- Each completed pathology test can be printed individually before the other tests on the same bill are ready
+- Multi-test invoices can be printed as one combined report or one report per test; each completed pathology test can also print immediately from its row
 - A4 reports and invoices can independently print with the built-in centre header or on the centre's own pre-printed letterhead with configurable margins
 - Long A4 reports paginate across multiple pages without clipping or dropping parameters
 - Printed report signatures can be shown or hidden when the pre-printed stationery already carries the signature

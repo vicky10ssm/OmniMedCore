@@ -3,6 +3,34 @@
 All notable changes to OmniMed Core are recorded here. This project follows semantic versioning once
 production releases begin.
 
+## [0.18.0] - 2026-11-09
+
+### Added
+
+- Reports ready to print now offers two choices for multi-test invoices:
+  - **Combined** — one report containing every test on the invoice
+  - **Each test** — a chooser listing each completed pathology test with its own Print action
+- The invoice-level list now scrolls and shows all ready bills instead of only the first eight.
+- Added a direct Print action to completed pathology rows, so a test can be printed as soon as it is
+  verified even when other tests on the same bill are pending.
+
+### Changed
+
+- The ready list copy explains both printing options.
+- Single-test and combined printing use the same report preview; a single-test preview contains only
+  that test.
+
+### Database
+
+- No schema change. Schema remains **24**.
+
+### Verified
+
+- INV-A-00007 (CBC + LFT) opened the Each test chooser and printed CBC alone.
+- Combined reports remain available when every test on the invoice is verified.
+- CBC + LFT single-test and combined flows both use section headings and multi-page print layout.
+- `npm run check`, terminal build, monitor build and Rust tests pass.
+
 ## [0.17.0] - 2026-11-09
 
 ### Added
