@@ -1,6 +1,6 @@
 # OmniMed Core starter test catalogue
 
-Generated: 2026-11-08
+Generated: 2026-11-09
 
 > This is a generated snapshot. If it disagrees with the database/code, fix the source and regenerate.
 > Source of truth: `src/db/starterTests.ts`, `src/db/starterParameters.ts` and
@@ -12,7 +12,7 @@ Generated: 2026-11-08
 - Pathology: **184**
 - X-ray: **43**
 - Other: **0**
-- Active parameters: **371**
+- Active parameters: **377**
 - Packages with at least one item: **29**
 
 Every pathology test has at least one parameter. X-ray tests intentionally have none and use the
@@ -1173,16 +1173,22 @@ own parameters.
 - Specimen: Whole Blood | Container: EDTA (lavender top)
 - Method: Automated analyser | Report type: numeric
 - Price: ₹300.00 | GST: 0%
-- Parameters (14):
+- Parameters (20):
   - Haemoglobin g/dL; ref Adult male: 13.0-17.0 g/dL; adult female: 12.0-15.0 g/dL; children 1-5y: 11.0-14.0 g/dL; children 6-12y: 11.5-15.5 g/dL; numeric
   - Total Leukocyte Count cells/cmm; ref Adult: 4,000-11,000 /cmm; numeric
   - Platelet Count cells/cmm; ref Adult: 1,50,000-4,50,000 /cmm; numeric
   - RBC Count million/cmm; ref Adult male: 4.5-5.9 million/cmm; adult female: 4.1-5.1 million/cmm; children 1-5y: 4.0-5.5; children 6-12y: 4.0-5.2 million/cmm; numeric
-  - Packed Cell Volume (PCV) %; ref Adult male: 40-52%; adult female: 36-48%; children 1-5y: 33-42%; children 6-12y: 35-45%; numeric
+  - Haematocrit (HCT) %; ref Adult male: 40-52%; adult female: 36-48%; children 1-5y: 33-42%; children 6-12y: 35-45%; numeric
   - Mean Corpuscular Volume (MCV) fL; ref Adult: 80-100 fL; numeric
   - Mean Corpuscular Haemoglobin (MCH) pg; ref Adult: 27-32 pg; numeric
   - Mean Corpuscular Hb Concentration (MCHC) g/dL; ref Adult: 32-36 g/dL; numeric
-  - Red Cell Distribution Width (RDW) %; ref Adult: 11.5-14.5%; numeric
+  - RDW-CV %; ref Adult: 11.5-14.5%; numeric
+  - RDW-SD fL; ref Adult: 35-56 fL (analyser-specific); numeric
+  - Mean Platelet Volume (MPV) fL; ref Adult: 7.5-11.5 fL; numeric
+  - Platelet Distribution Width (PDW) %; ref Adult: 9-17% (analyser-specific); numeric
+  - Plateletcrit (PCT) %; ref Adult: 0.19-0.39%; numeric
+  - Platelet Large Cell Ratio (P-LCR) %; ref Adult: 13-43%; numeric
+  - Platelet Large Cell Count (P-LCC) 10^3/uL; ref Adult: 30-90 x10^3/uL; numeric
   - Neutrophils %; ref Adult: 40-70%; numeric
   - Lymphocytes %; ref Adult blood: 20-40%; numeric
   - Eosinophils %; ref Adult: 1-6%; numeric

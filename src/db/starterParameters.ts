@@ -44,11 +44,48 @@ const p = (
 
 const n = (name: string, unit = ""): StarterParameter => p(name, unit, "numeric");
 
+const nr = (
+  name: string,
+  unit: string,
+  refRange: string,
+  refMin: number,
+  refMax: number
+): StarterParameter => ({
+  name,
+  unit,
+  refRange,
+  refMin,
+  refMax,
+  reportType: "numeric",
+});
+
 /**
  * Multi-parameter panel templates keyed by test code.
  * Tests not listed here receive one parameter named after the test.
  */
 export const STARTER_PARAMETERS: Record<string, StarterParameter[]> = {
+  CBC: [
+    nr("Haemoglobin", "g/dL", "Adult male: 13.0-17.0 g/dL; adult female: 12.0-15.0 g/dL", 12, 17),
+    nr("Total Leukocyte Count", "cells/cmm", "Adult: 4,000-11,000 /cmm", 4000, 11000),
+    nr("Platelet Count", "cells/cmm", "Adult: 1,50,000-4,50,000 /cmm", 150000, 450000),
+    nr("RBC Count", "million/cmm", "Adult male: 4.5-5.9; adult female: 4.1-5.1 million/cmm", 4.1, 5.9),
+    nr("Haematocrit (HCT)", "%", "Adult male: 40-52%; adult female: 36-48%", 36, 52),
+    nr("Mean Corpuscular Volume (MCV)", "fL", "Adult: 80-100 fL", 80, 100),
+    nr("Mean Corpuscular Haemoglobin (MCH)", "pg", "Adult: 27-32 pg", 27, 32),
+    nr("Mean Corpuscular Hb Concentration (MCHC)", "g/dL", "Adult: 32-36 g/dL", 32, 36),
+    nr("RDW-CV", "%", "Adult: 11.5-14.5%", 11.5, 14.5),
+    nr("RDW-SD", "fL", "Adult: 35-56 fL (analyser-specific)", 35, 56),
+    nr("Mean Platelet Volume (MPV)", "fL", "Adult: 7.5-11.5 fL", 7.5, 11.5),
+    nr("Platelet Distribution Width (PDW)", "%", "Adult: 9-17% (analyser-specific)", 9, 17),
+    nr("Plateletcrit (PCT)", "%", "Adult: 0.19-0.39%", 0.19, 0.39),
+    nr("Platelet Large Cell Ratio (P-LCR)", "%", "Adult: 13-43%", 13, 43),
+    nr("Platelet Large Cell Count (P-LCC)", "10^3/uL", "Adult: 30-90 x10^3/uL", 30, 90),
+    nr("Neutrophils", "%", "Adult: 40-70%", 40, 70),
+    nr("Lymphocytes", "%", "Adult: 20-40%", 20, 40),
+    nr("Eosinophils", "%", "Adult: 1-6%", 1, 6),
+    nr("Monocytes", "%", "Adult: 2-10%", 2, 10),
+    nr("Basophils", "%", "Adult: 0-2%", 0, 2),
+  ],
   DC: [
     n("Neutrophils", "%"),
     n("Lymphocytes", "%"),
@@ -262,6 +299,42 @@ export async function ensureStarterParameters(
       [tenant.id]
     );
     if (tests.length === 0) continue;
+
+    // Fresh databases get the CBC test row from SEED_SQL after migrations, so
+    // migration 23 cannot rename the legacy PCV/RDW rows there. Normalise the
+    // names here before the additive CBC map runs.
+    const cbcTest = tests.find((test) => test.code === "CBC");
+    if (cbcTest) {
+      await store.run(
+        `UPDATE test_parameters
+         SET name = 'Haematocrit (HCT)',
+             ref_range = 'Adult male: 40-52%; adult female: 36-48%',
+             ref_min = 36,
+             ref_max = 52,
+             updated_at = ?,
+             dirty = 1
+         WHERE test_id = ? AND tenant_id = ? AND deleted = 0
+           AND lower(name) = 'packed cell volume (pcv)'
+           AND NOT EXISTS (
+             SELECT 1 FROM test_parameters p2
+             WHERE p2.test_id = ? AND p2.tenant_id = ? AND p2.deleted = 0
+               AND lower(p2.name) = 'haematocrit (hct)'
+           )`,
+        [ts, cbcTest.id, tenant.id, cbcTest.id, tenant.id]
+      );
+      await store.run(
+        `UPDATE test_parameters
+         SET name = 'RDW-CV', updated_at = ?, dirty = 1
+         WHERE test_id = ? AND tenant_id = ? AND deleted = 0
+           AND lower(name) = 'red cell distribution width (rdw)'
+           AND NOT EXISTS (
+             SELECT 1 FROM test_parameters p2
+             WHERE p2.test_id = ? AND p2.tenant_id = ? AND p2.deleted = 0
+               AND lower(p2.name) = 'rdw-cv'
+           )`,
+        [ts, cbcTest.id, tenant.id, cbcTest.id, tenant.id]
+      );
+    }
 
     const existingRows = await store.all<{
       id: string;

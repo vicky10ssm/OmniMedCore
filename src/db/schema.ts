@@ -1712,6 +1712,236 @@ export const MIGRATIONS: Migration[] = [
       ALTER TABLE expenses ADD COLUMN modules TEXT NOT NULL DEFAULT '[]';
     `,
   },
+  {
+    version: 23,
+    name: "CBC analyser indices",
+    tolerant: true,
+    sql: `
+      -- The default CBC parameter rows are created by migration 10 before the
+      -- default test row is inserted by SEED_SQL. Handle that pair explicitly so
+      -- a fresh database also gets the analyser indices.
+      UPDATE test_parameters
+      SET name = 'Haematocrit (HCT)',
+          ref_range = 'Adult male: 40-52%; adult female: 36-48%',
+          ref_min = 36,
+          ref_max = 52,
+          updated_at = CAST(strftime('%s','now') AS INTEGER) * 1000,
+          dirty = 1
+      WHERE test_id = 'test-cbc' AND tenant_id = 'tenant-default' AND deleted = 0
+        AND lower(name) = 'packed cell volume (pcv)'
+        AND NOT EXISTS (
+          SELECT 1 FROM test_parameters p2
+          WHERE p2.test_id = 'test-cbc' AND p2.tenant_id = 'tenant-default'
+            AND p2.deleted = 0 AND lower(p2.name) = 'haematocrit (hct)'
+        );
+
+      UPDATE test_parameters
+      SET name = 'RDW-CV',
+          updated_at = CAST(strftime('%s','now') AS INTEGER) * 1000,
+          dirty = 1
+      WHERE test_id = 'test-cbc' AND tenant_id = 'tenant-default' AND deleted = 0
+        AND lower(name) = 'red cell distribution width (rdw)'
+        AND NOT EXISTS (
+          SELECT 1 FROM test_parameters p2
+          WHERE p2.test_id = 'test-cbc' AND p2.tenant_id = 'tenant-default'
+            AND p2.deleted = 0 AND lower(p2.name) = 'rdw-cv'
+        );
+
+      UPDATE test_parameters
+      SET sort_order = CASE lower(name)
+        WHEN 'neutrophils' THEN 15
+        WHEN 'lymphocytes' THEN 16
+        WHEN 'eosinophils' THEN 17
+        WHEN 'monocytes' THEN 18
+        WHEN 'basophils' THEN 19
+        ELSE sort_order
+      END
+      WHERE test_id = 'test-cbc' AND tenant_id = 'tenant-default' AND deleted = 0
+        AND lower(name) IN ('neutrophils','lymphocytes','eosinophils','monocytes','basophils');
+
+      INSERT OR IGNORE INTO test_parameters
+        (id, test_id, name, sort_order, unit, ref_range, ref_min, ref_max,
+         report_type, options, is_active, created_at, updated_at, device_id,
+         dirty, deleted, tenant_id)
+      SELECT src.id, 'test-cbc', src.name, src.sort_order, src.unit,
+             src.ref_range, src.ref_min, src.ref_max, 'numeric', '[]', 1, 0, 0,
+             '', 1, 0, 'tenant-default'
+      FROM (
+        SELECT 'tp-cbc-v23-tenant-default-rdw-sd' AS id, 'RDW-SD' AS name,
+               9 AS sort_order, 'fL' AS unit,
+               'Adult: 35-56 fL (analyser-specific)' AS ref_range,
+               35 AS ref_min, 56 AS ref_max
+        UNION ALL SELECT 'tp-cbc-v23-tenant-default-mpv',
+               'Mean Platelet Volume (MPV)', 10, 'fL', 'Adult: 7.5-11.5 fL',
+               7.5, 11.5
+        UNION ALL SELECT 'tp-cbc-v23-tenant-default-pdw',
+               'Platelet Distribution Width (PDW)', 11, '%',
+               'Adult: 9-17% (analyser-specific)', 9, 17
+        UNION ALL SELECT 'tp-cbc-v23-tenant-default-pct',
+               'Plateletcrit (PCT)', 12, '%', 'Adult: 0.19-0.39%', 0.19, 0.39
+        UNION ALL SELECT 'tp-cbc-v23-tenant-default-plcr',
+               'Platelet Large Cell Ratio (P-LCR)', 13, '%',
+               'Adult: 13-43%', 13, 43
+        UNION ALL SELECT 'tp-cbc-v23-tenant-default-plcc',
+               'Platelet Large Cell Count (P-LCC)', 14, '10^3/uL',
+               'Adult: 30-90 x10^3/uL', 30, 90
+      ) AS src
+      WHERE NOT EXISTS (
+        SELECT 1 FROM test_parameters p
+        WHERE p.test_id = 'test-cbc' AND p.tenant_id = 'tenant-default'
+          AND lower(p.name) = lower(src.name)
+      );
+
+      -- Rename the original PCV and RDW rows without creating duplicate
+      -- template parameters. Existing report snapshots keep their stored names.
+      UPDATE test_parameters
+      SET name = 'Haematocrit (HCT)',
+          ref_range = 'Adult male: 40-52%; adult female: 36-48%',
+          ref_min = 36,
+          ref_max = 52,
+          updated_at = CAST(strftime('%s','now') AS INTEGER) * 1000,
+          dirty = 1
+      WHERE id IN (
+        SELECT p.id
+        FROM test_parameters p
+        JOIN tests t ON t.id = p.test_id AND t.tenant_id = p.tenant_id
+        WHERE t.code = 'CBC' AND t.deleted = 0 AND p.deleted = 0
+          AND lower(p.name) = 'packed cell volume (pcv)'
+          AND NOT EXISTS (
+            SELECT 1 FROM test_parameters p2
+            WHERE p2.test_id = p.test_id AND p2.tenant_id = p.tenant_id
+              AND p2.deleted = 0 AND p2.id <> p.id
+              AND lower(p2.name) = 'haematocrit (hct)'
+          )
+      );
+
+      UPDATE test_parameters
+      SET name = 'RDW-CV',
+          updated_at = CAST(strftime('%s','now') AS INTEGER) * 1000,
+          dirty = 1
+      WHERE id IN (
+        SELECT p.id
+        FROM test_parameters p
+        JOIN tests t ON t.id = p.test_id AND t.tenant_id = p.tenant_id
+        WHERE t.code = 'CBC' AND t.deleted = 0 AND p.deleted = 0
+          AND lower(p.name) = 'red cell distribution width (rdw)'
+          AND NOT EXISTS (
+            SELECT 1 FROM test_parameters p2
+            WHERE p2.test_id = p.test_id AND p2.tenant_id = p.tenant_id
+              AND p2.deleted = 0 AND p2.id <> p.id
+              AND lower(p2.name) = 'rdw-cv'
+          )
+      );
+
+      UPDATE test_parameters
+      SET sort_order = CASE lower(name)
+        WHEN 'neutrophils' THEN 15
+        WHEN 'lymphocytes' THEN 16
+        WHEN 'eosinophils' THEN 17
+        WHEN 'monocytes' THEN 18
+        WHEN 'basophils' THEN 19
+        ELSE sort_order
+      END
+      WHERE test_id IN (
+        SELECT id FROM tests WHERE code = 'CBC' AND deleted = 0
+      )
+        AND deleted = 0
+        AND lower(name) IN ('neutrophils','lymphocytes','eosinophils','monocytes','basophils');
+
+      INSERT OR IGNORE INTO test_parameters
+        (id, test_id, name, sort_order, unit, ref_range, ref_min, ref_max,
+         report_type, options, is_active, created_at, updated_at, device_id,
+         dirty, deleted, tenant_id)
+      SELECT 'tp-cbc-v23-' || t.tenant_id || '-rdw-sd', t.id, 'RDW-SD', 9,
+             'fL', 'Adult: 35-56 fL (analyser-specific)', 35, 56,
+             'numeric', '[]', 1, 0, 0, '', 1, 0, t.tenant_id
+      FROM tests t
+      WHERE t.code = 'CBC' AND t.deleted = 0
+        AND NOT EXISTS (
+          SELECT 1 FROM test_parameters p
+          WHERE p.test_id = t.id AND p.tenant_id = t.tenant_id
+            AND lower(p.name) = 'rdw-sd'
+        );
+
+      INSERT OR IGNORE INTO test_parameters
+        (id, test_id, name, sort_order, unit, ref_range, ref_min, ref_max,
+         report_type, options, is_active, created_at, updated_at, device_id,
+         dirty, deleted, tenant_id)
+      SELECT 'tp-cbc-v23-' || t.tenant_id || '-mpv', t.id,
+             'Mean Platelet Volume (MPV)', 10, 'fL', 'Adult: 7.5-11.5 fL',
+             7.5, 11.5, 'numeric', '[]', 1, 0, 0, '', 1, 0, t.tenant_id
+      FROM tests t
+      WHERE t.code = 'CBC' AND t.deleted = 0
+        AND NOT EXISTS (
+          SELECT 1 FROM test_parameters p
+          WHERE p.test_id = t.id AND p.tenant_id = t.tenant_id
+            AND lower(p.name) = 'mean platelet volume (mpv)'
+        );
+
+      INSERT OR IGNORE INTO test_parameters
+        (id, test_id, name, sort_order, unit, ref_range, ref_min, ref_max,
+         report_type, options, is_active, created_at, updated_at, device_id,
+         dirty, deleted, tenant_id)
+      SELECT 'tp-cbc-v23-' || t.tenant_id || '-pdw', t.id,
+             'Platelet Distribution Width (PDW)', 11, '%',
+             'Adult: 9-17% (analyser-specific)', 9, 17,
+             'numeric', '[]', 1, 0, 0, '', 1, 0, t.tenant_id
+      FROM tests t
+      WHERE t.code = 'CBC' AND t.deleted = 0
+        AND NOT EXISTS (
+          SELECT 1 FROM test_parameters p
+          WHERE p.test_id = t.id AND p.tenant_id = t.tenant_id
+            AND lower(p.name) = 'platelet distribution width (pdw)'
+        );
+
+      INSERT OR IGNORE INTO test_parameters
+        (id, test_id, name, sort_order, unit, ref_range, ref_min, ref_max,
+         report_type, options, is_active, created_at, updated_at, device_id,
+         dirty, deleted, tenant_id)
+      SELECT 'tp-cbc-v23-' || t.tenant_id || '-pct', t.id,
+             'Plateletcrit (PCT)', 12, '%', 'Adult: 0.19-0.39%',
+             0.19, 0.39, 'numeric', '[]', 1, 0, 0, '', 1, 0, t.tenant_id
+      FROM tests t
+      WHERE t.code = 'CBC' AND t.deleted = 0
+        AND NOT EXISTS (
+          SELECT 1 FROM test_parameters p
+          WHERE p.test_id = t.id AND p.tenant_id = t.tenant_id
+            AND lower(p.name) = 'plateletcrit (pct)'
+        );
+
+      INSERT OR IGNORE INTO test_parameters
+        (id, test_id, name, sort_order, unit, ref_range, ref_min, ref_max,
+         report_type, options, is_active, created_at, updated_at, device_id,
+         dirty, deleted, tenant_id)
+      SELECT 'tp-cbc-v23-' || t.tenant_id || '-plcr', t.id,
+             'Platelet Large Cell Ratio (P-LCR)', 13, '%',
+             'Adult: 13-43%', 13, 43, 'numeric', '[]', 1, 0, 0, '', 1, 0,
+             t.tenant_id
+      FROM tests t
+      WHERE t.code = 'CBC' AND t.deleted = 0
+        AND NOT EXISTS (
+          SELECT 1 FROM test_parameters p
+          WHERE p.test_id = t.id AND p.tenant_id = t.tenant_id
+            AND lower(p.name) = 'platelet large cell ratio (p-lcr)'
+        );
+
+      INSERT OR IGNORE INTO test_parameters
+        (id, test_id, name, sort_order, unit, ref_range, ref_min, ref_max,
+         report_type, options, is_active, created_at, updated_at, device_id,
+         dirty, deleted, tenant_id)
+      SELECT 'tp-cbc-v23-' || t.tenant_id || '-plcc', t.id,
+             'Platelet Large Cell Count (P-LCC)', 14, '10^3/uL',
+             'Adult: 30-90 x10^3/uL', 30, 90, 'numeric', '[]', 1, 0, 0, '',
+             1, 0, t.tenant_id
+      FROM tests t
+      WHERE t.code = 'CBC' AND t.deleted = 0
+        AND NOT EXISTS (
+          SELECT 1 FROM test_parameters p
+          WHERE p.test_id = t.id AND p.tenant_id = t.tenant_id
+            AND lower(p.name) = 'platelet large cell count (p-lcc)'
+        );
+    `,
+  },
 ];
 
 /** First-boot seed data: lab settings, admin user, expense categories, sample catalog. */

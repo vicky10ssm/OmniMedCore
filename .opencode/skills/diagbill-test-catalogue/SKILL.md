@@ -27,10 +27,10 @@ Load it before touching the test catalogue.
 - Pathology: **184**
 - X-ray/radiography: **43**
 - Other: **0**
-- Active parameters: **371**
+- Active parameters: **377**
 - Combined packages: **29** total (27 seeded by this skill, plus 2 original packages)
-- Schema: **22**
-- Current release at time of writing: **0.13.0**
+- Schema: **23**
+- Current release at time of writing: **0.14.0**
 
 Counts change when tests/parameters/packages are added. The generated reference files are authoritative
 for the current snapshot; the source modules are authoritative if they disagree.
@@ -89,7 +89,7 @@ for the current snapshot; the source modules are authoritative if they disagree.
   only one parameter: Haemoglobin, TSH, HbA1c, creatinine, electrolytes, troponin, ABG components are
   separate tests only where the catalogue defines them as separate tests.
 - Panels get all component parameters. Examples:
-  - CBC 14, LFT 11, KFT 9, Lipid 8, Urine Routine 18
+  - CBC 20 (including HCT, RDW-CV, RDW-SD, MPV, PDW, PCT, P-LCR, P-LCC), LFT 11, KFT 9, Lipid 8, Urine Routine 18
   - Differential count 5, PT/INR 2, blood group/Rh 2
   - Dengue 3, Widal 8, urine microscopy 6, stool 6, semen 8
   - CSF 8, pleural 8, ascitic 7, synovial 6

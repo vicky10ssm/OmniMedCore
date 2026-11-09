@@ -3,6 +3,42 @@
 All notable changes to OmniMed Core are recorded here. This project follows semantic versioning once
 production releases begin.
 
+## [0.14.0] - 2026-11-09
+
+### Added
+
+- Expanded the starter **Complete Blood Count (CBC)** template from 14 to **20 parameters**:
+  - Haematocrit (HCT), replacing the old PCV template label
+  - RDW-CV and RDW-SD
+  - Mean Platelet Volume (MPV)
+  - Platelet Distribution Width (PDW)
+  - Plateletcrit (PCT)
+  - Platelet Large Cell Ratio (P-LCR)
+  - Platelet Large Cell Count (P-LCC)
+- Added filled starter reference intervals and numeric limits for the new CBC parameters.
+
+### Changed
+
+- The generic CBC `RDW` parameter is now `RDW-CV`; history on already-issued reports is unchanged.
+- SGPT (ALT) remains in LFT and as a separate SGPT test. It is **not** a CBC parameter and was not
+  added to CBC.
+- The active starter parameter catalogue is now **377** parameters.
+- The generated test-catalogue references were regenerated.
+
+### Database
+
+- Schema **23** adds a CBC analyser-index migration for existing tenants and fresh databases.
+- Existing report snapshots are not reshaped. New CBC reports use the expanded template.
+- Repeated starts do not duplicate parameters or resurrect deleted ones.
+
+### Verified
+
+- CBC has 20 active parameters in a fresh database and after migration.
+- No duplicate parameter names per test.
+- X-ray tests still have no parameters.
+- 227 tests, 377 parameters and 29 packages in the regenerated catalogue.
+- `npm run check`, terminal build, monitor build and Rust tests pass.
+
 ## [0.13.0] - 2026-11-09
 
 ### Added

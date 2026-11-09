@@ -599,6 +599,19 @@ The second deployment exists. `npm run build` makes the terminal (editing) app; 
 - The expenses list, search, module filter and CSV export include the attribution.
 - Operators can add and view expenses as before; admin/operator visibility rules are unchanged.
 
+## CBC analyser indices - built
+
+- The starter CBC template is expanded from 14 to 20 parameters:
+  Haemoglobin, Total Leukocyte Count, Platelet Count, RBC Count, Haematocrit (HCT), MCV, MCH,
+  MCHC, RDW-CV, RDW-SD, MPV, PDW, PCT, P-LCR, P-LCC, Neutrophils, Lymphocytes, Eosinophils,
+  Monocytes and Basophils.
+- PCV is represented by the analyser-standard HCT label. The old generic RDW row becomes RDW-CV;
+  RDW-SD is added separately.
+- SGPT (ALT) is a liver enzyme, remains in LFT and as a standalone test, and is not added to CBC.
+- Schema 23 adds the missing parameters for existing tenants and fresh default databases. Historical
+  report snapshots are not reshaped; new CBC reports use the expanded template.
+- The generated catalogue now contains 377 active parameters.
+
 ## Pre-printed letterhead printing - built
 
 - Settings -> Centre profile has independent A4 header modes for reports and invoices: built-in

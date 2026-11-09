@@ -39,7 +39,7 @@ Dashboard, Settings, Compliance or the Expenses profitability card.
 - Printed report signatures can be shown or hidden when the pre-printed stationery already carries the signature
 - Test/package catalogue with GST and specimen metadata
 - Broad starter library: 184 pathology tests and 43 X-ray/radiography exams, with editable prices and reference intervals
-- 371 starter pathology parameter templates; every pathology test has a result parameter, filled reference intervals, sex/age variants where relevant, and complex-report subfields
+- 377 starter pathology parameter templates; every pathology test has a result parameter, filled reference intervals, sex/age variants where relevant, and complex-report subfields
 - 27 combined starter health-check packages combining pathology and X-ray tests
 - Parameter-based pathology reporting, verification, amendment history and printing
 - X-ray/radiology reports with clinical history, findings, impression and configurable disclaimer,

@@ -131,6 +131,8 @@ Record invoice/payment IDs and totals used for acceptance.
 - [ ] Starter catalogue contains 184 pathology and 43 X-ray tests without duplicate names/codes
 - [ ] Every pathology test has at least one parameter; X-ray tests have none
 - [ ] Starter panel parameters exist for CBC, LFT, KFT, Lipid, Urine, DC, PT/INR, Widal, dengue, cultures, fluids, semen and stool
+- [ ] CBC has 20 parameters including HCT, RDW-CV, RDW-SD, MPV, PDW, PCT, P-LCR and P-LCC
+- [ ] SGPT remains in LFT and is not added to CBC
 - [ ] Optional subfields exist for malaria, VDRL/TPHA, peripheral smear, histopathology, cytology, IHC and special stains
 - [ ] Parameter duplicate-name check is zero; historical single results survive amendment
 - [ ] 27 combined starter packages present with no empty or duplicate package/test links
