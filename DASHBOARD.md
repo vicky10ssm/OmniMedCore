@@ -18,8 +18,9 @@ optional secondary path for cross-centre, remote or archival reporting.
 | Pharmacy | Sales, bill count, purchase-price stock value, expiry alerts, payment mix and low-stock count |
 | Hospital | Active admissions, period admissions/discharges, hospital charges/payments, outstanding balance and ward distribution |
 
-The date selector supports **Today**, **Last 7 days**, **Last 30 days** and **Last 90 days**. Every
-view loads its data for the selected range. The dashboard is administrator-only in the terminal build;
+The date selector supports **Today**, **Last 7 days**, **Last 30 days**, **Last 90 days** and a
+**Custom range** with start and end dates, applied with the **Apply** button. Every view loads its data
+for the selected range. The dashboard is administrator-only in the terminal build;
 operators continue to land on Expenses and cannot open it. The read-only monitor bundle can display the
 same live views without exposing write controls.
 
@@ -55,8 +56,8 @@ same live views without exposing write controls.
 
 - Data is read live from the active tenant's local database. Opening the dashboard or changing the range
   refreshes it; there is no background auto-refresh, scheduled report or email delivery.
-- There is no custom date range, ad-hoc report builder, drill-down from every chart or cross-tenant
-  consolidation.
+- There is no ad-hoc report builder, drill-down from every chart or cross-tenant consolidation. The
+  custom range start/end cannot be later than today.
 - The dashboard does not create a historical performance snapshot. For remote or long-term comparisons,
   use the local CSV outbox and the optional Google/Looker design.
 - Tenant isolation uses the same `tenant_id` guards as the rest of the application.

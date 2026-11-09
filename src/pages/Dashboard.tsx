@@ -8,10 +8,10 @@ import { csvRupees, exportCsv as exportCsvFile } from "../db/csv";
 import { printA4 } from "../db/print";
 import { tenantAnd, tenantAndOn } from "../db/tenant";
 import { BarList, LineChart, StatCard, type BarItem } from "../ui/charts";
-import { Btn, Card, Icon, PageHeader, Select } from "../ui/kit";
+import { Btn, Card, Icon, PageHeader, Select, TextInput } from "../ui/kit";
 
 type Tab = "overview" | "billing" | "diagnostics" | "expenses" | "pharmacy" | "hospital";
-type RangeKey = "today" | "7d" | "30d" | "90d";
+type RangeKey = "today" | "7d" | "30d" | "90d" | "custom";
 
 interface RecentInvoice {
   id: string;
@@ -98,6 +98,7 @@ const RANGES: { id: RangeKey; label: string; days: number }[] = [
   { id: "7d", label: "Last 7 days", days: 7 },
   { id: "30d", label: "Last 30 days", days: 30 },
   { id: "90d", label: "Last 90 days", days: 90 },
+  { id: "custom", label: "Custom range", days: 0 },
 ];
 
 function dateKey(ms: number): string {
@@ -138,6 +139,32 @@ function startOfRange(range: RangeKey, nowMs: number): number {
   return d.getTime();
 }
 
+function dateKeyDaysAgo(daysAgo: number): string {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  d.setDate(d.getDate() - daysAgo);
+  return dateKey(d.getTime());
+}
+
+function parseDateInput(value: string, endOfDay: boolean): number | null {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  if (!match) return null;
+  const year = Number(match[1]);
+  const month = Number(match[2]) - 1;
+  const day = Number(match[3]);
+  const date = new Date(year, month, day);
+  if (
+    date.getFullYear() !== year ||
+    date.getMonth() !== month ||
+    date.getDate() !== day
+  ) {
+    return null;
+  }
+  if (endOfDay) date.setHours(23, 59, 59, 999);
+  else date.setHours(0, 0, 0, 0);
+  return date.getTime();
+}
+
 function sumBy<T>(rows: T[], value: (row: T) => number): number {
   return rows.reduce((total, row) => total + value(row), 0);
 }
@@ -157,6 +184,9 @@ export default function Dashboard() {
   const { monitor } = useMonitor();
   const [tab, setTab] = useState<Tab>("overview");
   const [range, setRange] = useState<RangeKey>("30d");
+  const [customStart, setCustomStart] = useState(() => dateKeyDaysAgo(29));
+  const [customEnd, setCustomEnd] = useState(() => dateKeyDaysAgo(0));
+  const [customApplied, setCustomApplied] = useState(0);
   const [data, setData] = useState<DashboardData | null>(null);
   const [error, setError] = useState("");
 
@@ -167,8 +197,30 @@ export default function Dashboard() {
         setError("");
         const db = await getDb();
         const nowMs = Date.now();
-        const start = startOfRange(range, nowMs);
-        const end = nowMs;
+        let start: number;
+        let end: number;
+        let rangeLabel: string;
+        if (range === "custom") {
+          const customStartMs = parseDateInput(customStart, false);
+          const customEndMs = parseDateInput(customEnd, true);
+          if (
+            customStartMs === null ||
+            customEndMs === null ||
+            customStartMs > customEndMs
+          ) {
+            setError("Choose a valid custom range where the start date is on or before the end date.");
+            setData(null);
+            return;
+          }
+          start = customStartMs;
+          end = customEndMs;
+          rangeLabel = `${formatDate(start)} – ${formatDate(end)}`;
+        } else {
+          start = startOfRange(range, nowMs);
+          end = nowMs;
+          rangeLabel =
+            RANGES.find((item) => item.id === range)?.label ?? "Last 30 days";
+        }
         const [tenantClause, tenantParams] = tenantAnd();
         const [roTenantClause, roTenantParams] = tenantAndOn("ro");
         const [pTenantClause, pTenantParams] = tenantAndOn("p");
@@ -546,7 +598,7 @@ export default function Dashboard() {
         );
 
         setData({
-          rangeLabel: RANGES.find((item) => item.id === range)?.label ?? "Last 30 days",
+          rangeLabel,
           daily,
           recent: recentRows,
           periodBilled,
@@ -624,12 +676,25 @@ export default function Dashboard() {
     return () => {
       cancelled = true;
     };
-  }, [range]);
+  }, [range, customApplied]);
+
+  const applyCustomRange = () => {
+    const start = parseDateInput(customStart, false);
+    const end = parseDateInput(customEnd, true);
+    if (start === null || end === null || start > end) {
+      setError("Choose a valid custom range where the start date is on or before the end date.");
+      return;
+    }
+    setError("");
+    setCustomApplied((current) => current + 1);
+  };
 
   const exportDashboard = () => {
     if (!data) return;
     exportCsvFile(
-      `dashboard-${range}.csv`,
+      range === "custom"
+        ? `dashboard-${customStart}-to-${customEnd}.csv`
+        : `dashboard-${range}.csv`,
       [
         "Date",
         "Billed",
@@ -678,6 +743,29 @@ export default function Dashboard() {
                 </option>
               ))}
             </Select>
+            {range === "custom" && (
+              <>
+                <TextInput
+                  type="date"
+                  value={customStart}
+                  max={dateKeyDaysAgo(0)}
+                  onChange={(event) => setCustomStart(event.target.value)}
+                  className="w-36"
+                  aria-label="Custom range start date"
+                  title="Custom range start date"
+                />
+                <TextInput
+                  type="date"
+                  value={customEnd}
+                  max={dateKeyDaysAgo(0)}
+                  onChange={(event) => setCustomEnd(event.target.value)}
+                  className="w-36"
+                  aria-label="Custom range end date"
+                  title="Custom range end date"
+                />
+                <Btn onClick={applyCustomRange}>Apply</Btn>
+              </>
+            )}
             <Btn onClick={exportDashboard} disabled={!data}>
               <Icon name="receipt" className="h-4 w-4" /> CSV
             </Btn>

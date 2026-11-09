@@ -3,6 +3,34 @@
 All notable changes to OmniMed Core are recorded here. This project follows semantic versioning once
 production releases begin.
 
+## [0.16.0] - 2026-11-09
+
+### Added
+
+- Added a **Custom range** option to the administrator Dashboard date selector.
+- Custom range uses start and end date inputs with an explicit **Apply** action.
+- The dashboard subtitle and CSV filename show the selected dates.
+- Custom range works across Overview, Billing, Diagnostics, Expenses, Pharmacy and Hospital, and with
+  dashboard print.
+- Invalid ranges are rejected when the start date is after the end date; custom dates cannot be later
+  than today.
+
+### Changed
+
+- Dashboard documentation and release checklist now cover the custom date range.
+
+### Database
+
+- No schema change. Schema remains **24**.
+
+### Verified
+
+- Custom range applied 01 Nov 2026–05 Nov 2026 and recalculated the dashboard metrics.
+- The subtitle showed the selected range.
+- Preset ranges continue to work.
+- CSV filename, print and all tabs remain available with custom range.
+- `npm run check`, terminal build, monitor build and Rust tests pass.
+
 ## [0.15.1] - 2026-11-09
 
 ### Fixed
