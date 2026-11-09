@@ -31,6 +31,7 @@ import {
   PRINT_LETTERHEAD_KEYS,
   printLetterheadHideClass,
   readPrintLetterhead,
+  shouldPrintReportSignature,
 } from "../ui/printLetterhead";
 import AbdmExport from "./AbdmExport";
 import {
@@ -1460,6 +1461,7 @@ function ReportPrint({
     lab.pathologist_name ||
     "Authorized signatory";
   const printConfig = readPrintLetterhead(lab);
+  const showSignature = shouldPrintReportSignature(lab);
 
   return (
     <div className="fixed inset-0 z-40 overflow-y-auto bg-slate-900/50 p-0 sm:p-6">
@@ -1516,9 +1518,15 @@ function ReportPrint({
               <p className="text-sm font-bold uppercase tracking-widest">
                 {reportVersion > 1 ? "Amended Report" : "Report"}
               </p>
-              {invoice && <p className="num mt-0.5">{invoice.invoice_no}</p>}
-              <p>Version {reportVersion}</p>
-              <p>{formatDate(Date.now())}</p>
+              <p className="num mt-0.5 whitespace-nowrap">
+                {[
+                  invoice?.invoice_no,
+                  `Version ${reportVersion}`,
+                  formatDate(orders[0]?.reported_at ?? Date.now()),
+                ]
+                  .filter(Boolean)
+                  .join(" · ")}
+              </p>
             </div>
           </div>
 
@@ -1624,18 +1632,20 @@ function ReportPrint({
             clinical findings.
           </p>
 
-          <div className="mt-10 flex items-end justify-between text-[10px] text-slate-600">
-            <div>
-              <p className="border-t border-slate-400 pt-1 font-semibold">
-                {authorizerName}
-                {lab.pathologist_qualification && authorizerName === lab.pathologist_name
-                  ? `, ${lab.pathologist_qualification}`
-                  : ""}
-              </p>
-              <p className="text-slate-500">Authorized for release</p>
+          {showSignature && (
+            <div className="mt-10 flex items-end justify-between text-[10px] text-slate-600">
+              <div>
+                <p className="border-t border-slate-400 pt-1 font-semibold">
+                  {authorizerName}
+                  {lab.pathologist_qualification && authorizerName === lab.pathologist_name
+                    ? `, ${lab.pathologist_qualification}`
+                    : ""}
+                </p>
+                <p className="text-slate-500">Authorized for release</p>
+              </div>
+              <p>Released {formatDateTime(orders[0]?.reported_at ?? Date.now())}</p>
             </div>
-            <p>Released {formatDateTime(orders[0]?.reported_at ?? Date.now())}</p>
-          </div>
+          )}
         </div>
       </div>
     </div>
@@ -1698,6 +1708,7 @@ function XrayReportPrint({
   const impression = order.impression_text?.trim() || "";
   const clinicalHistory = order.clinical_history?.trim() || "";
   const printConfig = readPrintLetterhead(lab);
+  const showSignature = shouldPrintReportSignature(lab);
 
   return (
     <div className="fixed inset-0 z-40 overflow-y-auto bg-slate-900/50 p-0 sm:p-6">
@@ -1744,9 +1755,12 @@ function XrayReportPrint({
             </div>
             <div className="ml-auto text-right text-xs text-slate-600">
               <p className="text-sm font-bold uppercase tracking-widest">X-Ray Report</p>
-              <p className="num mt-0.5">{order.invoice_no}</p>
-              <p>Exam: {order.test_name}</p>
-              <p>Study: {formatDate(order.invoice_date)}</p>
+              <p className="num mt-0.5 whitespace-nowrap">
+                {[order.invoice_no, formatDate(order.invoice_date)]
+                  .filter(Boolean)
+                  .join(" · ")}
+              </p>
+              <p className="mt-0.5">Exam: {order.test_name}</p>
             </div>
           </div>
 
@@ -1792,23 +1806,25 @@ function XrayReportPrint({
             </p>
           </div>
 
-          <div className="mt-10 flex items-end justify-between text-[10px] text-slate-600">
-            <div>
-              {radiologistSignature && (
-                <img
-                  src={radiologistSignature}
-                  alt=""
-                  className="mb-1 max-h-16 max-w-44 object-contain"
-                />
-              )}
-              <p className="border-t border-slate-400 pt-1 font-semibold">
-                {radiologistName}
-                {radiologistQualification ? `, ${radiologistQualification}` : ""}
-              </p>
-              <p className="text-slate-500">Radiologist</p>
+          {showSignature && (
+            <div className="mt-10 flex items-end justify-between text-[10px] text-slate-600">
+              <div>
+                {radiologistSignature && (
+                  <img
+                    src={radiologistSignature}
+                    alt=""
+                    className="mb-1 max-h-16 max-w-44 object-contain"
+                  />
+                )}
+                <p className="border-t border-slate-400 pt-1 font-semibold">
+                  {radiologistName}
+                  {radiologistQualification ? `, ${radiologistQualification}` : ""}
+                </p>
+                <p className="text-slate-500">Radiologist</p>
+              </div>
+              <p>Reported {formatDateTime(order.reported_at ?? Date.now())}</p>
             </div>
-            <p>Reported {formatDateTime(order.reported_at ?? Date.now())}</p>
-          </div>
+          )}
 
           <div className="mt-6 border-t border-slate-300 pt-2 text-[10px] leading-4 text-slate-500">
             <span className="font-semibold uppercase tracking-wide">Disclaimer: </span>

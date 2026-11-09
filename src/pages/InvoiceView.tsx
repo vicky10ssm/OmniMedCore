@@ -276,9 +276,11 @@ export default function InvoiceView() {
             <p className="text-sm font-bold uppercase tracking-widest text-slate-700">
               Tax Invoice
             </p>
-            <p className="num mt-1 text-sm font-semibold">{invoice.invoice_no}</p>
-            <p className="mt-0.5 text-xs text-slate-600">
-              {formatDate(invoice.invoice_date)}
+            <p className="num mt-1 whitespace-nowrap text-sm font-semibold">
+              {invoice.invoice_no}{" "}
+              <span className="text-xs font-normal text-slate-600">
+                · {formatDate(invoice.invoice_date)}
+              </span>
             </p>
             {invoice.status === "cancelled" && (
               <p className="mt-1 text-xs font-bold uppercase text-rose-600">

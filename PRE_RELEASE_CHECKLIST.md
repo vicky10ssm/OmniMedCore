@@ -198,6 +198,10 @@ Record accession/sample IDs for both blocked and allowed disposal cases.
 - [ ] Thermal 80 mm receipt still shows the centre identity
 - [ ] Windows print dialog is set to A4, 100%, headers/footers off
 - [ ] Built-in-header mode prints normally when pre-printed mode is off
+- [ ] Printed report signature can be shown and hidden from Settings
+- [ ] Hidden signature removes the pathologist/radiologist name, qualification, image and release line
+- [ ] Report number, version and date print horizontally on one line
+- [ ] Invoice number and date print horizontally on one line
 
 ## Licensing verification
 
