@@ -599,6 +599,15 @@ The second deployment exists. `npm run build` makes the terminal (editing) app; 
 - The expenses list, search, module filter and CSV export include the attribution.
 - Operators can add and view expenses as before; admin/operator visibility rules are unchanged.
 
+## Local CSV pending badge - fixed
+
+- The sidebar pending badge must use `local_export_queue.exported_at IS NULL`, not the legacy
+  `dirty` column.
+- Empty queue shows **All changes saved locally**.
+- Pending rows show **N CSV records waiting** with an amber indicator.
+- The count refreshes on navigation, sync-status events, window visibility and every 30 seconds.
+- `dirty` remains a compatibility column only and must not be presented as unsynced data.
+
 ## Report parameter sections - built
 
 - `test_parameters.section_name` and `report_parameters.section_name` are added by schema 24.

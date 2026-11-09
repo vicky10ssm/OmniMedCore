@@ -139,6 +139,8 @@ Record invoice/payment IDs and totals used for acceptance.
 - [ ] Urine routine prints Physical Examination, Chemical Examination and Microscopy sections
 - [ ] Section names can be edited in Tests -> Parameters
 - [ ] Existing report snapshots retain their stored result values while gaining section headings
+- [ ] Sidebar badge shows **All changes saved locally** when `local_export_queue` has no pending rows
+- [ ] Sidebar badge shows **N CSV records waiting** only for actual pending export rows
 - [ ] Optional subfields exist for malaria, VDRL/TPHA, peripheral smear, histopathology, cytology, IHC and special stains
 - [ ] Parameter duplicate-name check is zero; historical single results survive amendment
 - [ ] 27 combined starter packages present with no empty or duplicate package/test links
