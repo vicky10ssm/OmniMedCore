@@ -1,7 +1,7 @@
 # Productionization plan
 
-Last updated: 8 November 2026
-Current product version: `0.10.0`
+Last updated: 9 November 2026
+Current product version: `0.11.0`
 Current schema: `22`
 Current deployment: packaged Windows desktop with SQLCipher, encrypted backups and local Google Drive
 CSV export for supervised pilots; browser build remains development-only
@@ -176,7 +176,7 @@ Remaining tasks:
 
 Exit gate: encrypted backup restored on a clean machine with exact invoice/payment counts.
 
-### WS4 — Local Google Drive CSV export
+### WS4 ï¿½ Local Google Drive CSV export
 
 Implemented pilot foundation:
 

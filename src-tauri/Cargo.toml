@@ -1,6 +1,6 @@
 [package]
 name = "medicore"
-version = "0.10.0"
+version = "0.11.0"
 description = "OmniMed Core offline billing and care operations"
 authors = ["OmniMed Core"]
 edition = "2021"

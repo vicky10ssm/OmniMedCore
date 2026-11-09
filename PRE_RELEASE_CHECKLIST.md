@@ -168,6 +168,23 @@ Record accession/sample IDs for both blocked and allowed disposal cases.
 - [ ] Monitor operator cannot see admin-only expense/commission screens
 - [ ] Monitor build rejects writes at the data-source boundary
 
+## Administrator dashboard verification
+
+- [ ] Admin sees Overview, Billing, Diagnostics, Expenses, Pharmacy and Hospital tabs
+- [ ] Today, Last 7 days, Last 30 days and Last 90 days all load without error
+- [ ] Empty ranges show "No activity" / empty-state text instead of broken charts
+- [ ] Overview collected, billed, dues, expenses and cash-profit values agree with source screens
+- [ ] Billing payment mix, dues ageing and top-test revenue agree with invoices/payments
+- [ ] Diagnostics pending/completed counts, sample status and average TAT agree with reports/samples
+- [ ] Expenses by category/module/vendor agree with the expenses register; shared tags are not split
+- [ ] Pharmacy sales, payment mix, stock value, low-stock and 90-day expiry alerts agree with inventory
+- [ ] Hospital active admissions, period admissions/discharges, charges/payments and outstanding agree
+- [ ] CSV downloads one daily row per date and is formula-injection guarded
+- [ ] Print prints only the active tab with range/tab/export controls hidden
+- [ ] Operator still cannot open the dashboard
+- [ ] Monitor shows the dashboard read-only with no write controls
+- [ ] `npm run check`, terminal build, monitor build and Rust tests pass
+
 ## Licensing verification
 
 If the release changes licensing or starts a new edition:
