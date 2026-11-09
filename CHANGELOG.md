@@ -3,6 +3,52 @@
 All notable changes to OmniMed Core are recorded here. This project follows semantic versioning once
 production releases begin.
 
+## [0.11.0] - 2026-11-09
+
+### Added
+
+- Rebuilt the administrator Dashboard as the primary in-app reporting surface, using live local SQLite
+  data with no cloud dependency.
+- Added six views:
+  - **Overview**: collected, billed, outstanding dues, expenses, cash profit, pending reports, new
+    patients, active admissions, trend chart, module contribution and recent bills.
+  - **Billing**: diagnostics billed/collected, dues ageing, payment-mode mix and top tests/packages by
+    revenue.
+  - **Diagnostics**: pending/completed reports, rejected samples, average reporting TAT, pathology/X-ray
+    volume and sample status.
+  - **Expenses**: period spend, category totals, module attribution and top vendors.
+  - **Pharmacy**: paid sales, bill count, stock value, payment mix, low-stock count and batches expiring
+    in 90 days.
+  - **Hospital**: active admissions, period admissions/discharges, charges/payments, outstanding balance
+    and active admissions by ward.
+- Added **Today**, **Last 7 days**, **Last 30 days** and **Last 90 days** range filters.
+- Added dependency-free inline SVG/CSS charts (`src/ui/charts.tsx`), avoiding a new chart package in the
+  offline desktop bundle.
+- Added daily dashboard CSV export and A4 print of the active tab.
+- Added `DASHBOARD.md` with metric definitions, export/print behavior and current limitations.
+
+### Changed
+
+- Dashboard queries are tenant-scoped and read-only; operator and monitor permission rules are unchanged.
+- Empty ranges show explicit no-activity states rather than empty charts.
+- The Google/Sheets/Looker dashboard remains an optional external design for cross-centre, remote or
+  archival reporting; it is no longer the only documented dashboard path.
+- Updated product capabilities, architecture, readiness, pre-release checklist and feature decisions.
+
+### Database
+
+- No schema change. Schema remains **22**.
+
+### Verified
+
+- `npm run check` passes (TypeScript, migrations and 231 tenant-scoped database calls).
+- All six dashboard tabs load with seeded demo data.
+- Today, 7-day, 30-day and 90-day ranges load and refresh their metrics.
+- CSV exports one row per day with the expected totals.
+- Empty ranges and empty tabs show readable empty states.
+- Monitor dashboard remains read-only and exposes no write controls.
+- Terminal build, monitor build and Rust library tests pass.
+
 ## [0.10.0] - 2026-11-08
 
 ### Changed

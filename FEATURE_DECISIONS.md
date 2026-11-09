@@ -599,6 +599,18 @@ The second deployment exists. `npm run build` makes the terminal (editing) app; 
 - The expenses list, search, module filter and CSV export include the attribution.
 - Operators can add and view expenses as before; admin/operator visibility rules are unchanged.
 
+## In-app administrator dashboard - built
+
+- The administrator dashboard is the primary reporting surface and reads the terminal's live, tenant-scoped
+  SQLite data. It does not depend on Google Drive, Sheets, BigQuery or Looker Studio.
+- Six tabs cover Overview, Billing, Diagnostics, Expenses, Pharmacy and Hospital.
+- A date selector supports Today, Last 7 days, Last 30 days and Last 90 days.
+- Charts are inline SVG/CSS (`src/ui/charts.tsx`), so no chart dependency is added to the offline bundle.
+- CSV exports one daily row with billed, collected, expenses, diagnostics, pharmacy and hospital values.
+- Print uses the existing A4 print rules and prints the active tab only; controls are `no-print`.
+- Monthly and cross-centre analysis, scheduled email delivery and custom ranges remain out of scope.
+- No schema change is required.
+
 ## Filled reference intervals - built
 
 - `src/db/starterReferences.ts` fills references for all 371 pathology parameters.

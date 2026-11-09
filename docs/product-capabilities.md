@@ -32,7 +32,8 @@ Status meanings: **Ready**, **Pilot**, **Partial**, **Not available**, **Externa
 | PDF download | Ready/Pilot | Browser-generated document output; verify printer/browser on buyer hardware |
 | Doctor/referral commissions | Not available | No Commissions tab/module, no commission rules in Doctors, and no new accrual/payouts; legacy rows are retained but not displayed |
 | Expenses | Ready | Categories, payment mode, bill number, notes, monthly categories and multi-module attribution (Pathology, X-ray, Pharmacy, Hospital, General/shared); shared expenses are tagged, not split |
-| Financial dashboard | Ready | Collection, dues, revenue, expenses and profit on local data |
+| Financial dashboard | Ready | Administrator dashboard with live local collection, billing, dues, expenses and cash-profit views |
+| Operations dashboard | Ready | Six in-app tabs (Overview, Billing, Diagnostics, Expenses, Pharmacy, Hospital), 1/7/30/90-day ranges, dependency-free charts, daily CSV export and print; no cloud dependency |
 | CSV export | Ready | Formula-injection guarded invoice export; confirm exact export list in demo |
 | Accounting/Tally integration | Not available | No Tally import/export or ledger posting |
 | Payroll | Not available | Salary can only be logged manually as an expense |
@@ -165,7 +166,7 @@ Status meanings: **Ready**, **Pilot**, **Partial**, **Not available**, **Externa
 | Browser/PWA install | Pilot | Development/local browser storage only; not recommended as primary data store |
 | Cloud backup | Not available | Local encrypted backup only |
 | Cloud monitoring / dashboard | Not available | Online sync/dashboard removed; local CSV export is the supported outbox |
-| External Google dashboard | Not available | Design only: read-only Google Sheets/BigQuery/Looker Studio consumer for exported CSVs; see [GOOGLE_DASHBOARD.md](../GOOGLE_DASHBOARD.md) |
+| External Google dashboard | Not available | Optional design only: read-only Google Sheets/BigQuery/Looker Studio consumer for exported CSVs; the primary local dashboard is built in; see [GOOGLE_DASHBOARD.md](../GOOGLE_DASHBOARD.md) |
 
 ## The one-table summary for a first call
 

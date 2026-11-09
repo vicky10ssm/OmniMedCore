@@ -1,7 +1,7 @@
 # OmniMed Core architecture and local export design
 
-Last updated: 8 November 2026  
-Current product version: `0.10.0`  
+Last updated: 9 November 2026  
+Current product version: `0.11.0`  
 Current schema: `22`
 
 ## 1. Status and scope
@@ -94,6 +94,10 @@ OmniMed Core is a multi-vertical product; a tenant enables only the modules it o
 
 - Billing and money: patients, billing, invoices, dues, doctors, expenses. Referral commissions are
   not exposed or accrued.
+- Administrator dashboard: live tenant-scoped reads over billing, diagnostics, expenses, pharmacy and
+  hospital tables. Six tabs (Overview, Billing, Diagnostics, Expenses, Pharmacy, Hospital), 1/7/30/90-day
+  ranges, inline SVG/CSS charts, daily CSV export and A4 print. It adds no schema and no cloud dependency;
+  see [DASHBOARD.md](../DASHBOARD.md).
 - Diagnostics: tests/packages, sample chain, result entry, amendments, pathology report printing, and
   X-ray/radiology reports with clinical history, findings, impression and a configurable disclaimer.
 - Radiologist catalogue: tenant-scoped names, qualifications and signature images selected at X-ray
@@ -112,7 +116,8 @@ OmniMed Core is a multi-vertical product; a tenant enables only the modules it o
 - Compliance: sample/report/consent evidence, audit page, offline ABDM draft.
 - Settings: administrator-only centre identity, branding/logo, vertical/module visibility, users,
   numbering and terminal configuration.
-- Monitor: read-only dashboards, invoices, dues, reports, admissions, pharmacy and money views.
+- Monitor: read-only dashboard, invoices, dues, reports, admissions, pharmacy and money views; the
+  dashboard shares the terminal queries but exposes no write controls.
 
 The umbrella brand is **OmniMed Core** (`src/app/brand.ts`). Internal package/storage names retain the
 historical `diagbill` identifier.
@@ -178,7 +183,8 @@ merge or online revocation.
 
 See [LOCAL_CSV_EXPORT.md](../LOCAL_CSV_EXPORT.md). An optional downstream Google
 Sheets/BigQuery/Looker Studio dashboard is described in [GOOGLE_DASHBOARD.md](../GOOGLE_DASHBOARD.md);
-it is design-only and not part of the desktop product.
+it remains an optional external consumer of exported CSVs. The desktop product's primary reporting
+surface is the built-in local dashboard in [DASHBOARD.md](../DASHBOARD.md).
 
 ### Data ownership in current build
 

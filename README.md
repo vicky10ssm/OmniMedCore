@@ -47,6 +47,7 @@ Dashboard, Settings, Compliance or the Expenses profitability card.
 - Hospital admissions, ward/bed, discharge summary and generic IPD service charges/payments/printing
 - Pharmacy medicine, batch/expiry stock, receipt, dispensing, GST receipt and cancellation
 - Expenses with multi-module attribution (Pathology, X-ray, Pharmacy, Hospital, General/shared), audit evidence and a read-only monitoring build
+- Administrator dashboard with live local Overview, Billing, Diagnostics, Expenses, Pharmacy and Hospital views, 1/7/30/90-day ranges, dependency-free charts, CSV export and print
 - SQLCipher-encrypted desktop database with the key held in Windows Credential Manager
 - Daily encrypted snapshots with 7/4/12 retention, optional USB/OneDrive copy, manual backup and validated restore
 - Signed Diagnostics/Pharmacy/Hospital/Complete/Custom licences with tenant/hardware fingerprint binding,
@@ -177,7 +178,8 @@ See [SECURITY.md](SECURITY.md).
 - [PRODUCTION_COMMERCIAL_READINESS.md](PRODUCTION_COMMERCIAL_READINESS.md) - current done/pending status and commercial release gates
 - [CLIENT_INSTALLATION_RUNBOOK.md](CLIENT_INSTALLATION_RUNBOOK.md) - end-to-end offline client installation, backup, local CSV export, acceptance and rollback
 - [LOCAL_CSV_EXPORT.md](LOCAL_CSV_EXPORT.md) - Google Drive transaction outbox, full all-module snapshots, masking, secret exclusions and retry behavior
-- [GOOGLE_DASHBOARD.md](GOOGLE_DASHBOARD.md) - design for an optional read-only Google Sheets/BigQuery/Looker Studio dashboard on exported CSVs
+- [DASHBOARD.md](DASHBOARD.md) - in-app administrator dashboard metrics, views, export/print and limits
+- [GOOGLE_DASHBOARD.md](GOOGLE_DASHBOARD.md) - optional external Google Sheets/BigQuery/Looker Studio dashboard on exported CSVs
 - [BACKUP_RESTORE.md](BACKUP_RESTORE.md) - local snapshots, retention, optional USB/OneDrive copy and restore
 - [ENCRYPTION.md](ENCRYPTION.md) - SQLCipher, Windows Credential Manager key storage and migration
 - [code-signing/README.md](code-signing/README.md) - local self-signed certificate and client trust setup
@@ -198,7 +200,7 @@ Read [CONTRIBUTING.md](CONTRIBUTING.md) before changing code or data rules.
   outside the desktop UI is still pending
 - No hosted/hardened vendor portal
 - Google Drive exports are one-way; they are not live sync, import, remote monitoring or backups
-- A Google Sheets/BigQuery/Looker Studio dashboard is an external design only, documented in [GOOGLE_DASHBOARD.md](GOOGLE_DASHBOARD.md); it is not bundled or supported as a live product feature
+- Operational reporting is available in the in-app administrator dashboard; a Google Sheets/BigQuery/Looker Studio dashboard remains an optional external design for cross-centre, remote or archival reporting and is documented in [GOOGLE_DASHBOARD.md](GOOGLE_DASHBOARD.md)
 - Full snapshots contain patient and clinical data; protect the Google Drive folder accordingly
 - The export schedulers run only while the desktop app is open; they are not OS services
 - No live ABDM/ABHA exchange
