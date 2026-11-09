@@ -214,6 +214,10 @@ Record accession/sample IDs for both blocked and allowed disposal cases.
 - [ ] Printed report signature can be shown and hidden from Settings
 - [ ] Hidden signature removes the pathologist/radiologist name, qualification, image and release line
 - [ ] Report number, version and date print horizontally on one line
+- [ ] A completed pathology test prints individually while another test on the same bill is pending
+- [ ] Single-test print contains only the selected test, not the other tests on the invoice
+- [ ] A long CBC/other panel report spans multiple A4 pages without trimming parameters
+- [ ] Continuation pages repeat the table header
 - [ ] Invoice number and date print horizontally on one line
 
 ## Licensing verification

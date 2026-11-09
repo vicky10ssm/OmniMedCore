@@ -51,7 +51,8 @@ Status meanings: **Ready**, **Pilot**, **Partial**, **Not available**, **Externa
 | Draft/verify workflow | Ready | Draft and verified statuses; release requires authority |
 | Report amendments | Ready | Issued results cannot return to draft; amendment reason and prior revision retained |
 | Sample release gate | Ready | Pathology release requires an accepted linked sample |
-| Report letterhead printing | Ready | Lab identity, patient/doctor, sample ID, authorizer, version; optional pre-printed centre letterhead mode hides the built-in header and reserves configurable page margins; printed signature block can be hidden when stationery already carries it |
+| Report letterhead printing | Ready | Lab identity, patient/doctor, sample ID, authorizer, version; individual completed test reports can print before the rest of the bill is ready; optional pre-printed centre letterhead mode hides the built-in header and reserves configurable page margins; printed signature block can be hidden when stationery already carries it; long reports paginate across A4 pages |
+| Single-test reporting | Ready | A completed pathology test can be printed on its own from the Reports table even when other tests on the same invoice are still pending; the combined invoice report remains available when all tests are verified |
 | Report sections | Ready | Parameter templates carry printable section headings; CBC is split into Complete Blood Count and Differential Leucocyte Count, LFT into Bilirubin/Liver Enzymes/Proteins, KFT into Renal Profile/Electrolytes/Minerals, and urine into Physical/Chemical/Microscopy |
 | X-ray report workflow | Ready | Clinical history, radiologist findings, impression and configurable disclaimer |
 | Radiologist signature catalogue | Ready | Admin uploads multiple names, qualifications and scanned signatures; operator selects one per report |

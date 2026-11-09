@@ -3,6 +3,33 @@
 All notable changes to OmniMed Core are recorded here. This project follows semantic versioning once
 production releases begin.
 
+## [0.17.0] - 2026-11-09
+
+### Added
+
+- Each completed pathology test now has a **Print** action in the Reports table, even when other tests
+  on the same invoice are still pending.
+- A single-test report contains only that test's results and sections. The combined invoice report is
+  still available from **Reports ready to print** once every test on the bill is verified.
+
+### Fixed
+
+- Long reports now paginate across multiple A4 pages instead of being clipped after page one.
+- Print layout now keeps printable content in normal document flow, neutralises the app shell, repeats
+  table headers on continuation pages and avoids splitting table rows.
+
+### Database
+
+- No schema change. Schema remains **24**.
+
+### Verified
+
+- A CBC test on a bill that also contains LFT printed as a single CBC report without waiting for the LFT.
+- Single report retained the CBC section headings and did not include the second test.
+- A long print fixture produced 4 A4 pages instead of one clipped page.
+- Preset and custom dashboard ranges remain unaffected.
+- `npm run check`, terminal build, monitor build and Rust tests pass.
+
 ## [0.16.0] - 2026-11-09
 
 ### Added
