@@ -220,6 +220,9 @@ Record accession/sample IDs for both blocked and allowed disposal cases.
 - [ ] Single-test print contains only the selected test, not the other tests on the invoice
 - [ ] A long CBC/other panel report spans multiple A4 pages without trimming parameters
 - [ ] Continuation pages repeat the table header
+- [ ] Report printout has no large blank space or blank page before the report
+- [ ] Print preview shows the Headers and footers guidance
+- [ ] Browser headers/footers are off in the print dialog for clean output
 - [ ] Invoice number and date print horizontally on one line
 
 ## Licensing verification

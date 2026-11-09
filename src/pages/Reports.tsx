@@ -1453,6 +1453,11 @@ function ReportPrint({
   const [paramsByOrder, setParamsByOrder] = useState<Record<string, ReportParameterRow[]>>({});
 
   useEffect(() => {
+    document.body.classList.add("printing-report");
+    return () => document.body.classList.remove("printing-report");
+  }, []);
+
+  useEffect(() => {
     void (async () => {
       const db = await getDb();
       const [tenantClause, tenantParams] = tenantAnd();
@@ -1873,6 +1878,11 @@ function XrayReportPrint({
 }) {
   const [lab, setLab] = useState<Record<string, string>>({});
   const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    document.body.classList.add("printing-report");
+    return () => document.body.classList.remove("printing-report");
+  }, []);
 
   useEffect(() => {
     void (async () => {
