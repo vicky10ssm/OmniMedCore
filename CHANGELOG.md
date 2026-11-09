@@ -3,6 +3,42 @@
 All notable changes to OmniMed Core are recorded here. This project follows semantic versioning once
 production releases begin.
 
+## [0.15.0] - 2026-11-09
+
+### Added
+
+- Added printable **report parameter sections**.
+- CBC reports are split into:
+  - **Complete Blood Count**
+  - **Differential Leucocyte Count**
+- Other starter panels now use clinical sections, including:
+  - LFT: Bilirubin, Liver Enzymes, Proteins
+  - KFT: Renal Profile, Electrolytes, Minerals
+  - Urine Routine: Physical Examination, Chemical Examination, Microscopy
+  - Stool, semen and fluid panels: physical, microscopy and special-test sections where applicable
+- The section heading is editable in **Tests & Packages -> Parameters**.
+
+### Changed
+
+- Report result entry and A4 report printing group parameters under their section headings.
+- Existing report snapshots keep their stored parameter names and results while gaining section headings
+  from the current template.
+- Section assignment runs at boot and fills only blank section names; a locally edited section is
+  preserved.
+- Generated catalogue documentation now records section names.
+
+### Database
+
+- Schema **24** adds `section_name` to `test_parameters` and `report_parameters`.
+- No result data is rewritten.
+
+### Verified
+
+- CBC entry and print show Complete Blood Count and Differential Leucocyte Count.
+- A historical CBC+LFT report prints section headings without changing its stored results.
+- Section names load correctly in Tests -> Parameters.
+- `npm run check`, terminal build, monitor build and Rust tests pass.
+
 ## [0.14.0] - 2026-11-09
 
 ### Added

@@ -218,15 +218,16 @@ async function completeTest(
     const id = uuid();
     await db.run(
       `INSERT INTO report_parameters
-         (id, report_order_id, parameter_id, parameter_name, unit, ref_range, ref_min,
-          ref_max, result_value, result_text, abnormal, loinc_code, created_at,
-          updated_at, device_id, dirty, deleted, tenant_id)
-       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,1,0,?)`,
+         (id, report_order_id, parameter_id, parameter_name, section_name, unit,
+          ref_range, ref_min, ref_max, result_value, result_text, abnormal,
+          loinc_code, created_at, updated_at, device_id, dirty, deleted, tenant_id)
+       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,1,0,?)`,
       [
         id,
         order.id,
         p.id,
         p.name,
+        p.section_name,
         p.unit,
         p.ref_range,
         p.ref_min,
@@ -247,6 +248,7 @@ async function completeTest(
       report_order_id: order.id,
       parameter_id: p.id,
       parameter_name: p.name,
+      section_name: p.section_name,
       unit: p.unit,
       ref_range: p.ref_range,
       ref_min: p.ref_min,

@@ -107,7 +107,10 @@ function renderTests(title, rows) {
             : "";
           const unit = parameter.unit ? ` ${md(parameter.unit)}` : "";
           const type = parameter.report_type ? `; ${md(parameter.report_type)}` : "";
-          lines.push(`  - ${md(parameter.name)}${unit}${ref}${type}`);
+          const section = parameter.section_name
+            ? `[${md(parameter.section_name)}] `
+            : "";
+          lines.push(`  - ${section}${md(parameter.name)}${unit}${ref}${type}`);
         }
       }
       lines.push("");

@@ -133,6 +133,12 @@ Record invoice/payment IDs and totals used for acceptance.
 - [ ] Starter panel parameters exist for CBC, LFT, KFT, Lipid, Urine, DC, PT/INR, Widal, dengue, cultures, fluids, semen and stool
 - [ ] CBC has 20 parameters including HCT, RDW-CV, RDW-SD, MPV, PDW, PCT, P-LCR and P-LCC
 - [ ] SGPT remains in LFT and is not added to CBC
+- [ ] CBC report prints **Complete Blood Count** and **Differential Leucocyte Count** sections
+- [ ] LFT prints Bilirubin, Liver Enzymes and Proteins sections
+- [ ] KFT prints Renal Profile, Electrolytes and Minerals sections
+- [ ] Urine routine prints Physical Examination, Chemical Examination and Microscopy sections
+- [ ] Section names can be edited in Tests -> Parameters
+- [ ] Existing report snapshots retain their stored result values while gaining section headings
 - [ ] Optional subfields exist for malaria, VDRL/TPHA, peripheral smear, histopathology, cytology, IHC and special stains
 - [ ] Parameter duplicate-name check is zero; historical single results survive amendment
 - [ ] 27 combined starter packages present with no empty or duplicate package/test links

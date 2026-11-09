@@ -681,6 +681,7 @@ export const MIGRATIONS: Migration[] = [
         id TEXT PRIMARY KEY,
         test_id TEXT NOT NULL,
         name TEXT NOT NULL,
+        section_name TEXT NOT NULL DEFAULT '',
         sort_order INTEGER NOT NULL DEFAULT 0,
         unit TEXT NOT NULL DEFAULT '',
         ref_range TEXT NOT NULL DEFAULT '',
@@ -701,6 +702,7 @@ export const MIGRATIONS: Migration[] = [
         report_order_id TEXT NOT NULL,
         parameter_id TEXT NOT NULL,
         parameter_name TEXT NOT NULL,
+        section_name TEXT NOT NULL DEFAULT '',
         unit TEXT NOT NULL DEFAULT '',
         ref_range TEXT NOT NULL DEFAULT '',
         ref_min REAL,
@@ -1940,6 +1942,15 @@ export const MIGRATIONS: Migration[] = [
           WHERE p.test_id = t.id AND p.tenant_id = t.tenant_id
             AND lower(p.name) = 'platelet large cell count (p-lcc)'
         );
+    `,
+  },
+  {
+    version: 24,
+    name: "report parameter sections",
+    tolerant: true,
+    sql: `
+      ALTER TABLE test_parameters ADD COLUMN section_name TEXT NOT NULL DEFAULT '';
+      ALTER TABLE report_parameters ADD COLUMN section_name TEXT NOT NULL DEFAULT '';
     `,
   },
 ];

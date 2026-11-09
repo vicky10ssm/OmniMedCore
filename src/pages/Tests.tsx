@@ -64,6 +64,7 @@ const EMPTY_TEST: TestForm = {
 
 interface ParameterForm {
   name: string;
+  section_name: string;
   unit: string;
   ref_range: string;
   ref_min: string;
@@ -74,6 +75,7 @@ interface ParameterForm {
 
 const EMPTY_PARAMETER: ParameterForm = {
   name: "",
+  section_name: "",
   unit: "",
   ref_range: "",
   ref_min: "",
@@ -288,6 +290,7 @@ export default function Tests() {
       const ts = now();
       const values = [
         paramForm.name.trim(),
+        paramForm.section_name.trim(),
         paramForm.unit.trim(),
         paramForm.ref_range.trim(),
         refMin,
@@ -299,8 +302,8 @@ export default function Tests() {
         const [tenantClause, tenantParams] = tenantAnd();
         await db.run(
           `UPDATE test_parameters
-           SET name = ?, unit = ?, ref_range = ?, ref_min = ?, ref_max = ?,
-               report_type = ?, loinc_code = ?, updated_at = ?, dirty = 1
+           SET name = ?, section_name = ?, unit = ?, ref_range = ?, ref_min = ?,
+               ref_max = ?, report_type = ?, loinc_code = ?, updated_at = ?, dirty = 1
            WHERE id = ? ${tenantClause}`,
           [...values, ts, editingParam.id, ...tenantParams]
         );
@@ -308,14 +311,15 @@ export default function Tests() {
         const sortOrder = testParams.reduce((max, p) => Math.max(max, p.sort_order), -1) + 1;
         await db.run(
           `INSERT INTO test_parameters
-             (id, test_id, name, sort_order, unit, ref_range, ref_min, ref_max,
-              report_type, loinc_code, options, is_active, created_at, updated_at,
-              device_id, dirty, deleted, tenant_id)
-           VALUES (?,?,?,?,?,?,?,?,?,?,'[]',1,?,?,?,1,0,?)`,
+             (id, test_id, name, section_name, sort_order, unit, ref_range, ref_min,
+              ref_max, report_type, loinc_code, options, is_active, created_at,
+              updated_at, device_id, dirty, deleted, tenant_id)
+           VALUES (?,?,?,?,?,?,?,?,?,?,?,'[]',1,?,?,?,1,0,?)`,
           [
             uuid(),
             paramTest.id,
             paramForm.name.trim(),
+            paramForm.section_name.trim(),
             sortOrder,
             paramForm.unit.trim(),
             paramForm.ref_range.trim(),
@@ -344,6 +348,7 @@ export default function Tests() {
     setEditingParam(p);
     setParamForm({
       name: p.name,
+      section_name: p.section_name,
       unit: p.unit,
       ref_range: p.ref_range,
       ref_min: p.ref_min == null ? "" : String(p.ref_min),
@@ -847,6 +852,7 @@ export default function Tests() {
               <thead>
                 <tr className="bg-slate-50 text-left text-xs text-slate-500">
                   <th className="px-3 py-2">Parameter</th>
+                  <th className="px-3 py-2">Section</th>
                   <th className="px-3 py-2">Unit</th>
                   <th className="px-3 py-2">Reference range</th>
                   <th className="px-3 py-2">Type</th>
@@ -856,7 +862,7 @@ export default function Tests() {
               <tbody>
                 {testParams.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="px-3 py-6 text-center text-slate-400">
+                    <td colSpan={6} className="px-3 py-6 text-center text-slate-400">
                       No parameters yet. Add the first one below, or leave this test
                       without parameters for a single free-text result.
                     </td>
@@ -865,6 +871,9 @@ export default function Tests() {
                   testParams.map((p) => (
                     <tr key={p.id} className="border-t border-slate-100">
                       <td className="px-3 py-2 font-medium">{p.name}</td>
+                      <td className="px-3 py-2 text-slate-600">
+                        {p.section_name || "—"}
+                      </td>
                       <td className="px-3 py-2 text-slate-600">{p.unit || "—"}</td>
                       <td className="px-3 py-2 text-slate-600">{p.ref_range || "—"}</td>
                       <td className="px-3 py-2 capitalize text-slate-600">{p.report_type}</td>
@@ -891,6 +900,18 @@ export default function Tests() {
                   value={paramForm.name}
                   onChange={(e) => setParamForm({ ...paramForm, name: e.target.value })}
                   placeholder="e.g. Haemoglobin"
+                />
+              </Labeled>
+              <Labeled
+                label="Report section"
+                hint="Optional heading, e.g. Differential Leucocyte Count"
+              >
+                <TextInput
+                  value={paramForm.section_name}
+                  onChange={(e) =>
+                    setParamForm({ ...paramForm, section_name: e.target.value })
+                  }
+                  placeholder="e.g. Complete Blood Count"
                 />
               </Labeled>
               <Labeled label="Result type">

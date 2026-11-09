@@ -11,6 +11,7 @@ import { MIGRATIONS, SEED_SQL, splitSqlStatements } from "./schema";
 import { ensureDefaultTenant, getCurrentTenantId } from "./tenant";
 import { ensureStarterTests } from "./starterTests";
 import { ensureStarterParameters } from "./starterParameters";
+import { ensureStarterSections } from "./starterSections";
 import { ensureStarterPackages } from "./starterPackages";
 import { ensureStarterReferences } from "./starterReferences";
 import { backupDatabase, databaseInfo } from "./tauriStorage";
@@ -121,6 +122,7 @@ export class TauriSqlSource implements DataSource {
     await ensureDefaultTenant(source);
     await ensureStarterTests(source);
     await ensureStarterParameters(source);
+    await ensureStarterSections(source);
     await ensureStarterReferences(source);
     await ensureStarterPackages(source);
     return source;
@@ -263,7 +265,9 @@ export class TauriSqlSource implements DataSource {
       ["report_orders", "approved_at INTEGER"],
       ["users", "can_authorize_reports INTEGER NOT NULL DEFAULT 0"],
       ["test_parameters", "loinc_code TEXT NOT NULL DEFAULT ''"],
+      ["test_parameters", "section_name TEXT NOT NULL DEFAULT ''"],
       ["report_parameters", "loinc_code TEXT NOT NULL DEFAULT ''"],
+      ["report_parameters", "section_name TEXT NOT NULL DEFAULT ''"],
     ];
 
     for (const [table, definition] of repairs) {

@@ -67,6 +67,9 @@ every active tenant. Seeding is additive and idempotent:
 - a previously seeded generic parameter is removed only when no report value references it
 - `starterReferences.ts` fills all 377 references, including sex/age variant text; seeding is versioned
   per tenant and starter-owned parameter updates do not touch custom parameters
+- `starterSections.ts` assigns printable section headings. CBC uses Complete Blood Count and
+  Differential Leucocyte Count; LFT, KFT, urine, stool, semen, ABG and other panels use clinically
+  grouped headings. Blank sections are filled without overwriting an administrator-edited section.
 - reference text and numeric abnormal limits are independent; validate sex/age-specific flags locally
 
 `src/db/starterPackages.ts` seeds 27 combined health-check packages from pathology and X-ray tests.

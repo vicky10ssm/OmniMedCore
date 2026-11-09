@@ -19,8 +19,9 @@
       values: [],
     });
     const parameters = await invoke("db_select", {
-      sql: `SELECT t.code AS test_code, tp.name, tp.unit, tp.ref_range,
-                   tp.ref_min, tp.ref_max, tp.report_type, tp.sort_order
+      sql: `SELECT t.code AS test_code, tp.name, tp.section_name, tp.unit,
+                   tp.ref_range, tp.ref_min, tp.ref_max, tp.report_type,
+                   tp.sort_order
             FROM test_parameters tp
             JOIN tests t ON t.id = tp.test_id AND t.tenant_id = tp.tenant_id
             WHERE t.deleted = 0 AND tp.deleted = 0

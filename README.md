@@ -40,6 +40,7 @@ Dashboard, Settings, Compliance or the Expenses profitability card.
 - Test/package catalogue with GST and specimen metadata
 - Broad starter library: 184 pathology tests and 43 X-ray/radiography exams, with editable prices and reference intervals
 - 377 starter pathology parameter templates; every pathology test has a result parameter, filled reference intervals, sex/age variants where relevant, and complex-report subfields
+- Report parameters support printable sections; CBC separates Complete Blood Count from Differential Leucocyte Count, and other panels use clinical sections such as Bilirubin/Liver Enzymes/Proteins and Renal Profile/Electrolytes/Minerals
 - 27 combined starter health-check packages combining pathology and X-ray tests
 - Parameter-based pathology reporting, verification, amendment history and printing
 - X-ray/radiology reports with clinical history, findings, impression and configurable disclaimer,
