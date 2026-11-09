@@ -56,7 +56,7 @@ Dashboard, Settings, Compliance or the Expenses profitability card.
 - Signed Diagnostics/Pharmacy/Hospital/Complete/Custom licences with tenant/hardware fingerprint binding,
   DPAPI storage, clock high-water checks, 30-day grace and read-only mode after grace
 - Vendor licence portal for issue, download, renewal and revocation
-- Decoupled local CSV export into a Google Drive sync folder
+- Decoupled local CSV export into a Google Drive sync folder, with a sidebar badge showing the real pending CSV queue count
 - Unique transaction CSVs with masked patient IDs, local retry queue and no network calls
 - Full daily/on-demand snapshots with one CSV per table, including patients and all business modules
 

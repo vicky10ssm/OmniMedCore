@@ -3,7 +3,7 @@ import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import { getDb } from "../db";
 import { getSetting } from "../db/settings";
-import { tenantAnd } from "../db/tenant";
+import { pendingSyncCount, subscribeSyncStatus } from "../sync/syncEngine";
 import {
   ALL_MODULE_IDS,
   MODULES_CHANGED_EVENT,
@@ -96,33 +96,35 @@ export default function Layout() {
   }, []);
 
   useEffect(() => {
-    void getDb().then(async (db) => {
-      const [tenantClause, tenantParams] = tenantAnd();
-      const tables = [
-        "patients",
-        "tests",
-        "packages",
-        "doctors",
-        "invoices",
-        "invoice_items",
-        "payments",
-        "report_orders",
-        "expenses",
-      ];
-      let total = 0;
-      for (const t of tables) {
-        const r = await db.get<{ n: number }>(
-          `SELECT COUNT(*) AS n FROM ${t} WHERE dirty = 1 ${tenantClause}`,
-          tenantParams
-        );
-        total += r?.n ?? 0;
+    let active = true;
+    const refresh = async () => {
+      try {
+        const count = await pendingSyncCount();
+        if (active) setPending(count);
+      } catch {
+        // The badge is informational; a read failure must not block the app.
       }
-      setPending(total);
+    };
+    void refresh();
+    const unsubscribe = subscribeSyncStatus((status) => {
+      if (active) setPending(status.pending);
     });
-  }, []);
+    const refreshWhenVisible = () => {
+      if (document.visibilityState === "visible") void refresh();
+    };
+    document.addEventListener("visibilitychange", refreshWhenVisible);
+    const timer = window.setInterval(() => void refresh(), 30_000);
+    return () => {
+      active = false;
+      unsubscribe();
+      document.removeEventListener("visibilitychange", refreshWhenVisible);
+      window.clearInterval(timer);
+    };
+  }, [location.pathname]);
 
-  const syncNote = pending
-    ? `${pending} record${pending === 1 ? "" : "s"} waiting`
+  const hasPending = pending > 0;
+  const syncNote = hasPending
+    ? `${pending} CSV record${pending === 1 ? "" : "s"} waiting`
     : "All changes saved locally";
 
   useEffect(() => setDrawer(false), [location.pathname]);
@@ -196,7 +198,11 @@ export default function Layout() {
       <aside className="no-print hidden w-60 shrink-0 flex-col bg-slate-900 md:flex">
         {brand}
         {nav}
-        <div className="border-t border-white/10 px-5 py-3 text-[11px] text-slate-500">
+        <div
+          className={`border-t border-white/10 px-5 py-3 text-[11px] ${
+            hasPending ? "text-amber-400" : "text-slate-500"
+          }`}
+        >
           {syncNote}
         </div>
       </aside>
@@ -228,14 +234,18 @@ export default function Layout() {
           <div className="ml-auto flex items-center gap-3">
             <span
               className={`hidden items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium sm:inline-flex ${
-                syncNote ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500"
+                hasPending
+                  ? "bg-amber-50 text-amber-700"
+                  : "bg-emerald-50 text-emerald-700"
               }`}
               title={syncNote}
             >
               <span
-                className={`h-1.5 w-1.5 rounded-full ${syncNote ? "bg-emerald-500" : "bg-emerald-500"}`}
+                className={`h-1.5 w-1.5 rounded-full ${
+                  hasPending ? "bg-amber-500" : "bg-emerald-500"
+                }`}
               />
-              {syncNote || "Local database"}
+              {syncNote}
             </span>
             <div className="text-right">
               <p className="text-xs font-semibold leading-tight">

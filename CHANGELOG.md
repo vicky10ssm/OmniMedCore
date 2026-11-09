@@ -3,6 +3,29 @@
 All notable changes to OmniMed Core are recorded here. This project follows semantic versioning once
 production releases begin.
 
+## [0.15.1] - 2026-11-09
+
+### Fixed
+
+- Replaced the misleading sidebar **“records waiting”** badge. It previously counted legacy `dirty = 1`
+  rows across business tables, a cloud-sync flag that is no longer cleared and could report hundreds
+  of records forever.
+- The badge now counts actual pending rows in `local_export_queue` where `exported_at IS NULL`.
+- When the CSV export queue is empty it shows **All changes saved locally**.
+- When records are genuinely waiting it shows **N CSV records waiting** with an amber status colour.
+- The badge refreshes on navigation, export-status events, returning to the window, and a 30-second
+  interval.
+
+### Database
+
+- No schema change. Schema remains **24**.
+
+### Verified
+
+- Existing demo database now shows **All changes saved locally** instead of the stale 344-record warning.
+- Settings -> Device & sync uses the same `local_export_queue` source of truth.
+- `npm run check`, terminal build, monitor build and Rust tests pass.
+
 ## [0.15.0] - 2026-11-09
 
 ### Added
