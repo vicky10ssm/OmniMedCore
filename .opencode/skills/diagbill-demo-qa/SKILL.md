@@ -87,6 +87,16 @@ After seeding, verify:
 12. Re-running the seeder returns `created: false`.
 13. Browser console has no errors.
 
+## Database upgrade acceptance
+
+1. Install the previous release, launch it once and create or open a database.
+2. Install the new release over it and launch.
+3. Confirm `%APPDATA%\in.medicore.desktop\Backups\pre-upgrade-*-to-*-*.db` exists.
+4. Confirm the backup opens through **Settings → Device & sync → Backup & restore** on a disposable
+   profile and passes validation.
+5. Restart the same version and confirm no second pre-upgrade backup is created.
+6. For schema-changing releases, confirm the separate `pre-migration-v<schema>-*.db` exists.
+
 ## Browser testing
 
 - The usual Vite development URL is `http://127.0.0.1:5173/`; verify the actual running port first.

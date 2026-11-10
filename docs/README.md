@@ -1,8 +1,8 @@
 # OmniMed Core buyer documentation
 
-Last updated: 9 November 2026  
-Product version: `0.21.0`  
-Database schema: `24`
+Last updated: 10 November 2026  
+Product version: `0.22.0`  
+Database schema: `25`
 
 **OmniMed Core** is the umbrella product name. The internal package/browser storage keys retain the
 historical `diagbill` identifier; this does not affect buyer branding.
@@ -42,7 +42,8 @@ For the current done/pending and commercial release decision, use
 | [../DASHBOARD.md](../DASHBOARD.md) | In-app administrator dashboard views, definitions, CSV/print and limits |
 | [../LETTERHEAD_PRINTING.md](../LETTERHEAD_PRINTING.md) | Pre-printed A4 letterhead setup, margins and print-dialog alignment |
 | [../GOOGLE_DASHBOARD.md](../GOOGLE_DASHBOARD.md) | Optional external Google Sheets/BigQuery/Looker Studio dashboard on exported CSVs |
-| [../BACKUP_RESTORE.md](../BACKUP_RESTORE.md) | Daily snapshots, 7/4/12 retention, USB/OneDrive copy, validation and restore |
+| [../BACKUP_RESTORE.md](../BACKUP_RESTORE.md) | Pre-upgrade/pre-migration backups, daily snapshots, 7/4/12 retention, USB/OneDrive copy, validation and restore |
+| [../RELEASE_TESTING.md](../RELEASE_TESTING.md) | Automated and manual database-safety gate run before every release |
 | [../ENCRYPTION.md](../ENCRYPTION.md) | SQLCipher, Windows Credential Manager key storage, migration and key-recovery limits |
 | [security-privacy-compliance.md](security-privacy-compliance.md) | Security posture, NABL/ISO/ABDM evidence, data protection and claims policy |
 | [commercial-model-and-pricing.md](commercial-model-and-pricing.md) | Pricing structures, cost drivers, ROI method and proposal terms |

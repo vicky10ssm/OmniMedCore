@@ -599,6 +599,23 @@ The second deployment exists. `npm run build` makes the terminal (editing) app; 
 - The expenses list, search, module filter and CSV export include the attribution.
 - Operators can add and view expenses as before; admin/operator visibility rules are unchanged.
 
+## Automatic pre-upgrade database backup and release test gate - built
+
+- Rust writes a pre-upgrade copy before opening the database when the running app version differs from
+  `last-run-version.txt`.
+- The backup includes the main database and `-wal`/`-shm` sidecars and is named
+  `pre-upgrade-<from>-to-<to>-<epoch>.db`.
+- A missing version marker on an existing database is labelled `unknown`, so the first release with
+  the feature protects the upgrade that introduces it.
+- A failed sidecar/main-file copy aborts the database open instead of continuing unprotected.
+- The existing pre-migration backup remains a second layer for schema changes.
+- `pre-upgrade-*`, `pre-migration-*` and `pre-restore-*` files are excluded from daily snapshot
+  retention.
+- CI now runs `cargo test --lib --locked` for SQLCipher, backup validation, snapshot retention, export
+  safety and pre-upgrade backup tests.
+- `RELEASE_TESTING.md` records the complete automated and manual database-safety gate.
+- No schema change.
+
 ## Faster pathology bench workflow - built
 
 - Billing already creates the expected sample and accession automatically; no extra registration is

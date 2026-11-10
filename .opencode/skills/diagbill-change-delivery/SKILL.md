@@ -51,8 +51,11 @@ gh release view --json tagName,publishedAt 2>$null
 npm run check
 npm run build
 npm run build:monitor
-cargo test --lib
+cargo test --lib --locked --manifest-path src-tauri/Cargo.toml
 ```
+
+CI now runs the same Rust database tests on every pull request and `main` push. The full release
+database-safety gate is documented in `RELEASE_TESTING.md`.
 
 - Add targeted manual checks for the affected workflow. For licensing changes, include hardware mismatch,
   DPAPI copy/tamper failure, clock rollback and legacy migration checks.
@@ -146,6 +149,8 @@ Get-AuthenticodeSignature .\src-tauri\target\release\bundle\msi\OmniMed Core_X.Y
 - Confirm `ProductVersion` matches the release version.
 - Perform an install/upgrade smoke test on a test profile or clean Windows environment. Confirm the app
   launches, the database opens, data survives the upgrade and the licensed modules are correct.
+- Confirm a `Backups\pre-upgrade-<from>-to-<to>-<epoch>.db` file was created on the version-changing
+  launch. Restart the same version and confirm no duplicate is created.
 - Copy release assets into `release/vX.Y.Z/`:
 
 ```powershell
@@ -243,6 +248,7 @@ Always report:
 - [ ] All affected docs, runbooks, skills, portal docs and changelog updated
 - [ ] Version bumped everywhere
 - [ ] `npm run check`, terminal build, monitor build and Rust tests pass
+- [ ] Pre-upgrade backup created and same-version restart does not duplicate it
 - [ ] Merge commit is on `main`
 - [ ] Tag points to the merged release commit
 - [ ] Signed NSIS and MSI installers verified

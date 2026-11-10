@@ -1,7 +1,7 @@
 # OmniMed Core architecture and local export design
 
 Last updated: 9 November 2026  
-Current product version: `0.21.0`  
+Current product version: `0.22.0`  
 Current schema: `24`
 
 ## 1. Status and scope
@@ -68,7 +68,7 @@ supported integration path is the local CSV export described in [LOCAL_CSV_EXPOR
 | Licence storage | Windows DPAPI current-user file in Tauri, with legacy localStorage migration; backend enforcement outside the UI still required |
 | Vendor portal | Separate Node admin portal signs issuances/renewals/revocations with the private key; not publicly deployed |
 | Encryption | Desktop SQLCipher 4.20/AES-256, key in Windows Credential Manager; browser AES-GCM envelope remains separate |
-| Backups | Encrypted local daily/monthly/weekly snapshots, optional USB/OneDrive copy, validated restore |
+| Backups | Automatic pre-upgrade and pre-migration copies, encrypted daily/monthly/weekly snapshots, optional USB/OneDrive copy, validated restore |
 
 ### Application boot
 
@@ -77,15 +77,18 @@ supported integration path is the local CSV export described in [LOCAL_CSV_EXPOR
 2. The browser loads the `SqlJsSource` SQLite image from IndexedDB. The desktop opens a native
    SQLCipher connection from the app-config directory; an existing plaintext file is exported into
    SQLCipher before use.
-3. Before an existing desktop database migrates, Tauri checkpoints WAL, creates a timestamped
+3. Before the database is opened, Rust compares the running app version with the last-run marker and
+   writes a pre-upgrade copy of the database plus WAL/SHM sidecars when the version changed. A failed
+   copy blocks the open.
+4. Before an existing desktop database migrates, Tauri checkpoints WAL, creates a timestamped
    pre-migration backup and runs `PRAGMA quick_check`.
-4. Migrations run in ascending version order with tenant/compliance repair.
-5. Default tenant and initial admin are ensured.
-6. The licence verifier loads the DPAPI-protected signed file, checks signature/tenant/hardware
+5. Migrations run in ascending version order with tenant/compliance repair.
+6. Default tenant and initial admin are ensured.
+7. The licence verifier loads the DPAPI-protected signed file, checks signature/tenant/hardware
    fingerprint/expiry and the execution-time high-water mark, then derives the licensed module set. A
    development build falls back to a complete development licence only when no real licence is stored.
-7. Auth restores a session or shows login/unlock.
-8. Effective modules and routes are `licensed modules ∩ clinic-enabled modules`; read-only mode applies
+8. Auth restores a session or shows login/unlock.
+9. Effective modules and routes are `licensed modules ∩ clinic-enabled modules`; read-only mode applies
    after grace expiry.
 
 ### Module composition
