@@ -3,6 +3,49 @@
 All notable changes to OmniMed Core are recorded here. This project follows semantic versioning once
 production releases begin.
 
+## [0.23.0] - 2026-11-10
+
+### Added
+
+- **Bench** page under **Diagnostics**. Pathology work is grouped by sample instead of one flat row per
+  test.
+- Inline Bench actions:
+  - **Accept sample** for expected/collected/received specimens
+  - **Reject** with a reason, moving the sample to the Exceptions queue
+  - **Recollect sample** for a rejected specimen when no results have been entered or released
+  - **Enter result** per test, using the existing parameter entry, pathologist, verification and
+    amendment flow
+  - **Release & print** from the same screen
+  - **Print report**, **History** and **Amend** for completed work
+- **Exceptions** tab for rejected samples, with the rejection reason and a recollect action.
+- A **Bench / Reports** view toggle. `/bench` opens the Bench; `/reports` keeps the flat worklist used
+  for X-ray and completed/report history work.
+
+### Changed
+
+- Routine pathology work no longer needs a Samples → Reports hop. The Bench accepts the sample, opens
+  result entry and releases/prints in one screen.
+- Samples remains available for the detailed pre-examination chain, disposal and legacy order
+  registration.
+- Recollect creates a replacement expected sample, preserves the rejected sample history, re-links the
+  pending tests and refuses when results already exist or a report was released.
+- X-ray report entry remains in Reports.
+
+### Database
+
+- No schema change. Schema remains **25**.
+
+### Verified
+
+- `npm run check`, terminal build, monitor build and Rust tests pass.
+- Bench groups pathology tests by sample and shows awaiting/ready/printable counts.
+- Accept sample, Fill normal, Release & print, print report, history and amend work from the Bench.
+- Reject moves the sample to Exceptions with its reason.
+- Recollect creates a new expected sample, re-links the pending tests and clears the exception.
+- Recollect is blocked when results or a released report already exist.
+- Reports flat view and X-ray entry remain unchanged.
+- Operator/module route restrictions remain in place.
+
 ## [0.22.0] - 2026-11-10
 
 ### Added

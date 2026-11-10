@@ -49,7 +49,8 @@ Status meanings: **Ready**, **Pilot**, **Partial**, **Not available**, **Externa
 | Per-report unit/reference editing | Ready | Snapshot values for that patient; printer shows them |
 | Abnormal flags | Ready | Low/High from numeric limits |
 | Draft/verify workflow | Ready | Draft and verified statuses; release requires authority |
-| Fast bench workflow | Ready | Accept the linked sample from report entry, fill empty numeric results from reference midpoints with **Fill normal**, then **Release & print**; Release only is available when printing is deferred |
+| Fast bench workflow | Ready | Dedicated **Bench** groups pathology work by sample; accept the linked sample, fill empty numeric results with **Fill normal**, then **Release & print**; Release only is available when printing is deferred |
+| Bench sample exceptions | Ready | Reject a specimen with a reason, see it in the Exceptions queue, and recollect when no results or released report exist; the rejected sample history is preserved |
 | One-click sample acceptance | Ready | Samples desk accepts a routine specimen in one action while still recording collection, receipt and acceptance evidence; individual stage actions remain available |
 | Report amendments | Ready | Issued results cannot return to draft; amendment reason and prior revision retained |
 | Sample release gate | Ready | Pathology release requires an accepted linked sample |

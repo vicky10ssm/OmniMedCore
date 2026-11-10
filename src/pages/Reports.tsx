@@ -65,8 +65,26 @@ interface WorkRow extends ReportOrderRow {
   sample_specimen_type?: string | null;
   sample_collected_at?: number | null;
   sample_received_at?: number | null;
+  sample_rejection_reason?: string | null;
   verified_by_name?: string;
   revision_no?: number;
+}
+
+/** One Bench card: a sample (or a legacy order without a sample) and its tests. */
+interface BenchGroup {
+  key: string;
+  sampleId: string;
+  accessionNo: string;
+  sampleStatus: SampleRow["status"] | null;
+  rejectionReason: string;
+  patientName: string;
+  patientPhone: string;
+  patientAge: number | null;
+  patientGender: string | null;
+  invoiceId: string;
+  invoiceNo: string;
+  orders: WorkRow[];
+  createdAt: number;
 }
 
 interface HistoryRow extends ReportResultRevisionRow {
@@ -162,13 +180,28 @@ function revisionResultSummary(snapshotJson: string): string {
   }
 }
 
-export default function Reports() {
+export default function Reports({
+  initialView = "reports",
+}: {
+  initialView?: "bench" | "reports";
+}) {
   const { user } = useAuth();
   const { monitor } = useMonitor();
   const [rows, setRows] = useState<WorkRow[]>([]);
+  const [view, setView] = useState<"bench" | "reports">(initialView);
   const [filter, setFilter] = useState<Filter>("pending");
   const [query, setQuery] = useState("");
+  const [benchFilter, setBenchFilter] = useState<"active" | "exceptions" | "all">("active");
+  const [benchQuery, setBenchQuery] = useState("");
+  const [rejecting, setRejecting] = useState<BenchGroup | null>(null);
+  const [rejectReason, setRejectReason] = useState("");
   const [loaded, setLoaded] = useState(false);
+
+  // The Bench and Reports routes reuse this component. Keep the visible view
+  // in sync with the route, while still allowing the in-page toggle.
+  useEffect(() => {
+    setView(initialView);
+  }, [initialView]);
 
   const [entering, setEntering] = useState<WorkRow | null>(null);
   const [resultText, setResultText] = useState("");
@@ -214,6 +247,7 @@ export default function Reports() {
                 smp.specimen_type AS sample_specimen_type,
                 smp.collected_at AS sample_collected_at,
                 smp.received_at AS sample_received_at,
+                smp.rejection_reason AS sample_rejection_reason,
                 COALESCE(u.full_name, u.username, '') AS verified_by_name,
                 (SELECT COALESCE(MAX(rr.revision_no), 0)
                  FROM report_result_revisions rr
@@ -270,6 +304,96 @@ export default function Reports() {
       abnormal: rows.filter((r) => r.abnormal === 1).length,
     }),
     [rows]
+  );
+
+  const benchGroups = useMemo(() => {
+    const q = benchQuery.trim().toLowerCase();
+    const map = new Map<string, BenchGroup>();
+    for (const row of rows) {
+      // The Bench is the pathology bench. X-ray work remains in the Reports list.
+      if (row.test_category !== "Pathology") continue;
+      const key = row.sample_id || `order-${row.id}`;
+      const existing = map.get(key);
+      if (existing) {
+        existing.orders.push(row);
+        continue;
+      }
+      map.set(key, {
+        key,
+        sampleId: row.sample_id || "",
+        accessionNo: row.accession_no || "No sample",
+        sampleStatus: row.sample_status,
+        rejectionReason: row.sample_rejection_reason || "",
+        patientName: row.patient_name,
+        patientPhone: row.patient_phone,
+        patientAge: row.patient_age,
+        patientGender: row.patient_gender,
+        invoiceId: row.invoice_id,
+        invoiceNo: row.invoice_no,
+        orders: [row],
+        createdAt: row.created_at,
+      });
+    }
+    return [...map.values()]
+      .map((group) => ({
+        ...group,
+        orders: [...group.orders].sort((a, b) => a.created_at - b.created_at),
+      }))
+      .filter(
+        (group) =>
+          !q ||
+          [
+            group.accessionNo,
+            group.patientName,
+            group.patientPhone,
+            group.invoiceNo,
+            ...group.orders.map((order) => order.test_name),
+          ].some((value) => value.toLowerCase().includes(q))
+      )
+      .sort((a, b) => b.createdAt - a.createdAt);
+  }, [rows, benchQuery]);
+
+  const benchCounts = useMemo(() => {
+    const active = benchGroups.filter(
+      (group) =>
+        group.sampleStatus !== "rejected" &&
+        !group.orders.some((order) => order.status === "rejected")
+    );
+    return {
+      awaiting: active.filter((group) =>
+        ["expected", "collected", "received"].includes(group.sampleStatus ?? "")
+      ).length,
+      ready: active.filter(
+        (group) =>
+          group.sampleStatus === "accepted" &&
+          group.orders.some((order) => order.status !== "done")
+      ).length,
+      printable: active.filter(
+        (group) =>
+          group.sampleStatus === "accepted" &&
+          group.orders.length > 0 &&
+          group.orders.every((order) => order.status === "done")
+      ).length,
+      exceptions: benchGroups.filter(
+        (group) =>
+          group.sampleStatus === "rejected" ||
+          group.orders.some((order) => order.status === "rejected")
+      ).length,
+      missingSample: active.filter((group) => !group.sampleId).length,
+    };
+  }, [benchGroups]);
+
+  const benchFiltered = useMemo(
+    () =>
+      benchGroups.filter((group) => {
+        const rejected =
+          group.sampleStatus === "rejected" ||
+          group.orders.some((order) => order.status === "rejected");
+        if (benchFilter === "exceptions") return rejected;
+        if (benchFilter === "active") return !rejected;
+        return true;
+      }),
+    [benchGroups, benchFilter]
   );
 
   const selectedRadiologist = useMemo(
@@ -542,12 +666,11 @@ export default function Reports() {
   };
 
   /**
-   * Accepts the linked sample from report entry so the bench user does not
-   * have to leave for the Samples desk. Collection/receipt/acceptance evidence
-   * is still recorded with the same timestamp and user.
+   * Accepts a linked sample from the Bench or report entry. Collection,
+   * receipt and acceptance evidence is recorded with one timestamp/user.
    */
-  const acceptSampleInline = async () => {
-    if (!entering?.sample_id || !user) return;
+  const acceptSampleById = async (sampleId: string, accessionNo?: string | null) => {
+    if (!user) return false;
     setBusy(true);
     setError("");
     try {
@@ -564,7 +687,7 @@ export default function Reports() {
                received_by = CASE WHEN received_by = '' THEN ? ELSE received_by END,
                accepted_at = ?, accepted_by = ?, updated_at = ?, dirty = 1
            WHERE id = ? AND deleted = 0 ${tenantClause}`,
-          [ts, user.id, ts, user.id, ts, user.id, ts, entering.sample_id, ...tenantParams]
+          [ts, user.id, ts, user.id, ts, user.id, ts, sampleId, ...tenantParams]
         );
         await db.run(
           `UPDATE report_orders
@@ -572,19 +695,162 @@ export default function Reports() {
                specimen_received_at = COALESCE(specimen_received_at, ?),
                updated_at = ?, dirty = 1
            WHERE sample_id = ? ${tenantClause}`,
-          [ts, ts, ts, entering.sample_id, ...tenantParams]
+          [ts, ts, ts, sampleId, ...tenantParams]
         );
         await writeAudit(db, {
           userId: user.id,
           action: "sample.accept",
           entity: "sample",
-          entityId: entering.sample_id,
-          detail: `${entering.accession_no || "Sample"} accepted from report entry`,
+          entityId: sampleId,
+          detail: `${accessionNo || "Sample"} accepted`,
         });
       });
-      setEntering({ ...entering, sample_status: "accepted" });
+      await load();
+      return true;
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not accept the sample");
+      return false;
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const acceptSampleInline = async () => {
+    if (!entering?.sample_id) return;
+    const ok = await acceptSampleById(entering.sample_id, entering.accession_no);
+    if (ok) setEntering({ ...entering, sample_status: "accepted" });
+  };
+
+  const rejectSample = async () => {
+    if (!rejecting || !user || !rejectReason.trim()) return;
+    setBusy(true);
+    setError("");
+    try {
+      const db = await getDb();
+      const [tenantClause, tenantParams] = tenantAnd();
+      const ts = now();
+      await db.tx(async () => {
+        await db.run(
+          `UPDATE samples
+           SET status = 'rejected', rejected_at = ?, rejected_by = ?,
+               rejection_reason = ?, updated_at = ?, dirty = 1
+           WHERE id = ? AND deleted = 0 ${tenantClause}`,
+          [ts, user.id, rejectReason.trim(), ts, rejecting.sampleId, ...tenantParams]
+        );
+        await db.run(
+          `UPDATE report_orders
+           SET status = 'rejected', updated_at = ?, dirty = 1
+           WHERE sample_id = ? AND status IN ('pending','in_progress') ${tenantClause}`,
+          [ts, rejecting.sampleId, ...tenantParams]
+        );
+        await writeAudit(db, {
+          userId: user.id,
+          action: "sample.reject",
+          entity: "sample",
+          entityId: rejecting.sampleId,
+          detail: `${rejecting.accessionNo} - ${rejectReason.trim()}`,
+        });
+      });
+      setRejecting(null);
+      setRejectReason("");
+      await load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not reject the sample");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  /**
+   * Creates a replacement sample for a rejected specimen and re-links its
+   * pending tests. It refuses when any result was already entered or released,
+   * so a recollect cannot silently discard clinical data.
+   */
+  const recollectSample = async (group: BenchGroup) => {
+    if (!group.sampleId || !user) return;
+    setBusy(true);
+    setError("");
+    try {
+      const db = await getDb();
+      const [tenantClause, tenantParams] = tenantAnd();
+      const ts = now();
+      const old = await db.get<SampleRow>(
+        `SELECT * FROM samples WHERE id = ? AND deleted = 0 ${tenantClause}`,
+        [group.sampleId, ...tenantParams]
+      );
+      if (!old) throw new Error("The rejected sample no longer exists");
+      const orderIds = group.orders.map((order) => order.id);
+      if (orderIds.length === 0) {
+        throw new Error("No linked tests are available for this sample");
+      }
+      if (group.orders.some((order) => order.status === "done")) {
+        throw new Error(
+          "This sample already has a released report. Amend the report or create a new bill instead of recollecting."
+        );
+      }
+      const placeholders = orderIds.map(() => "?").join(",");
+      const entered = await db.get<{ n: number }>(
+        `SELECT COUNT(*) AS n FROM report_parameters
+         WHERE report_order_id IN (${placeholders}) AND deleted = 0
+           AND (result_text <> '' OR result_value IS NOT NULL) ${tenantClause}`,
+        [...orderIds, ...tenantParams]
+      );
+      if ((entered?.n ?? 0) > 0) {
+        throw new Error(
+          "This sample already has entered results. Amend the report or create a new bill instead of recollecting."
+        );
+      }
+      const count = await db.get<{ n: number }>(
+        `SELECT COUNT(*) AS n FROM samples WHERE invoice_id = ? AND deleted = 0 ${tenantClause}`,
+        [old.invoice_id, ...tenantParams]
+      );
+      const accessionNo = `${group.invoiceNo}-S${String((count?.n ?? 0) + 1).padStart(2, "0")}`;
+      const newSampleId = uuid();
+      await db.tx(async () => {
+        await db.run(
+          `INSERT INTO samples
+             (id, accession_no, invoice_id, patient_id, specimen_type, container_type,
+              status, collection_site, collected_at, collected_by, received_at, received_by,
+              accepted_at, accepted_by, rejected_at, rejected_by, rejection_reason,
+              storage_location, transport_note, disposed_at, disposed_by, disposal_method,
+              notes, created_at, updated_at, device_id, dirty, deleted, tenant_id)
+           VALUES (?,?,?,?,?,?,'expected','',NULL,'',NULL,'',NULL,'',NULL,'','','','',
+              NULL,'','',?,?,?,?,1,0,?)`,
+          [
+            newSampleId,
+            accessionNo,
+            old.invoice_id,
+            old.patient_id,
+            old.specimen_type || "Unspecified",
+            old.container_type || "",
+            `Recollect after ${old.accession_no} was rejected`,
+            ts,
+            ts,
+            getDeviceId(),
+            getCurrentTenantId(),
+          ]
+        );
+        await db.run(
+          `UPDATE report_orders
+           SET sample_id = ?, status = 'pending', result_text = '', result_value = NULL,
+               abnormal = 0, verified_by = '', reported_at = NULL,
+               approval_status = 'pending', approved_by = '', approved_at = NULL,
+               analysis_started_at = NULL, analysis_completed_at = NULL,
+               updated_at = ?, dirty = 1
+           WHERE sample_id = ? ${tenantClause}`,
+          [newSampleId, ts, group.sampleId, ...tenantParams]
+        );
+        await writeAudit(db, {
+          userId: user.id,
+          action: "sample.recollect",
+          entity: "sample",
+          entityId: newSampleId,
+          detail: `${old.accession_no} -> ${accessionNo}`,
+        });
+      });
+      await load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not recollect the sample");
     } finally {
       setBusy(false);
     }
@@ -903,11 +1169,266 @@ export default function Reports() {
   return (
     <>
       <PageHeader
-        title="Reports"
-        subtitle={`${counts.pending} pending · ${counts.done} completed${counts.abnormal ? ` · ${counts.abnormal} abnormal` : ""}`}
+        title={view === "bench" ? "Bench" : "Reports"}
+        subtitle={
+          view === "bench"
+            ? `${benchCounts.awaiting} awaiting sample · ${benchCounts.ready} ready for results · ${benchCounts.printable} ready to print${benchCounts.missingSample ? ` · ${benchCounts.missingSample} need a sample` : ""} · ${benchCounts.exceptions} exceptions`
+            : `${counts.pending} pending · ${counts.done} completed${counts.abnormal ? ` · ${counts.abnormal} abnormal` : ""}`
+        }
       />
 
-      <div className="grid gap-4 lg:grid-cols-3">
+      <div className="mb-4 inline-flex gap-1 rounded-lg bg-slate-100 p-1">
+        {(["bench", "reports"] as const).map((nextView) => (
+          <button
+            key={nextView}
+            onClick={() => setView(nextView)}
+            className={`rounded-md px-3 py-1 text-xs font-medium capitalize ${
+              view === nextView ? "bg-white text-teal-700 shadow-sm" : "text-slate-600"
+            }`}
+          >
+            {nextView === "bench" ? "Bench" : "Reports"}
+          </button>
+        ))}
+      </div>
+
+      {view === "bench" ? (
+        <Card>
+          <div className="flex flex-wrap items-center gap-2 border-b border-slate-200 p-3">
+            <TextInput
+              value={benchQuery}
+              onChange={(e) => setBenchQuery(e.target.value)}
+              placeholder="Search accession, patient, invoice or test…"
+              className="max-w-xs"
+            />
+            <div className="flex flex-wrap gap-1">
+              {(
+                [
+                  [
+                    "active",
+                    `Active (${benchCounts.awaiting + benchCounts.ready + benchCounts.printable + benchCounts.missingSample})`,
+                  ],
+                  ["exceptions", `Exceptions (${benchCounts.exceptions})`],
+                  ["all", "All"],
+                ] as const
+              ).map(([value, label]) => (
+                <button
+                  key={value}
+                  onClick={() => setBenchFilter(value)}
+                  className={`rounded-full px-3 py-1 text-xs font-medium ${
+                    benchFilter === value
+                      ? "bg-teal-700 text-white"
+                      : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+            {benchCounts.missingSample > 0 && (
+              <Link to="/samples" className="text-xs text-amber-700 hover:underline">
+                {benchCounts.missingSample} order(s) need a sample record
+              </Link>
+            )}
+          </div>
+          <p className="px-4 pt-2 text-xs text-slate-400">
+            Pathology work only. X-ray reports remain in Reports.
+          </p>
+
+          {error && (
+            <div className="px-4 pt-3">
+              <ErrorNote message={error} />
+            </div>
+          )}
+
+          {!loaded ? (
+            <p className="px-4 py-10 text-center text-sm text-slate-400">Loading…</p>
+          ) : benchFiltered.length === 0 ? (
+            <EmptyState
+              message={
+                benchGroups.length === 0
+                  ? "No pathology work yet"
+                  : benchFilter === "exceptions"
+                    ? "No sample exceptions"
+                    : "No bench work matches"
+              }
+              hint="A pathology bill creates the expected sample. Accept it, enter results and release from this screen."
+            />
+          ) : (
+            <div className="divide-y divide-slate-100">
+              {benchFiltered.map((group) => {
+                const rejected =
+                  group.sampleStatus === "rejected" ||
+                  group.orders.some((order) => order.status === "rejected");
+                const awaiting = ["expected", "collected", "received"].includes(
+                  group.sampleStatus ?? ""
+                );
+                const accepted = group.sampleStatus === "accepted";
+                const allDone =
+                  group.orders.length > 0 &&
+                  group.orders.every((order) => order.status === "done");
+                const statusClass = rejected
+                  ? "bg-rose-50 text-rose-700"
+                  : accepted
+                    ? "bg-emerald-50 text-emerald-700"
+                    : "bg-amber-50 text-amber-700";
+                return (
+                  <div key={group.key} className="p-4">
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="font-medium">{group.patientName}</p>
+                        <p className="num text-xs text-slate-500">
+                          {group.accessionNo} · {group.invoiceNo} ·{" "}
+                          {group.orders.length} test
+                          {group.orders.length === 1 ? "" : "s"}
+                          {group.patientAge != null ? ` · ${group.patientAge}y` : ""}
+                          {group.patientGender ? ` · ${group.patientGender}` : ""}
+                        </p>
+                        <span
+                          className={`mt-1 inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium capitalize ${statusClass}`}
+                        >
+                          {group.sampleStatus ?? "No sample"}
+                        </span>
+                      </div>
+                      <div className="flex flex-wrap gap-1">
+                        {!monitor && !group.sampleId && (
+                          <Link to="/samples">
+                            <Btn variant="outline">Register sample</Btn>
+                          </Link>
+                        )}
+                        {!monitor && awaiting && (
+                          <>
+                            <Btn
+                              variant="primary"
+                              onClick={() =>
+                                void acceptSampleById(group.sampleId, group.accessionNo)
+                              }
+                              disabled={busy}
+                            >
+                              Accept sample
+                            </Btn>
+                            <Btn
+                              variant="ghost"
+                              onClick={() => {
+                                setRejecting(group);
+                                setRejectReason("");
+                                setError("");
+                              }}
+                              disabled={busy}
+                            >
+                              Reject
+                            </Btn>
+                          </>
+                        )}
+                        {!monitor && rejected && (
+                          <>
+                            <Btn
+                              variant="outline"
+                              onClick={() => void recollectSample(group)}
+                              disabled={busy}
+                            >
+                              Recollect sample
+                            </Btn>
+                            <Link to="/samples">
+                              <Btn variant="ghost">Open Samples</Btn>
+                            </Link>
+                          </>
+                        )}
+                        {!monitor && accepted && allDone && (
+                          <Btn
+                            variant="primary"
+                            onClick={() =>
+                              setPrintingInvoice({
+                                invoiceId: group.invoiceId,
+                                orderId:
+                                  group.orders.length === 1
+                                    ? group.orders[0].id
+                                    : undefined,
+                              })
+                            }
+                          >
+                            <Icon name="printer" className="h-4 w-4" />
+                            Print report
+                          </Btn>
+                        )}
+                      </div>
+                    </div>
+
+                    {rejected && group.rejectionReason && (
+                      <p className="mt-2 rounded-lg bg-rose-50 px-3 py-2 text-xs text-rose-700">
+                        Rejected: {group.rejectionReason}
+                      </p>
+                    )}
+
+                    <div className="mt-3 divide-y divide-slate-100 rounded-lg border border-slate-200">
+                      {group.orders.map((order) => (
+                        <div
+                          key={order.id}
+                          className="flex flex-wrap items-center justify-between gap-2 px-3 py-2 text-sm"
+                        >
+                          <div className="min-w-0">
+                            <span className="font-medium">{order.test_name}</span>
+                            <span
+                              className={`ml-2 rounded-full px-2 py-0.5 text-[11px] font-medium capitalize ${
+                                order.status === "done"
+                                  ? "bg-emerald-50 text-emerald-700"
+                                  : order.status === "rejected"
+                                    ? "bg-rose-50 text-rose-700"
+                                    : "bg-amber-50 text-amber-700"
+                              }`}
+                            >
+                              {order.status}
+                            </span>
+                            {order.result_text && (
+                              <span className="num mt-0.5 block truncate text-xs text-slate-500">
+                                {order.result_text}
+                              </span>
+                            )}
+                          </div>
+                          <div className="flex flex-wrap gap-1">
+                            <Btn variant="ghost" onClick={() => void openHistory(order)}>
+                              History
+                            </Btn>
+                            {!monitor && order.status === "done" && (
+                              <Btn
+                                variant="ghost"
+                                onClick={() =>
+                                  setPrintingInvoice({
+                                    invoiceId: order.invoice_id,
+                                    orderId: order.id,
+                                  })
+                                }
+                              >
+                                Print
+                              </Btn>
+                            )}
+                            {!monitor &&
+                              order.status !== "rejected" &&
+                              (accepted || order.status === "done") && (
+                                <Btn
+                                  variant={
+                                    order.status === "pending" ? "primary" : "outline"
+                                  }
+                                  onClick={() => void openEntry(order)}
+                                >
+                                  {order.status === "pending"
+                                    ? "Enter result"
+                                    : order.status === "done"
+                                      ? "Amend"
+                                      : "Edit"}
+                                </Btn>
+                              )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </Card>
+      ) : (
+        <div className="grid gap-4 lg:grid-cols-3">
         <div className="lg:col-span-2">
           <Card>
             <div className="flex flex-wrap items-center gap-2 border-b border-slate-200 p-3">
@@ -1200,6 +1721,7 @@ export default function Reports() {
           )}
         </div>
       </div>
+      )}
 
       <Modal
         open={entering !== null}
@@ -1591,8 +2113,65 @@ export default function Reports() {
       </Modal>
 
       <Modal
+        open={!!rejecting}
+        title={rejecting ? `Reject sample - ${rejecting.accessionNo}` : "Reject sample"}
+        onClose={() => {
+          setRejecting(null);
+          setRejectReason("");
+        }}
+      >
+        {rejecting && (
+          <form
+            onSubmit={(event) => {
+              event.preventDefault();
+              void rejectSample();
+            }}
+            className="space-y-3"
+          >
+            <div className="rounded-lg bg-slate-50 p-3 text-sm">
+              <p className="font-medium">{rejecting.patientName}</p>
+              <p className="num text-xs text-slate-500">
+                {rejecting.accessionNo} · {rejecting.invoiceNo}
+              </p>
+            </div>
+            <Labeled
+              label="Rejection reason *"
+              hint="Linked pending tests move to the Exceptions queue. Create a replacement sample from the Bench."
+            >
+              <textarea
+                value={rejectReason}
+                onChange={(event) => setRejectReason(event.target.value)}
+                rows={3}
+                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:border-teal-600 focus:outline-none focus:ring-1 focus:ring-teal-600"
+                placeholder="e.g. Haemolysed sample; repeat collection required"
+              />
+            </Labeled>
+            <ErrorNote message={error} />
+            <div className="flex justify-end gap-2">
+              <Btn
+                onClick={() => {
+                  setRejecting(null);
+                  setRejectReason("");
+                }}
+                disabled={busy}
+              >
+                Cancel
+              </Btn>
+              <Btn
+                type="submit"
+                variant="primary"
+                disabled={busy || !rejectReason.trim()}
+              >
+                {busy ? "Rejecting…" : "Reject sample"}
+              </Btn>
+            </div>
+          </form>
+        )}
+      </Modal>
+
+      <Modal
         open={!!historyFor}
-        title={historyFor ? `Report history — ${historyFor.test_name}` : "Report history"}
+        title={historyFor ? `Report history - ${historyFor.test_name}` : "Report history"}
         onClose={() => setHistoryFor(null)}
         wide
       >
@@ -1717,6 +2296,7 @@ function ReportPrint({
                 smp.specimen_type AS sample_specimen_type,
                 smp.collected_at AS sample_collected_at,
                 smp.received_at AS sample_received_at,
+                smp.rejection_reason AS sample_rejection_reason,
                 COALESCE(u.full_name, u.username, '') AS verified_by_name,
                 (SELECT COALESCE(MAX(rr.revision_no), 0)
                  FROM report_result_revisions rr

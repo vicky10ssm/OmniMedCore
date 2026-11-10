@@ -160,11 +160,20 @@ const sharedRoutes = [
     }
   />,
   <Route
+    key="bench"
+    path="/bench"
+    element={
+      <ModuleGate moduleId="reports">
+        <Reports initialView="bench" />
+      </ModuleGate>
+    }
+  />,
+  <Route
     key="reports"
     path="/reports"
     element={
       <ModuleGate moduleId="reports">
-        <Reports />
+        <Reports initialView="reports" />
       </ModuleGate>
     }
   />,

@@ -24,7 +24,10 @@ Use this skill for parameter-based pathology reports and the current diagnostic-
 - New parameter-based orders select all available parameters by default. The pathologist can include/exclude rows, enter results, and edit units/reference ranges for that report.
 - Excluded parameters remain as tombstones (`deleted = 1`) so draft/reopen preserves the selection. Entry loads active and excluded snapshots; printing uses only `deleted = 0` rows.
 - Verification requires at least one selected parameter and a result for every selected parameter. Drafts may be incomplete.
+- The **Bench** page (`/bench`) groups pathology report orders by sample. It is the routine worklist: Accept sample, Reject with reason, Recollect sample, Enter result, Release & print, Print report, History and Amend.
 - Report entry can accept the linked expected/collected/received sample in place. The inline action records collection, receipt and acceptance with one timestamp/user and still updates the report-order specimen timestamps; the Samples desk also offers a one-click **Accept sample**.
+- Rejected samples leave the active Bench and appear in the **Exceptions** tab. Recollect creates a replacement expected sample with a new accession, preserves the rejected sample history and re-links pending tests; it must be refused when any result is entered or a report was released.
+- `/reports` remains the flat worklist for X-ray, completed reports, history and amendments. The Bench reuses the same entry/release path and does not bypass sample acceptance, report authority or amendment rules.
 - **Fill normal** fills only empty, selected numeric results with the midpoint of the parameter's numeric reference range. Text-only rows stay blank. It is an entry aid, not auto-verification: the user must review every value.
 - **Release & print** is the primary action; **Release only** defers printing. After release, the preview opens and prints combined when all tests on the invoice are done, otherwise the released test alone.
 - The first active pathologist in catalogue order is preselected on report entry and can be changed or cleared before release.

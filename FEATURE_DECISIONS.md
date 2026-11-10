@@ -599,6 +599,22 @@ The second deployment exists. `npm run build` makes the terminal (editing) app; 
 - The expenses list, search, module filter and CSV export include the attribution.
 - Operators can add and view expenses as before; admin/operator visibility rules are unchanged.
 
+## Pathology Bench screen - built
+
+- A dedicated **Bench** route under Diagnostics groups pathology report orders by sample.
+- Each card shows patient, accession, invoice, sample status, linked tests and result summaries.
+- Inline actions: Accept sample, Reject with reason, Recollect sample, Enter result, Release & print,
+  Print report, History and Amend.
+- The existing result-entry modal, Fill normal, pathologist snapshot, release authority, amendment and
+  print logic are reused; the Bench does not duplicate the clinical write path.
+- Rejected samples are removed from the active list and shown in an **Exceptions** tab with the reason.
+- Recollect creates a replacement expected sample with a new accession, preserves the rejected sample,
+  re-links pending tests and clears the exception. It is blocked when any result is entered or a report
+  was released, to avoid silently discarding clinical data.
+- `/reports` keeps the flat worklist for X-ray, completed reports, history and amendments.
+- Samples remains the detailed pre-examination chain and disposal screen.
+- No schema change.
+
 ## Automatic pre-upgrade database backup and release test gate - built
 
 - Rust writes a pre-upgrade copy before opening the database when the running app version differs from
