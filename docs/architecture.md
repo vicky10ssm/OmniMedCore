@@ -1,7 +1,7 @@
 # OmniMed Core architecture and local export design
 
 Last updated: 9 November 2026  
-Current product version: `0.20.0`  
+Current product version: `0.21.0`  
 Current schema: `24`
 
 ## 1. Status and scope
@@ -100,6 +100,9 @@ OmniMed Core is a multi-vertical product; a tenant enables only the modules it o
   see [DASHBOARD.md](../DASHBOARD.md).
 - Diagnostics: tests/packages, sample chain, result entry, amendments, pathology report printing, and
   X-ray/radiology reports with clinical history, findings, impression and a configurable disclaimer.
+  The routine bench path lets the report user accept the linked sample in place, fill empty numeric
+  results from reference midpoints, and release-and-print in one action; collection/receipt/acceptance
+  evidence, report authority and sample-release validation remain enforced.
 - Radiologist catalogue: tenant-scoped names, qualifications and signature images managed in the
   administrator-only **Diagnostics -> Radiologists** section and selected at X-ray entry; the chosen
   snapshot is stored on `report_orders` so issued reports are immutable.

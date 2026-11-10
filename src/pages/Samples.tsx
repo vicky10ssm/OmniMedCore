@@ -357,6 +357,55 @@ export default function Samples() {
     }
   };
 
+  /**
+   * One-click acceptance for the routine bench flow. Collection, receipt and
+   * acceptance are recorded together with the same timestamp and user; labs
+   * that need separate stage times can still use the individual actions.
+   */
+  const acceptNow = async (row: SampleRow) => {
+    if (!user) return;
+    setBusy(true);
+    setError("");
+    try {
+      const db = await getDb();
+      const ts = now();
+      const [tenantClause, tenantParams] = tenantAnd();
+      await db.tx(async () => {
+        await db.run(
+          `UPDATE samples
+           SET status = 'accepted',
+               collected_at = COALESCE(collected_at, ?),
+               collected_by = CASE WHEN collected_by = '' THEN ? ELSE collected_by END,
+               received_at = COALESCE(received_at, ?),
+               received_by = CASE WHEN received_by = '' THEN ? ELSE received_by END,
+               accepted_at = ?, accepted_by = ?, updated_at = ?, dirty = 1
+           WHERE id = ? ${tenantClause}`,
+          [ts, user.id, ts, user.id, ts, user.id, ts, row.id, ...tenantParams]
+        );
+        await db.run(
+          `UPDATE report_orders
+           SET specimen_collected_at = COALESCE(specimen_collected_at, ?),
+               specimen_received_at = COALESCE(specimen_received_at, ?),
+               updated_at = ?, dirty = 1
+           WHERE sample_id = ? ${tenantClause}`,
+          [ts, ts, ts, row.id, ...tenantParams]
+        );
+        await writeAudit(db, {
+          userId: user.id,
+          action: "sample.accept",
+          entity: "sample",
+          entityId: row.id,
+          detail: `${row.accession_no} accepted`,
+        });
+      });
+      await load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not accept the sample");
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const canDispose = (r: SampleListRow) =>
     r.report_count > 0 && r.result_count >= r.report_count;
 
@@ -570,14 +619,22 @@ export default function Samples() {
                     </td>
                     <td className="px-4 py-2.5 text-right whitespace-nowrap">
                       {r.status === "expected" && (
-                        <Btn variant="primary" onClick={() => void advance(r, "collected")} disabled={busy}>
-                          Collected
-                        </Btn>
+                        <>
+                          <Btn variant="primary" onClick={() => void acceptNow(r)} disabled={busy}>
+                            Accept sample
+                          </Btn>
+                          <Btn variant="ghost" onClick={() => void advance(r, "collected")} disabled={busy}>
+                            Collected only
+                          </Btn>
+                        </>
                       )}
                       {r.status === "collected" && (
                         <>
-                          <Btn variant="primary" onClick={() => void advance(r, "received")} disabled={busy}>
-                            Receive
+                          <Btn variant="primary" onClick={() => void acceptNow(r)} disabled={busy}>
+                            Accept sample
+                          </Btn>
+                          <Btn variant="ghost" onClick={() => void advance(r, "received")} disabled={busy}>
+                            Received only
                           </Btn>
                           <Btn variant="ghost" onClick={() => { setActionSample(r); setActionKind("reject"); setActionReason(""); setActionError(""); }}>
                             Reject
@@ -586,8 +643,8 @@ export default function Samples() {
                       )}
                       {r.status === "received" && (
                         <>
-                          <Btn variant="primary" onClick={() => void advance(r, "accepted")} disabled={busy}>
-                            Accept
+                          <Btn variant="primary" onClick={() => void acceptNow(r)} disabled={busy}>
+                            Accept sample
                           </Btn>
                           <Btn variant="ghost" onClick={() => { setActionSample(r); setActionKind("reject"); setActionReason(""); setActionError(""); }}>
                             Reject

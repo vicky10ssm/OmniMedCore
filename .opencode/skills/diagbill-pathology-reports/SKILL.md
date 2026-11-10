@@ -24,6 +24,10 @@ Use this skill for parameter-based pathology reports and the current diagnostic-
 - New parameter-based orders select all available parameters by default. The pathologist can include/exclude rows, enter results, and edit units/reference ranges for that report.
 - Excluded parameters remain as tombstones (`deleted = 1`) so draft/reopen preserves the selection. Entry loads active and excluded snapshots; printing uses only `deleted = 0` rows.
 - Verification requires at least one selected parameter and a result for every selected parameter. Drafts may be incomplete.
+- Report entry can accept the linked expected/collected/received sample in place. The inline action records collection, receipt and acceptance with one timestamp/user and still updates the report-order specimen timestamps; the Samples desk also offers a one-click **Accept sample**.
+- **Fill normal** fills only empty, selected numeric results with the midpoint of the parameter's numeric reference range. Text-only rows stay blank. It is an entry aid, not auto-verification: the user must review every value.
+- **Release & print** is the primary action; **Release only** defers printing. After release, the preview opens and prints combined when all tests on the invoice are done, otherwise the released test alone.
+- The first active pathologist in catalogue order is preselected on report entry and can be changed or cleared before release.
 - **Sample disposal is gated on result entry.** An accepted sample can only be disposed after every linked
   `report_orders` row is either `done` or has complete saved results (every selected report parameter
   filled, or the single result field populated). Empty drafts, partially filled parameters and samples

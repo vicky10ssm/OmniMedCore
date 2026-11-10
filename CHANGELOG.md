@@ -3,6 +3,45 @@
 All notable changes to OmniMed Core are recorded here. This project follows semantic versioning once
 production releases begin.
 
+## [0.21.0] - 2026-11-10
+
+### Added
+
+- **Fill normal** in pathology report entry. It fills only empty, selected numeric results with the
+  midpoint of each parameter's reference range. Text-only parameters stay blank and every value must
+  still be reviewed before release.
+- **Release & print** as the primary report action, with **Release only** as the alternative. After a
+  successful release the report preview opens automatically; combined printing is used when every test
+  on the invoice is done, otherwise the released test prints individually.
+- **Accept sample now** inside report entry, so the bench user does not need to leave Reports for the
+  Samples desk on a routine specimen.
+- **Accept sample** one-click action on the Samples desk. It records collection, receipt and acceptance
+  in one transaction; the individual stage actions remain available for labs that record them separately.
+- The reporting pathologist is preselected from the active catalogue (catalogue order is the default),
+  reducing one choice per pathology report.
+
+### Changed
+
+- Routine pathology flow is now: bill → open report → accept sample → fill normal → release & print.
+- Existing sample-chain validation, report authority, amendment history and pathologist snapshots are
+  unchanged.
+
+### Database
+
+- No schema change. Schema remains **25**.
+
+### Verified
+
+- `npm run check`, terminal build, monitor build and Rust tests pass.
+- Billing creates the expected sample and accession automatically.
+- Inline sample acceptance records collection/receipt/acceptance timestamps and user.
+- Fill normal populates selected numeric CBC results and leaves text-only parameters blank.
+- Release & print stores the report, closes the entry form and opens the report preview.
+- Release only stores the report without opening print.
+- The first active pathologist is preselected and snapshotted on release.
+- Samples desk one-click acceptance works from expected, collected or received.
+- X-ray reporting, operator restrictions and issued-report immutability remain intact.
+
 ## [0.20.0] - 2026-11-09
 
 ### Added
