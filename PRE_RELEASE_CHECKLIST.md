@@ -171,6 +171,12 @@ Record accession/sample IDs for both blocked and allowed disposal cases.
 - [ ] Operator cannot see or open Radiologists/Pathologists routes
 - [ ] Admin can add, edit, deactivate and delete multiple pathologist records with signatures
 - [ ] An existing single pathologist profile is seeded into the new catalogue after migration 25
+- [ ] Billing creates the expected sample and accession without a separate register step
+- [ ] Report entry can accept the linked sample in place and records collection/receipt/acceptance evidence
+- [ ] Samples desk one-click Accept sample works from expected, collected and received
+- [ ] Fill normal fills selected numeric results from reference midpoints and leaves text-only rows blank
+- [ ] Release & print opens the preview; Release only does not
+- [ ] Combined printing is used only when every test on the invoice is done
 - [ ] A pathology report stores the selected pathologist snapshot and prints its name/qualification/signature
 - [ ] Deactivating/deleting a pathologist does not change an already issued report
 - [ ] X-ray reports still require and print the selected radiologist signature

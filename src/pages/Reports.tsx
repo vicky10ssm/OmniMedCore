@@ -430,7 +430,10 @@ export default function Reports() {
         if (snapshot) pathologistList.push(snapshot);
       }
       setPathologists(pathologistList);
-      setSelectedPathologistId(r.pathologist_id || "");
+      // Preselect the report's snapshot, otherwise the first active pathologist
+      // (the catalogue order is the centre's default order). The user can still
+      // change or clear the selection before release.
+      setSelectedPathologistId(r.pathologist_id || pathologistList[0]?.id || "");
       const templates = await db.all<TestParameterRow>(
         `SELECT * FROM test_parameters
          WHERE test_id = ? AND is_active = 1 AND deleted = 0 ${tenantClause}
@@ -507,7 +510,87 @@ export default function Reports() {
     );
   };
 
-  const saveResult = async (markDone: boolean) => {
+  /**
+   * Fills only empty, selected numeric results with the midpoint of the
+   * parameter's reference range. Text-only parameters are left blank, and the
+   * user must still review every value before release.
+   */
+  const fillNormal = () => {
+    if (entryParameters.length > 0) {
+      setEntryParameters((all) =>
+        all.map((p) => {
+          if (!p.selected || p.result.trim()) return p;
+          if (p.refMin === null || p.refMax === null) return p;
+          const mid = (p.refMin + p.refMax) / 2;
+          return {
+            ...p,
+            result: String(Number(mid.toFixed(Math.abs(mid) < 1 ? 3 : 2))),
+          };
+        })
+      );
+      return;
+    }
+    if (
+      entering &&
+      !resultText.trim() &&
+      entering.ref_min !== null &&
+      entering.ref_max !== null
+    ) {
+      const mid = (entering.ref_min + entering.ref_max) / 2;
+      setResultText(String(Number(mid.toFixed(Math.abs(mid) < 1 ? 3 : 2))));
+    }
+  };
+
+  /**
+   * Accepts the linked sample from report entry so the bench user does not
+   * have to leave for the Samples desk. Collection/receipt/acceptance evidence
+   * is still recorded with the same timestamp and user.
+   */
+  const acceptSampleInline = async () => {
+    if (!entering?.sample_id || !user) return;
+    setBusy(true);
+    setError("");
+    try {
+      const db = await getDb();
+      const [tenantClause, tenantParams] = tenantAnd();
+      const ts = now();
+      await db.tx(async () => {
+        await db.run(
+          `UPDATE samples
+           SET status = 'accepted',
+               collected_at = COALESCE(collected_at, ?),
+               collected_by = CASE WHEN collected_by = '' THEN ? ELSE collected_by END,
+               received_at = COALESCE(received_at, ?),
+               received_by = CASE WHEN received_by = '' THEN ? ELSE received_by END,
+               accepted_at = ?, accepted_by = ?, updated_at = ?, dirty = 1
+           WHERE id = ? AND deleted = 0 ${tenantClause}`,
+          [ts, user.id, ts, user.id, ts, user.id, ts, entering.sample_id, ...tenantParams]
+        );
+        await db.run(
+          `UPDATE report_orders
+           SET specimen_collected_at = COALESCE(specimen_collected_at, ?),
+               specimen_received_at = COALESCE(specimen_received_at, ?),
+               updated_at = ?, dirty = 1
+           WHERE sample_id = ? ${tenantClause}`,
+          [ts, ts, ts, entering.sample_id, ...tenantParams]
+        );
+        await writeAudit(db, {
+          userId: user.id,
+          action: "sample.accept",
+          entity: "sample",
+          entityId: entering.sample_id,
+          detail: `${entering.accession_no || "Sample"} accepted from report entry`,
+        });
+      });
+      setEntering({ ...entering, sample_status: "accepted" });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not accept the sample");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const saveResult = async (markDone: boolean, printAfter = false) => {
     if (!entering || parametersLoading) return;
     try {
       // Creating or amending a clinical report is a critical licence action.
@@ -799,6 +882,17 @@ export default function Reports() {
       });
       setEntering(null);
       await load();
+      if (markDone && printAfter) {
+        const remaining = await db.get<{ n: number }>(
+          `SELECT COUNT(*) AS n FROM report_orders
+           WHERE invoice_id = ? AND status <> 'done' AND deleted = 0 ${tenantClause}`,
+          [entering.invoice_id, ...tenantParams]
+        );
+        setPrintingInvoice({
+          invoiceId: entering.invoice_id,
+          orderId: remaining?.n ? entering.id : undefined,
+        });
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not save the result");
     } finally {
@@ -1272,7 +1366,14 @@ export default function Reports() {
                   <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                     Parameters on this report ({entryParameters.filter((p) => p.selected).length} selected)
                   </p>
-                  <div className="flex gap-2 text-xs">
+                  <div className="flex flex-wrap gap-2 text-xs">
+                    <button
+                      type="button"
+                      className="font-medium text-teal-700 hover:underline"
+                      onClick={fillNormal}
+                    >
+                      Fill normal
+                    </button>
                     <button
                       type="button"
                       className="text-teal-700 hover:underline"
@@ -1374,32 +1475,59 @@ export default function Reports() {
                 <p className="text-xs text-slate-400">
                   Only selected parameters are printed. Unit and reference changes apply
                   to this report; numeric results outside the normal limits are flagged.
+                  Fill normal uses the midpoint of each numeric reference range and leaves
+                  text-only parameters blank. Review every value before release.
                 </p>
               </div>
             ) : (
-              <Labeled
-                label="Result"
-                hint={
-                  entering.ref_min !== null || entering.ref_max !== null
-                    ? "A number outside the reference range is flagged abnormal automatically."
-                    : "Free text (e.g. “Normal study”, “No growth after 24 hrs”). Define parameters under Tests & Packages for a parameter-wise report."
-                }
-              >
-                <TextInput
-                  value={resultText}
-                  autoFocus
-                  onChange={(e) => setResultText(e.target.value)}
-                  placeholder={entering.unit ? `e.g. value in ${entering.unit}` : "Result"}
-                />
-              </Labeled>
+              <div className="space-y-2">
+                <Labeled
+                  label="Result"
+                  hint={
+                    entering.ref_min !== null || entering.ref_max !== null
+                      ? "A number outside the reference range is flagged abnormal automatically."
+                      : "Free text (e.g. “Normal study”, “No growth after 24 hrs”). Define parameters under Tests & Packages for a parameter-wise report."
+                  }
+                >
+                  <TextInput
+                    value={resultText}
+                    autoFocus
+                    onChange={(e) => setResultText(e.target.value)}
+                    placeholder={entering.unit ? `e.g. value in ${entering.unit}` : "Result"}
+                  />
+                </Labeled>
+                {entering.ref_min !== null && entering.ref_max !== null && (
+                  <button
+                    type="button"
+                    className="text-xs font-medium text-teal-700 hover:underline"
+                    onClick={fillNormal}
+                  >
+                    Fill normal (midpoint of reference range)
+                  </button>
+                )}
+              </div>
             )}
 
             {entering.test_category === "Pathology" && entering.sample_status !== "accepted" && (
-              <p className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">
-                {entering.accession_no
-                  ? `Sample ${entering.accession_no} is ${entering.sample_status ?? "not available"}. It must be accepted in the Samples desk before release.`
-                  : "No sample is linked to this pathology order. Register and accept a sample before releasing results."}
-              </p>
+              <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">
+                <p className="min-w-0">
+                  {entering.accession_no
+                    ? `Sample ${entering.accession_no} is ${entering.sample_status ?? "not available"}. Accept it before release.`
+                    : "No sample is linked to this pathology order. Register a sample in the Samples desk before releasing results."}
+                </p>
+                {entering.sample_id &&
+                  ["expected", "collected", "received"].includes(
+                    entering.sample_status ?? ""
+                  ) && (
+                    <Btn
+                      variant="primary"
+                      onClick={() => void acceptSampleInline()}
+                      disabled={busy}
+                    >
+                      {busy ? "Accepting…" : "Accept sample now"}
+                    </Btn>
+                  )}
+              </div>
             )}
 
             {entering.status === "done" && (
@@ -1434,7 +1562,6 @@ export default function Reports() {
                 </Btn>
               )}
               <Btn
-                variant="primary"
                 onClick={() => void saveResult(true)}
                 disabled={
                   busy ||
@@ -1443,8 +1570,20 @@ export default function Reports() {
                   !xraySignatureReady
                 }
               >
-                <Icon name="check" className="h-4 w-4" />
-                {entering.status === "done" ? "Save amendment" : "Verify & release"}
+                {entering.status === "done" ? "Save amendment only" : "Release only"}
+              </Btn>
+              <Btn
+                variant="primary"
+                onClick={() => void saveResult(true, true)}
+                disabled={
+                  busy ||
+                  parametersLoading ||
+                  !user?.can_authorize_reports ||
+                  !xraySignatureReady
+                }
+              >
+                <Icon name="printer" className="h-4 w-4" />
+                {entering.status === "done" ? "Save amendment & print" : "Release & print"}
               </Btn>
             </div>
           </div>

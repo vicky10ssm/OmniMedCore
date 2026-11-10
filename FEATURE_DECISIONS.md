@@ -599,6 +599,25 @@ The second deployment exists. `npm run build` makes the terminal (editing) app; 
 - The expenses list, search, module filter and CSV export include the attribution.
 - Operators can add and view expenses as before; admin/operator visibility rules are unchanged.
 
+## Faster pathology bench workflow - built
+
+- Billing already creates the expected sample and accession automatically; no extra registration is
+  required for a normal billed pathology test.
+- Report entry now offers **Accept sample now** for the linked expected/collected/received sample, so a
+  bench user can stay on one screen. Collection, receipt and acceptance timestamps are recorded in the
+  same transaction with the current user.
+- The Samples desk adds **Accept sample** as a one-click routine action. The existing Collected only,
+  Received only and Reject actions remain for labs that need explicit stage timing.
+- **Fill normal** fills only empty, selected numeric results with the midpoint of the stored numeric
+  reference range. Text-only parameters remain blank. This is an entry aid, not auto-verification.
+- The primary release action is **Release & print**; **Release only** defers printing. After release,
+  the preview opens automatically and chooses combined printing when all tests on the invoice are done,
+  otherwise the released test alone.
+- The first active pathologist in catalogue order is preselected. The user can change or clear it before
+  release, and the chosen snapshot is still stored on the report.
+- No schema change. Report authority, sample-release gating, amendment history and issued-report
+  immutability are unchanged.
+
 ## Multiple pathologist signatures - built
 
 - `pathologists` mirrors `radiologists`: tenant-scoped name, qualification, signature data URL,
