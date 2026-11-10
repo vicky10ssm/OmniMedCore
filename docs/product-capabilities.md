@@ -51,6 +51,8 @@ Status meanings: **Ready**, **Pilot**, **Partial**, **Not available**, **Externa
 | Draft/verify workflow | Ready | Draft and verified statuses; release requires authority |
 | Fast bench workflow | Ready | Dedicated **Bench** groups pathology work by sample; accept the linked sample, fill empty numeric results with **Fill normal**, then **Release & print**; Release only is available when printing is deferred |
 | Bench sample exceptions | Ready | Reject a specimen with a reason, see it in the Exceptions queue, and recollect when no results or released report exist; the rejected sample history is preserved |
+| Bench batch operations | Ready | Select visible samples to accept, print completed reports, or release complete normal drafts; abnormal, critical, incomplete and rejected reports are skipped for individual review |
+| Analyser result import | Ready | Paste or load CSV/TSV rows as `accession,parameter,value` or `accession,test,parameter,value`; creates report parameter snapshots as needed, saves drafts only and reports unmatched/ambiguous rows. This is a vendor-neutral import, not a live analyser driver |
 | One-click sample acceptance | Ready | Samples desk accepts a routine specimen in one action while still recording collection, receipt and acceptance evidence; individual stage actions remain available |
 | Report amendments | Ready | Issued results cannot return to draft; amendment reason and prior revision retained |
 | Sample release gate | Ready | Pathology release requires an accepted linked sample |
