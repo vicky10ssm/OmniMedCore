@@ -9,6 +9,13 @@ Describe the change and the problem it solves.
 - Clinical/financial impact:
 - Licensing impact:
 
+## Documentation
+
+- [ ] `CHANGELOG.md` has an entry for the release version
+- [ ] README, capability docs, architecture, backup/upgrade guidance and relevant skills updated
+- [ ] Version and schema references synchronized (`npm run check:docs`)
+- [ ] Release notes drafted when this change will be released
+
 ## Verification
 
 - [ ] `npm run check`
