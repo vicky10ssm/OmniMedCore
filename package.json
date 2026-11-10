@@ -16,7 +16,9 @@
     "typecheck": "tsc --noEmit",
     "check:migrations": "node scripts/check-migrations.mjs",
     "check:scope": "node scripts/check-tenant-scope.mjs",
-    "check": "npm run typecheck && npm run check:migrations && npm run check:scope",
+    "check:docs": "node scripts/check-docs.mjs",
+    "check:docs:release": "node scripts/check-docs.mjs --release",
+    "check": "npm run typecheck && npm run check:migrations && npm run check:scope && npm run check:docs",
     "license:keygen": "node license-portal/generate-keys.mjs",
     "license:portal": "node license-portal/server.mjs",
     "postinstall": "node scripts/copy-wasm.mjs"

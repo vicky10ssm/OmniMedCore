@@ -29,7 +29,7 @@ Load it before touching the test catalogue.
 - Other: **0**
 - Active parameters: **377**
 - Combined packages: **29** total (27 seeded by this skill, plus 2 original packages)
-- Schema: **24**
+- Schema: **25**
 - Current release at time of writing: **0.22.0**
 
 Counts change when tests/parameters/packages are added. The generated reference files are authoritative

@@ -19,11 +19,19 @@ npm run build:monitor
 cargo test --lib --locked --manifest-path src-tauri/Cargo.toml
 ```
 
+After the release notes and checksum file are written, run the release-time documentation check:
+
+```powershell
+npm run check:docs:release
+```
+
 What each command covers:
 
 | Command | Scope |
 | --- | --- |
-| `npm run check` | TypeScript typecheck, migration harness, tenant-scope lint |
+| `npm run check` | TypeScript typecheck, migration harness, tenant-scope lint, documentation consistency |
+| `npm run check:docs` | Version/schema references, changelog entry, required documents and doc links |
+| `npm run check:docs:release` | Release notes and checksum file for the current version |
 | `npm run build` | Production terminal bundle |
 | `npm run build:monitor` | Read-only monitor bundle |
 | `cargo test --lib` | SQLCipher, backup validation, snapshot retention, export safety, pre-upgrade backup |
@@ -32,6 +40,23 @@ CI (`.github/workflows/ci.yml`) runs `npm run check`, `cargo test --lib --locked
 and `npm run build:monitor` on every pull request and push to `main`.
 
 A red gate blocks the release. Do not sign or publish around a failure.
+
+## 1a. Documentation gate
+
+`npm run check:docs` runs as part of `npm run check` and fails when:
+
+- `package.json`, `package-lock.json`, `Cargo.toml`, `Cargo.lock` and `tauri.conf.json` disagree on the
+  version.
+- The latest migration version in `src/db/schema.ts` does not match the documented schema version.
+- `docs/README.md`, `docs/architecture.md`, `docs/productionization-plan.md`,
+  `docs/deployment-and-readiness.md`, `PRODUCTION_COMMERCIAL_READINESS.md`, `LOCAL_CSV_EXPORT.md` or the
+  test-catalogue skill carry stale version/schema references.
+- The top `CHANGELOG.md` release heading does not match the current version.
+- Required documents or documentation links are missing.
+
+`npm run check:docs:release` additionally requires `release/v<version>/RELEASE_NOTES.md` and
+`SHA256SUMS.txt`, and checks that the notes mention the version, schema/upgrade guidance and backup
+instructions.
 
 ## 2. Migration harness
 
@@ -126,7 +151,16 @@ pre-upgrade-<from>-to-<to>-<epoch>.db
 
 Run after the automated gate passes.
 
-### 5.1 Build and signing
+### 5.1 Documentation and release notes
+
+1. Update `CHANGELOG.md` with the new version.
+2. Update README, capability docs, architecture, backup/upgrade guidance and the relevant skills.
+3. Write `release/v<version>/RELEASE_NOTES.md` with the version, schema/migration notes and backup
+   instructions.
+4. After the installers and `SHA256SUMS.txt` exist, run `npm run check:docs:release`.
+5. Confirm the release notes describe how to roll back and where the pre-upgrade backup is written.
+
+### 5.2 Build and signing
 
 1. Build from the merged `main` commit, not a dirty worktree.
 2. Confirm `package.json`, `tauri.conf.json` and the tag version match.
@@ -135,7 +169,7 @@ Run after the automated gate passes.
 5. Verify all signatures return `Valid` with thumbprint `1180CA1A9509C9E968DED5E4274C89410AC52584`.
 6. Extract the MSI and verify the embedded `medicore.exe` signature and file version.
 
-### 5.2 Install-over smoke test
+### 5.3 Install-over smoke test
 
 1. Install the new build over the previous release.
 2. Confirm the installed `ProductVersion` matches the release.
@@ -145,7 +179,7 @@ Run after the automated gate passes.
    Tests & Packages, Pharmacy, Admissions, Expenses and Settings.
 6. Confirm the current schema version is recorded in `meta.schema_version`.
 
-### 5.3 Backup verification
+### 5.4 Backup verification
 
 1. Confirm the new `pre-upgrade-*.db` file exists in the backup folder after a version-changing launch.
 2. On a test profile or disposable copy, validate the backup through **Settings → Device & sync →
@@ -154,7 +188,7 @@ Run after the automated gate passes.
 4. Confirm a same-version restart does not create another pre-upgrade backup.
 5. Delete disposable test backups after verification.
 
-### 5.4 Release evidence
+### 5.5 Release evidence
 
 Record in the release notes or internal release record:
 

@@ -67,6 +67,7 @@ Update every affected document, not just the changelog. Check:
 
 - `README.md` and `CHANGELOG.md`
 - `docs/*.md` relevant to the feature
+- `RELEASE_TESTING.md` when the release gate, backup behaviour or database checks change
 - `CLIENT_INSTALLATION_RUNBOOK.md`, `BACKUP_RESTORE.md`, `DESKTOP_BUILD.md`,
   `PRODUCTION_COMMERCIAL_READINESS.md`, `PRE_RELEASE_CHECKLIST.md`, `SECURITY.md`
 - `license-portal/README.md` and portal UI when licensing changes
@@ -76,6 +77,23 @@ Update every affected document, not just the changelog. Check:
   `.opencode/skills/diagbill-test-catalogue/references/packages.md` using
   `diagbill-test-catalogue/references/regenerate.md`
 - Release notes and migration guidance
+
+After the documentation sweep and version bump, run the documentation gate:
+
+```powershell
+npm run check:docs
+```
+
+It runs inside `npm run check` and enforces matching versions across product metadata, the current
+schema in `docs/README.md`, `docs/architecture.md`, productionization/readiness docs, local export docs
+and the test-catalogue skill. It also requires the top `CHANGELOG.md` release to match and the required
+documents/links to exist.
+
+After `release/vX.Y.Z/RELEASE_NOTES.md` and `SHA256SUMS.txt` exist, run:
+
+```powershell
+npm run check:docs:release
+```
 
 Useful stale-claim scan (avoid `target/` and `node_modules/`):
 
@@ -246,6 +264,8 @@ Always report:
 - [ ] Change implemented and tested
 - [ ] Relevant domain skill loaded and followed
 - [ ] All affected docs, runbooks, skills, portal docs and changelog updated
+- [ ] `npm run check:docs` passes
+- [ ] `npm run check:docs:release` passes once release notes and checksums exist
 - [ ] Version bumped everywhere
 - [ ] `npm run check`, terminal build, monitor build and Rust tests pass
 - [ ] Pre-upgrade backup created and same-version restart does not duplicate it

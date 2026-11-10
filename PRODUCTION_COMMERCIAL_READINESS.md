@@ -1,8 +1,8 @@
 # Production and commercial readiness status
 
-Last updated: 9 November 2026
+Last updated: 10 November 2026
 Product version: `0.22.0`
-Database schema: `24`
+Database schema: `25`
 Current stage: supervised pilot / pre-production
 
 This is the single high-level status document for “what is done” and “what is still pending” from a

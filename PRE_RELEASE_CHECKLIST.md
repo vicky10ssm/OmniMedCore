@@ -103,6 +103,32 @@ Unscoped:
 Rust tests passed/ignored:
 ```
 
+## Documentation verification
+
+- [ ] `CHANGELOG.md` top release heading matches the version
+- [ ] README and buyer-facing capability docs updated for behaviour changes
+- [ ] Architecture, backup/restore and upgrade guidance updated where affected
+- [ ] Relevant `.opencode/skills/*/SKILL.md` files updated
+- [ ] Version and schema references synchronized (`npm run check:docs`)
+- [ ] Release notes mention the version, schema/migration impact and backup instructions
+- [ ] `npm run check:docs:release` passes after release notes and checksums exist
+- [ ] `RELEASE_TESTING.md` reviewed and its evidence fields completed
+
+Commands:
+
+```powershell
+npm run check:docs
+npm run check:docs:release
+```
+
+Evidence:
+
+```text
+Documentation check:
+Release notes:
+Backup guidance included:
+```
+
 ## Money and billing verification
 
 - [ ] GST invoice with multiple lines
