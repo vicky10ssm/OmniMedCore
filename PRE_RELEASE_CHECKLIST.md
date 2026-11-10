@@ -201,6 +201,13 @@ Record accession/sample IDs for both blocked and allowed disposal cases.
 - [ ] Admin can add, edit, deactivate and delete multiple pathologist records with signatures
 - [ ] An existing single pathologist profile is seeded into the new catalogue after migration 25
 - [ ] Billing creates the expected sample and accession without a separate register step
+- [ ] **Bench** groups pathology tests by sample with awaiting/ready/printable counts
+- [ ] Accept sample from the Bench reveals Enter result and records collection/receipt/acceptance evidence
+- [ ] Release & print from the Bench stores the report and opens the preview
+- [ ] Reject with a reason moves the sample to the Exceptions queue
+- [ ] Recollect creates a replacement expected sample and re-links pending tests
+- [ ] Recollect is blocked when results are entered or a report was released
+- [ ] `/reports` flat worklist and X-ray entry remain unchanged
 - [ ] Report entry can accept the linked sample in place and records collection/receipt/acceptance evidence
 - [ ] Samples desk one-click Accept sample works from expected, collected and received
 - [ ] Fill normal fills selected numeric results from reference midpoints and leaves text-only rows blank

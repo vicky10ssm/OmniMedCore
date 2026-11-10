@@ -51,6 +51,7 @@ const NAV: NavItem[] = [
     moduleId: "admissions",
   },
   { to: "/samples", label: "Samples", icon: "alert", section: "Diagnostics", moduleId: "samples" },
+  { to: "/bench", label: "Bench", icon: "check", moduleId: "reports" },
   { to: "/reports", label: "Reports", icon: "flask", moduleId: "reports" },
   { to: "/tests", label: "Tests & Packages", icon: "chart", moduleId: "tests" },
   { to: "/doctors", label: "Doctors", icon: "stethoscope", moduleId: "doctors" },

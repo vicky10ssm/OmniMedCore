@@ -122,14 +122,19 @@ After seeding, verify:
 
 1. Under Tests & Packages, inspect or add parameter templates with units, reference text, and numeric limits.
 2. Bill a multi-parameter test such as LFT or CBC. Confirm the expected sample and accession were created automatically.
-3. Confirm the result modal lists the complete template with all parameters selected initially.
-4. Use **Accept sample now** in the same modal; confirm the warning disappears and sample collection/receipt/acceptance evidence is recorded.
-5. Click **Fill normal**; confirm only selected numeric rows are filled and text-only rows stay blank.
-6. Deselect at least one parameter and enter report-specific unit/reference edits.
-7. Save a draft, reopen it, and confirm values and exclusions persist.
-8. Verify the order with **Release & print**; confirm the preview opens with result rows, abnormal flags and snapshots. Confirm **Release only** stores the report without opening print.
-9. Repeat a no-template test to ensure single-result reporting still works.
-10. In Samples, confirm the one-click **Accept sample** works from expected/collected/received, and that a sample with no result still cannot be disposed.
+3. Open **Bench**; confirm the sample card shows the patient, accession, invoice and linked tests.
+4. Use **Accept sample** on the Bench card; confirm the card switches to Accepted and shows **Enter result**.
+5. Confirm the result modal lists the complete template with all parameters selected initially.
+6. Click **Fill normal**; confirm only selected numeric rows are filled and text-only rows stay blank.
+7. Deselect at least one parameter and enter report-specific unit/reference edits.
+8. Save a draft, reopen it, and confirm values and exclusions persist.
+9. Verify the order with **Release & print** from the Bench; confirm the preview opens with result rows, abnormal flags and snapshots. Confirm **Release only** stores the report without opening print.
+10. Repeat a no-template test to ensure single-result reporting still works.
+11. Reject a second expected sample with a reason; confirm it leaves Active and appears in **Exceptions**.
+12. Click **Recollect sample**; confirm a new expected accession appears in Active, the old rejected sample remains in history, and the linked test is pending.
+13. Confirm recollect is refused when a result has been entered or a report released.
+14. In Samples, confirm the one-click **Accept sample** works from expected/collected/received, and that a sample with no result still cannot be disposed.
+15. Confirm `/reports` still shows the flat worklist and X-ray entry is unchanged.
 8. In Samples, accept a sample with no result. Confirm Dispose is disabled and the row shows `0/1 linked
    test result entered`; attempt to bypass the UI and confirm the action handler still rejects it.
 9. Enter a complete draft or verify the linked test. Confirm Dispose becomes enabled and records the
