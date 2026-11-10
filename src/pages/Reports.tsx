@@ -8,7 +8,7 @@ import { Fragment, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import { useMonitor } from "../app/MonitorContext";
-import { getDb } from "../db";
+import { getDb, type DataSource } from "../db";
 import { writeAudit } from "../db/audit";
 import { formatDate, formatDateTime, getDeviceId, now, uuid } from "../db/helpers";
 import type {
@@ -119,6 +119,65 @@ function parameterFlag(p: ParameterEntry): "Low" | "High" | "" {
   return "";
 }
 
+interface AnalyserRow {
+  line: number;
+  cells: string[];
+}
+
+/** Splits a CSV/TSV row, honouring simple quoted values. */
+function splitDelimitedLine(line: string, delimiter: string): string[] {
+  const cells: string[] = [];
+  let current = "";
+  let quoted = false;
+  for (let index = 0; index < line.length; index += 1) {
+    const character = line[index];
+    if (character === '"') {
+      if (quoted && line[index + 1] === '"') {
+        current += '"';
+        index += 1;
+      } else {
+        quoted = !quoted;
+      }
+    } else if (character === delimiter && !quoted) {
+      cells.push(current.trim());
+      current = "";
+    } else {
+      current += character;
+    }
+  }
+  cells.push(current.trim());
+  return cells;
+}
+
+/**
+ * Parses analyser output in one of two shapes:
+ *   accession,parameter,value
+ *   accession,test,parameter,value
+ * The delimiter is detected from the first non-empty line. A header row is
+ * ignored when it contains an accession/sample column.
+ */
+function parseAnalyserText(text: string): AnalyserRow[] {
+  const lines = text
+    .split(/\r?\n/)
+    .map((line, index) => ({ line: index + 1, raw: line }))
+    .filter((entry) => entry.raw.trim());
+  if (lines.length === 0) return [];
+  const delimiter = lines[0].raw.includes("\t") ? "\t" : ",";
+  const parsed = lines.map((entry) => ({
+    line: entry.line,
+    cells: splitDelimitedLine(entry.raw, delimiter),
+  }));
+  const firstAccession = parsed[0]?.cells[0]?.toLowerCase() ?? "";
+  if (
+    firstAccession.includes("accession") ||
+    firstAccession.includes("sample") ||
+    firstAccession.includes("barcode")
+  ) {
+    parsed.shift();
+  }
+  return parsed;
+}
+
 function isRadiologyReport(row: Pick<WorkRow, "test_category">): boolean {
   const category = row.test_category.toLowerCase();
   return category.includes("x-ray") || category.includes("xray") || category.includes("radiology");
@@ -195,6 +254,22 @@ export default function Reports({
   const [benchQuery, setBenchQuery] = useState("");
   const [rejecting, setRejecting] = useState<BenchGroup | null>(null);
   const [rejectReason, setRejectReason] = useState("");
+  const [selectedGroups, setSelectedGroups] = useState<Set<string>>(new Set());
+  const [batchPreview, setBatchPreview] = useState<{
+    orders: WorkRow[];
+    skipped: { order: WorkRow; reason: string }[];
+  } | null>(null);
+  const [printQueue, setPrintQueue] = useState<
+    { invoiceId: string; orderId?: string }[]
+  >([]);
+  const [importOpen, setImportOpen] = useState(false);
+  const [importText, setImportText] = useState("");
+  const [importBusy, setImportBusy] = useState(false);
+  const [importSummary, setImportSummary] = useState<{
+    applied: number;
+    orders: number;
+    skipped: { line: number; reason: string }[];
+  } | null>(null);
   const [loaded, setLoaded] = useState(false);
 
   // The Bench and Reports routes reuse this component. Keep the visible view
@@ -856,6 +931,499 @@ export default function Reports({
     }
   };
 
+  const toggleGroup = (key: string) => {
+    setSelectedGroups((current) => {
+      const next = new Set(current);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  };
+
+  const acceptSelected = async () => {
+    const groups = benchGroups.filter(
+      (group) =>
+        selectedGroups.has(group.key) &&
+        group.sampleId &&
+        ["expected", "collected", "received"].includes(group.sampleStatus ?? "")
+    );
+    if (groups.length === 0) {
+      setError("Select at least one sample awaiting acceptance");
+      return;
+    }
+    for (const group of groups) {
+      const ok = await acceptSampleById(group.sampleId, group.accessionNo);
+      if (!ok) return;
+    }
+    setSelectedGroups(new Set());
+  };
+
+  const previewBatchRelease = async () => {
+    const groups = benchGroups.filter((group) => selectedGroups.has(group.key));
+    if (groups.length === 0) {
+      setError("Select at least one sample");
+      return;
+    }
+    setBusy(true);
+    setError("");
+    try {
+      const db = await getDb();
+      const [tenantClause, tenantParams] = tenantAnd();
+      const orders: WorkRow[] = [];
+      const skipped: { order: WorkRow; reason: string }[] = [];
+      for (const group of groups) {
+        if (group.sampleStatus !== "accepted") {
+          for (const order of group.orders) {
+            skipped.push({ order, reason: "sample is not accepted" });
+          }
+          continue;
+        }
+        for (const order of group.orders) {
+          if (order.status === "done") {
+            skipped.push({ order, reason: "already released" });
+            continue;
+          }
+          if (order.status === "rejected") {
+            skipped.push({ order, reason: "sample rejected" });
+            continue;
+          }
+          const params = await db.all<ReportParameterRow>(
+            `SELECT * FROM report_parameters
+             WHERE report_order_id = ? AND deleted = 0 ${tenantClause}`,
+            [order.id, ...tenantParams]
+          );
+          if (params.length === 0) {
+            if (!order.result_text.trim()) {
+              skipped.push({ order, reason: "no result entered" });
+              continue;
+            }
+            if (order.abnormal === 1 || order.critical_flag === 1) {
+              skipped.push({ order, reason: "abnormal or critical" });
+              continue;
+            }
+          } else {
+            const missing = params.find((parameter) => !parameter.result_text.trim());
+            if (missing) {
+              skipped.push({
+                order,
+                reason: `${missing.parameter_name} has no result`,
+              });
+              continue;
+            }
+            if (
+              params.some((parameter) => parameter.abnormal === 1) ||
+              order.abnormal === 1 ||
+              order.critical_flag === 1
+            ) {
+              skipped.push({ order, reason: "abnormal or critical" });
+              continue;
+            }
+          }
+          orders.push(order);
+        }
+      }
+      setBatchPreview({ orders, skipped });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not check the selected reports");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  /**
+   * Releases already-entered, normal pathology drafts. Abnormal, critical,
+   * incomplete and rejected orders are excluded by previewBatchRelease; the
+   * same guards are re-checked inside the transaction.
+   */
+  const applyBatchRelease = async () => {
+    if (!batchPreview || batchPreview.orders.length === 0) return;
+    setBusy(true);
+    setError("");
+    try {
+      const db = await getDb();
+      const [tenantClause, tenantParams] = tenantAnd();
+      const ts = now();
+      const userId = user?.id ?? "";
+      const tenantId = getCurrentTenantId();
+      const deviceId = getDeviceId();
+      await db.tx(async () => {
+        for (const order of batchPreview.orders) {
+          const params = await db.all<ReportParameterRow>(
+            `SELECT * FROM report_parameters
+             WHERE report_order_id = ? AND deleted = 0 ${tenantClause}`,
+            [order.id, ...tenantParams]
+          );
+          let combined = order.result_text;
+          if (params.length > 0) {
+            if (
+              params.some(
+                (parameter) =>
+                  !parameter.result_text.trim() || parameter.abnormal === 1
+              )
+            ) {
+              throw new Error(
+                `${order.test_name} changed during the batch. Review it individually.`
+              );
+            }
+            combined = params
+              .filter((parameter) => parameter.result_text.trim())
+              .map(
+                (parameter) =>
+                  `${parameter.parameter_name}: ${parameter.result_text}${
+                    parameter.unit ? ` ${parameter.unit}` : ""
+                  }`
+              )
+              .join(" | ");
+          } else if (
+            !order.result_text.trim() ||
+            order.abnormal === 1 ||
+            order.critical_flag === 1
+          ) {
+            throw new Error(
+              `${order.test_name} changed during the batch. Review it individually.`
+            );
+          }
+
+          await db.run(
+            `UPDATE report_orders
+             SET status = 'done', result_text = ?, verified_by = ?, reported_at = ?,
+                 approval_status = 'approved', approved_by = ?, approved_at = ?,
+                 analysis_completed_at = COALESCE(analysis_completed_at, ?),
+                 updated_at = ?, dirty = 1
+             WHERE id = ? ${tenantClause}`,
+            [combined, userId, ts, userId, ts, ts, ts, order.id, ...tenantParams]
+          );
+
+          const updatedOrder = await db.get<ReportOrderRow>(
+            `SELECT * FROM report_orders WHERE id = ? ${tenantClause}`,
+            [order.id, ...tenantParams]
+          );
+          const revision = await db.get<{ n: number }>(
+            `SELECT COALESCE(MAX(revision_no), 0) + 1 AS n
+             FROM report_result_revisions
+             WHERE report_order_id = ? AND deleted = 0 ${tenantClause}`,
+            [order.id, ...tenantParams]
+          );
+          await db.run(
+            `INSERT INTO report_result_revisions
+               (id, report_order_id, invoice_id, revision_no, action, reason,
+                snapshot_json, acted_by, acted_at, created_at, updated_at, device_id,
+                dirty, deleted, tenant_id)
+             VALUES (?,?,?,?,?,?,?,?,?,?,?,?,1,0,?)`,
+            [
+              uuid(),
+              order.id,
+              order.invoice_id,
+              revision?.n ?? 1,
+              "verified",
+              "Batch normal release",
+              JSON.stringify({ order: updatedOrder, parameters: params }),
+              userId,
+              ts,
+              ts,
+              ts,
+              deviceId,
+              tenantId,
+            ]
+          );
+          await writeAudit(db, {
+            userId,
+            action: "report.verify",
+            entity: "report_order",
+            entityId: order.id,
+            detail: `Revision ${revision?.n ?? 1} (batch normal)`,
+          });
+        }
+      });
+      setBatchPreview(null);
+      setSelectedGroups(new Set());
+      await load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not release the selected reports");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const printSelected = () => {
+    const groups = benchGroups.filter(
+      (group) =>
+        selectedGroups.has(group.key) &&
+        group.sampleStatus === "accepted" &&
+        group.orders.length > 0 &&
+        group.orders.every((order) => order.status === "done")
+    );
+    if (groups.length === 0) {
+      setError("Select at least one completed sample to print");
+      return;
+    }
+    const queue = groups.map((group) =>
+      group.orders.length === 1
+        ? { invoiceId: group.invoiceId, orderId: group.orders[0].id }
+        : { invoiceId: group.invoiceId }
+    );
+    setPrintQueue(queue.slice(1));
+    setPrintingInvoice(queue[0]);
+    setSelectedGroups(new Set());
+  };
+
+  const closePrint = () => {
+    if (printQueue.length > 0) {
+      const [next, ...rest] = printQueue;
+      setPrintQueue(rest);
+      setPrintingInvoice(next);
+    } else {
+      setPrintingInvoice(null);
+    }
+  };
+
+  /**
+   * Returns a report's parameter snapshots. A brand-new order has no
+   * report_parameters until result entry is opened, so the importer creates
+   * them from the test template the first time it sees the order.
+   */
+  const ensureReportParametersFor = async (
+    db: DataSource,
+    order: ReportOrderRow
+  ): Promise<ReportParameterRow[]> => {
+    const [tenantClause, tenantParams] = tenantAnd();
+    const existing = await db.all<ReportParameterRow>(
+      `SELECT * FROM report_parameters
+       WHERE report_order_id = ? AND deleted = 0 ${tenantClause}`,
+      [order.id, ...tenantParams]
+    );
+    if (existing.length > 0) return existing;
+    const all = await db.all<ReportParameterRow>(
+      `SELECT * FROM report_parameters
+       WHERE report_order_id = ? ${tenantClause}`,
+      [order.id, ...tenantParams]
+    );
+    if (all.length > 0) return [];
+    const templates = await db.all<TestParameterRow>(
+      `SELECT * FROM test_parameters
+       WHERE test_id = ? AND is_active = 1 AND deleted = 0 ${tenantClause}
+       ORDER BY sort_order, name`,
+      [order.test_id, ...tenantParams]
+    );
+    if (templates.length === 0) return [];
+    const ts = now();
+    const deviceId = getDeviceId();
+    const tenantId = getCurrentTenantId();
+    await db.tx(async () => {
+      for (const template of templates) {
+        await db.run(
+          `INSERT INTO report_parameters
+             (id, report_order_id, parameter_id, parameter_name, section_name,
+              unit, ref_range, ref_min, ref_max, result_value, result_text,
+              abnormal, loinc_code, created_at, updated_at, device_id, dirty,
+              deleted, tenant_id)
+           VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,1,?,?)`,
+          [
+            uuid(),
+            order.id,
+            template.id,
+            template.name,
+            template.section_name,
+            template.unit,
+            template.ref_range,
+            template.ref_min,
+            template.ref_max,
+            null,
+            "",
+            0,
+            template.loinc_code,
+            ts,
+            ts,
+            deviceId,
+            0,
+            tenantId,
+          ]
+        );
+      }
+    });
+    return db.all<ReportParameterRow>(
+      `SELECT * FROM report_parameters
+       WHERE report_order_id = ? AND deleted = 0 ${tenantClause}`,
+      [order.id, ...tenantParams]
+    );
+  };
+
+  /**
+   * Imports analyser output as draft parameter results. Nothing is released.
+   * Supported shapes: accession,parameter,value and
+   * accession,test,parameter,value (comma or tab separated).
+   */
+  const importAnalyserResults = async () => {
+    const rows = parseAnalyserText(importText);
+    if (rows.length === 0) {
+      setImportSummary({
+        applied: 0,
+        orders: 0,
+        skipped: [{ line: 0, reason: "No data rows found" }],
+      });
+      return;
+    }
+    setImportBusy(true);
+    setError("");
+    setImportSummary(null);
+    try {
+      const db = await getDb();
+      const [tenantClause, tenantParams] = tenantAnd();
+      const ts = now();
+      const skipped: { line: number; reason: string }[] = [];
+      const updates = new Map<
+        string,
+        { order: ReportOrderRow; parameter: ReportParameterRow; value: string }
+      >();
+
+      for (const row of rows) {
+        const cells = row.cells;
+        if (cells.length < 3) {
+          skipped.push({
+            line: row.line,
+            reason: "expected accession,parameter,value or accession,test,parameter,value",
+          });
+          continue;
+        }
+        const accession = cells[0];
+        const hasTest = cells.length >= 4;
+        const testFilter = hasTest ? cells[1].toLowerCase() : "";
+        const parameterName = hasTest ? cells[2] : cells[1];
+        const value = hasTest ? cells[3] : cells[2];
+        if (!accession || !parameterName) {
+          skipped.push({ line: row.line, reason: "accession and parameter are required" });
+          continue;
+        }
+        const sample = await db.get<SampleRow>(
+          `SELECT * FROM samples WHERE accession_no = ? AND deleted = 0 ${tenantClause}`,
+          [accession, ...tenantParams]
+        );
+        if (!sample) {
+          skipped.push({ line: row.line, reason: `unknown accession ${accession}` });
+          continue;
+        }
+        const orders = await db.all<ReportOrderRow>(
+          `SELECT * FROM report_orders
+           WHERE sample_id = ? AND deleted = 0 AND status IN ('pending','in_progress')
+             ${tenantClause}
+           ORDER BY created_at`,
+          [sample.id, ...tenantParams]
+        );
+        const candidates = hasTest
+          ? orders.filter((order) => order.test_name.toLowerCase().includes(testFilter))
+          : orders;
+        if (candidates.length === 0) {
+          skipped.push({
+            line: row.line,
+            reason: `no open test for ${accession}${hasTest ? ` / ${cells[1]}` : ""}`,
+          });
+          continue;
+        }
+        const matches: {
+          order: ReportOrderRow;
+          parameter: ReportParameterRow;
+        }[] = [];
+        for (const order of candidates) {
+          const parameters = await ensureReportParametersFor(db, order);
+          const parameter = parameters.find(
+            (entry) =>
+              entry.parameter_name.toLowerCase() === parameterName.toLowerCase()
+          );
+          if (parameter) matches.push({ order, parameter });
+        }
+        if (matches.length === 0) {
+          skipped.push({
+            line: row.line,
+            reason: `parameter ${parameterName} not found${hasTest ? ` in ${cells[1]}` : ""}`,
+          });
+          continue;
+        }
+        if (matches.length > 1) {
+          skipped.push({
+            line: row.line,
+            reason: `parameter ${parameterName} is ambiguous; include the test name`,
+          });
+          continue;
+        }
+        updates.set(matches[0].parameter.id, {
+          ...matches[0],
+          value: value.trim(),
+        });
+      }
+
+      if (updates.size === 0) {
+        setImportSummary({ applied: 0, orders: 0, skipped });
+        return;
+      }
+
+      const orderIds = new Set<string>();
+      for (const update of updates.values()) {
+        orderIds.add(update.order.id);
+      }
+
+      await db.tx(async () => {
+        for (const update of updates.values()) {
+          const numeric = numericValue(update.value);
+          const abnormal =
+            numeric !== null &&
+            ((update.parameter.ref_min !== null && numeric < update.parameter.ref_min) ||
+              (update.parameter.ref_max !== null && numeric > update.parameter.ref_max))
+              ? 1
+              : 0;
+          await db.run(
+            `UPDATE report_parameters
+             SET result_text = ?, result_value = ?, abnormal = ?, updated_at = ?, dirty = 1
+             WHERE id = ? ${tenantClause}`,
+            [update.value, numeric, abnormal, ts, update.parameter.id, ...tenantParams]
+          );
+        }
+        for (const orderId of orderIds) {
+          const parameters = await db.all<ReportParameterRow>(
+            `SELECT * FROM report_parameters
+             WHERE report_order_id = ? AND deleted = 0 ${tenantClause}
+             ORDER BY created_at`,
+            [orderId, ...tenantParams]
+          );
+          const combined = parameters
+            .filter((parameter) => parameter.result_text.trim())
+            .map(
+              (parameter) =>
+                `${parameter.parameter_name}: ${parameter.result_text}${
+                  parameter.unit ? ` ${parameter.unit}` : ""
+                }`
+            )
+            .join(" | ");
+          const abnormal = parameters.some((parameter) => parameter.abnormal === 1) ? 1 : 0;
+          await db.run(
+            `UPDATE report_orders
+             SET result_text = ?, abnormal = ?, entered_by = ?,
+                 analysis_started_at = COALESCE(analysis_started_at, ?),
+                 updated_at = ?, dirty = 1
+             WHERE id = ? ${tenantClause}`,
+            [combined, abnormal, user?.id ?? "", ts, ts, orderId, ...tenantParams]
+          );
+          await writeAudit(db, {
+            userId: user?.id ?? "",
+            action: "report.analyzer_import",
+            entity: "report_order",
+            entityId: orderId,
+            detail: "Analyser results imported as draft",
+          });
+        }
+      });
+      await load();
+      setImportSummary({
+        applied: updates.size,
+        orders: orderIds.size,
+        skipped,
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not import analyser results");
+    } finally {
+      setImportBusy(false);
+    }
+  };
+
   const saveResult = async (markDone: boolean, printAfter = false) => {
     if (!entering || parametersLoading) return;
     try {
@@ -1229,10 +1797,63 @@ export default function Reports({
                 {benchCounts.missingSample} order(s) need a sample record
               </Link>
             )}
+            <Btn
+              variant="outline"
+              onClick={() => {
+                setImportOpen(true);
+                setImportSummary(null);
+                setError("");
+              }}
+            >
+              Import analyser results
+            </Btn>
           </div>
           <p className="px-4 pt-2 text-xs text-slate-400">
             Pathology work only. X-ray reports remain in Reports.
           </p>
+
+          <div className="flex flex-wrap items-center gap-2 border-b border-slate-200 px-3 py-2">
+            <button
+              type="button"
+              className="text-xs font-medium text-teal-700 hover:underline"
+              onClick={() =>
+                setSelectedGroups(new Set(benchFiltered.map((group) => group.key)))
+              }
+            >
+              Select visible
+            </button>
+            <button
+              type="button"
+              className="text-xs text-slate-500 hover:underline"
+              onClick={() => setSelectedGroups(new Set())}
+            >
+              Clear
+            </button>
+            {selectedGroups.size > 0 && (
+              <>
+                <span className="text-xs font-medium text-slate-700">
+                  {selectedGroups.size} selected
+                </span>
+                <Btn
+                  variant="outline"
+                  onClick={() => void acceptSelected()}
+                  disabled={busy}
+                >
+                  Accept selected
+                </Btn>
+                <Btn
+                  variant="outline"
+                  onClick={() => void previewBatchRelease()}
+                  disabled={busy}
+                >
+                  Release normal drafts
+                </Btn>
+                <Btn variant="outline" onClick={printSelected} disabled={busy}>
+                  Print selected
+                </Btn>
+              </>
+            )}
+          </div>
 
           {error && (
             <div className="px-4 pt-3">
@@ -1274,7 +1895,15 @@ export default function Reports({
                 return (
                   <div key={group.key} className="p-4">
                     <div className="flex flex-wrap items-start justify-between gap-3">
-                      <div className="min-w-0">
+                      <div className="flex min-w-0 items-start gap-2">
+                        <input
+                          type="checkbox"
+                          checked={selectedGroups.has(group.key)}
+                          onChange={() => toggleGroup(group.key)}
+                          className="mt-1 h-4 w-4 rounded border-slate-300 accent-teal-700"
+                          aria-label={`Select ${group.accessionNo}`}
+                        />
+                        <div className="min-w-0">
                         <p className="font-medium">{group.patientName}</p>
                         <p className="num text-xs text-slate-500">
                           {group.accessionNo} · {group.invoiceNo} ·{" "}
@@ -1288,6 +1917,7 @@ export default function Reports({
                         >
                           {group.sampleStatus ?? "No sample"}
                         </span>
+                        </div>
                       </div>
                       <div className="flex flex-wrap gap-1">
                         {!monitor && !group.sampleId && (
@@ -2170,6 +2800,133 @@ export default function Reports({
       </Modal>
 
       <Modal
+        open={!!batchPreview}
+        title="Release normal drafts"
+        onClose={() => setBatchPreview(null)}
+        wide
+      >
+        {batchPreview && (
+          <div className="space-y-3">
+            <p className="text-sm text-slate-600">
+              This releases only reports with complete, normal results. Abnormal, critical,
+              incomplete and rejected reports are skipped and remain on the Bench for individual
+              review.
+            </p>
+            <div className="rounded-lg bg-slate-50 p-3 text-sm">
+              <p>
+                <strong>{batchPreview.orders.length}</strong> report(s) ready to release
+              </p>
+              <p className="text-xs text-slate-500">
+                {batchPreview.skipped.length} skipped
+              </p>
+            </div>
+            {batchPreview.skipped.length > 0 && (
+              <ul className="max-h-40 space-y-1 overflow-y-auto text-xs text-amber-800">
+                {batchPreview.skipped.map((entry, index) => (
+                  <li key={`${entry.order.id}-${index}`}>
+                    {entry.order.test_name} ({entry.order.patient_name}) — {entry.reason}
+                  </li>
+                ))}
+              </ul>
+            )}
+            <ErrorNote message={error} />
+            <div className="flex justify-end gap-2">
+              <Btn onClick={() => setBatchPreview(null)} disabled={busy}>
+                Cancel
+              </Btn>
+              <Btn
+                variant="primary"
+                onClick={() => void applyBatchRelease()}
+                disabled={busy || batchPreview.orders.length === 0}
+              >
+                {busy
+                  ? "Releasing…"
+                  : `Release ${batchPreview.orders.length} report(s)`}
+              </Btn>
+            </div>
+          </div>
+        )}
+      </Modal>
+
+      <Modal
+        open={importOpen}
+        title="Import analyser results"
+        onClose={() => {
+          setImportOpen(false);
+          setImportSummary(null);
+        }}
+        wide
+      >
+        <div className="space-y-3">
+          <p className="text-xs text-slate-500">
+            Paste rows or load a CSV/TSV file. Formats:{" "}
+            <span className="num">accession,parameter,value</span> or{" "}
+            <span className="num">accession,test,parameter,value</span>. Results are saved as
+            drafts; nothing is released.
+          </p>
+          <textarea
+            value={importText}
+            onChange={(event) => setImportText(event.target.value)}
+            rows={10}
+            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 font-mono text-xs focus:border-teal-600 focus:outline-none focus:ring-1 focus:ring-teal-600"
+            placeholder={"INV-A-00001-S01,Haemoglobin,14\nINV-A-00001-S01,Total Leukocyte Count,7500"}
+          />
+          <label className="flex cursor-pointer items-center justify-center rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">
+            <input
+              type="file"
+              accept=".csv,.tsv,.txt,text/csv,text/tab-separated-values,text/plain"
+              className="sr-only"
+              onChange={async (event) => {
+                const file = event.target.files?.[0];
+                if (file) setImportText(await file.text());
+                event.currentTarget.value = "";
+              }}
+            />
+            Load CSV/TSV file
+          </label>
+          {importSummary && (
+            <div className="space-y-2 rounded-lg border border-slate-200 p-3 text-sm">
+              <p>
+                <strong>{importSummary.applied}</strong> result(s) saved across{" "}
+                <strong>{importSummary.orders}</strong> report(s) as drafts.
+              </p>
+              {importSummary.skipped.length > 0 && (
+                <ul className="max-h-40 space-y-1 overflow-y-auto text-xs text-amber-800">
+                  {importSummary.skipped.map((entry, index) => (
+                    <li key={`${entry.line}-${index}`}>
+                      Line {entry.line}: {entry.reason}
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <p className="text-xs text-slate-500">
+                Review the results on the Bench or in Reports before releasing.
+              </p>
+            </div>
+          )}
+          <ErrorNote message={error} />
+          <div className="flex justify-end gap-2">
+            <Btn
+              onClick={() => {
+                setImportOpen(false);
+                setImportSummary(null);
+              }}
+              disabled={importBusy}
+            >
+              Close
+            </Btn>
+            <Btn
+              variant="primary"
+              onClick={() => void importAnalyserResults()}
+              disabled={importBusy || !importText.trim()}
+            >
+              {importBusy ? "Importing…" : "Import as drafts"}
+            </Btn>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal
         open={!!historyFor}
         title={historyFor ? `Report history - ${historyFor.test_name}` : "Report history"}
         onClose={() => setHistoryFor(null)}
@@ -2230,7 +2987,7 @@ export default function Reports({
         <ReportPrint
           invoiceId={printingInvoice.invoiceId}
           reportOrderId={printingInvoice.orderId}
-          onClose={() => setPrintingInvoice(null)}
+          onClose={closePrint}
         />
       )}
 

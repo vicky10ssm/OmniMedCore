@@ -133,8 +133,12 @@ After seeding, verify:
 11. Reject a second expected sample with a reason; confirm it leaves Active and appears in **Exceptions**.
 12. Click **Recollect sample**; confirm a new expected accession appears in Active, the old rejected sample remains in history, and the linked test is pending.
 13. Confirm recollect is refused when a result has been entered or a report released.
-14. In Samples, confirm the one-click **Accept sample** works from expected/collected/received, and that a sample with no result still cannot be disposed.
-15. Confirm `/reports` still shows the flat worklist and X-ray entry is unchanged.
+14. Select multiple samples on the Bench and confirm **Accept selected** updates each awaiting card.
+15. On a new accepted order, use **Import analyser results** with `accession,parameter,value` rows; confirm it creates the parameter snapshot when needed and saves drafts. Confirm unknown/ambiguous rows are reported and nothing is released.
+16. Complete all results normally, select the sample and use **Release normal drafts**; confirm the preview lists eligible reports, skips abnormal/incomplete ones, and writes a revision plus audit event on release.
+17. Select a completed sample and confirm **Print selected** opens the report preview.
+18. In Samples, confirm the one-click **Accept sample** works from expected/collected/received, and that a sample with no result still cannot be disposed.
+19. Confirm `/reports` still shows the flat worklist and X-ray entry is unchanged.
 8. In Samples, accept a sample with no result. Confirm Dispose is disabled and the row shows `0/1 linked
    test result entered`; attempt to bypass the UI and confirm the action handler still rejects it.
 9. Enter a complete draft or verify the linked test. Confirm Dispose becomes enabled and records the

@@ -3,6 +3,50 @@
 All notable changes to OmniMed Core are recorded here. This project follows semantic versioning once
 production releases begin.
 
+## [0.24.0] - 2026-11-10
+
+### Added
+
+- **Bench multi-select** with a batch toolbar:
+  - **Accept selected** for samples awaiting acceptance
+  - **Release normal drafts** for reports whose selected results are complete and normal
+  - **Print selected** for completed samples, with a print queue for multiple reports
+  - **Select visible** and **Clear**
+- **Release normal drafts** previews the batch first. Abnormal, critical, incomplete, rejected and
+  already-released reports are skipped and remain on the Bench. Every released report gets a normal
+  revision and audit event.
+- **Import analyser results** on the Bench:
+  - Paste rows or load a CSV/TSV file.
+  - Formats: `accession,parameter,value` or `accession,test,parameter,value`.
+  - Creates the report parameter snapshots from the test template when the order has not been opened
+    yet.
+  - Saves results as drafts only; nothing is released automatically.
+  - Reports applied rows, affected reports, and skipped lines with reasons (unknown accession, unknown
+    parameter, ambiguous parameter, or no open test).
+
+### Changed
+
+- The Bench now supports a routine batch path for normal panels while keeping abnormal/critical and
+  incomplete reports for individual review.
+- Batch print opens one report at a time from a queue.
+- Imported analyser results update the report summary and abnormal flag but leave the report pending
+  until reviewed and released.
+
+### Database
+
+- No schema change. Schema remains **25**.
+
+### Verified
+
+- `npm run check`, terminal build, monitor build and Rust tests pass.
+- Batch selection and **Accept selected** work on the Bench.
+- **Import analyser results** created 20 CBC report parameters from the template and applied 3 imported
+  values as drafts for a new order.
+- **Release normal drafts** previewed one complete normal report, released it, and wrote revision 2 and
+  a `report.verify` audit event.
+- **Print selected** opened the completed report preview.
+- Reports flat view and X-ray entry remain unchanged.
+
 ## [0.23.0] - 2026-11-10
 
 ### Added

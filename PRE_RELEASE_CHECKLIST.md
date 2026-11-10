@@ -207,6 +207,14 @@ Record accession/sample IDs for both blocked and allowed disposal cases.
 - [ ] Reject with a reason moves the sample to the Exceptions queue
 - [ ] Recollect creates a replacement expected sample and re-links pending tests
 - [ ] Recollect is blocked when results are entered or a report was released
+- [ ] Bench selection and **Accept selected** work
+- [ ] **Release normal drafts** previews eligible reports and skips abnormal, critical, incomplete and rejected reports
+- [ ] Batch release writes a revision and `report.verify` audit event per report
+- [ ] **Print selected** queues completed reports and opens the preview
+- [ ] **Import analyser results** accepts pasted and CSV/TSV rows
+- [ ] Analyser import creates report parameter snapshots for a new order
+- [ ] Analyser import reports unknown accession, unknown parameter and ambiguous rows
+- [ ] Imported results stay drafts and are not auto-released
 - [ ] `/reports` flat worklist and X-ray entry remain unchanged
 - [ ] Report entry can accept the linked sample in place and records collection/receipt/acceptance evidence
 - [ ] Samples desk one-click Accept sample works from expected, collected and received

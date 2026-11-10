@@ -599,6 +599,25 @@ The second deployment exists. `npm run build` makes the terminal (editing) app; 
 - The expenses list, search, module filter and CSV export include the attribution.
 - Operators can add and view expenses as before; admin/operator visibility rules are unchanged.
 
+## Bench batch operations and analyser import - built
+
+- Bench cards have a selection checkbox; the toolbar offers Select visible, Clear, Accept selected,
+  Release normal drafts and Print selected.
+- Accept selected applies the same sample-acceptance evidence as the single action.
+- Release normal drafts preflights every selected order and excludes abnormal, critical, incomplete,
+  rejected and already-released reports. The eligible orders are released in one transaction with a
+  normal revision per order and a `report.verify` audit event.
+- Print selected queues completed reports and opens them one at a time.
+- Analyser import accepts pasted text or CSV/TSV files in `accession,parameter,value` or
+  `accession,test,parameter,value` form.
+- The importer resolves the accession to its open report orders, matches parameter names
+  case-insensitively, and refuses ambiguous matches. It creates report parameter snapshots from the test
+  template when a new order has not been opened yet.
+- Imported values are drafts only: status stays pending, the report summary and abnormal flag are
+  recomputed, and the user must review and release.
+- This is a vendor-neutral CSV/TSV import, not a live Mindray/Sysmex/other analyser driver.
+- No schema change.
+
 ## Pathology Bench screen - built
 
 - A dedicated **Bench** route under Diagnostics groups pathology report orders by sample.
