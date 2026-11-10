@@ -18,6 +18,7 @@ use tauri::Manager;
 use zeroize::Zeroizing;
 
 const DB_FILE_NAME: &str = "medicore.db";
+const VERSION_MARKER_FILE: &str = "last-run-version.txt";
 const SQLITE_HEADER: &[u8] = b"SQLite format 3\0";
 const KEYRING_SERVICE: &str = "in.medicore.desktop";
 const KEYRING_USER: &str = "sqlcipher-database-key-v1";
@@ -203,7 +204,7 @@ fn atomic_copy_file(source: &Path, destination: &Path) -> Result<(), String> {
     Ok(())
 }
 
-fn copy_sidecar(source: &Path, destination: &Path) {
+fn copy_sidecar(source: &Path, destination: &Path) -> Result<(), String> {
     let source_name = source
         .file_name()
         .map(|name| name.to_string_lossy().to_string())
@@ -215,12 +216,17 @@ fn copy_sidecar(source: &Path, destination: &Path) {
     for suffix in ["-wal", "-shm"] {
         let from = source.with_file_name(format!("{source_name}{suffix}"));
         if from.exists() {
-            let _ = fs::copy(
-                &from,
-                destination.with_file_name(format!("{destination_name}{suffix}")),
-            );
+            let to = destination.with_file_name(format!("{destination_name}{suffix}"));
+            fs::copy(&from, &to).map_err(|e| {
+                format!(
+                    "Could not copy SQLite sidecar {} to {}: {e}",
+                    from.display(),
+                    to.display()
+                )
+            })?;
         }
     }
+    Ok(())
 }
 
 fn remove_sidecars(path: &Path) {
@@ -248,6 +254,87 @@ fn remove_sidecars_checked(path: &Path) -> Result<(), String> {
             })?;
         }
     }
+    Ok(())
+}
+
+fn safe_version_label(value: &str) -> String {
+    let cleaned: String = value
+        .chars()
+        .map(|character| {
+            if character.is_ascii_alphanumeric() || character == '.' || character == '-' {
+                character
+            } else {
+                '_'
+            }
+        })
+        .collect();
+    if cleaned.is_empty() {
+        "unknown".to_string()
+    } else {
+        cleaned
+    }
+}
+
+fn read_version_marker(data_dir: &Path) -> Option<String> {
+    fs::read_to_string(data_dir.join(VERSION_MARKER_FILE))
+        .ok()
+        .map(|value| value.trim().to_string())
+        .filter(|value| !value.is_empty())
+}
+
+fn write_version_marker(data_dir: &Path, version: &str) -> Result<(), String> {
+    fs::create_dir_all(data_dir)
+        .map_err(|e| format!("Could not create the application-data directory: {e}"))?;
+    fs::write(data_dir.join(VERSION_MARKER_FILE), version)
+        .map_err(|e| format!("Could not record the running application version: {e}"))
+}
+
+/// Copies the live database and its SQLite sidecars before the first open of a
+/// different application version. It runs before migrations, so the backup
+/// captures the last file written by the previous release.
+fn ensure_pre_upgrade_backup_at(
+    data_dir: &Path,
+    current_version: &str,
+) -> Result<Option<PathBuf>, String> {
+    fs::create_dir_all(data_dir)
+        .map_err(|e| format!("Could not create the application-data directory: {e}"))?;
+
+    let previous = read_version_marker(data_dir);
+    let database = data_dir.join(DB_FILE_NAME);
+    let database_exists = fs::metadata(&database)
+        .map(|metadata| metadata.len() > 0)
+        .unwrap_or(false);
+
+    // A missing marker on an existing database is the first run of the
+    // pre-upgrade backup feature (for example 0.21 -> 0.22). Back it up too,
+    // labelled "unknown", so the first upgrade that introduces this feature is
+    // also protected.
+    if database_exists && previous.as_deref() != Some(current_version) {
+        let dir = data_dir.join("Backups");
+        fs::create_dir_all(&dir)
+            .map_err(|e| format!("Could not create the backup directory: {e}"))?;
+        let destination = dir.join(format!(
+            "pre-upgrade-{}-to-{}-{}.db",
+            safe_version_label(previous.as_deref().unwrap_or("unknown")),
+            safe_version_label(current_version),
+            timestamp()
+        ));
+        atomic_copy_file(&database, &destination)?;
+        copy_sidecar(&database, &destination)?;
+        write_version_marker(data_dir, current_version)?;
+        return Ok(Some(destination));
+    }
+
+    if previous.as_deref() != Some(current_version) {
+        write_version_marker(data_dir, current_version)?;
+    }
+    Ok(None)
+}
+
+fn ensure_pre_upgrade_backup(app: &tauri::AppHandle) -> Result<(), String> {
+    let data_dir = app_data_dir(app)?;
+    let current_version = app.package_info().version.to_string();
+    ensure_pre_upgrade_backup_at(&data_dir, &current_version)?;
     Ok(())
 }
 
@@ -392,6 +479,10 @@ pub fn db_open(app: tauri::AppHandle, state: tauri::State<'_, DbState>) -> Resul
     if guard.is_some() {
         return Ok(());
     }
+    // Protect the previous release's file before any migration or encryption
+    // conversion runs. A failed copy blocks the open rather than risking an
+    // unrecoverable upgrade.
+    ensure_pre_upgrade_backup(&app)?;
     ensure_encrypted_database(&app)?;
     let key =
         read_key()?.ok_or_else(|| "Windows Credential Manager has no database key.".to_string())?;
@@ -626,7 +717,7 @@ pub fn restore_database(
             .map_err(|e| format!("Could not create the backup directory: {e}"))?;
         let safety = safety_dir.join(format!("pre-restore-{}.db", timestamp()));
         atomic_copy_file(&target, &safety)?;
-        copy_sidecar(&target, &safety);
+        copy_sidecar(&target, &safety)?;
     }
 
     let encrypted_bytes = if validation.encrypted {
@@ -714,5 +805,91 @@ mod tests {
         let bytes = fs::read(&path).expect("read backup");
         let error = validate_backup_bytes(&bytes).expect_err("missing tables");
         assert!(error.contains("required"));
+    }
+
+    #[test]
+    fn pre_upgrade_backup_copies_database_and_sidecars() {
+        let dir = tempfile::tempdir().expect("temp dir");
+        let data = dir.path();
+        fs::write(data.join(DB_FILE_NAME), b"database").expect("database");
+        fs::write(data.join(format!("{DB_FILE_NAME}-wal")), b"wal").expect("wal");
+        fs::write(data.join(format!("{DB_FILE_NAME}-shm")), b"shm").expect("shm");
+        write_version_marker(data, "0.21.0").expect("old marker");
+
+        let backup = ensure_pre_upgrade_backup_at(data, "0.22.0")
+            .expect("backup")
+            .expect("version change should create a backup");
+        assert_eq!(fs::read(&backup).expect("backup contents"), b"database");
+
+        let backup_name = backup
+            .file_name()
+            .expect("backup name")
+            .to_string_lossy()
+            .to_string();
+        assert_eq!(
+            fs::read(backup.with_file_name(format!("{backup_name}-wal"))).expect("backup wal"),
+            b"wal"
+        );
+        assert_eq!(
+            fs::read(backup.with_file_name(format!("{backup_name}-shm"))).expect("backup shm"),
+            b"shm"
+        );
+        assert_eq!(read_version_marker(data).as_deref(), Some("0.22.0"));
+    }
+
+    #[test]
+    fn pre_upgrade_backup_is_skipped_for_the_same_version() {
+        let dir = tempfile::tempdir().expect("temp dir");
+        let data = dir.path();
+        fs::write(data.join(DB_FILE_NAME), b"database").expect("database");
+        write_version_marker(data, "0.22.0").expect("marker");
+
+        assert!(ensure_pre_upgrade_backup_at(data, "0.22.0")
+            .expect("same version")
+            .is_none());
+        assert!(!data.join("Backups").exists());
+    }
+
+    #[test]
+    fn first_run_with_an_existing_database_creates_an_unknown_backup() {
+        let dir = tempfile::tempdir().expect("temp dir");
+        let data = dir.path();
+        fs::write(data.join(DB_FILE_NAME), b"database").expect("database");
+
+        let backup = ensure_pre_upgrade_backup_at(data, "0.22.0")
+            .expect("first run")
+            .expect("existing database should be backed up");
+        let name = backup
+            .file_name()
+            .expect("backup name")
+            .to_string_lossy()
+            .to_string();
+        assert!(name.starts_with("pre-upgrade-unknown-to-0.22.0-"));
+        assert_eq!(read_version_marker(data).as_deref(), Some("0.22.0"));
+    }
+
+    #[test]
+    fn first_run_without_a_database_records_the_version() {
+        let dir = tempfile::tempdir().expect("temp dir");
+        let data = dir.path();
+
+        assert!(ensure_pre_upgrade_backup_at(data, "0.22.0")
+            .expect("fresh install")
+            .is_none());
+        assert_eq!(read_version_marker(data).as_deref(), Some("0.22.0"));
+        assert!(!data.join("Backups").exists());
+    }
+
+    #[test]
+    fn version_change_without_a_database_records_the_version() {
+        let dir = tempfile::tempdir().expect("temp dir");
+        let data = dir.path();
+        write_version_marker(data, "0.21.0").expect("old marker");
+
+        assert!(ensure_pre_upgrade_backup_at(data, "0.22.0")
+            .expect("missing database")
+            .is_none());
+        assert_eq!(read_version_marker(data).as_deref(), Some("0.22.0"));
+        assert!(!data.join("Backups").exists());
     }
 }

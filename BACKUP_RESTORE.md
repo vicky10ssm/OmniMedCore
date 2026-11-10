@@ -1,7 +1,7 @@
 # Backup and restore
 
-Last updated: 3 November 2026  
-Applies to: Tauri Windows desktop app (`0.3.0+`; schema `22` from `0.10.0`)
+Last updated: 10 November 2026  
+Applies to: Tauri Windows desktop app (`0.22.0+`; schema `25` from `0.20.0`)
 
 ## What is implemented
 
@@ -14,6 +14,8 @@ Applies to: Tauri Windows desktop app (`0.3.0+`; schema `22` from `0.10.0`)
   - 12 monthly snapshots
 - SQLCipher-encrypted snapshot files (the desktop database key is in Windows Credential Manager)
 - Schema + integrity validation before restore
+- Automatic pre-upgrade backup before a different application version opens the database
+- Automatic pre-migration backup before a schema migration
 - Automatic pre-restore safety copy
 - Safe replacement of the active SQLCipher database, followed by app reload
 - Legacy plaintext backups are re-encrypted before they become active
@@ -30,7 +32,39 @@ File pattern:
 MediCore-daily-YYYY-MM-DD.db
 MediCore-weekly-YYYY-Www.db
 MediCore-monthly-YYYY-MM.db
+pre-upgrade-<from>-to-<to>-<epoch>.db
+pre-migration-v<schema>-<epoch>.db
+pre-restore-<epoch>.db
 ```
+
+## Automatic pre-upgrade backup
+
+Before the database is opened, the app compares the running version with
+`last-run-version.txt` in the application-data directory. When they differ, it copies the database
+and its `-wal` / `-shm` sidecars to:
+
+```text
+%APPDATA%\in.medicore.desktop\Backups\pre-upgrade-<from>-to-<to>-<epoch>.db
+```
+
+- A missing version marker on an existing database is labelled `unknown`, so the first release that
+  introduces this feature also protects the existing file.
+- The copy runs before encryption conversion and before schema migrations.
+- If the copy fails, the database is not opened and the upgrade does not continue.
+- A same-version restart does not create another backup.
+- The pre-upgrade backup protects the database file. The SQLCipher key remains in Windows Credential
+  Manager on the same Windows user profile.
+
+## Automatic pre-migration backup
+
+When the database schema is older than the running build, the data layer checkpoints WAL and creates:
+
+```text
+Backups\pre-migration-v<schema>-<epoch>.db
+```
+
+This is a second safety net focused on schema upgrades. A version change that does not change the
+schema still gets the pre-upgrade backup.
 
 The daily scheduler checks once per day while the application is open. It does not run while the app is
 closed. For a fully unattended daily backup, a Windows Scheduled Task or service should be added later.
@@ -78,8 +112,8 @@ target machine.
 
 The app keeps the newest 7 daily files, newest 4 weekly files and newest 12 monthly files in each backup
 folder. Retention only deletes files beginning with `MediCore-daily-`, `MediCore-weekly-` or
-`MediCore-monthly-`. Migration backups such as `pre-migration-v16-*.db` and restore safety copies such as
-`pre-restore-*.db` are not deleted by this policy.
+`MediCore-monthly-`. Pre-upgrade backups (`pre-upgrade-*.db`), migration backups
+(`pre-migration-v16-*.db`) and restore safety copies (`pre-restore-*.db`) are not deleted by this policy.
 
 ## Verification performed
 
@@ -96,6 +130,9 @@ adds schema 18 for the local export queue without changing the backup/restore fo
 - Rust unit tests confirmed 7 daily / 4 weekly / 12 monthly retention, preservation of pre-migration
   backups, SQLCipher export and backup validation.
 - `npm run tauri build` produced NSIS and MSI installers.
+- `0.22.0`: Rust tests cover the default pre-upgrade backup path, WAL/SHM sidecar copying, same-version
+  skip, first-run-with-existing-database backup and missing-database startup. CI now runs
+  `cargo test --lib --locked` on every pull request and `main` push.
 
 ## Limitations
 

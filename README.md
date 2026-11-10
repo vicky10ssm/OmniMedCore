@@ -56,7 +56,7 @@ Expenses profitability card.
 - Administrator dashboard with live local Overview, Billing, Diagnostics, Expenses, Pharmacy and Hospital views, preset 1/7/30/90-day and custom date ranges, dependency-free charts, CSV export and print
 - Administrator-only Radiologists and Pathologists catalogues under Diagnostics; both support multiple people with scanned signatures, and the selected person is snapshotted onto the issued report
 - SQLCipher-encrypted desktop database with the key held in Windows Credential Manager
-- Daily encrypted snapshots with 7/4/12 retention, optional USB/OneDrive copy, manual backup and validated restore
+- Automatic pre-upgrade and pre-migration database backups, plus daily encrypted snapshots with 7/4/12 retention, optional USB/OneDrive copy, manual backup and validated restore
 - Signed Diagnostics/Pharmacy/Hospital/Complete/Custom licences with tenant/hardware fingerprint binding,
   DPAPI storage, clock high-water checks, 30-day grace and read-only mode after grace
 - Vendor licence portal for issue, download, renewal and revocation
@@ -188,7 +188,8 @@ See [SECURITY.md](SECURITY.md).
 - [DASHBOARD.md](DASHBOARD.md) - in-app administrator dashboard metrics, views, export/print and limits
 - [LETTERHEAD_PRINTING.md](LETTERHEAD_PRINTING.md) - printing A4 invoices and reports on pre-printed centre stationery
 - [GOOGLE_DASHBOARD.md](GOOGLE_DASHBOARD.md) - optional external Google Sheets/BigQuery/Looker Studio dashboard on exported CSVs
-- [BACKUP_RESTORE.md](BACKUP_RESTORE.md) - local snapshots, retention, optional USB/OneDrive copy and restore
+- [BACKUP_RESTORE.md](BACKUP_RESTORE.md) - pre-upgrade/pre-migration backups, local snapshots, retention, optional USB/OneDrive copy and restore
+- [RELEASE_TESTING.md](RELEASE_TESTING.md) - automated and manual database-safety gate run before every release
 - [ENCRYPTION.md](ENCRYPTION.md) - SQLCipher, Windows Credential Manager key storage and migration
 - [code-signing/README.md](code-signing/README.md) - local self-signed certificate and client trust setup
 - [COMPLIANCE.md](COMPLIANCE.md) — compliance evidence and gaps

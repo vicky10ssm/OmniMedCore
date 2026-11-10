@@ -2,7 +2,7 @@
 
 Last updated: 5 November 2026<br>
 Use for: pilot, hotfix and production release candidates  
-Related: [HOTFIX_ROLLBACK_PROCESS.md](HOTFIX_ROLLBACK_PROCESS.md)
+Related: [HOTFIX_ROLLBACK_PROCESS.md](HOTFIX_ROLLBACK_PROCESS.md), [RELEASE_TESTING.md](RELEASE_TESTING.md)
 
 This checklist is evidence-based. Tick an item only after running the verification, not because the code
 “should” work. Record the commit SHA, tag, version and schema version on every release.
@@ -80,6 +80,7 @@ Verification:
 - [ ] Migration suite passes fresh, upgrade, partial and repeat paths
 - [ ] Schema version is correct
 - [ ] Tenant-scope check passes
+- [ ] Rust database tests pass on the merged release commit
 - [ ] New tenant-owned tables appear in all required lists
 - [ ] No unscoped business query introduced
 
@@ -89,6 +90,7 @@ Commands:
 npm run typecheck
 npm run check:migrations
 npm run check:scope
+cargo test --lib --locked --manifest-path src-tauri/Cargo.toml
 ```
 
 Evidence:
@@ -98,6 +100,7 @@ Typecheck:
 Migration scenarios:
 Tenant-scope calls checked:
 Unscoped:
+Rust tests passed/ignored:
 ```
 
 ## Money and billing verification
@@ -295,7 +298,10 @@ foreach ($p in $patterns) {
 
 ## Database and backup verification
 
-- [ ] Pre-migration database backup created
+- [ ] Pre-upgrade database backup created after a version-changing launch
+- [ ] Pre-upgrade backup includes WAL/SHM sidecars where present
+- [ ] Same-version restart does not create a duplicate pre-upgrade backup
+- [ ] Pre-migration database backup created for schema-changing releases
 - [ ] Backup hash recorded
 - [ ] Restore tested on a clean machine/profile
 - [ ] Restored invoice/payment/report/sample counts match

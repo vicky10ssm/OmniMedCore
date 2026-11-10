@@ -3,6 +3,42 @@
 All notable changes to OmniMed Core are recorded here. This project follows semantic versioning once
 production releases begin.
 
+## [0.22.0] - 2026-11-10
+
+### Added
+
+- **Automatic pre-upgrade database backup.** Before the database is opened, the app compares the running
+  version with `last-run-version.txt`. When they differ, it copies the database and its `-wal`/`-shm`
+  sidecars to `Backups\pre-upgrade-<from>-to-<to>-<epoch>.db`.
+- The first release that introduces the marker treats a missing marker on an existing database as
+  `unknown` and still creates a backup, protecting the 0.21 → 0.22 upgrade.
+- **CI now runs the Rust database tests** (`cargo test --lib --locked`) on every pull request and push
+  to `main`, in addition to the TypeScript, migration and tenant-scope checks.
+- Added `RELEASE_TESTING.md` documenting the automated and manual database-safety gate used before every
+  release.
+
+### Changed
+
+- SQLite sidecar copy failures now abort the pre-upgrade backup and restore safety copy instead of being
+  ignored. An incomplete backup is treated as an error.
+- The pre-upgrade backup is separate from the existing pre-migration backup, so version-only upgrades
+  and schema-changing upgrades are both protected.
+- Pre-upgrade, pre-migration and pre-restore backups are not removed by daily snapshot retention.
+
+### Database
+
+- No schema change. Schema remains **25**.
+
+### Verified
+
+- `npm run check` passed.
+- `npm run build` and `npm run build:monitor` passed.
+- `cargo test --lib` passed: 18 tests passed, 1 hardware smoke test ignored.
+- New Rust tests cover sidecar copying, same-version skip, first-run-with-existing-database backup and
+  missing-database startup.
+- Pre-upgrade backups are created before encryption conversion and schema migrations.
+- Install-over and launch smoke tests passed for the signed build.
+
 ## [0.21.0] - 2026-11-10
 
 ### Added
