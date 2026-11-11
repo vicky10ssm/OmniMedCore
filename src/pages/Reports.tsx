@@ -2278,8 +2278,8 @@ export default function Reports({
             <Card className="p-4">
               <h2 className="mb-1 text-sm font-semibold">Reports ready to print</h2>
               <p className="mb-3 text-xs text-slate-400">
-                Every test on the bill is verified. Print one combined report or one
-                report per test.
+                Every test on the bill is verified. One-test bills print a single report;
+                multi-test bills can print one combined report or one report per test.
               </p>
               <ul className="max-h-80 divide-y divide-slate-100 overflow-y-auto text-sm">
                 {printableInvoices.map((p) => (
@@ -2297,9 +2297,14 @@ export default function Reports({
                         onClick={() =>
                           setPrintingInvoice({ invoiceId: p.invoiceId })
                         }
-                        title="Print one combined report for the bill"
+                        title={
+                          p.tests === 1
+                            ? "Print the report for this test"
+                            : "Print one combined report for the bill"
+                        }
                       >
-                        <Icon name="printer" className="h-4 w-4" /> Combined
+                        <Icon name="printer" className="h-4 w-4" />
+                        {p.tests === 1 ? "Print report" : "Combined"}
                       </Btn>
                       {p.tests > 1 && (
                         <Btn

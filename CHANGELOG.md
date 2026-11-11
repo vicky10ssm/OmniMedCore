@@ -3,6 +3,25 @@
 All notable changes to OmniMed Core are recorded here. This project follows semantic versioning once
 production releases begin.
 
+## [0.24.1] - 2026-11-11
+
+### Fixed
+
+- Single-test invoices no longer offer **Combined**. A one-test bill shows a single **Print report**
+  action.
+- **Combined** and **Each test** appear only when the invoice has two or more printable pathology tests.
+- The Reports ready-to-print helper text now explains the one-test and multi-test behaviour separately.
+
+### Database
+
+- No schema change. Schema remains **25**.
+
+### Verified
+
+- A one-test invoice shows **Print report** only.
+- A two-test invoice shows **Combined** and **Each test**.
+- `npm run check`, terminal build, monitor build and Rust tests pass.
+
 ## [0.24.0] - 2026-11-10
 
 ### Added
