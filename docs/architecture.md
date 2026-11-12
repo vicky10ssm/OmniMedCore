@@ -1,7 +1,7 @@
 # OmniMed Core architecture and local export design
 
 Last updated: 9 November 2026  
-Current product version: `0.25.0`  
+Current product version: `0.26.0`  
 Current schema: `25`
 
 ## 1. Status and scope
@@ -24,8 +24,10 @@ supported integration path is the local CSV export described in [LOCAL_CSV_EXPOR
 3. **Google Drive is an outbox, not a second editable copy.** The app writes a unique CSV file and Google Drive uploads it independently.
 4. **Tenant isolation is mandatory.** Every business row and export query is scoped to the active
    tenant; no CSV row may mix tenants.
-5. **Money uses integer paise and append-only correction flows.** A mistake is cancelled/re-issued or
-   reversed, not silently overwritten.
+5. **Money uses integer paise and append-only correction flows.** Payments and cancellations are
+   append-only. An invoice number/date is immutable, but a bill can be amended while its linked lab
+   work is still work-free; otherwise it is cancelled/re-issued or reversed. Amendments are audit-logged
+   and cannot reduce the total below payments already collected.
 6. **Clinical history is not last-write-wins.** Issued reports are amended with reasons; conflicting
    clinical edits require controlled resolution.
 7. **Patient data is sensitive.** Secrets and patient data must not appear in logs, sync conflict

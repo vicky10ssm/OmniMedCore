@@ -26,7 +26,8 @@ Status meanings: **Ready**, **Pilot**, **Partial**, **Not available**, **Externa
 | Invoice discounts | Ready | Line-level discount reducing taxable value |
 | Payments | Ready | Cash, UPI, card, bank, credit; partial payments create dues |
 | Dues register | Ready | Outstanding bills, ageing/follow-up views and payment collection |
-| Invoice cancellation | Ready | Reasoned cancellation, history retained |
+| Invoice amendment | Ready | Edit quantities, rates, discounts, doctor and notes, or add tests without changing the invoice number/date. Removing a line is allowed only while its linked sample is still expected and no result exists; totals cannot fall below collected payments. Amend is audit-logged |
+| Invoice cancellation | Ready | Reasoned cancellation, history retained; use when linked work exists or a refund/reissue is required |
 | Invoice numbering | Ready | Tenant/terminal-aware block allocation and optional device code |
 | A4 and 80 mm invoice print | Ready | Browser print layouts; A4 invoice header can be built-in or pre-printed centre letterhead with configurable top/bottom/side margins; report header metadata prints horizontally |
 | PDF download | Ready/Pilot | Browser-generated document output; verify printer/browser on buyer hardware |

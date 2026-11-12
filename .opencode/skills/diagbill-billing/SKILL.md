@@ -24,7 +24,13 @@ Use this skill for financial behavior. Preserve the existing accounting invarian
 - Store GST rates in basis points. Prices are pre-tax and CGST/SGST split GST 50/50.
 - A line discount reduces that line's taxable value.
 - Round the grand total to the nearest rupee and retain `round_off_paise` so reports reconcile.
-- Invoice corrections use cancellation plus re-issue. Money records are effectively append-only.
+- Invoice numbers and dates are immutable. Payments, cancellations and issued-report revisions remain
+  append-only.
+- A bill may be **amended** only while its linked lab work is work-free: pending orders with no entered
+  results and expected samples that have not been collected. Editing quantities, rates, discounts,
+  doctor, notes or adding tests is allowed; removing a line is not. The amendment cannot reduce the
+  total below payments already collected. Audit it as `invoice.amend`.
+- When linked work exists or a refund/reissue is required, use cancellation plus re-issue.
 - Partial payments create dues; later collections are additional payment records, not edits that erase history.
 - Invoice numbers come from tenant-aware blocks so offline terminals cannot collide. The existing block size is 1000 and the optional device code is part of the configured format.
 - Generic hospital/IPD billing is a separate admission service sheet, not an OPD diagnostic invoice:
@@ -61,6 +67,10 @@ Use this skill for financial behavior. Preserve the existing accounting invarian
 - Partial payment followed by balance collection
 - Two offline-style terminals allocating different invoice-number blocks
 - Paid invoice cancellation without creating or reversing any commission entry
+- Amend a work-free invoice (rate, discount, doctor, notes, add a test) and confirm totals, report
+  orders/samples and audit event
+- Attempt to remove a line with a collected sample or entered result and confirm it is blocked
+- Attempt to reduce an amended total below collected payments and confirm it is blocked
 - Expense entry reflected correctly in dashboard/profit without changing sales revenue
 - CSV export checked for encoding and spreadsheet-formula safety
 - A4 and thermal print preview checked for correct totals

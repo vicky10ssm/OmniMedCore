@@ -6,7 +6,10 @@
 //  - line discount reduces the taxable value of that line
 //  - the grand total is rounded to the nearest rupee; the difference is stored
 //    as round_off_paise so the books always add up
-//  - invoices are effectively append-only: corrections = cancel + re-issue
+//  - invoice numbers/dates are immutable; a bill may be amended only while its
+//    linked lab work is still work-free, otherwise cancel + re-issue
+//  - payments remain append-only; an amendment cannot reduce the total below
+//    payments already collected
 //  - referral commissions are not accrued or exposed in the current product
 
 import type { DataSource } from "./index";
@@ -14,7 +17,15 @@ import { writeAudit } from "./audit";
 import { getDeviceId, now, uuid } from "./helpers";
 import { allocateInvoiceNo } from "./invoiceNo";
 import { getCurrentTenantId, tenantAnd } from "./tenant";
-import type { InvoiceRow, PackageItemRow, TestRow } from "./types";
+import type {
+  InvoiceItemRow,
+  InvoiceRow,
+  PackageItemRow,
+  ReportOrderRow,
+  ReportParameterRow,
+  SampleRow,
+  TestRow,
+} from "./types";
 
 export type PaymentMode = "cash" | "upi" | "card" | "bank" | "credit";
 
@@ -295,6 +306,366 @@ export async function saveInvoice(
     });
 
     return { id, invoiceNo };
+  });
+}
+
+export interface AmendBillLineInput extends BillLineInput {
+  /** Existing invoice_items id. Omit for a newly added line. */
+  id?: string;
+}
+
+export interface AmendBillInput {
+  invoiceId: string;
+  doctorId: string;
+  notes: string;
+  lines: AmendBillLineInput[];
+  userId: string;
+}
+
+/**
+ * Amends an existing invoice without changing its number or date.
+ *
+ * Safe boundaries:
+ * - the invoice must not be cancelled
+ * - a new total cannot be lower than payments already collected
+ * - a line can only be removed while its linked orders are still pending, have
+ *   no entered results and its sample is still expected (not collected/accepted)
+ * - an existing line's test/package identity cannot be changed; remove it and
+ *   add the correct item instead
+ */
+export async function amendInvoice(
+  db: DataSource,
+  input: AmendBillInput
+): Promise<{ total: number }> {
+  if (input.lines.length === 0) {
+    throw new Error("Add at least one test or package to the bill");
+  }
+
+  return db.tx(async () => {
+    const [tenantClause, tenantParams] = tenantAnd();
+    const invoice = await db.get<InvoiceRow>(
+      `SELECT * FROM invoices WHERE id = ? ${tenantClause}`,
+      [input.invoiceId, ...tenantParams]
+    );
+    if (!invoice) throw new Error("Invoice not found");
+    if (invoice.status === "cancelled") {
+      throw new Error("Cancelled invoices cannot be amended");
+    }
+
+    const currentItems = await db.all<InvoiceItemRow>(
+      `SELECT * FROM invoice_items
+       WHERE invoice_id = ? AND deleted = 0 ${tenantClause}
+       ORDER BY line_no`,
+      [input.invoiceId, ...tenantParams]
+    );
+    const currentById = new Map(currentItems.map((item) => [item.id, item]));
+    const retainedIds = new Set(
+      input.lines.map((line) => line.id).filter(Boolean) as string[]
+    );
+    const removed = currentItems.filter((item) => !retainedIds.has(item.id));
+
+    const identity = (item: {
+      item_type: string;
+      test_id: string;
+      package_id: string;
+    }) =>
+      `${item.item_type}:${
+        item.item_type === "package" ? item.package_id : item.test_id
+      }`;
+    const currentCounts = new Map<string, number>();
+    for (const item of currentItems) {
+      currentCounts.set(
+        identity(item),
+        (currentCounts.get(identity(item)) ?? 0) + 1
+      );
+    }
+
+    for (const line of input.lines) {
+      if (!line.id) continue;
+      const current = currentById.get(line.id);
+      if (!current) throw new Error("An amended line no longer exists");
+      if (
+        current.item_type !== line.item_type ||
+        current.test_id !== line.test_id ||
+        current.package_id !== line.package_id
+      ) {
+        throw new Error(
+          "An existing line's test or package cannot be changed. Remove it and add the correct item instead."
+        );
+      }
+    }
+
+    const ts = now();
+    const deviceId = getDeviceId();
+    const tenantId = getCurrentTenantId();
+
+    for (const item of removed) {
+      if ((currentCounts.get(identity(item)) ?? 0) > 1) {
+        throw new Error(
+          "This bill has duplicate lines for the same test/package. Keep one line and remove the duplicate only after checking linked work."
+        );
+      }
+      const orderWhere =
+        item.item_type === "package"
+          ? "package_id = ?"
+          : "test_id = ? AND package_id = ''";
+      const orderParam =
+        item.item_type === "package" ? item.package_id : item.test_id;
+      const orders = await db.all<ReportOrderRow>(
+        `SELECT * FROM report_orders
+         WHERE invoice_id = ? AND deleted = 0 AND ${orderWhere} ${tenantClause}`,
+        [input.invoiceId, orderParam, ...tenantParams]
+      );
+      for (const order of orders) {
+        if (
+          order.status !== "pending" ||
+          order.result_text.trim() ||
+          order.result_value !== null ||
+          order.abnormal === 1 ||
+          order.critical_flag === 1
+        ) {
+          throw new Error(
+            `Cannot remove ${item.description}: a linked report already has work or results.`
+          );
+        }
+        const entered = await db.all<ReportParameterRow>(
+          `SELECT * FROM report_parameters
+           WHERE report_order_id = ? AND deleted = 0
+             AND (result_text <> '' OR result_value IS NOT NULL) ${tenantClause}`,
+          [order.id, ...tenantParams]
+        );
+        if (entered.length > 0) {
+          throw new Error(
+            `Cannot remove ${item.description}: linked results have already been entered.`
+          );
+        }
+        if (order.sample_id) {
+          const sample = await db.get<SampleRow>(
+            `SELECT * FROM samples WHERE id = ? AND deleted = 0 ${tenantClause}`,
+            [order.sample_id, ...tenantParams]
+          );
+          if (sample && sample.status !== "expected") {
+            throw new Error(
+              `Cannot remove ${item.description}: sample ${sample.accession_no} is ${sample.status}.`
+            );
+          }
+        }
+      }
+
+      await db.run(
+        `UPDATE report_parameters SET deleted = 1, updated_at = ?, dirty = 1
+         WHERE report_order_id IN (
+           SELECT id FROM report_orders
+           WHERE invoice_id = ? AND deleted = 0 AND ${orderWhere} ${tenantClause}
+         ) ${tenantClause}`,
+        [
+          ts,
+          input.invoiceId,
+          orderParam,
+          ...tenantParams,
+          ...tenantParams,
+        ]
+      );
+      await db.run(
+        `UPDATE report_orders SET deleted = 1, updated_at = ?, dirty = 1
+         WHERE invoice_id = ? AND deleted = 0 AND ${orderWhere} ${tenantClause}`,
+        [ts, input.invoiceId, orderParam, ...tenantParams]
+      );
+      for (const order of orders) {
+        if (!order.sample_id) continue;
+        await db.run(
+          `UPDATE samples SET deleted = 1, updated_at = ?, dirty = 1
+           WHERE id = ? AND status = 'expected' ${tenantClause}`,
+          [ts, order.sample_id, ...tenantParams]
+        );
+      }
+      await db.run(
+        `UPDATE invoice_items SET deleted = 1, updated_at = ?, dirty = 1
+         WHERE id = ? ${tenantClause}`,
+        [ts, item.id, ...tenantParams]
+      );
+    }
+
+    const sampleCount = await db.get<{ n: number }>(
+      `SELECT COUNT(*) AS n FROM samples WHERE invoice_id = ? ${tenantClause}`,
+      [input.invoiceId, ...tenantParams]
+    );
+    let sampleSequence = (sampleCount?.n ?? 0) + 1;
+    let lineNo = 1;
+
+    for (const line of input.lines) {
+      const totalsLine = computeLine(line);
+      const qty = Math.max(1, Math.floor(line.qty || 1));
+      if (line.id) {
+        await db.run(
+          `UPDATE invoice_items
+           SET line_no = ?, description = ?, qty = ?, unit_price_paise = ?,
+               gst_rate_bp = ?, amount_paise = ?, taxable_paise = ?,
+               cgst_paise = ?, sgst_paise = ?, updated_at = ?, dirty = 1
+           WHERE id = ? ${tenantClause}`,
+          [
+            lineNo,
+            line.description,
+            qty,
+            line.unit_price_paise,
+            line.gst_rate_bp,
+            totalsLine.gross,
+            totalsLine.taxable,
+            totalsLine.cgst,
+            totalsLine.sgst,
+            ts,
+            line.id,
+            ...tenantParams,
+          ]
+        );
+      } else {
+        await db.run(
+          `INSERT INTO invoice_items
+             (id, invoice_id, line_no, item_type, test_id, package_id,
+              description, qty, unit_price_paise, gst_rate_bp, amount_paise,
+              taxable_paise, cgst_paise, sgst_paise, created_at, updated_at,
+              device_id, dirty, deleted, tenant_id)
+           VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,1,0,?)`,
+          [
+            uuid(),
+            input.invoiceId,
+            lineNo,
+            line.item_type,
+            line.test_id,
+            line.package_id,
+            line.description,
+            qty,
+            line.unit_price_paise,
+            line.gst_rate_bp,
+            totalsLine.gross,
+            totalsLine.taxable,
+            totalsLine.cgst,
+            totalsLine.sgst,
+            ts,
+            ts,
+            deviceId,
+            tenantId,
+          ]
+        );
+
+        if (line.item_type === "test" && line.test_id) {
+          const test = await db.get<TestRow>(
+            `SELECT * FROM tests WHERE id = ? ${tenantClause}`,
+            [line.test_id, ...tenantParams]
+          );
+          if (test) {
+            const created = await insertReportOrder(db, {
+              invoiceId: input.invoiceId,
+              invoiceNo: invoice.invoice_no,
+              patientId: invoice.patient_id,
+              testId: test.id,
+              testName: test.name,
+              category: test.category,
+              specimenType: test.specimen_type,
+              containerType: test.container_type,
+              packageId: "",
+              unit: test.unit,
+              refRange: test.ref_range,
+              refMin: test.ref_min,
+              refMax: test.ref_max,
+              userId: input.userId,
+              sampleSequence,
+            });
+            if (created.sampleId) sampleSequence += 1;
+          }
+        } else if (line.item_type === "package" && line.package_id) {
+          const items = await db.all<PackageItemRow>(
+            `SELECT * FROM package_items
+             WHERE package_id = ? AND deleted = 0 ${tenantClause}`,
+            [line.package_id, ...tenantParams]
+          );
+          for (const item of items) {
+            const test = await db.get<TestRow>(
+              `SELECT * FROM tests WHERE id = ? ${tenantClause}`,
+              [item.test_id, ...tenantParams]
+            );
+            if (!test) continue;
+            const created = await insertReportOrder(db, {
+              invoiceId: input.invoiceId,
+              invoiceNo: invoice.invoice_no,
+              patientId: invoice.patient_id,
+              testId: test.id,
+              testName: test.name,
+              category: test.category,
+              specimenType: test.specimen_type,
+              containerType: test.container_type,
+              packageId: line.package_id,
+              unit: test.unit,
+              refRange: test.ref_range,
+              refMin: test.ref_min,
+              refMax: test.ref_max,
+              userId: input.userId,
+              sampleSequence,
+            });
+            if (created.sampleId) sampleSequence += 1;
+          }
+        }
+      }
+      lineNo += 1;
+    }
+
+    const totals = computeTotals(input.lines);
+    const paidRow = await db.get<{ paid: number }>(
+      `SELECT COALESCE(SUM(amount_paise), 0) AS paid FROM payments
+       WHERE invoice_id = ? AND deleted = 0 ${tenantClause}`,
+      [input.invoiceId, ...tenantParams]
+    );
+    const paid = paidRow?.paid ?? 0;
+    if (totals.total < paid) {
+      throw new Error(
+        `The amended total is below payments already collected. Refund or cancel/reissue the bill instead.`
+      );
+    }
+    const status: InvoiceRow["status"] =
+      paid <= 0 ? "unpaid" : paid >= totals.total ? "paid" : "partial";
+    const sampleRows = await db.all<{ id: string }>(
+      `SELECT id FROM samples WHERE invoice_id = ? AND deleted = 0 ${tenantClause}`,
+      [input.invoiceId, ...tenantParams]
+    );
+
+    await db.run(
+      `UPDATE invoices
+       SET subtotal_paise = ?, discount_paise = ?, taxable_paise = ?,
+           cgst_paise = ?, sgst_paise = ?, round_off_paise = ?, total_paise = ?,
+           status = ?, doctor_id = ?, notes = ?, sample_ids = ?, updated_at = ?,
+           dirty = 1
+       WHERE id = ? ${tenantClause}`,
+      [
+        totals.subtotal,
+        totals.discount,
+        totals.taxable,
+        totals.cgst,
+        totals.sgst,
+        totals.roundOff,
+        totals.total,
+        status,
+        input.doctorId,
+        input.notes.trim(),
+        JSON.stringify(sampleRows.map((row) => row.id)),
+        ts,
+        input.invoiceId,
+        ...tenantParams,
+      ]
+    );
+
+    await writeAudit(db, {
+      userId: input.userId,
+      action: "invoice.amend",
+      entity: "invoice",
+      entityId: input.invoiceId,
+      detail: `${invoice.invoice_no}: total ${(invoice.total_paise / 100).toFixed(
+        2
+      )} -> ${(totals.total / 100).toFixed(2)}; lines ${currentItems.length} -> ${
+        input.lines.length
+      }`,
+    });
+
+    return { total: totals.total };
   });
 }
 

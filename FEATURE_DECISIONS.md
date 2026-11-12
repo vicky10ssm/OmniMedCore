@@ -599,6 +599,23 @@ The second deployment exists. `npm run build` makes the terminal (editing) app; 
 - The expenses list, search, module filter and CSV export include the attribution.
 - Operators can add and view expenses as before; admin/operator visibility rules are unchanged.
 
+## Invoice amendment - built
+
+- InvoiceView has an **Amend bill** action for non-cancelled invoices.
+- The amendment form edits quantities, rates, discounts, referring doctor and notes, and can add
+  tests/packages.
+- The invoice number, invoice date and patient identity remain unchanged.
+- Existing line identity (test/package) cannot be changed; remove the wrong line and add the correct
+  item.
+- Removing a line is allowed only while its linked report orders are pending with no results and its
+  sample is still expected. Collected/received/accepted/rejected/disposed samples block removal.
+- New lines create their report orders and expected samples with the normal accession sequence.
+- Payments remain append-only. The amendment is blocked when the new total would fall below collected
+  payments; refund/cancel-and-reissue is the fallback.
+- The invoice status is recalculated as unpaid/partial/paid from existing payments.
+- An `invoice.amend` audit event records the invoice number, old/new total and line count.
+- No schema change.
+
 ## Absolute Eosinophil Count (AEC) added - built
 
 - Added `AEC` as a Haematology starter test: "Absolute Eosinophil Count (AEC)".
