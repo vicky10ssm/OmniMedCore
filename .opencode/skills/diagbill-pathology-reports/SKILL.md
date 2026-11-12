@@ -51,7 +51,7 @@ Before changing any test, parameter or package, load `diagbill-test-catalogue` a
 `references/test-catalogue.md` and `references/packages.md`. Regenerate both references in the same PR
 after a catalogue change.
 
-`src/db/starterTests.ts` seeds a broad 228-entry library (185 pathology and 43 X-ray) on app boot for
+`src/db/starterTests.ts` seeds a broad 229-entry library (186 pathology and 43 X-ray) on app boot for
 every active tenant. Seeding is additive and idempotent:
 
 - matches by stable seed id, code and case-insensitive name
@@ -61,7 +61,7 @@ every active tenant. Seeding is additive and idempotent:
 - labs must set prices and validate references (including sex/age variants) before billing or clinical use
 - this is a broad routine/specialty library, not a claim that every possible esoteric test exists
 
-`src/db/starterParameters.ts` seeds 378 pathology parameter templates after the test catalogue:
+`src/db/starterParameters.ts` seeds 383 pathology parameter templates after the test catalogue:
 
 - every pathology test has at least one parameter
 - single-analyte tests receive one parameter named after the test
@@ -75,7 +75,7 @@ every active tenant. Seeding is additive and idempotent:
 - complex reports split optional subfields for malaria, VDRL/TPHA titre, peripheral smear,
   histopathology, cytology, IHC/special stains and MRSA/VRE screens
 - a previously seeded generic parameter is removed only when no report value references it
-- `starterReferences.ts` fills all 378 references, including sex/age variant text; seeding is versioned
+- `starterReferences.ts` fills all 383 references, including sex/age variant text; seeding is versioned
   per tenant and starter-owned parameter updates do not touch custom parameters
 - `starterSections.ts` assigns printable section headings. CBC uses Complete Blood Count and
   Differential Leucocyte Count; LFT, KFT, urine, stool, semen, ABG and other panels use clinically

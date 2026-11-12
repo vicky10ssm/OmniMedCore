@@ -3,6 +3,37 @@
 All notable changes to OmniMed Core are recorded here. This project follows semantic versioning once
 production releases begin.
 
+## [0.27.0] - 2026-11-12
+
+### Added
+
+- Added **Malaria Parasite by Quantitative Buffy Coat (QBC)** as a Haematology starter test.
+  - Code: `QBC`
+  - Specimen: Capillary Blood / QBC tube (heparinised, acridine orange)
+  - Method: Quantitative buffy coat / fluorescence microscopy
+  - Parameters: Parasite Species, Parasite Stage, Parasite Density (/uL), RBC Parasitised (%),
+    Interpretation
+  - References: No parasites seen; not applicable; 0/uL; 0%; negative for malaria parasites
+- Existing tenants receive QBC additively on the next boot. Custom, renamed and deleted tests remain
+  preserved.
+
+### Changed
+
+- Starter catalogue counts are now **229 tests** (186 pathology + 43 X-ray) and **383 active pathology
+  parameters**. Packages remain 29.
+- Regenerated the test-catalogue and packages references from the live database.
+
+### Database
+
+- No schema change. Schema remains **25**.
+
+### Verified
+
+- `npm run check`, terminal build, monitor build and Rust tests pass.
+- Live catalogue export rendered **229 tests, 383 parameters and 29 packages**.
+- QBC appears under Haematology with all five parameters and filled references.
+- Existing catalogue entries and packages are unchanged.
+
 ## [0.26.0] - 2026-11-12
 
 ### Added

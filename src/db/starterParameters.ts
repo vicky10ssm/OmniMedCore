@@ -216,6 +216,13 @@ export const STARTER_PARAMETERS: Record<string, StarterParameter[]> = {
     n("RBC Parasitised", "%"),
     p("Interpretation"),
   ],
+  QBC: [
+    p("Parasite Species"),
+    p("Parasite Stage"),
+    n("Parasite Density", "/uL"),
+    n("RBC Parasitised", "%"),
+    p("Interpretation"),
+  ],
   MPAG: [p("Pf Antigen"), p("Pan Antigen"), p("Interpretation")],
   VDRL: [p("VDRL Result"), p("VDRL Titre")],
   TPHA: [p("TPHA Result"), p("TPHA Titre")],
