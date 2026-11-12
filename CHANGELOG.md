@@ -3,6 +3,43 @@
 All notable changes to OmniMed Core are recorded here. This project follows semantic versioning once
 production releases begin.
 
+## [0.26.0] - 2026-11-12
+
+### Added
+
+- **Amend bill** action on the invoice screen. It edits an existing invoice without changing its
+  number, date or patient.
+- The amendment form supports quantities, rates, discounts, referring doctor, notes and adding
+  tests/packages.
+- New tests/packages create their report orders and expected samples automatically.
+- Removed lines are soft-deleted with their work-free orders, samples and parameters.
+- The invoice status is recalculated from existing payments, and an `invoice.amend` audit event records
+  the old/new total and line count.
+
+### Safety
+
+- A line can only be removed while its linked orders are pending with no entered results and its sample
+  is still expected. Collected, received, accepted, rejected or disposed samples block removal.
+- An existing line's test/package identity cannot be changed; remove it and add the correct item.
+- The amendment is blocked when the new total would fall below payments already collected. Refund or
+  cancel/reissue remains the fallback.
+- Cancelled invoices cannot be amended.
+- Payments, cancellations and issued reports remain append-only.
+
+### Database
+
+- No schema change. Schema remains **25**.
+
+### Verified
+
+- `npm run check`, terminal build, monitor build and Rust tests pass.
+- Changing the CBC rate and adding AEC updated the invoice total and created the AEC report order and
+  expected sample.
+- Removing a work-free line soft-deleted its order/sample and updated the total.
+- Removing a line whose sample was collected was blocked with a clear message.
+- Reducing a paid invoice below the collected amount disabled save and showed the warning.
+- `invoice.amend` audit events were written.
+
 ## [0.25.0] - 2026-11-12
 
 ### Added

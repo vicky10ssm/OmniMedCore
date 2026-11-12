@@ -135,6 +135,12 @@ Backup guidance included:
 - [ ] Line discount and round-off reconcile
 - [ ] Partial payment followed by balance collection
 - [ ] Dues/ageing view correct
+- [ ] Invoice amendment changes rate/qty/discount, doctor and notes without changing the invoice number/date
+- [ ] Invoice amendment can add a test and creates its report order and expected sample
+- [ ] Removing a work-free line soft-deletes its order/sample and updates totals
+- [ ] Removing a collected/accepted sample line is blocked with a clear message
+- [ ] Amendment is blocked when the new total is below collected payments
+- [ ] Amendment writes an `invoice.amend` audit event
 - [ ] Paid invoice cancellation preserves history
 - [ ] No new referral commission entry or payout created
 - [ ] A4 and 80 mm invoice print checked

@@ -1,10 +1,18 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import { useMonitor } from "../app/MonitorContext";
 import { getDb } from "../db";
 import { formatDate, formatDateTime, formatINR, rupeesToPaise } from "../db/helpers";
-import { addPayment, cancelInvoice, type PaymentMode } from "../db/invoicing";
+import {
+  addPayment,
+  amendInvoice,
+  cancelInvoice,
+  computeLine,
+  computeTotals,
+  type BillLineInput,
+  type PaymentMode,
+} from "../db/invoicing";
 import { printA4, printThermal } from "../db/print";
 import { getSettings } from "../db/settings";
 import { tenantAnd } from "../db/tenant";
@@ -12,8 +20,10 @@ import type {
   DoctorRow,
   InvoiceItemRow,
   InvoiceRow,
+  PackageRow,
   PatientRow,
   PaymentRow,
+  TestRow,
 } from "../db/types";
 import {
   Btn,
@@ -25,6 +35,7 @@ import {
   PageHeader,
   Select,
   TextInput,
+  inputCls,
 } from "../ui/kit";
 import {
   PrintLetterheadHint,
@@ -41,6 +52,28 @@ const MODES: { value: PaymentMode; label: string }[] = [
   { value: "card", label: "Card" },
   { value: "bank", label: "Bank transfer" },
 ];
+
+interface CatalogOption {
+  kind: "test" | "package";
+  id: string;
+  name: string;
+  category: string;
+  price_paise: number;
+  gst_rate_bp: number;
+}
+
+interface AmendLineDraft {
+  key: string;
+  id?: string;
+  item_type: "test" | "package";
+  test_id: string;
+  package_id: string;
+  description: string;
+  gst_rate_bp: number;
+  qty: string;
+  rate: string;
+  discount: string;
+}
 
 export default function InvoiceView() {
   const { id } = useParams();
@@ -61,6 +94,16 @@ export default function InvoiceView() {
   const [payMode, setPayMode] = useState<PaymentMode>("cash");
   const [payError, setPayError] = useState("");
   const [busy, setBusy] = useState(false);
+
+  const [amendOpen, setAmendOpen] = useState(false);
+  const [amendLines, setAmendLines] = useState<AmendLineDraft[]>([]);
+  const [amendDoctors, setAmendDoctors] = useState<DoctorRow[]>([]);
+  const [amendCatalog, setAmendCatalog] = useState<CatalogOption[]>([]);
+  const [amendCatalogQuery, setAmendCatalogQuery] = useState("");
+  const [amendDoctorId, setAmendDoctorId] = useState("");
+  const [amendNotes, setAmendNotes] = useState("");
+  const [amendError, setAmendError] = useState("");
+  const [amendBusy, setAmendBusy] = useState(false);
 
   const load = async () => {
     if (!id) return;
@@ -176,6 +219,182 @@ export default function InvoiceView() {
     }
   };
 
+  const openAmend = async () => {
+    if (!invoice) return;
+    setAmendLines(
+      items.map((item) => ({
+        key: item.id,
+        id: item.id,
+        item_type: item.item_type,
+        test_id: item.test_id,
+        package_id: item.package_id,
+        description: item.description,
+        gst_rate_bp: item.gst_rate_bp,
+        qty: String(item.qty),
+        rate: (item.unit_price_paise / 100).toFixed(2),
+        discount:
+          item.amount_paise > item.taxable_paise
+            ? ((item.amount_paise - item.taxable_paise) / 100).toFixed(2)
+            : "",
+      }))
+    );
+    setAmendDoctorId(invoice.doctor_id || "");
+    setAmendNotes(invoice.notes || "");
+    setAmendCatalogQuery("");
+    setAmendError("");
+    try {
+      const db = await getDb();
+      const [tenantClause, tenantParams] = tenantAnd();
+      const [tests, pkgs, doctors] = await Promise.all([
+        db.all<TestRow>(
+          `SELECT * FROM tests
+           WHERE deleted = 0 AND is_active = 1 ${tenantClause}
+           ORDER BY name`,
+          tenantParams
+        ),
+        db.all<PackageRow>(
+          `SELECT * FROM packages
+           WHERE deleted = 0 AND is_active = 1 ${tenantClause}
+           ORDER BY name`,
+          tenantParams
+        ),
+        db.all<DoctorRow>(
+          `SELECT * FROM doctors
+           WHERE deleted = 0 AND is_active = 1 ${tenantClause}
+           ORDER BY name`,
+          tenantParams
+        ),
+      ]);
+      setAmendCatalog([
+        ...tests.map((test) => ({
+          kind: "test" as const,
+          id: test.id,
+          name: test.name,
+          category: test.category,
+          price_paise: test.price_paise,
+          gst_rate_bp: test.gst_rate_bp,
+        })),
+        ...pkgs.map((pkg) => ({
+          kind: "package" as const,
+          id: pkg.id,
+          name: pkg.name,
+          category: "Package",
+          price_paise: pkg.price_paise,
+          gst_rate_bp: pkg.gst_rate_bp,
+        })),
+      ]);
+      setAmendDoctors(doctors);
+      setAmendOpen(true);
+    } catch (err) {
+      setPayError(err instanceof Error ? err.message : "Could not load the amendment form");
+    }
+  };
+
+  const amendBillLines: BillLineInput[] = useMemo(
+    () =>
+      amendLines.map((line) => ({
+        item_type: line.item_type,
+        test_id: line.test_id,
+        package_id: line.package_id,
+        description: line.description,
+        qty: Math.max(1, Number(line.qty) || 1),
+        unit_price_paise: rupeesToPaise(Number(line.rate) || 0),
+        gst_rate_bp: line.gst_rate_bp,
+        discount_paise: rupeesToPaise(Number(line.discount) || 0),
+      })),
+    [amendLines]
+  );
+  const amendTotals = useMemo(() => computeTotals(amendBillLines), [amendBillLines]);
+  const amendBelowPaid = amendTotals.total < paid;
+  const amendCatalogMatches = amendCatalogQuery.trim()
+    ? amendCatalog
+        .filter((item) => {
+          const q = amendCatalogQuery.trim().toLowerCase();
+          return (
+            item.name.toLowerCase().includes(q) ||
+            item.category.toLowerCase().includes(q)
+          );
+        })
+        .slice(0, 8)
+    : [];
+
+  const addAmendCatalogItem = (option: CatalogOption) => {
+    setAmendLines((current) => {
+      const existing = current.find(
+        (line) =>
+          line.item_type === option.kind &&
+          line.test_id + line.package_id === option.id
+      );
+      if (existing) {
+        return current.map((line) =>
+          line.key === existing.key
+            ? { ...line, qty: String(Math.max(1, Number(line.qty) || 1) + 1) }
+            : line
+        );
+      }
+      return [
+        ...current,
+        {
+          key: `new-${option.kind}-${option.id}-${current.length}`,
+          item_type: option.kind,
+          test_id: option.kind === "test" ? option.id : "",
+          package_id: option.kind === "package" ? option.id : "",
+          description: option.name,
+          gst_rate_bp: option.gst_rate_bp,
+          qty: "1",
+          rate: (option.price_paise / 100).toFixed(2),
+          discount: "",
+        },
+      ];
+    });
+    setAmendCatalogQuery("");
+  };
+
+  const patchAmendLine = (key: string, patch: Partial<AmendLineDraft>) => {
+    setAmendLines((current) =>
+      current.map((line) => (line.key === key ? { ...line, ...patch } : line))
+    );
+  };
+
+  const removeAmendLine = (key: string) => {
+    setAmendLines((current) => current.filter((line) => line.key !== key));
+  };
+
+  const submitAmend = async () => {
+    if (!invoice) return;
+    if (amendLines.length === 0) {
+      setAmendError("Add at least one test or package to the bill");
+      return;
+    }
+    if (amendBelowPaid) {
+      setAmendError(
+        "The amended total is below payments already collected. Refund or cancel/reissue the bill instead."
+      );
+      return;
+    }
+    setAmendBusy(true);
+    setAmendError("");
+    try {
+      const db = await getDb();
+      await amendInvoice(db, {
+        invoiceId: invoice.id,
+        doctorId: amendDoctorId,
+        notes: amendNotes,
+        lines: amendLines.map((line, index) => ({
+          ...amendBillLines[index],
+          id: line.id,
+        })),
+        userId: user?.id ?? "",
+      });
+      setAmendOpen(false);
+      await load();
+    } catch (err) {
+      setAmendError(err instanceof Error ? err.message : "Could not amend the bill");
+    } finally {
+      setAmendBusy(false);
+    }
+  };
+
   if (!loaded) {
     return (
       <>
@@ -218,6 +437,11 @@ export default function InvoiceView() {
               <Btn onClick={printThermal} title="Print a receipt on an 80mm thermal roll">
                 <Icon name="printer" className="h-4 w-4" /> Thermal 80mm
               </Btn>
+              {!monitor && invoice.status !== "cancelled" && (
+                <Btn onClick={() => void openAmend()} title="Edit this bill without changing its number">
+                  <Icon name="edit" className="h-4 w-4" /> Amend bill
+                </Btn>
+              )}
               {!monitor && invoice.status !== "cancelled" && balance > 0 && (
                 <Btn variant="primary" onClick={openPayment}>
                   <Icon name="rupee" className="h-4 w-4" /> Collect payment
@@ -459,6 +683,213 @@ export default function InvoiceView() {
             <Btn onClick={() => setPayOpen(false)}>Cancel</Btn>
             <Btn variant="primary" onClick={() => void submitPayment()} disabled={busy}>
               {busy ? "Saving…" : `Receive ${payAmount ? `₹${payAmount}` : ""}`}
+            </Btn>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal
+        open={amendOpen}
+        title={`Amend ${invoice.invoice_no}`}
+        onClose={() => setAmendOpen(false)}
+        wide
+      >
+        <div className="space-y-3">
+          <p className="text-xs text-slate-500">
+            Change quantities, rates, discounts, doctor or notes, and add tests. The invoice number
+            and date stay the same. A line can only be removed while its linked sample is still
+            expected and no result has been entered.
+          </p>
+
+          <div className="grid gap-3 sm:grid-cols-2">
+            <Labeled label="Referring doctor (optional)">
+              <Select
+                value={amendDoctorId}
+                onChange={(event) => setAmendDoctorId(event.target.value)}
+              >
+                <option value="">— None —</option>
+                {amendDoctors.map((doctor) => (
+                  <option key={doctor.id} value={doctor.id}>
+                    Dr. {doctor.name}
+                    {doctor.specialization ? ` (${doctor.specialization})` : ""}
+                  </option>
+                ))}
+              </Select>
+            </Labeled>
+            <Labeled label="Notes">
+              <TextInput
+                value={amendNotes}
+                onChange={(event) => setAmendNotes(event.target.value)}
+                placeholder="Optional"
+              />
+            </Labeled>
+          </div>
+
+          <Labeled label="Add test or package">
+            <TextInput
+              value={amendCatalogQuery}
+              onChange={(event) => setAmendCatalogQuery(event.target.value)}
+              placeholder="Type to search your rate list…"
+            />
+          </Labeled>
+          {amendCatalogMatches.length > 0 && (
+            <div className="overflow-hidden rounded-lg border border-slate-200">
+              {amendCatalogMatches.map((option) => (
+                <button
+                  key={`${option.kind}-${option.id}`}
+                  type="button"
+                  onClick={() => addAmendCatalogItem(option)}
+                  className="flex w-full items-center justify-between gap-3 border-b border-slate-100 px-3 py-2 text-left text-sm last:border-0 hover:bg-slate-50"
+                >
+                  <span className="min-w-0">
+                    <span className="block truncate font-medium">{option.name}</span>
+                    <span className="text-xs text-slate-400">{option.category}</span>
+                  </span>
+                  <span className="num shrink-0 text-slate-600">
+                    {formatINR(option.price_paise)}
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
+
+          <div className="overflow-x-auto">
+            {amendLines.length === 0 ? (
+              <p className="rounded-lg border border-dashed border-slate-200 px-3 py-6 text-center text-sm text-slate-400">
+                No items on this bill
+              </p>
+            ) : (
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-slate-200 text-left text-[11px] font-medium uppercase tracking-wide text-slate-500">
+                    <th className="py-2 pr-2">Item</th>
+                    <th className="w-14 py-2 pr-2">Qty</th>
+                    <th className="w-24 py-2 pr-2">Rate ₹</th>
+                    <th className="w-24 py-2 pr-2">Disc ₹</th>
+                    <th className="w-16 py-2 pr-2">GST</th>
+                    <th className="w-24 py-2 pr-2 text-right">Amount</th>
+                    <th className="w-8" />
+                  </tr>
+                </thead>
+                <tbody>
+                  {amendLines.map((line, index) => {
+                    const totalsLine = computeLine(amendBillLines[index]);
+                    return (
+                      <tr key={line.key} className="border-b border-slate-100 last:border-0">
+                        <td className="max-w-[220px] py-2 pr-2">
+                          <p className="truncate font-medium">{line.description}</p>
+                          <p className="text-[11px] text-slate-400">
+                            {line.item_type === "package"
+                              ? "Package"
+                              : line.id
+                                ? "Existing test"
+                                : "New test"}
+                          </p>
+                        </td>
+                        <td className="py-2 pr-2">
+                          <input
+                            className={`${inputCls} px-2 py-1`}
+                            value={line.qty}
+                            inputMode="numeric"
+                            onChange={(event) =>
+                              patchAmendLine(line.key, { qty: event.target.value })
+                            }
+                          />
+                        </td>
+                        <td className="py-2 pr-2">
+                          <input
+                            className={`${inputCls} px-2 py-1`}
+                            value={line.rate}
+                            inputMode="decimal"
+                            onChange={(event) =>
+                              patchAmendLine(line.key, { rate: event.target.value })
+                            }
+                          />
+                        </td>
+                        <td className="py-2 pr-2">
+                          <input
+                            className={`${inputCls} px-2 py-1`}
+                            value={line.discount}
+                            inputMode="decimal"
+                            placeholder="0"
+                            onChange={(event) =>
+                              patchAmendLine(line.key, { discount: event.target.value })
+                            }
+                          />
+                        </td>
+                        <td className="num py-2 pr-2 text-slate-500">
+                          {line.gst_rate_bp / 100}%
+                        </td>
+                        <td className="num py-2 pr-2 text-right font-medium">
+                          {formatINR(totalsLine.taxable + totalsLine.tax)}
+                        </td>
+                        <td className="py-2 text-right">
+                          <button
+                            type="button"
+                            onClick={() => removeAmendLine(line.key)}
+                            className="rounded p-1 text-slate-400 hover:bg-rose-50 hover:text-rose-600"
+                            title="Remove line"
+                          >
+                            <Icon name="x" className="h-4 w-4" />
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            )}
+          </div>
+
+          <div className="rounded-lg bg-slate-50 p-3 text-sm">
+            <div className="flex justify-between">
+              <span className="text-slate-500">Subtotal</span>
+              <span className="num">{formatINR(amendTotals.subtotal)}</span>
+            </div>
+            {amendTotals.discount > 0 && (
+              <div className="flex justify-between">
+                <span className="text-slate-500">Discount</span>
+                <span className="num">− {formatINR(amendTotals.discount)}</span>
+              </div>
+            )}
+            <div className="flex justify-between">
+              <span className="text-slate-500">Taxable value</span>
+              <span className="num">{formatINR(amendTotals.taxable)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-slate-500">CGST</span>
+              <span className="num">{formatINR(amendTotals.cgst)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-slate-500">SGST</span>
+              <span className="num">{formatINR(amendTotals.sgst)}</span>
+            </div>
+            <div className="mt-1 flex justify-between border-t border-slate-200 pt-1 font-semibold">
+              <span>New total</span>
+              <span className="num">{formatINR(amendTotals.total)}</span>
+            </div>
+            <p className="mt-2 text-xs text-slate-500">
+              Already collected: <b>{formatINR(paid)}</b>
+            </p>
+          </div>
+
+          {amendBelowPaid && (
+            <p className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">
+              The new total is below payments already collected. Refund or cancel/reissue the bill
+              instead of amending it.
+            </p>
+          )}
+          <ErrorNote message={amendError} />
+          <div className="flex justify-end gap-2">
+            <Btn onClick={() => setAmendOpen(false)} disabled={amendBusy}>
+              Cancel
+            </Btn>
+            <Btn
+              variant="primary"
+              onClick={() => void submitAmend()}
+              disabled={amendBusy || amendBelowPaid || amendLines.length === 0}
+            >
+              {amendBusy ? "Saving…" : "Save amendment"}
             </Btn>
           </div>
         </div>
