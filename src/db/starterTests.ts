@@ -78,6 +78,7 @@ export const STARTER_TESTS: StarterTest[] = [
   path("HB", "Haemoglobin", "Haematology", ...EDTA, "g/dL", "numeric", "Automated analyser"),
   path("TC", "Total Leucocyte Count (TLC)", "Haematology", ...EDTA, "cells/cmm", "numeric", "Automated analyser"),
   path("DC", "Differential Leucocyte Count (DLC)", "Haematology", ...EDTA, "%", "text", "Microscopy"),
+  path("AEC", "Absolute Eosinophil Count (AEC)", "Haematology", ...EDTA, "cells/cmm", "numeric", "Automated analyser / microscopy"),
   path("ESR", "Erythrocyte Sedimentation Rate (ESR)", "Haematology", ...EDTA, "mm/hr", "numeric", "Westergren"),
   path("PLT", "Platelet Count", "Haematology", ...EDTA, "cells/cmm", "numeric", "Automated analyser"),
   path("PCV", "Packed Cell Volume (PCV/HCT)", "Haematology", ...EDTA, "%", "numeric", "Automated analyser"),
