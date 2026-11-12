@@ -599,6 +599,21 @@ The second deployment exists. `npm run build` makes the terminal (editing) app; 
 - The expenses list, search, module filter and CSV export include the attribution.
 - Operators can add and view expenses as before; admin/operator visibility rules are unchanged.
 
+## Absolute Eosinophil Count (AEC) added - built
+
+- Added `AEC` as a Haematology starter test: "Absolute Eosinophil Count (AEC)".
+- Specimen: Whole Blood / EDTA (lavender top). Method: automated analyser / microscopy. Numeric result.
+- One parameter: `Absolute Eosinophil Count`, unit `cells/cmm`, reference `Adult: 40-440 cells/cmm`,
+  numeric limits 40-440.
+- The reference is also in the starter reference map so fresh tenants get the same interval.
+- Seeding is additive/idempotent: existing tenants receive AEC on the next boot; custom, renamed and
+  deleted tests remain preserved.
+- Starter catalogue counts: 228 tests (185 pathology + 43 X-ray), 378 active parameters, 29 packages.
+- Regenerated `.opencode/skills/diagbill-test-catalogue/references/test-catalogue.md` and `packages.md`.
+- Starter reference version bumped to 4 so existing tenants receive the source reference set, including
+  the full sex/age HCT text and the AEC interval.
+- No schema change.
+
 ## Bench batch operations and analyser import - built
 
 - Bench cards have a selection checkbox; the toolbar offers Select visible, Clear, Accept selected,

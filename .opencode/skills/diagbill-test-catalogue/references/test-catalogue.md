@@ -1,6 +1,6 @@
 # OmniMed Core starter test catalogue
 
-Generated: 2026-11-09
+Generated: 2026-11-12
 
 > This is a generated snapshot. If it disagrees with the database/code, fix the source and regenerate.
 > Source of truth: `src/db/starterTests.ts`, `src/db/starterParameters.ts` and
@@ -8,11 +8,11 @@ Generated: 2026-11-09
 
 ## Counts
 
-- Tests: **227**
-- Pathology: **184**
+- Tests: **228**
+- Pathology: **185**
 - X-ray: **43**
 - Other: **0**
-- Active parameters: **377**
+- Active parameters: **378**
 - Packages with at least one item: **29**
 
 Every pathology test has at least one parameter. X-ray tests intentionally have none and use the
@@ -1147,6 +1147,15 @@ own parameters.
   - Total T4 ug/dL; ref Adult: 5-12 ug/dL; numeric
 
 ### Haematology
+
+#### `AEC` — Absolute Eosinophil Count (AEC)
+
+- Category: Pathology
+- Specimen: Whole Blood | Container: EDTA (lavender top)
+- Method: Automated analyser / microscopy | Report type: numeric
+- Price: ₹0.00 | GST: 0%
+- Parameters (1):
+  - Absolute Eosinophil Count cells/cmm; ref Adult: 40-440 cells/cmm; numeric
 
 #### `APTT` — Activated Partial Thromboplastin Time (APTT)
 

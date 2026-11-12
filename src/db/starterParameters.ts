@@ -69,7 +69,13 @@ export const STARTER_PARAMETERS: Record<string, StarterParameter[]> = {
     nr("Total Leukocyte Count", "cells/cmm", "Adult: 4,000-11,000 /cmm", 4000, 11000),
     nr("Platelet Count", "cells/cmm", "Adult: 1,50,000-4,50,000 /cmm", 150000, 450000),
     nr("RBC Count", "million/cmm", "Adult male: 4.5-5.9; adult female: 4.1-5.1 million/cmm", 4.1, 5.9),
-    nr("Haematocrit (HCT)", "%", "Adult male: 40-52%; adult female: 36-48%", 36, 52),
+    nr(
+      "Haematocrit (HCT)",
+      "%",
+      "Adult male: 40-52%; adult female: 36-48%; children 1-5y: 33-42%; children 6-12y: 35-45%",
+      36,
+      52
+    ),
     nr("Mean Corpuscular Volume (MCV)", "fL", "Adult: 80-100 fL", 80, 100),
     nr("Mean Corpuscular Haemoglobin (MCH)", "pg", "Adult: 27-32 pg", 27, 32),
     nr("Mean Corpuscular Hb Concentration (MCHC)", "g/dL", "Adult: 32-36 g/dL", 32, 36),
@@ -92,6 +98,15 @@ export const STARTER_PARAMETERS: Record<string, StarterParameter[]> = {
     n("Eosinophils", "%"),
     n("Monocytes", "%"),
     n("Basophils", "%"),
+  ],
+  AEC: [
+    nr(
+      "Absolute Eosinophil Count",
+      "cells/cmm",
+      "Adult: 40-440 cells/cmm",
+      40,
+      440
+    ),
   ],
   PTINR: [n("Prothrombin Time", "seconds"), n("INR", "ratio")],
   BGRH: [p("ABO Blood Group"), p("Rh Factor")],
@@ -308,7 +323,7 @@ export async function ensureStarterParameters(
       await store.run(
         `UPDATE test_parameters
          SET name = 'Haematocrit (HCT)',
-             ref_range = 'Adult male: 40-52%; adult female: 36-48%',
+             ref_range = 'Adult male: 40-52%; adult female: 36-48%; children 1-5y: 33-42%; children 6-12y: 35-45%',
              ref_min = 36,
              ref_max = 52,
              updated_at = ?,

@@ -3,6 +3,38 @@
 All notable changes to OmniMed Core are recorded here. This project follows semantic versioning once
 production releases begin.
 
+## [0.25.0] - 2026-11-12
+
+### Added
+
+- Added the **Absolute Eosinophil Count (AEC)** starter test under Haematology.
+  - Code: `AEC`
+  - Specimen: Whole Blood / EDTA (lavender top)
+  - Method: Automated analyser / microscopy
+  - One numeric parameter: `Absolute Eosinophil Count`, unit `cells/cmm`,
+    reference `Adult: 40-440 cells/cmm`, numeric limits 40-440
+- Existing tenants receive AEC additively on the next boot. Custom, renamed and deleted tests remain
+  preserved.
+
+### Changed
+
+- Starter catalogue counts are now **228 tests** (185 pathology + 43 X-ray) and **378 active pathology
+  parameters**. Packages remain 29.
+- Regenerated the test-catalogue and packages references from the live database.
+- Starter reference seeding moved to version 4 so existing tenants receive the source reference set,
+  including the full sex/age HCT text and the AEC reference interval.
+
+### Database
+
+- No schema change. Schema remains **25**.
+
+### Verified
+
+- `npm run check`, terminal build, monitor build and Rust tests pass.
+- Live catalogue export rendered **228 tests, 378 parameters and 29 packages**.
+- AEC appears under Haematology with its parameter, unit and reference interval.
+- Existing catalogue entries and packages are unchanged.
+
 ## [0.24.1] - 2026-11-11
 
 ### Fixed

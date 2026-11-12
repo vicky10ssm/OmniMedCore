@@ -32,7 +32,7 @@ interface ParameterForReference {
   ref_range: string;
 }
 
-export const STARTER_REFERENCE_VERSION = 3;
+export const STARTER_REFERENCE_VERSION = 4;
 
 /** Shared parameter-name rules. Test-specific overrides take precedence. */
 const COMMON: Record<string, string> = {
@@ -40,6 +40,7 @@ const COMMON: Record<string, string> = {
     "Adult male: 1.0-2.0 g/24h; adult female: 0.8-1.8 g/24h",
   "24 hour urine protein": "Adult: <150 mg/24h",
   "abo blood group": "Not applicable (report ABO group)",
+  "absolute eosinophil count": "Adult: 40-440 cells/cmm",
   "acth": "Adult morning: 7-63 pg/mL",
   "ada": "Fluid-specific; typical <10 U/L (validate locally)",
   "afb result": "Negative (no AFB seen)",
