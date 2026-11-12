@@ -599,6 +599,20 @@ The second deployment exists. `npm run build` makes the terminal (editing) app; 
 - The expenses list, search, module filter and CSV export include the attribution.
 - Operators can add and view expenses as before; admin/operator visibility rules are unchanged.
 
+## Malaria Parasite by Quantitative Buffy Coat (QBC) added - built
+
+- Added `QBC` as a Haematology starter test: "Malaria Parasite by Quantitative Buffy Coat (QBC)".
+- Specimen: Capillary Blood / QBC tube (heparinised, acridine orange).
+- Method: Quantitative buffy coat / fluorescence microscopy. Report type text.
+- Parameters: Parasite Species, Parasite Stage, Parasite Density (/uL), RBC Parasitised (%),
+  Interpretation.
+- References: No parasites seen; not applicable; 0/uL; 0%; negative for malaria parasites.
+- Seeding is additive/idempotent: existing tenants receive QBC on the next boot; custom, renamed and
+  deleted tests remain preserved.
+- Starter catalogue counts: 229 tests (186 pathology + 43 X-ray), 383 active parameters, 29 packages.
+- Regenerated `.opencode/skills/diagbill-test-catalogue/references/test-catalogue.md` and `packages.md`.
+- No schema change.
+
 ## Invoice amendment - built
 
 - InvoiceView has an **Amend bill** action for non-cancelled invoices.

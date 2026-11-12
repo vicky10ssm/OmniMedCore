@@ -50,7 +50,7 @@ node .opencode\skills\diagbill-test-catalogue\scripts\render-catalogue.mjs `
 Expected output:
 
 ```text
-Rendered 228 tests, 378 parameters and 29 packages.
+Rendered 229 tests, 383 parameters and 29 packages.
 ```
 
 The counts should match the current source and database. If they do not, fix the source/seeding first;
@@ -58,8 +58,8 @@ do not hand-edit the generated files.
 
 ## Verify before committing
 
-- Tests by category: 185 Pathology + 43 X-ray = 228.
-- Active parameters: 378.
+- Tests by category: 186 Pathology + 43 X-ray = 229.
+- Active parameters: 383.
 - Combined packages: 29 (27 seeded + 2 original).
 - No pathology test without a parameter.
 - No X-ray test with a parameter.

@@ -101,6 +101,16 @@ export const STARTER_TESTS: StarterTest[] = [
   path("G6PD", "G6PD Enzyme Activity", "Haematology", ...EDTA, "U/g Hb", "numeric", "Enzymatic"),
   path("SICKLE", "Sickling Test", "Haematology", ...EDTA, "", "text", "Sodium metabisulphite"),
   path("MPS", "Malaria Parasite Smear", "Haematology", ...EDTA, "", "text", "Thick and thin smear"),
+  path(
+    "QBC",
+    "Malaria Parasite by Quantitative Buffy Coat (QBC)",
+    "Haematology",
+    "Capillary Blood",
+    "QBC tube (heparinised, acridine orange)",
+    "",
+    "text",
+    "Quantitative buffy coat / fluorescence microscopy"
+  ),
   path("MPAG", "Malaria Antigen (Pf/Pan)", "Serology", ...EDTA, "", "text", "Rapid immunochromatography"),
   path(
     "ABG",

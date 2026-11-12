@@ -163,8 +163,9 @@ Record invoice/payment IDs and totals used for acceptance.
 - [ ] Expenses can be tagged with one or more modules; shared expense shows all selected modules in list/filter/CSV
 - [ ] Every pathology parameter has a non-blank reference interval; sex/age variants are present where applicable
 - [ ] Starter references were updated once per tenant and custom references remain editable
-- [ ] Starter catalogue contains 185 pathology and 43 X-ray tests without duplicate names/codes
+- [ ] Starter catalogue contains 186 pathology and 43 X-ray tests without duplicate names/codes
 - [ ] Absolute Eosinophil Count (AEC) exists with one numeric parameter, cells/cmm and a filled reference interval
+- [ ] Malaria Parasite by Quantitative Buffy Coat (QBC) exists with the malaria parameter set and filled references
 - [ ] Every pathology test has at least one parameter; X-ray tests have none
 - [ ] Starter panel parameters exist for CBC, LFT, KFT, Lipid, Urine, DC, PT/INR, Widal, dengue, cultures, fluids, semen and stool
 - [ ] CBC has 20 parameters including HCT, RDW-CV, RDW-SD, MPV, PDW, PCT, P-LCR and P-LCC

@@ -8,11 +8,11 @@ Generated: 2026-11-12
 
 ## Counts
 
-- Tests: **228**
-- Pathology: **185**
+- Tests: **229**
+- Pathology: **186**
 - X-ray: **43**
 - Other: **0**
-- Active parameters: **378**
+- Active parameters: **383**
 - Packages with at least one item: **29**
 
 Every pathology test has at least one parameter. X-ray tests intentionally have none and use the
@@ -1298,6 +1298,19 @@ own parameters.
 - Price: ₹0.00 | GST: 0%
 - Parameters (1):
   - Indirect Coombs Test (IAT); ref Negative; text
+
+#### `QBC` — Malaria Parasite by Quantitative Buffy Coat (QBC)
+
+- Category: Pathology
+- Specimen: Capillary Blood | Container: QBC tube (heparinised, acridine orange)
+- Method: Quantitative buffy coat / fluorescence microscopy | Report type: text
+- Price: ₹0.00 | GST: 0%
+- Parameters (5):
+  - [Malaria Parasite by Quantitative Buffy Coat (QBC)] Parasite Species; ref No parasites seen; text
+  - [Malaria Parasite by Quantitative Buffy Coat (QBC)] Parasite Stage; ref Not applicable (no parasites seen); text
+  - [Malaria Parasite by Quantitative Buffy Coat (QBC)] Parasite Density /uL; ref 0/uL (no parasites seen); numeric
+  - [Malaria Parasite by Quantitative Buffy Coat (QBC)] RBC Parasitised %; ref 0%; numeric
+  - [Malaria Parasite by Quantitative Buffy Coat (QBC)] Interpretation; ref Negative for malaria parasites; text
 
 #### `MPS` — Malaria Parasite Smear
 

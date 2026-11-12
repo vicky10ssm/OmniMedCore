@@ -418,6 +418,13 @@ const TEST_OVERRIDES: Record<string, Record<string, string>> = {
     "rbc parasitised": "0%",
     "interpretation": "Negative for malaria parasites",
   },
+  QBC: {
+    "parasite species": "No parasites seen",
+    "parasite stage": "Not applicable (no parasites seen)",
+    "parasite density": "0/uL (no parasites seen)",
+    "rbc parasitised": "0%",
+    "interpretation": "Negative for malaria parasites",
+  },
   MPAG: {
     "pf antigen": "Negative",
     "pan antigen": "Negative",

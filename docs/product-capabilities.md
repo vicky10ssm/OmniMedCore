@@ -19,8 +19,8 @@ Status meanings: **Ready**, **Pilot**, **Partial**, **Not available**, **Externa
 | Capability | Status | Description |
 | --- | --- | --- |
 | Test catalog and packages | Ready | Price, editable GST rate (default 0%), SAC, department, specimen, container, method, LOINC fields |
-| Starter test library | Ready | 228 entries: 185 pathology and 43 X-ray/radiography tests, including Absolute Eosinophil Count (AEC); additive, idempotent seeding preserves custom, renamed and deleted tests |
-| Starter parameter templates | Ready | 378 pathology parameters; every pathology test has at least one; panels and complex reports include CBC 20, LFT 11, KFT 9, Lipid 8, Urine 18, malaria subfields, VDRL/TPHA titres, histopathology sections and cytology findings; X-rays remain text-only |
+| Starter test library | Ready | 229 entries: 186 pathology and 43 X-ray/radiography tests, including Absolute Eosinophil Count (AEC) and Malaria Parasite by Quantitative Buffy Coat (QBC); additive, idempotent seeding preserves custom, renamed and deleted tests |
+| Starter parameter templates | Ready | 383 pathology parameters; every pathology test has at least one; panels and complex reports include CBC 20, LFT 11, KFT 9, Lipid 8, Urine 18, malaria subfields, VDRL/TPHA titres, histopathology sections and cytology findings; X-rays remain text-only |
 | Starter combined packages | Ready | 27 seeded health-check packages (29 total), linking parameterized pathology tests and X-ray report tests; packages are price/name wrappers, items retain their own parameters |
 | GST invoice | Ready | Per-line GST, CGST/SGST split, taxable value, round-off, GSTIN |
 | Invoice discounts | Ready | Line-level discount reducing taxable value |
@@ -44,7 +44,7 @@ Status meanings: **Ready**, **Pilot**, **Partial**, **Not available**, **Externa
 | Capability | Status | Description |
 | --- | --- | --- |
 | Test parameter templates | Ready | Multiple parameters, units, references, numeric limits, LOINC field |
-| Starter parameter sets | Ready | CBC 20 (including HCT, RDW-CV, RDW-SD, MPV, PDW, PCT, P-LCR and P-LCC), LFT 11, KFT 9, Lipid 8, Urine 18, AEC, plus 378 total pathology parameters with filled references |
+| Starter parameter sets | Ready | CBC 20 (including HCT, RDW-CV, RDW-SD, MPV, PDW, PCT, P-LCR and P-LCC), LFT 11, KFT 9, Lipid 8, Urine 18, AEC, QBC, plus 383 total pathology parameters with filled references |
 | Reference intervals | Ready | Adult ranges filled; sex/age variants included in reference text where applicable; laboratory validation still required |
 | Per-report parameter selection | Ready | Include/exclude each parameter; excluded rows retained for draft reopening |
 | Per-report unit/reference editing | Ready | Snapshot values for that patient; printer shows them |
