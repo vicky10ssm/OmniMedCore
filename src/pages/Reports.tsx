@@ -659,9 +659,9 @@ export default function Reports({
           section: existing?.section_name || p.section_name,
           result: existing?.result_text || "",
           unit: existing ? existing.unit : p.unit,
-          refRange: existing ? existing.ref_range : p.ref_range,
-          refMin: existing ? existing.ref_min : p.ref_min,
-          refMax: existing ? existing.ref_max : p.ref_max,
+          refRange: existing?.ref_range || p.ref_range,
+          refMin: existing?.ref_min ?? p.ref_min,
+          refMax: existing?.ref_max ?? p.ref_max,
           selected: existing ? existing.deleted === 0 : saved.length === 0,
           loincCode: existing?.loinc_code || p.loinc_code,
         };

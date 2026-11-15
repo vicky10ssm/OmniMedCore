@@ -3,6 +3,29 @@
 All notable changes to OmniMed Core are recorded here. This project follows semantic versioning once
 production releases begin.
 
+## [0.27.2] - 2026-11-15
+
+### Fixed
+
+- The standalone **Platelet Count (PLT)** starter test now receives numeric reference limits
+  (`150000`–`450000`). Previously it had the reference text but `ref_min`/`ref_max` were null, so
+  **Low/High** flags never appeared.
+- Existing PLT parameter rows are repaired on boot: missing numeric limits are filled without
+  overwriting a locally edited reference range.
+- Report entry now falls back to the current template limits when a saved report snapshot has null
+  limits, so older drafts and amendments can flag correctly.
+- This complements the 0.27.1 comma-thousands parsing fix.
+
+### Verified
+
+- The installed PLT parameter now has `ref_min = 150000` and `ref_max = 450000`.
+- A Platelet Count below 1,50,000 is flagged **Low**; above 4,50,000 is flagged **High**.
+- `npm run check`, terminal build, monitor build and Rust tests pass.
+
+### Database
+
+- No schema change. Schema remains **25**.
+
 ## [0.27.1] - 2026-11-15
 
 ### Fixed
