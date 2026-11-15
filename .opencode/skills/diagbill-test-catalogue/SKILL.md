@@ -30,7 +30,7 @@ Load it before touching the test catalogue.
 - Active parameters: **383**
 - Combined packages: **29** total (27 seeded by this skill, plus 2 original packages)
 - Schema: **25**
-- Current release at time of writing: **0.27.2**
+- Current release at time of writing: **0.28.0**
 
 Counts change when tests/parameters/packages are added. The generated reference files are authoritative
 for the current snapshot; the source modules are authoritative if they disagree.
@@ -58,9 +58,13 @@ for the current snapshot; the source modules are authoritative if they disagree.
    the clinic sets a rate.
 10. Starter reference intervals are filled, including sex/age variants where applicable. The laboratory
     must still validate intervals for its methods and population.
-11. Do not rename or repurpose a test code without checking packages, report orders, historical report
+11. Every numeric parameter whose reference text contains a range or bound must have `ref_min` and/or
+    `ref_max` so Low/High flags work. Missing limits are derived at boot by `ensureReferenceLimits`; the
+    release audit is `npm run check:catalogue <exported-json>`. See
+    `.opencode/skills/diagbill-parameter-validation/SKILL.md`.
+12. Do not rename or repurpose a test code without checking packages, report orders, historical report
     snapshots and the generated catalogue.
-12. A scanned radiologist signature is not a digital signature/DSC.
+13. A scanned radiologist signature is not a digital signature/DSC.
 
 ## Test data model
 

@@ -1,6 +1,6 @@
 # OmniMed Core starter test catalogue
 
-Generated: 2026-11-12
+Generated: 2026-11-15
 
 > This is a generated snapshot. If it disagrees with the database/code, fix the source and regenerate.
 > Source of truth: `src/db/starterTests.ts`, `src/db/starterParameters.ts` and

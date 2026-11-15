@@ -3,6 +3,43 @@
 All notable changes to OmniMed Core are recorded here. This project follows semantic versioning once
 production releases begin.
 
+## [0.28.0] - 2026-11-15
+
+### Added
+
+- Added a reusable **parameter validation** skill and `npm run check:catalogue` audit. The audit
+  checks every exported test and parameter for missing references, duplicate names, invalid limits,
+  range-like reference text without numeric limits, and unitless numeric parameters.
+- Numeric limits are now derived from the printable reference text when a row has none. The parser
+  ignores age-band pairs such as `children 1-5y`, combines sex/age variants into the broadest range,
+  keeps one side open for `<150`/`>90`, and treats a purely zero reference (`0%`, `0/uL`) as `0-0`.
+- A boot-time backfill runs after reference seeding on every tenant. It fills missing limits without
+  overwriting an explicit local limit.
+
+### Fixed
+
+- Repaired legacy seed limits that did not match the displayed reference text:
+  - CBC **Haemoglobin** now `11`–`17`, **RBC Count** `4.0`–`5.9`, **Haematocrit** `33`–`52`
+  - standalone **HB** Haemoglobin now `11`–`17`
+  - KFT **Blood Urea** `15`–`40`, **BUN** `7`–`20`, **Serum Creatinine** `0.3`–`1.3`,
+    **Uric Acid** `2.0`–`7.2`, **Calcium** `8.6`–`10.8`, **Phosphorus** `2.5`–`7.0`
+  - LIPID **VLDL Cholesterol** now `5`–`40`
+  - LFT **Alkaline Phosphatase** now `40`–`400`, **Gamma GT (GGT)** now `0`–`55`
+- Every repair only applies when the row still holds the exact old seeded pair, so locally edited
+  references and limits are preserved.
+- The audit now reports 0 errors across 229 tests and 383 parameters (221 numeric). The 13 numeric
+  parameters without limits are deliberate exceptions (fluid-specific differentials, IGF-1, FiO2).
+
+### Verified
+
+- Low and High flags work for plain and comma-formatted values, including Platelet Count.
+- `npm run check`, terminal build, monitor build and Rust tests pass.
+- `npm run check:catalogue <exported-json>` reports 0 errors.
+
+### Database
+
+- No schema change. Schema remains **25**.
+
 ## [0.27.2] - 2026-11-15
 
 ### Fixed

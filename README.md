@@ -42,7 +42,7 @@ Expenses profitability card.
 - Printed report signatures can be shown or hidden when the pre-printed stationery already carries the signature
 - Test/package catalogue with GST and specimen metadata
 - Broad starter library: 186 pathology tests and 43 X-ray/radiography exams, with editable prices and reference intervals
-- 383 starter pathology parameter templates; every pathology test has a result parameter, filled reference intervals, sex/age variants where relevant, and complex-report subfields
+- 383 starter pathology parameter templates; every pathology test has a result parameter, filled reference intervals with numeric limits for Low/High flags, sex/age variants where relevant, and complex-report subfields
 - Report parameters support printable sections; CBC separates Complete Blood Count from Differential Leucocyte Count, and other panels use clinical sections such as Bilirubin/Liver Enzymes/Proteins and Renal Profile/Electrolytes/Minerals
 - 27 combined starter health-check packages combining pathology and X-ray tests
 - Parameter-based pathology reporting with a sample-grouped **Bench**, inline accept/reject/recollect, batch accept/print, normal-only batch release, **Fill normal**, CSV/TSV analyser result import, amendment history, and **Release & print**
@@ -111,6 +111,15 @@ npm run build:monitor
 ```
 
 `npm run check` covers TypeScript, migration scenarios and static tenant-scope checks.
+
+Run the parameter-catalogue audit against a JSON export from a running app:
+
+```powershell
+npm run check:catalogue -- <catalogue.json>
+```
+
+It fails on duplicate catalogue entries, blank references, invalid limits, or a numeric parameter whose
+range-like reference has no numeric limits. See `RELEASE_TESTING.md` for the export workflow.
 
 ### Windows desktop build
 
