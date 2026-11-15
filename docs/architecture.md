@@ -1,7 +1,7 @@
 # OmniMed Core architecture and local export design
 
 Last updated: 9 November 2026  
-Current product version: `0.27.2`  
+Current product version: `0.28.0`  
 Current schema: `25`
 
 ## 1. Status and scope
@@ -124,7 +124,8 @@ OmniMed Core is a multi-vertical product; a tenant enables only the modules it o
   custom/renamed/deleted tests are preserved, and new entries require local pricing/reference validation.
 - Reference intervals: 383 pathology parameters are seeded with adult ranges and sex/age variants in the
   reference text where applicable. Reference seeding is versioned per tenant so custom intervals are not
-  overwritten on every boot.
+  overwritten on every boot. After seeding, `ensureReferenceLimits` fills missing `ref_min`/`ref_max`
+  from the printable text so Low/High flags work; it only touches rows where both limits are null.
 - Expenses: `expenses.modules` stores a JSON array of Pathology/X-ray/Pharmacy/Hospital/General attribution.
   Shared expenses are tagged with multiple modules; amounts are not split automatically.
 - Hospital: inpatient admission, ward/bed, treating doctor, discharge diagnosis/summary, generic

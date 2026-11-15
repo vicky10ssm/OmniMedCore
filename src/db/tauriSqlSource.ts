@@ -10,7 +10,10 @@ import { getDeviceId, now, setDeviceId } from "./helpers";
 import { MIGRATIONS, SEED_SQL, splitSqlStatements } from "./schema";
 import { ensureDefaultTenant, getCurrentTenantId } from "./tenant";
 import { ensureStarterTests } from "./starterTests";
-import { ensureStarterParameters } from "./starterParameters";
+import {
+  ensureReferenceLimits,
+  ensureStarterParameters,
+} from "./starterParameters";
 import { ensureStarterSections } from "./starterSections";
 import { ensureStarterPackages } from "./starterPackages";
 import { ensureStarterReferences } from "./starterReferences";
@@ -124,6 +127,7 @@ export class TauriSqlSource implements DataSource {
     await ensureStarterParameters(source);
     await ensureStarterSections(source);
     await ensureStarterReferences(source);
+    await ensureReferenceLimits(source);
     await ensureStarterPackages(source);
     return source;
   }

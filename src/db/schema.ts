@@ -735,11 +735,11 @@ export const MIGRATIONS: Migration[] = [
       SELECT src.id, src.test_id, src.name, src.sort_order, src.unit, src.ref_range,
              src.ref_min, src.ref_max, src.report_type, '[]', 1, 0, 0, '', 1, 0, 'tenant-default'
       FROM (
-        SELECT 'tp-cbc-01' AS id, 'test-cbc' AS test_id, 'Haemoglobin' AS name, 0 AS sort_order, 'g/dL' AS unit, '12.0 - 16.0 (adult)' AS ref_range, 12.0 AS ref_min, 16.0 AS ref_max, 'numeric' AS report_type
+        SELECT 'tp-cbc-01' AS id, 'test-cbc' AS test_id, 'Haemoglobin' AS name, 0 AS sort_order, 'g/dL' AS unit, 'Adult male: 13.0-17.0 g/dL; adult female: 12.0-15.0 g/dL; children 1-5y: 11.0-14.0 g/dL; children 6-12y: 11.5-15.5 g/dL' AS ref_range, 11.0 AS ref_min, 17.0 AS ref_max, 'numeric' AS report_type
         UNION ALL SELECT 'tp-cbc-02','test-cbc','Total Leukocyte Count',1,'cells/cmm','4,000 - 11,000',4000,11000,'numeric'
         UNION ALL SELECT 'tp-cbc-03','test-cbc','Platelet Count',2,'cells/cmm','1,50,000 - 4,50,000',150000,450000,'numeric'
-        UNION ALL SELECT 'tp-cbc-04','test-cbc','RBC Count',3,'million/cmm','4.2 - 5.9 (adult)',4.2,5.9,'numeric'
-        UNION ALL SELECT 'tp-cbc-05','test-cbc','Packed Cell Volume (PCV)',4,'%','36 - 46 (adult)',36,46,'numeric'
+        UNION ALL SELECT 'tp-cbc-04','test-cbc','RBC Count',3,'million/cmm','Adult male: 4.5-5.9 million/cmm; adult female: 4.1-5.1 million/cmm; children 1-5y: 4.0-5.5; children 6-12y: 4.0-5.2 million/cmm',4.0,5.9,'numeric'
+        UNION ALL SELECT 'tp-cbc-05','test-cbc','Packed Cell Volume (PCV)',4,'%','Adult male: 40-52%; adult female: 36-48%; children 1-5y: 33-42%; children 6-12y: 35-45%',33,52,'numeric'
         UNION ALL SELECT 'tp-cbc-06','test-cbc','Mean Corpuscular Volume (MCV)',5,'fL','80 - 100',80,100,'numeric'
         UNION ALL SELECT 'tp-cbc-07','test-cbc','Mean Corpuscular Haemoglobin (MCH)',6,'pg','27 - 32',27,32,'numeric'
         UNION ALL SELECT 'tp-cbc-08','test-cbc','Mean Corpuscular Hb Concentration (MCHC)',7,'g/dL','32 - 36',32,36,'numeric'
@@ -768,8 +768,8 @@ export const MIGRATIONS: Migration[] = [
         UNION ALL SELECT 'tp-lft-03','test-lft','Bilirubin Indirect',2,'mg/dL','0.1 - 1.0',0.1,1.0,'numeric'
         UNION ALL SELECT 'tp-lft-04','test-lft','SGOT (AST)',3,'U/L','5 - 40',5,40,'numeric'
         UNION ALL SELECT 'tp-lft-05','test-lft','SGPT (ALT)',4,'U/L','5 - 41',5,41,'numeric'
-        UNION ALL SELECT 'tp-lft-06','test-lft','Alkaline Phosphatase',5,'U/L','40 - 130',40,130,'numeric'
-        UNION ALL SELECT 'tp-lft-07','test-lft','Gamma GT (GGT)',6,'U/L','0 - 50',0,50,'numeric'
+        UNION ALL SELECT 'tp-lft-06','test-lft','Alkaline Phosphatase',5,'U/L','40 - 400',40,400,'numeric'
+        UNION ALL SELECT 'tp-lft-07','test-lft','Gamma GT (GGT)',6,'U/L','0 - 55',0,55,'numeric'
         UNION ALL SELECT 'tp-lft-08','test-lft','Total Protein',7,'g/dL','6.0 - 8.3',6.0,8.3,'numeric'
         UNION ALL SELECT 'tp-lft-09','test-lft','Albumin',8,'g/dL','3.5 - 5.2',3.5,5.2,'numeric'
         UNION ALL SELECT 'tp-lft-10','test-lft','Globulin',9,'g/dL','2.0 - 3.5',2.0,3.5,'numeric'
@@ -788,15 +788,15 @@ export const MIGRATIONS: Migration[] = [
       SELECT src.id, src.test_id, src.name, src.sort_order, src.unit, src.ref_range,
              src.ref_min, src.ref_max, src.report_type, '[]', 1, 0, 0, '', 1, 0, 'tenant-default'
       FROM (
-        SELECT 'tp-kft-01' AS id, 'test-kft' AS test_id, 'Blood Urea' AS name, 0 AS sort_order, 'mg/dL' AS unit, '17 - 43' AS ref_range, 17 AS ref_min, 43 AS ref_max, 'numeric' AS report_type
-        UNION ALL SELECT 'tp-kft-02','test-kft','Blood Urea Nitrogen (BUN)',1,'mg/dL','8 - 20',8,20,'numeric'
-        UNION ALL SELECT 'tp-kft-03','test-kft','Serum Creatinine',2,'mg/dL','0.6 - 1.3',0.6,1.3,'numeric'
-        UNION ALL SELECT 'tp-kft-04','test-kft','Uric Acid',3,'mg/dL','3.5 - 7.2',3.5,7.2,'numeric'
+        SELECT 'tp-kft-01' AS id, 'test-kft' AS test_id, 'Blood Urea' AS name, 0 AS sort_order, 'mg/dL' AS unit, '15 - 40' AS ref_range, 15 AS ref_min, 40 AS ref_max, 'numeric' AS report_type
+        UNION ALL SELECT 'tp-kft-02','test-kft','Blood Urea Nitrogen (BUN)',1,'mg/dL','7 - 20',7,20,'numeric'
+        UNION ALL SELECT 'tp-kft-03','test-kft','Serum Creatinine',2,'mg/dL','0.3 - 1.3',0.3,1.3,'numeric'
+        UNION ALL SELECT 'tp-kft-04','test-kft','Uric Acid',3,'mg/dL','2.0 - 7.2',2.0,7.2,'numeric'
         UNION ALL SELECT 'tp-kft-05','test-kft','Sodium',4,'mmol/L','135 - 145',135,145,'numeric'
         UNION ALL SELECT 'tp-kft-06','test-kft','Potassium',5,'mmol/L','3.5 - 5.1',3.5,5.1,'numeric'
         UNION ALL SELECT 'tp-kft-07','test-kft','Chloride',6,'mmol/L','98 - 107',98,107,'numeric'
-        UNION ALL SELECT 'tp-kft-08','test-kft','Calcium',7,'mg/dL','8.5 - 10.5',8.5,10.5,'numeric'
-        UNION ALL SELECT 'tp-kft-09','test-kft','Phosphorus',8,'mg/dL','2.5 - 4.5',2.5,4.5,'numeric'
+        UNION ALL SELECT 'tp-kft-08','test-kft','Calcium',7,'mg/dL','8.6 - 10.8',8.6,10.8,'numeric'
+        UNION ALL SELECT 'tp-kft-09','test-kft','Phosphorus',8,'mg/dL','2.5 - 7.0',2.5,7.0,'numeric'
       ) AS src
       WHERE NOT EXISTS (
         SELECT 1 FROM test_parameters tp
@@ -815,7 +815,7 @@ export const MIGRATIONS: Migration[] = [
         UNION ALL SELECT 'tp-lipid-02','test-lipid','Triglycerides',1,'mg/dL','< 150',NULL,150,'numeric'
         UNION ALL SELECT 'tp-lipid-03','test-lipid','HDL Cholesterol',2,'mg/dL','> 40',40,NULL,'numeric'
         UNION ALL SELECT 'tp-lipid-04','test-lipid','LDL Cholesterol',3,'mg/dL','< 100',NULL,100,'numeric'
-        UNION ALL SELECT 'tp-lipid-05','test-lipid','VLDL Cholesterol',4,'mg/dL','10 - 40',10,40,'numeric'
+        UNION ALL SELECT 'tp-lipid-05','test-lipid','VLDL Cholesterol',4,'mg/dL','5 - 40',5,40,'numeric'
         UNION ALL SELECT 'tp-lipid-06','test-lipid','Non-HDL Cholesterol',5,'mg/dL','< 130',NULL,130,'numeric'
         UNION ALL SELECT 'tp-lipid-07','test-lipid','Total Cholesterol / HDL Ratio',6,'ratio','< 4.5',NULL,4.5,'numeric'
         UNION ALL SELECT 'tp-lipid-08','test-lipid','LDL / HDL Ratio',7,'ratio','< 3.0',NULL,3.0,'numeric'
@@ -1724,8 +1724,8 @@ export const MIGRATIONS: Migration[] = [
       -- a fresh database also gets the analyser indices.
       UPDATE test_parameters
       SET name = 'Haematocrit (HCT)',
-          ref_range = 'Adult male: 40-52%; adult female: 36-48%',
-          ref_min = 36,
+          ref_range = 'Adult male: 40-52%; adult female: 36-48%; children 1-5y: 33-42%; children 6-12y: 35-45%',
+          ref_min = 33,
           ref_max = 52,
           updated_at = CAST(strftime('%s','now') AS INTEGER) * 1000,
           dirty = 1
@@ -1798,8 +1798,8 @@ export const MIGRATIONS: Migration[] = [
       -- template parameters. Existing report snapshots keep their stored names.
       UPDATE test_parameters
       SET name = 'Haematocrit (HCT)',
-          ref_range = 'Adult male: 40-52%; adult female: 36-48%',
-          ref_min = 36,
+          ref_range = 'Adult male: 40-52%; adult female: 36-48%; children 1-5y: 33-42%; children 6-12y: 35-45%',
+          ref_min = 33,
           ref_max = 52,
           updated_at = CAST(strftime('%s','now') AS INTEGER) * 1000,
           dirty = 1
@@ -2038,7 +2038,7 @@ export const SEED_SQL = `
   -- Starter catalog, EDIT FREELY (prices are pre-tax examples, adjust to your rate list)
   INSERT OR IGNORE INTO tests (id, code, name, category, price_paise, gst_rate_bp, sac_code, unit, ref_range, ref_min, ref_max, report_type, is_active, created_at, updated_at, device_id, dirty, deleted, tenant_id) VALUES
     ('test-cbc',   'CBC',    'Complete Blood Count (CBC)',        'Pathology', 30000, 0, '999316', 'cells/cmm', '4,000 - 11,000', 4000, 11000, 'numeric', 1, 0, 0, '', 0, 0, 'tenant-default'),
-    ('test-hb',    'HB',     'Haemoglobin',                      'Pathology', 10000, 0, '999316', 'g/dL',      '12 - 16',       12,   16,   'numeric', 1, 0, 0, '', 0, 0, 'tenant-default'),
+    ('test-hb',    'HB',     'Haemoglobin',                      'Pathology', 10000, 0, '999316', 'g/dL',      '11 - 17',       11,   17,   'numeric', 1, 0, 0, '', 0, 0, 'tenant-default'),
     ('test-fbs',   'FBS',    'Blood Sugar Fasting',              'Pathology', 10000, 0, '999316', 'mg/dL',     '70 - 100',      70,   100,  'numeric', 1, 0, 0, '', 0, 0, 'tenant-default'),
     ('test-rbs',   'RBS',    'Blood Sugar Random',               'Pathology', 10000, 0, '999316', 'mg/dL',     '70 - 140',      70,   140,  'numeric', 1, 0, 0, '', 0, 0, 'tenant-default'),
     ('test-lipid', 'LIPID',  'Lipid Profile',                    'Pathology', 40000, 0, '999316', '',          '',              NULL, NULL, 'text',    1, 0, 0, '', 0, 0, 'tenant-default'),

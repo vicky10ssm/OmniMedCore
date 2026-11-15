@@ -1,7 +1,7 @@
 # Productionization plan
 
 Last updated: 9 November 2026
-Current product version: `0.27.2`
+Current product version: `0.28.0`  
 Current schema: `25`
 Current deployment: packaged Windows desktop with SQLCipher, encrypted backups and local Google Drive
 CSV export for supervised pilots; browser build remains development-only

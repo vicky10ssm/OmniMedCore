@@ -1,7 +1,7 @@
 # OmniMed Core buyer documentation
 
-Last updated: 10 November 2026  
-Product version: `0.27.2`  
+Last updated: 15 November 2026  
+Product version: `0.28.0`  
 Database schema: `25`
 
 **OmniMed Core** is the umbrella product name. The internal package/browser storage keys retain the
@@ -77,7 +77,7 @@ Compliance source detail remains in [`../COMPLIANCE.md`](../COMPLIANCE.md).
 | Module branding | OmniMed Core umbrella brand; licensed modules then toggled per tenant in Settings |
 | Billing | GST invoices, packages, discounts, dues, payments, cancellations |
 | Money controls | Integer paise, CGST/SGST, invoice-number blocks, append-only corrections |
-| Clinical reporting | Parameter templates, selected parameters, units, references, abnormal flags, amendments |
+| Clinical reporting | Parameter templates, selected parameters, units, references, abnormal flags, amendments; every numeric range-like reference has checked Low/High limits |
 | Sample workflow | Accession, collection, receipt, acceptance/rejection, disposal, audit |
 | Roles | Admin/operator plus explicit clinical report-release authority |
 | Security | Password hashing, optional TOTP 2FA, read-only monitor enforcement |

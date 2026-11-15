@@ -9,6 +9,7 @@
 // overwritten or resurrected, and tests with recorded results are not reshaped.
 
 import { getDeviceId, now } from "./helpers";
+import { deriveReferenceLimits } from "./referenceLimits";
 
 export interface StarterParameterStore {
   all<T>(sql: string, params?: unknown[]): Promise<T[]>;
@@ -65,15 +66,27 @@ const nr = (
  */
 export const STARTER_PARAMETERS: Record<string, StarterParameter[]> = {
   CBC: [
-    nr("Haemoglobin", "g/dL", "Adult male: 13.0-17.0 g/dL; adult female: 12.0-15.0 g/dL", 12, 17),
+    nr(
+      "Haemoglobin",
+      "g/dL",
+      "Adult male: 13.0-17.0 g/dL; adult female: 12.0-15.0 g/dL; children 1-5y: 11.0-14.0 g/dL; children 6-12y: 11.5-15.5 g/dL",
+      11,
+      17
+    ),
     nr("Total Leukocyte Count", "cells/cmm", "Adult: 4,000-11,000 /cmm", 4000, 11000),
     nr("Platelet Count", "cells/cmm", "Adult: 1,50,000-4,50,000 /cmm", 150000, 450000),
-    nr("RBC Count", "million/cmm", "Adult male: 4.5-5.9; adult female: 4.1-5.1 million/cmm", 4.1, 5.9),
+    nr(
+      "RBC Count",
+      "million/cmm",
+      "Adult male: 4.5-5.9 million/cmm; adult female: 4.1-5.1 million/cmm; children 1-5y: 4.0-5.5; children 6-12y: 4.0-5.2 million/cmm",
+      4.0,
+      5.9
+    ),
     nr(
       "Haematocrit (HCT)",
       "%",
       "Adult male: 40-52%; adult female: 36-48%; children 1-5y: 33-42%; children 6-12y: 35-45%",
-      36,
+      33,
       52
     ),
     nr("Mean Corpuscular Volume (MCV)", "fL", "Adult: 80-100 fL", 80, 100),
@@ -509,9 +522,193 @@ export async function ensureStarterParameters(
         }
       }
     }
+
     if (inserted > 0) {
       console.info(
         `Starter pathology parameters: added ${inserted} parameter(s) for tenant ${tenant.id}`
+      );
+    }
+  }
+}
+
+/**
+ * Known legacy seed pairs whose stored limits predate the printable reference
+ * text. Each repair only applies when the row still holds the exact old seeded
+ * pair, so a locally edited reference is never overwritten.
+ */
+const STARTER_LIMIT_REPAIRS = [
+  {
+    code: "CBC",
+    name: "haemoglobin",
+    fromMin: 12,
+    fromMax: 16,
+    toMin: 11,
+    toMax: 17,
+  },
+  {
+    code: "CBC",
+    name: "rbc count",
+    fromMin: 4.2,
+    fromMax: 5.9,
+    toMin: 4.0,
+    toMax: 5.9,
+  },
+  {
+    code: "CBC",
+    name: "haematocrit (hct)",
+    fromMin: 36,
+    fromMax: 52,
+    toMin: 33,
+    toMax: 52,
+  },
+  {
+    code: "HB",
+    name: "haemoglobin",
+    fromMin: 12,
+    fromMax: 16,
+    toMin: 11,
+    toMax: 17,
+  },
+  {
+    code: "KFT",
+    name: "blood urea",
+    fromMin: 17,
+    fromMax: 43,
+    toMin: 15,
+    toMax: 40,
+  },
+  {
+    code: "KFT",
+    name: "blood urea nitrogen (bun)",
+    fromMin: 8,
+    fromMax: 20,
+    toMin: 7,
+    toMax: 20,
+  },
+  {
+    code: "KFT",
+    name: "serum creatinine",
+    fromMin: 0.6,
+    fromMax: 1.3,
+    toMin: 0.3,
+    toMax: 1.3,
+  },
+  {
+    code: "KFT",
+    name: "uric acid",
+    fromMin: 3.5,
+    fromMax: 7.2,
+    toMin: 2.0,
+    toMax: 7.2,
+  },
+  {
+    code: "KFT",
+    name: "calcium",
+    fromMin: 8.5,
+    fromMax: 10.5,
+    toMin: 8.6,
+    toMax: 10.8,
+  },
+  {
+    code: "KFT",
+    name: "phosphorus",
+    fromMin: 2.5,
+    fromMax: 4.5,
+    toMin: 2.5,
+    toMax: 7.0,
+  },
+  {
+    code: "LIPID",
+    name: "vldl cholesterol",
+    fromMin: 10,
+    fromMax: 40,
+    toMin: 5,
+    toMax: 40,
+  },
+  {
+    code: "LFT",
+    name: "alkaline phosphatase",
+    fromMin: 40,
+    fromMax: 130,
+    toMin: 40,
+    toMax: 400,
+  },
+  {
+    code: "LFT",
+    name: "gamma gt (ggt)",
+    fromMin: 0,
+    fromMax: 50,
+    toMin: 0,
+    toMax: 55,
+  },
+] as const;
+
+/**
+ * Fills missing numeric limits from the printable reference text.
+ *
+ * Runs after reference seeding so a fresh database also gets limits. It only
+ * touches rows where both limits are null and never overwrites an explicit
+ * local limit.
+ */
+export async function ensureReferenceLimits(
+  store: StarterParameterStore
+): Promise<void> {
+  const tenants = await store.all<{ id: string }>(
+    "SELECT id FROM tenants WHERE deleted = 0"
+  );
+  const ts = now();
+  for (const tenant of tenants) {
+    const tests = await store.all<{ id: string; code: string }>(
+      `SELECT id, code FROM tests
+       WHERE tenant_id = ? AND deleted = 0`,
+      [tenant.id]
+    );
+    const testByCode = new Map(tests.map((test) => [test.code, test.id]));
+
+    // Align known legacy seed limits with the displayed reference text. Only
+    // the exact old seeded pair is updated, so local edits are preserved.
+    for (const repair of STARTER_LIMIT_REPAIRS) {
+      const testId = testByCode.get(repair.code);
+      if (!testId) continue;
+      await store.run(
+        `UPDATE test_parameters
+         SET ref_min = ?, ref_max = ?, updated_at = ?, dirty = 1
+         WHERE test_id = ? AND tenant_id = ? AND deleted = 0
+           AND lower(name) = ? AND ref_min = ? AND ref_max = ?`,
+        [
+          repair.toMin,
+          repair.toMax,
+          ts,
+          testId,
+          tenant.id,
+          repair.name,
+          repair.fromMin,
+          repair.fromMax,
+        ]
+      );
+    }
+
+    const missingLimits = await store.all<{ id: string; ref_range: string }>(
+      `SELECT id, ref_range FROM test_parameters
+       WHERE tenant_id = ? AND deleted = 0 AND report_type = 'numeric'
+         AND ref_min IS NULL AND ref_max IS NULL AND trim(ref_range) <> ''`,
+      [tenant.id]
+    );
+    let fixedLimits = 0;
+    for (const row of missingLimits) {
+      const limits = deriveReferenceLimits(row.ref_range);
+      if (!limits) continue;
+      await store.run(
+        `UPDATE test_parameters
+         SET ref_min = ?, ref_max = ?, updated_at = ?, dirty = 1
+         WHERE id = ? AND tenant_id = ? AND ref_min IS NULL AND ref_max IS NULL`,
+        [limits.refMin, limits.refMax, ts, row.id, tenant.id]
+      );
+      fixedLimits += 1;
+    }
+    if (fixedLimits > 0) {
+      console.info(
+        `Starter reference limits: filled ${fixedLimits} parameter(s) for tenant ${tenant.id}`
       );
     }
   }

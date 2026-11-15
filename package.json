@@ -1,7 +1,7 @@
 {
   "name": "diagbill",
   "private": true,
-  "version": "0.27.2",
+  "version": "0.28.0",
   "description": "OmniMed Core — modular billing and care operations for diagnostic centres, pharmacies and small hospitals",
   "type": "module",
   "scripts": {
@@ -17,6 +17,7 @@
     "check:migrations": "node scripts/check-migrations.mjs",
     "check:scope": "node scripts/check-tenant-scope.mjs",
     "check:docs": "node scripts/check-docs.mjs",
+    "check:catalogue": "node scripts/check-catalogue.mjs",
     "check:docs:release": "node scripts/check-docs.mjs --release",
     "check": "npm run typecheck && npm run check:migrations && npm run check:scope && npm run check:docs",
     "license:keygen": "node license-portal/generate-keys.mjs",

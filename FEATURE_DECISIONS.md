@@ -858,3 +858,25 @@ The second deployment exists. `npm run build` makes the terminal (editing) app; 
 - Unresolved numeric parameters never remain blank; they show a validation-required fallback.
 - Reference text is for report display; numeric abnormal flags still use the report parameter's numeric
   limits. Laboratories must validate sex/age-specific flags and intervals locally.
+
+## Numeric reference limits and catalogue audit - built
+
+- `src/db/referenceLimits.ts` derives numeric limits from printable reference text when a numeric
+  parameter has neither `ref_min` nor `ref_max`.
+- `ensureReferenceLimits` runs after reference seeding in both the SQL.js and Tauri boot paths. It fills
+  only rows where both limits are null, so an explicit local limit is never overwritten.
+- The parser is deliberately conservative:
+  - age-band pairs such as `children 1-5y` are skipped and the actual range that follows is used
+  - sex/age variants are combined into the broadest range
+  - one-sided references such as `<150` and `>90` keep the open side null
+  - a purely zero reference (`0%`, `0/uL`) becomes `0-0`, so any positive result flags High
+  - qualitative and method-specific text returns no limits
+- `scripts/check-catalogue.mjs` audits every exported test and parameter. `npm run check:catalogue
+  <catalogue.json>` fails on duplicate/invalid entries, blank references, and range-like references with
+  null limits. Allowed exceptions remain warnings: fluid-specific differentials, IGF-1 charts, FiO2 room
+  air and other qualitative numeric codes.
+- Known legacy seed mismatches are repaired only when the row still holds the exact old seeded pair.
+  This keeps locally edited references and limits intact while aligning fresh and upgraded databases.
+- Current audit state: 229 tests (186 pathology + 43 X-ray), 383 parameters (221 numeric), 0 errors, 13
+  deliberate numeric-without-limits exceptions.
+- The workflow is captured in `.opencode/skills/diagbill-parameter-validation/SKILL.md`.

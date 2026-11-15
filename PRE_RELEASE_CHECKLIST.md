@@ -162,6 +162,8 @@ Record invoice/payment IDs and totals used for acceptance.
 - [ ] Login screen contains no default admin password hint
 - [ ] Expenses can be tagged with one or more modules; shared expense shows all selected modules in list/filter/CSV
 - [ ] Every pathology parameter has a non-blank reference interval; sex/age variants are present where applicable
+- [ ] Every numeric parameter with a range-like reference has `ref_min`/`ref_max`; derived limits are present after boot
+- [ ] `npm run check:catalogue <exported-json>` reports 0 errors and only known warnings
 - [ ] Starter references were updated once per tenant and custom references remain editable
 - [ ] Starter catalogue contains 186 pathology and 43 X-ray tests without duplicate names/codes
 - [ ] Absolute Eosinophil Count (AEC) exists with one numeric parameter, cells/cmm and a filled reference interval

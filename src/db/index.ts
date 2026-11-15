@@ -18,7 +18,10 @@ import { hashPassword } from "../auth/crypto";
 import { isMonitor } from "../app/mode";
 import { ensureDefaultTenant, getCurrentTenantId } from "./tenant";
 import { ensureStarterTests } from "./starterTests";
-import { ensureStarterParameters } from "./starterParameters";
+import {
+  ensureReferenceLimits,
+  ensureStarterParameters,
+} from "./starterParameters";
 import { ensureStarterSections } from "./starterSections";
 import { ensureStarterPackages } from "./starterPackages";
 import { ensureStarterReferences } from "./starterReferences";
@@ -179,6 +182,7 @@ class SqlJsSource implements DataSource {
     await ensureStarterParameters(src);
     await ensureStarterSections(src);
     await ensureStarterReferences(src);
+    await ensureReferenceLimits(src);
     await ensureStarterPackages(src);
     src.persist();
     return src;

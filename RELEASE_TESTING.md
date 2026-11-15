@@ -32,6 +32,7 @@ What each command covers:
 | `npm run check` | TypeScript typecheck, migration harness, tenant-scope lint, documentation consistency |
 | `npm run check:docs` | Version/schema references, changelog entry, required documents and doc links |
 | `npm run check:docs:release` | Release notes and checksum file for the current version |
+| `npm run check:catalogue <json>` | Every exported test/parameter: duplicates, blank references, invalid or missing numeric limits |
 | `npm run build` | Production terminal bundle |
 | `npm run build:monitor` | Read-only monitor bundle |
 | `cargo test --lib` | SQLCipher, backup validation, snapshot retention, export safety, pre-upgrade backup |
@@ -57,6 +58,24 @@ A red gate blocks the release. Do not sign or publish around a failure.
 `npm run check:docs:release` additionally requires `release/v<version>/RELEASE_NOTES.md` and
 `SHA256SUMS.txt`, and checks that the notes mention the version, schema/upgrade guidance and backup
 instructions.
+
+## 1b. Parameter catalogue audit
+
+Command: `npm run check:catalogue <catalogue.json>`
+
+The JSON is exported from a running app with
+`.opencode/skills/diagbill-test-catalogue/scripts/export-catalogue.js`. The audit fails when:
+
+- a pathology test has no parameter, or an X-ray has parameters
+- a test code or name is duplicated, or a parameter name repeats within a test
+- a parameter has a blank reference range
+- `ref_min` is greater than `ref_max`
+- a numeric parameter has a range-like reference (`7.35-7.45`, `<150`, `>90`, `-2 to +2`) but null limits
+
+Warnings are limited to deliberate exceptions: fluid-specific differentials, IGF-1 chart references,
+FiO2 room air and qualitative/method-specific numeric codes. A release must report **0 errors** and only
+those known warnings. The audit also verifies the startup backfill on an upgraded database, because it
+runs against the live catalogue rather than a source file.
 
 ## 2. Migration harness
 
