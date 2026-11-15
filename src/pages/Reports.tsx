@@ -106,8 +106,10 @@ interface ParameterEntry {
 }
 
 function numericValue(text: string): number | null {
-  if (!text.trim()) return null;
-  const value = Number(text);
+  // Accept thousands separators and stray spaces, e.g. "50,000" or "1,50,000".
+  const cleaned = text.trim().replace(/,/g, "").replace(/\s+/g, "");
+  if (!cleaned) return null;
+  const value = Number(cleaned);
   return Number.isFinite(value) ? value : null;
 }
 
