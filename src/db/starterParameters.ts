@@ -92,6 +92,15 @@ export const STARTER_PARAMETERS: Record<string, StarterParameter[]> = {
     nr("Monocytes", "%", "Adult: 2-10%", 2, 10),
     nr("Basophils", "%", "Adult: 0-2%", 0, 2),
   ],
+  PLT: [
+    nr(
+      "Platelet Count",
+      "cells/cmm",
+      "Adult: 1,50,000-4,50,000 /cmm",
+      150000,
+      450000
+    ),
+  ],
   DC: [
     n("Neutrophils", "%"),
     n("Lymphocytes", "%"),
@@ -355,6 +364,28 @@ export async function ensureStarterParameters(
                AND lower(p2.name) = 'rdw-cv'
            )`,
         [ts, cbcTest.id, tenant.id, cbcTest.id, tenant.id]
+      );
+    }
+
+    // Older standalone Platelet Count rows received the reference text but
+    // null numeric limits, so Low/High flags never fired. Fill only missing
+    // limits; keep any locally edited reference text.
+    const pltTest = tests.find((test) => test.code === "PLT");
+    if (pltTest) {
+      await store.run(
+        `UPDATE test_parameters
+         SET ref_min = COALESCE(ref_min, 150000),
+             ref_max = COALESCE(ref_max, 450000),
+             ref_range = CASE
+               WHEN trim(ref_range) = ''
+               THEN 'Adult: 1,50,000-4,50,000 /cmm'
+               ELSE ref_range
+             END,
+             updated_at = ?,
+             dirty = 1
+         WHERE test_id = ? AND tenant_id = ? AND deleted = 0
+           AND lower(name) = 'platelet count'`,
+        [ts, pltTest.id, tenant.id]
       );
     }
 
