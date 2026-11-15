@@ -48,7 +48,7 @@ Status meanings: **Ready**, **Pilot**, **Partial**, **Not available**, **Externa
 | Reference intervals | Ready | Adult ranges filled; sex/age variants included in reference text where applicable; laboratory validation still required |
 | Per-report parameter selection | Ready | Include/exclude each parameter; excluded rows retained for draft reopening |
 | Per-report unit/reference editing | Ready | Snapshot values for that patient; printer shows them |
-| Abnormal flags | Ready | Low/High from numeric limits |
+| Abnormal flags | Ready | Low/High from numeric limits; comma/space thousands separators such as `50,000` or `1,50,000` are parsed correctly |
 | Draft/verify workflow | Ready | Draft and verified statuses; release requires authority |
 | Fast bench workflow | Ready | Dedicated **Bench** groups pathology work by sample; accept the linked sample, fill empty numeric results with **Fill normal**, then **Release & print**; Release only is available when printing is deferred |
 | Bench sample exceptions | Ready | Reject a specimen with a reason, see it in the Exceptions queue, and recollect when no results or released report exist; the rejected sample history is preserved |

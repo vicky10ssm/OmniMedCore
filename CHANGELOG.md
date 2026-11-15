@@ -3,6 +3,28 @@
 All notable changes to OmniMed Core are recorded here. This project follows semantic versioning once
 production releases begin.
 
+## [0.27.1] - 2026-11-15
+
+### Fixed
+
+- Numeric result parsing now accepts thousands separators and spaces. Values such as `50,000` or
+  `1,50,000` are parsed as numbers instead of `NaN`.
+- This fixes Platelet Count (and every other numeric parameter) not showing **Low** or **High** when the
+  value was entered with a comma thousands separator.
+- Saved report parameters now store the correct numeric `result_value` and `abnormal` flag for
+  comma-formatted input.
+
+### Verified
+
+- Platelet Count `50,000` and `50000` both show **Low**.
+- Platelet Count `500000` shows **High**.
+- Saving `50,000` stores `result_value = 50000` and `abnormal = 1`.
+- `npm run check`, terminal build, monitor build and Rust tests pass.
+
+### Database
+
+- No schema change. Schema remains **25**.
+
 ## [0.27.0] - 2026-11-12
 
 ### Added
