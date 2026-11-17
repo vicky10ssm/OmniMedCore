@@ -4,8 +4,9 @@ The OmniMed Core dashboard is the primary in-app reporting surface for administr
 from the terminal's live local SQLite database, so it works fully offline and never depends on Google
 Drive, Sheets, BigQuery or Looker Studio.
 
-The external Google dashboard described in [GOOGLE_DASHBOARD.md](GOOGLE_DASHBOARD.md) remains an
-optional secondary path for cross-centre, remote or archival reporting.
+The external Google dashboard described in [GOOGLE_DASHBOARD.md](GOOGLE_DASHBOARD.md) is an optional
+secondary path for cross-centre, remote or archival reporting. Its production ingestion kit lives in
+[`google-dashboard/`](google-dashboard/README.md) and runs completely outside this desktop app.
 
 ## What it covers
 

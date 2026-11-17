@@ -1,7 +1,7 @@
 # Local Google Drive CSV export
 
-Last updated: 5 November 2026<br>
-Applies to: OmniMed Core desktop `0.28.0+`, schema `25+`
+Last updated: 17 November 2026<br>
+Applies to: OmniMed Core desktop `0.29.0+`, schema `25+`
 
 ## What it does
 
@@ -121,12 +121,19 @@ SQLCipher backup in [BACKUP_RESTORE.md](BACKUP_RESTORE.md).
 
 ### Optional Google dashboard
 
-An external read-only dashboard can be built from these files, but it is **not part of the desktop
-product**. The design, ingestion options, recommended BigQuery model, Looker Studio pages, security
-controls and acceptance tests are documented in [GOOGLE_DASHBOARD.md](GOOGLE_DASHBOARD.md).
+An external read-only dashboard can be built from these files. The production ingestion kit is in
+[`google-dashboard/`](google-dashboard/README.md); it is **not part of the desktop product** and does not
+change the app's export path. The design, ingestion options, recommended BigQuery model, Looker Studio
+pages, security controls and acceptance tests are documented in
+[GOOGLE_DASHBOARD.md](GOOGLE_DASHBOARD.md).
 
 The key boundary remains: Google Drive is an outbox, and the dashboard is a downstream consumer. No
-dashboard can write back into OmniMed Core, acknowledge uploads or replace terminal backups.
+dashboard can write back into OmniMed Core, acknowledge uploads or replace terminal backups. The kit
+reads only the existing full snapshots and loads an allowlisted reporting subset; patient names, contact
+details, clinical free text, signatures and authentication secrets are excluded.
+
+The production kit operates independently of the terminal. If it is not deployed, stopped or failing,
+OmniMed Core operations are unchanged.
 
 ## Queue, retry and failure handling
 

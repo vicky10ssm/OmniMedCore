@@ -3,6 +3,43 @@
 All notable changes to OmniMed Core are recorded here. This project follows semantic versioning once
 production releases begin.
 
+## [0.29.0] - 2026-11-17
+
+### Added
+
+- Added an optional **external Google dashboard production kit** in `google-dashboard/`.
+  - Reads the existing OmniMed Core full snapshots from Google Drive.
+  - Validates the snapshot manifest, safe file names, headers, row counts, tenant id and size limits.
+  - Loads only an allowlisted reporting subset into BigQuery.
+  - Keeps all tables in snapshot-tagged raw tables and activates a new snapshot only after every table
+    loads successfully.
+  - Ships read-only BigQuery/Looker Studio views, a Cloud Run container and deployment guidance.
+- Added `npm run check:dashboard` and the `diagbill-google-dashboard` operating skill.
+
+### Safety
+
+- The desktop app is not modified: no new import, network call, timer, queue write, database migration
+  or sync acknowledgement.
+- A stopped, late or failing dashboard pipeline leaves billing, reporting, backups and the monitor
+  unchanged.
+- Patient names, contact details, addresses, ABHA IDs, clinical free text, signatures and authentication
+  secrets are never loaded into BigQuery.
+- A malformed or incomplete snapshot is quarantined and the previous snapshot stays active.
+- Scheduler retries are idempotent; an already active snapshot is skipped.
+- The default pipeline uses the daily full snapshot only, so transaction rows are not mixed into
+  financial totals.
+
+### Verified
+
+- `npm run check:dashboard` passes all dashboard-kit tests.
+- A local dry run validates a complete snapshot without writing to BigQuery.
+- The desktop sync guard test confirms no dashboard import, `fetch` call or cloud URL in the export path.
+- `npm run check`, terminal build, monitor build and Rust tests pass.
+
+### Database
+
+- No schema change. Schema remains **25**.
+
 ## [0.28.0] - 2026-11-15
 
 ### Added

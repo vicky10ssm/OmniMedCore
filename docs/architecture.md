@@ -1,7 +1,7 @@
 # OmniMed Core architecture and local export design
 
 Last updated: 9 November 2026  
-Current product version: `0.28.0`  
+Current product version: `0.29.0`  
 Current schema: `25`
 
 ## 1. Status and scope
@@ -203,9 +203,12 @@ authentication secrets (`users.password_hash`, `users.totp_secret`, `users.recov
 merge or online revocation.
 
 See [LOCAL_CSV_EXPORT.md](../LOCAL_CSV_EXPORT.md). An optional downstream Google
-Sheets/BigQuery/Looker Studio dashboard is described in [GOOGLE_DASHBOARD.md](../GOOGLE_DASHBOARD.md);
-it remains an optional external consumer of exported CSVs. The desktop product's primary reporting
-surface is the built-in local dashboard in [DASHBOARD.md](../DASHBOARD.md).
+Sheets/BigQuery/Looker Studio dashboard is described in [GOOGLE_DASHBOARD.md](../GOOGLE_DASHBOARD.md).
+Its production ingestion kit in [`google-dashboard/`](../google-dashboard/README.md) is a separate
+read-only project: it consumes the existing full snapshots, loads an allowlisted reporting subset into
+BigQuery and exposes Looker Studio views. It is not imported by the desktop app, makes no network call
+from the terminal and cannot write back. The desktop product's primary reporting surface remains the
+built-in local dashboard in [DASHBOARD.md](../DASHBOARD.md).
 
 ### Data ownership in current build
 

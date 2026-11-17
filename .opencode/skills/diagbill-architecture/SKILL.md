@@ -13,7 +13,7 @@ Use this skill for structural work on the diagnostic-centre application. Read th
 - The packaged desktop app uses Tauri + native SQLCipher; the browser build remains sql.js/IndexedDB and is development-only.
 - The same app supports Diagnostics, Pharmacy, Hospital, Complete and Custom editions. Effective modules are the signed licence's modules ∩ the clinic's enabled modules. Licence verification is offline ECDSA P-256 with tenant/device binding; see the `diagbill-licensing` skill.
 - Monitoring is local and read-only. Billing belongs on trusted offline terminals, including when several terminals work without connectivity.
-- The integration path is a decoupled local Google Drive CSV outbox: `local_export_queue` snapshots invoices, pharmacy sales, admissions and hospital charges, and a 30-second scheduler writes unique masked CSV files. There is no API, token, ACK table or hosted cloud dashboard. See `diagbill-sync` and `LOCAL_CSV_EXPORT.md`.
+- The integration path is a decoupled local Google Drive CSV outbox: `local_export_queue` snapshots invoices, pharmacy sales, admissions and hospital charges, and a 30-second scheduler writes unique masked CSV files. There is no API, token, ACK table or hosted cloud dashboard inside the app. The optional Google dashboard kit is a separate external read-only consumer in `google-dashboard/`. See `diagbill-sync`, `diagbill-google-dashboard` and `LOCAL_CSV_EXPORT.md`.
 - Every independent centre/hospital is a tenant. Never mix tenant records, settings, invoice numbers or monitoring data.
 - Records use UUIDs, `created_at`, `updated_at`, `device_id`, `dirty`, `deleted`, and `tenant_id` where applicable. `dirty` is legacy; the local export ledger is separate.
 

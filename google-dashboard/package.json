@@ -1,0 +1,19 @@
+{
+  "name": "omnimed-google-dashboard",
+  "version": "0.29.0",
+  "private": true,
+  "type": "module",
+  "description": "Read-only Google Drive to BigQuery ingestion and Looker Studio views for OmniMed Core exports",
+  "scripts": {
+    "start": "node src/main.mjs",
+    "dry-run": "node src/main.mjs --dry-run",
+    "test": "node --test test"
+  },
+  "dependencies": {
+    "@google-cloud/bigquery": "^9.6.1",
+    "googleapis": "^190.0.0"
+  },
+  "engines": {
+    "node": ">=24"
+  }
+}

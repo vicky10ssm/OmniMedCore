@@ -61,6 +61,7 @@ Expenses profitability card.
   DPAPI storage, clock high-water checks, 30-day grace and read-only mode after grace
 - Vendor licence portal for issue, download, renewal and revocation
 - Decoupled local CSV export into a Google Drive sync folder, with a sidebar badge showing the real pending CSV queue count
+- Optional external Google dashboard kit (`google-dashboard/`) that validates exported full snapshots, loads an allowlisted reporting subset into BigQuery, and serves read-only Looker Studio views without changing or depending on the desktop app
 - Unique transaction CSVs with masked patient IDs, local retry queue and no network calls
 - Full daily/on-demand snapshots with one CSV per table, including patients and all business modules
 
@@ -106,11 +107,13 @@ through Settings → Modules & logo or `window.__diagbillSeedDemo()`.
 
 ```powershell
 npm run check
+npm run check:dashboard
 npm run build
 npm run build:monitor
 ```
 
-`npm run check` covers TypeScript, migration scenarios and static tenant-scope checks.
+`npm run check` covers TypeScript, migration scenarios, static tenant-scope checks and the external
+Google-dashboard kit tests.
 
 Run the parameter-catalogue audit against a JSON export from a running app:
 

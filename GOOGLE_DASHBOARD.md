@@ -1,13 +1,52 @@
-# Google dashboard design for OmniMed Core
+# Google dashboard for OmniMed Core
 
-Status: **design only - not implemented in the desktop product**  
-Applies to: OmniMed Core `0.7.0+`, schema `20+`  
+Status: **optional external production kit available** in [`google-dashboard/`](google-dashboard/README.md)  
+Applies to: OmniMed Core `0.29.0+`, schema `25+`  
 Related: [LOCAL_CSV_EXPORT.md](LOCAL_CSV_EXPORT.md), [docs/architecture.md](docs/architecture.md)
+
+## 0. Production kit and safety boundary
+
+The production pipeline is implemented outside the desktop product in
+[`google-dashboard/`](google-dashboard/README.md). It validates the newest complete full snapshot from
+the existing Google Drive export, reduces it to an allowlisted reporting subset, loads it into BigQuery,
+and exposes read-only views for Looker Studio.
+
+The kit is deliberately **not imported by the desktop app**:
+
+- no new app network call, timer, queue write, database migration or sync acknowledgement
+- no write-back into the terminal
+- no dependency on the pipeline for billing, reporting, backups or the read-only monitor
+- a stopped, late or failed pipeline leaves OmniMed Core operations unchanged
+
+The default pipeline consumes the daily **full snapshot** only. It does not append transaction CSV rows,
+so revenue cannot be double-counted by mixing the two export contracts. The transaction outbox remains
+available for a separate, masked trend use case if the clinic explicitly builds one.
+
+Safety controls enforced by the kit and its tests:
+
+- validate the manifest, file names, table names, headers and row counts before any write
+- load only approved tables and columns; patient names, phone numbers, addresses, ABHA IDs, clinical free
+  text, signatures and authentication secrets are never loaded
+- load all tables into snapshot-tagged raw tables, then switch a single `_current_snapshot` pointer
+- keep the previous snapshot active when any table fails validation or loading
+- skip an already active snapshot so scheduler retries are idempotent
+- retain raw snapshots for a configurable window and log every run
+- prove with an automated test that the desktop sync code has no dashboard or network dependency
+
+Run the local dry run and tests before deploying:
+
+```powershell
+node google-dashboard/src/main.mjs --source local `
+  --folder "%USERPROFILE%\My Drive\OmniMed Core\outbox\full-export" `
+  --dry-run
+npm run check:dashboard
+```
 
 ## 1. Purpose
 
-This document describes how an optional **Google-based read-only dashboard** could be built on top of
-the CSV files that OmniMed Core already writes to a local Google Drive sync folder.
+This document describes the optional **Google-based read-only dashboard** built on top of the CSV files
+that OmniMed Core already writes to a local Google Drive sync folder. The production ingestion kit lives
+in [`google-dashboard/`](google-dashboard/README.md).
 
 The dashboard is an **external downstream consumer**. It is not:
 
@@ -32,8 +71,8 @@ There are three practical levels:
 | Production | Google Drive + Cloud Run/Cloud Functions + BigQuery + Looker Studio | Multiple centres, larger volumes, access control and reliable refresh |
 | Lightweight | Google Drive + Looker Studio connected to a Google Sheet | A fast demo, not a long-term clinical data store |
 
-**Recommended production design:** Google Drive outbox -> Cloud Run/Cloud Functions ingestion ->
-BigQuery tables -> Looker Studio dashboards.
+**Recommended production design:** Google Drive outbox -> Cloud Run job in `google-dashboard/` ->
+BigQuery raw tables and reporting views -> Looker Studio dashboards.
 
 **Recommended pilot design:** Google Drive outbox -> Apps Script -> Google Sheets -> Looker Studio.
 The Sheet is a staging and charting layer, not the source of truth.
@@ -176,7 +215,10 @@ Limits of this approach:
 
 Use it for a controlled pilot, not as the long-term architecture.
 
-### 5.2 Production: BigQuery + Cloud Run/Cloud Functions
+### 5.2 Production: BigQuery + Cloud Run
+
+The implementation is in [`google-dashboard/`](google-dashboard/README.md). It runs as a scheduled Cloud
+Run job and does not require a custom API in the desktop app.
 
 ```text
 Google Drive / Shared Drive
@@ -190,7 +232,7 @@ Google Drive / Shared Drive
   -> Looker Studio
 ```
 
-Recommended details:
+Recommended details (implemented in `google-dashboard/`):
 
 - Use a dedicated Google Cloud project and a dedicated service account.
 - Use Workload Identity or a service account key stored in Secret Manager; never commit keys.
@@ -395,20 +437,14 @@ Do not label the dashboard "live". Use "last updated" and show the source timest
 
 ### 10.3 Production dashboard
 
-1. Create a Google Cloud project and BigQuery dataset.
-2. Create a private Cloud Storage staging bucket.
-3. Create the ingestion service account and grant Drive folder read access.
-4. Deploy the Cloud Run job or Cloud Function.
-5. Schedule it with Cloud Scheduler.
-6. Load and validate one complete snapshot.
-7. Create reporting views with paise-to-rupees and Asia/Kolkata date conversions.
-8. Connect Looker Studio to the BigQuery views.
-9. Build the dashboards and access groups.
-10. Run the acceptance tests in section 12.
+Use the deploy steps in [`google-dashboard/README.md`](google-dashboard/README.md). They cover the Cloud
+Run job, service account, BigQuery datasets, scheduler and Looker Studio connection.
 
 ## 11. BigQuery example views
 
-These are examples, not shipped migrations. Adapt column names to the exported snapshot.
+The shipped views are in [`google-dashboard/sql/views.sql`](google-dashboard/sql/views.sql). They read
+the latest activated snapshot and convert paise to INR and epoch milliseconds to Asia/Kolkata dates.
+Adapt additional views to the exported snapshot, but keep the same read-only boundary.
 
 ```sql
 CREATE OR REPLACE VIEW reporting.invoices AS
@@ -467,11 +503,13 @@ Use separate views for transaction-outbox trends to avoid mixing the two export 
 
 ## 12. Acceptance tests
 
-- [ ] A new transaction CSV is detected and loaded exactly once.
-- [ ] Duplicate transaction IDs are deduplicated, not double-counted.
+- [ ] `npm run check:dashboard` passes.
+- [ ] A local dry run validates the newest snapshot without writing to BigQuery.
+- [ ] The newest complete snapshot is loaded exactly once; an already active snapshot is skipped.
+- [ ] A failed table load leaves the previous snapshot active and records a failed run.
 - [ ] The latest full snapshot replaces the prior snapshot for the same table.
 - [ ] A malformed CSV is quarantined and does not partially update the dashboard.
-- [ ] The dashboard shows the correct latest snapshot and transaction timestamps.
+- [ ] The dashboard shows the correct latest snapshot timestamp.
 - [ ] A missing daily snapshot triggers an alert.
 - [ ] Currency displays as INR and paise is converted exactly once.
 - [ ] Dates use Asia/Kolkata and align with the terminal's business date.
@@ -508,7 +546,8 @@ Google pricing.
 
 ## 14. Limitations and non-goals
 
-- No dashboard code, API, endpoint, token or hosted service is included in OmniMed Core.
+- No dashboard code, API, endpoint, token or hosted service is included in the desktop app. The optional
+  ingestion kit is a separate external project and does not run inside OmniMed Core.
 - No real-time monitoring; freshness depends on the app, Drive client and ingestion schedule.
 - No import, write-back, correction propagation or conflict resolution.
 - No Google Drive upload acknowledgement.

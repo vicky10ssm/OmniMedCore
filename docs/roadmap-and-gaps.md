@@ -90,8 +90,9 @@ licence portal is implemented as a vendor admin portal, not a hosted public subs
 
 Hosted monitoring and online sync were removed. The current product uses a one-way local Google Drive
 CSV outbox. Future integrations must not become a write path or a substitute for terminal backups.
-An external read-only Google Sheets/BigQuery/Looker Studio dashboard design is documented in
-[GOOGLE_DASHBOARD.md](../GOOGLE_DASHBOARD.md); it is not a current product feature.
+An external read-only Google Sheets/BigQuery/Looker Studio dashboard is available as a separate
+production kit in [`google-dashboard/`](../google-dashboard/README.md). It is not a current desktop-app
+feature and has no write path into OmniMed Core.
 
 ## P3 — ABDM production
 
