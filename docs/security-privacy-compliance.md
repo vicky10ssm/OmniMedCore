@@ -39,6 +39,10 @@
 - There is no cloud backup, central retention scheduler or deletion certificate.
 - CSV exports and printed PDFs create uncontrolled copies outside the app; buyers must have a policy
   for those copies.
+- The optional external Google dashboard kit loads only an allowlisted reporting subset (no patient
+  names, contact details, addresses, ABHA IDs, clinical free text, signatures or authentication
+  secrets), but the clinic's Google Drive/BigQuery/Looker access, region and retention policy remain
+  buyer responsibilities.
 - Say “desktop database and local backups are SQLCipher-encrypted; browser/development storage is not”
   rather than “all data is encrypted”.
 

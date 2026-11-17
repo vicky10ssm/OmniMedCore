@@ -1,7 +1,7 @@
 # Production and commercial readiness status
 
 Last updated: 10 November 2026
-Product version: `0.28.0`
+Product version: `0.29.0`
 Database schema: `25`
 Current stage: supervised pilot / pre-production
 
@@ -150,9 +150,11 @@ migration 18.
 
 ### P2 — Future integrations (not in current scope)
 
-Hosted monitoring and online sync were removed. Future work may add a controlled downstream CSV
-consumer, but it must not become a write path or a substitute for terminal backups. Current scope does
-not include a hosted dashboard, per-device sync tokens, cloud tenant administration or SaaS billing.
+Hosted monitoring and online sync were removed. An optional external, read-only dashboard kit now exists
+in `google-dashboard/`; it consumes exported CSVs and is not a write path, hosted product tier or
+substitute for terminal backups. It must not be described as a hosted dashboard bundled with OmniMed
+Core. Current scope still does not include per-device sync tokens, cloud tenant administration or SaaS
+billing.
 
 ### P3 — ABDM production
 

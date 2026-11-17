@@ -1,7 +1,7 @@
 # Productionization plan
 
 Last updated: 9 November 2026
-Current product version: `0.28.0`  
+Current product version: `0.29.0`  
 Current schema: `25`
 Current deployment: packaged Windows desktop with SQLCipher, encrypted backups and local Google Drive
 CSV export for supervised pilots; browser build remains development-only
@@ -11,8 +11,9 @@ For the current one-page done/pending snapshot and commercial release decision, 
 
 > **Scope note:** hosted cloud sync and the read-only cloud dashboard were removed in `0.4.0`. The
 > current integration path is the local Google Drive CSV outbox in
-> [LOCAL_CSV_EXPORT.md](../LOCAL_CSV_EXPORT.md). Cloud/monitor references later in this historical plan
-> are retained for context only.
+> [LOCAL_CSV_EXPORT.md](../LOCAL_CSV_EXPORT.md). An optional external read-only dashboard kit exists in
+> [`google-dashboard/`](../google-dashboard/README.md); it is not bundled with the desktop app. Cloud/
+> monitor references later in this historical plan are retained for context only.
 
 ## 1. Purpose
 

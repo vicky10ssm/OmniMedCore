@@ -507,6 +507,27 @@ The second deployment exists. `npm run build` makes the terminal (editing) app; 
 - Full snapshots contain confidential patient data and are not encrypted backups.
 - Legacy `sync_queue`/`sync_ack` tables remain historical; migration 18 drops their triggers.
 
+## External Google dashboard production kit - built
+
+- `google-dashboard/` is a separate, optional read-only pipeline. It is not imported by the desktop app
+  and adds no network call, timer, queue write or schema change to OmniMed Core.
+- It consumes the newest complete `snapshot_*` folder from the existing Google Drive full export.
+- The manifest, safe file/table names, headers, row counts, tenant id and size limits are validated before
+  any BigQuery write. A malformed or incomplete snapshot is quarantined.
+- Only an explicit table/column allowlist is loaded. Patient names, contact details, addresses, ABHA IDs,
+  clinical free text, signatures and authentication secrets are excluded.
+- Tables are loaded with `_snapshot_id`/`_run_id` metadata. A single `_current_snapshot` row is switched
+  only after every approved table loads, so a failure leaves the previous snapshot active.
+- An already active snapshot is skipped; scheduler retries are idempotent.
+- The default pipeline uses the daily full snapshot only. Transaction outbox rows are not appended, which
+  prevents double counting between the two export contracts.
+- `sql/views.sql` provides typed INR/Asia-Kolkata views for Looker Studio, including
+  `v_data_freshness`.
+- `npm run check:dashboard` covers CSV/manifest validation, PII removal, fail-closed activation,
+  idempotency and the no-desktop-coupling guard.
+- Deployment uses a Cloud Run job, a dedicated service account and Cloud Scheduler. If the kit is absent,
+  stopped or failing, OmniMed Core operations are unchanged.
+
 ## OmniMed Core rebrand and X-ray reporting - built
 
 - The product is branded **OmniMed Core** across the app, installers, portal and documentation.

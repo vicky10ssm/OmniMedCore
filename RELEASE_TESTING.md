@@ -33,6 +33,7 @@ What each command covers:
 | `npm run check:docs` | Version/schema references, changelog entry, required documents and doc links |
 | `npm run check:docs:release` | Release notes and checksum file for the current version |
 | `npm run check:catalogue <json>` | Every exported test/parameter: duplicates, blank references, invalid or missing numeric limits |
+| `npm run check:dashboard` | External Google dashboard kit: CSV/manifest validation, PII allowlist, fail-closed activation and no app coupling |
 | `npm run build` | Production terminal bundle |
 | `npm run build:monitor` | Read-only monitor bundle |
 | `cargo test --lib` | SQLCipher, backup validation, snapshot retention, export safety, pre-upgrade backup |
@@ -76,6 +77,29 @@ Warnings are limited to deliberate exceptions: fluid-specific differentials, IGF
 FiO2 room air and qualitative/method-specific numeric codes. A release must report **0 errors** and only
 those known warnings. The audit also verifies the startup backfill on an upgraded database, because it
 runs against the live catalogue rather than a source file.
+
+## 1c. External Google dashboard kit
+
+Command: `npm run check:dashboard`
+
+The tests in `google-dashboard/test/` cover the read-only ingestion contract:
+
+- strict CSV quoting, formula-guard removal and malformed-input rejection
+- manifest path/table/header validation and row-count matching
+- allowlist removal of patient names, notes and authentication secrets
+- newest-snapshot selection, fail-closed table loading and idempotent activation
+- a guard that the desktop sync source has no dashboard import, `fetch` call or cloud URL
+
+Before deploying the kit, run a local dry run against a copy of the export folder:
+
+```powershell
+node google-dashboard/src/main.mjs --source local `
+  --folder "%USERPROFILE%\My Drive\OmniMed Core\outbox\full-export" `
+  --dry-run
+```
+
+The kit is external. Its failure or absence must never block an OmniMed Core release or change billing,
+reporting, backups or the monitor.
 
 ## 2. Migration harness
 
