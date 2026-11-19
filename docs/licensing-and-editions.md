@@ -57,6 +57,16 @@ If WMI/CIM access is restricted or either component is a placeholder, the app fa
 drive volume serial number and returns a `volume-serial` fingerprint. If no stable identifier can be read,
 activation fails closed with a supportable error instead of crashing or silently accepting a random ID.
 
+The first successfully resolved identity is persisted with DPAPI at
+`%APPDATA%\in.medicore.desktop\device-identity.dpapi`. On later launches the app keeps that identity when
+WMI is temporarily unavailable, instead of switching between the motherboard/CPU hash and the volume-serial
+hash. It also keeps a volume-serial identity if that is what the stored licence was issued for. This makes
+the Hardware Device ID stable across transient WMI/PowerShell timeouts and reboots. The identity only
+changes when the same source reports genuinely different hardware.
+
+Do not delete `device-identity.dpapi` during support unless the terminal hardware has deliberately changed
+and the licence is being reissued. The packaged app reads it before licence matching.
+
 ### DPAPI licence storage
 
 The signed licence is encrypted with Windows Data Protection API (DPAPI) at `CurrentUser` scope, with an

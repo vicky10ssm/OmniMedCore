@@ -3,6 +3,41 @@
 All notable changes to OmniMed Core are recorded here. This project follows semantic versioning once
 production releases begin.
 
+## [0.30.1] - 2026-11-19
+
+### Fixed
+
+- The Hardware Device ID no longer changes when the Windows WMI/PowerShell query times out or is
+  temporarily blocked.
+  - The first resolved hardware identity is persisted with DPAPI in
+    `%APPDATA%\in.medicore.desktop\device-identity.dpapi`.
+  - A cached motherboard/CPU identity is kept when the volume-serial fallback appears.
+  - A cached volume-serial identity is kept when WMI becomes available again, so an existing licence
+    does not suddenly stop matching.
+  - On first run, the app checks the stored licence's `deviceIds` and keeps whichever available
+    candidate matches the issued licence before choosing a new identity.
+- Increased the WMI/PowerShell query timeout from 8 to 20 seconds to reduce false fallback on slower
+  terminals.
+
+### Safety
+
+- The cached identity is DPAPI-protected to the current Windows account and machine.
+- A genuine change in the same hardware source still updates the identity, so a replaced motherboard/CPU
+  or reformatted system drive still requires a replacement licence.
+- Signature, tenant and hardware checks in the frontend remain the entitlement boundary; the cache only
+  stabilises which hardware candidate is presented.
+
+### Verified
+
+- `cargo test --lib --locked` covers fallback switching, licence-match preference and DPAPI identity
+  storage.
+- Repeated launches on the same terminal return the same Device ID.
+- `npm run check`, terminal build and monitor build pass.
+
+### Database
+
+- No schema change. Schema remains **25**.
+
 ## [0.30.0] - 2026-11-19
 
 ### Added

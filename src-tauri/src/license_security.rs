@@ -32,11 +32,12 @@ use windows_sys::Win32::Security::Cryptography::{
 
 const LICENSE_FILE_NAME: &str = "license.dpapi";
 const TIME_STATE_FILE_NAME: &str = "license-state.dpapi";
+const IDENTITY_STATE_FILE_NAME: &str = "device-identity.dpapi";
 const DPAPI_ENTROPY: &[u8] = b"MediCore.License.DPAPI.v1";
 const CREATE_NO_WINDOW: u32 = 0x0800_0000;
-const WMI_QUERY_TIMEOUT: Duration = Duration::from_secs(8);
+const WMI_QUERY_TIMEOUT: Duration = Duration::from_secs(20);
 
-#[derive(Debug, Serialize)]
+#[derive(Clone, Debug, Serialize)]
 pub struct MachineIdentity {
     pub fingerprint: String,
     pub source: String,
@@ -46,6 +47,16 @@ pub struct MachineIdentity {
 struct ExecutionState {
     version: u8,
     last_known_execution_time: i64,
+}
+
+/// The first successfully resolved hardware identity is persisted. This stops a
+/// transient WMI/PowerShell failure from switching the licence Device ID to the
+/// volume-serial fallback (or back again) between launches.
+#[derive(Debug, Serialize, Deserialize)]
+struct DeviceIdentityState {
+    version: u8,
+    source: String,
+    fingerprint: String,
 }
 
 fn app_data_dir(app: &tauri::AppHandle) -> Result<PathBuf, String> {
@@ -64,6 +75,10 @@ fn license_path(app: &tauri::AppHandle) -> Result<PathBuf, String> {
 
 fn time_state_path(app: &tauri::AppHandle) -> Result<PathBuf, String> {
     Ok(app_data_dir(app)?.join(TIME_STATE_FILE_NAME))
+}
+
+fn identity_state_path(app: &tauri::AppHandle) -> Result<PathBuf, String> {
+    Ok(app_data_dir(app)?.join(IDENTITY_STATE_FILE_NAME))
 }
 
 fn system_time_ms() -> Result<i64, String> {
@@ -288,6 +303,74 @@ fn save_execution_state(path: &Path, state: &ExecutionState) -> Result<(), Strin
     atomic_write(path, &protected)
 }
 
+fn load_identity_state(path: &Path) -> Result<Option<DeviceIdentityState>, String> {
+    if !path.exists() {
+        return Ok(None);
+    }
+    let protected =
+        fs::read(path).map_err(|e| format!("Could not read the device-identity state: {e}"))?;
+    let clear = dpapi_unprotect(&protected)?;
+    let state: DeviceIdentityState = serde_json::from_slice(&clear)
+        .map_err(|e| format!("Invalid device-identity state: {e}"))?;
+    if state.version != 1 {
+        return Ok(None);
+    }
+    Ok(Some(state))
+}
+
+fn save_identity_state(path: &Path, state: &DeviceIdentityState) -> Result<(), String> {
+    let clear = serde_json::to_vec(state)
+        .map_err(|e| format!("Could not serialize device-identity state: {e}"))?;
+    let protected = dpapi_protect(&clear)?;
+    atomic_write(path, &protected)
+}
+
+fn valid_fingerprint(value: &str) -> bool {
+    value.len() == 64 && value.chars().all(|c| c.is_ascii_hexdigit())
+}
+
+/// Keeps the first resolved identity stable across transient WMI failures.
+///
+/// Rules:
+/// - no cache: use the current identity and persist it
+/// - same fingerprint: keep it
+/// - cached WMI + current volume fallback: keep WMI (temporary query failure)
+/// - cached volume fallback + current WMI: keep the fallback rather than changing
+///   the Device ID once a licence has been issued
+/// - same source but a different fingerprint: hardware changed; use the new one
+fn select_machine_identity(
+    cached: Option<DeviceIdentityState>,
+    current: MachineIdentity,
+) -> (MachineIdentity, bool) {
+    let Some(cached) = cached else {
+        return (current, true);
+    };
+    if !valid_fingerprint(&cached.fingerprint) {
+        return (current, true);
+    }
+    if cached.fingerprint.eq_ignore_ascii_case(&current.fingerprint) {
+        return (
+            MachineIdentity {
+                fingerprint: cached.fingerprint,
+                source: cached.source,
+            },
+            false,
+        );
+    }
+    if (cached.source == "wmi" && current.source == "volume-serial")
+        || (cached.source == "volume-serial" && current.source == "wmi")
+    {
+        return (
+            MachineIdentity {
+                fingerprint: cached.fingerprint,
+                source: cached.source,
+            },
+            false,
+        );
+    }
+    (current, true)
+}
+
 fn advance_execution_time(now: i64, last_known: i64) -> Result<i64, String> {
     if now < last_known {
         return Err(
@@ -468,39 +551,134 @@ fn primary_volume_serial() -> Option<String> {
     None
 }
 
-fn machine_identity() -> Result<MachineIdentity, String> {
+fn candidate_identities() -> (Option<MachineIdentity>, Option<MachineIdentity>) {
     let (board, cpu, disk) = powershell_ids().unwrap_or((None, None, None));
-    if let Some((fingerprint, source)) = fingerprint_from_components(
-        board.and_then(|v| normalize_component(&v)),
-        cpu.and_then(|v| normalize_component(&v)),
-    ) {
-        return Ok(MachineIdentity {
+    let wmi = fingerprint_from_components(
+        board.and_then(|value| normalize_component(&value)),
+        cpu.and_then(|value| normalize_component(&value)),
+    )
+    .map(|(fingerprint, source)| MachineIdentity {
+        fingerprint,
+        source,
+    });
+
+    let serial = disk.or_else(primary_volume_serial);
+    let volume = serial
+        .and_then(|serial| volume_serial_fingerprint(&serial))
+        .map(|(fingerprint, source)| MachineIdentity {
             fingerprint,
             source,
         });
-    }
 
-    let serial = disk.or_else(primary_volume_serial);
-    if let Some(serial) = serial {
-        if let Some((fingerprint, source)) = volume_serial_fingerprint(&serial) {
-            return Ok(MachineIdentity {
-                fingerprint,
-                source,
-            });
+    (wmi, volume)
+}
+
+/// Reads the signed licence's deviceIds only to keep an existing installation on
+/// its previously issued identity. Signature and trust checks still happen in
+/// the frontend; this value never grants entitlement by itself.
+fn stored_license_device_ids(app: &tauri::AppHandle) -> Vec<String> {
+    let Ok(path) = license_path(app) else {
+        return Vec::new();
+    };
+    let Ok(protected) = fs::read(path) else {
+        return Vec::new();
+    };
+    let Ok(clear) = dpapi_unprotect(&protected) else {
+        return Vec::new();
+    };
+    let Ok(value) = serde_json::from_slice::<serde_json::Value>(&clear) else {
+        return Vec::new();
+    };
+    value
+        .pointer("/payload/deviceIds")
+        .and_then(|ids| ids.as_array())
+        .map(|ids| {
+            ids.iter()
+                .filter_map(|id| id.as_str())
+                .map(|id| id.trim().to_ascii_lowercase())
+                .filter(|id| !id.is_empty())
+                .collect()
+        })
+        .unwrap_or_default()
+}
+
+fn preferred_identity(
+    wmi: Option<MachineIdentity>,
+    volume: Option<MachineIdentity>,
+    licensed_device_ids: &[String],
+) -> Option<MachineIdentity> {
+    let candidates: Vec<MachineIdentity> = [wmi, volume].into_iter().flatten().collect();
+    if candidates.is_empty() {
+        return None;
+    }
+    candidates
+        .iter()
+        .find(|candidate| {
+            licensed_device_ids
+                .iter()
+                .any(|id| id.eq_ignore_ascii_case(&candidate.fingerprint))
+        })
+        .cloned()
+        .or_else(|| candidates.into_iter().next())
+}
+
+fn choose_machine_identity(
+    cached: Option<DeviceIdentityState>,
+    current: MachineIdentity,
+    wmi: Option<MachineIdentity>,
+    volume: Option<MachineIdentity>,
+    licensed_device_ids: &[String],
+) -> (MachineIdentity, bool) {
+    let preferred =
+        preferred_identity(wmi, volume, licensed_device_ids).unwrap_or_else(|| current.clone());
+    match cached {
+        Some(cached) => {
+            let cached_matches = licensed_device_ids
+                .iter()
+                .any(|id| id.eq_ignore_ascii_case(&cached.fingerprint));
+            let preferred_matches = licensed_device_ids
+                .iter()
+                .any(|id| id.eq_ignore_ascii_case(&preferred.fingerprint));
+            if !cached_matches && preferred_matches {
+                (preferred, true)
+            } else {
+                select_machine_identity(Some(cached), current)
+            }
         }
+        None => (preferred, true),
     }
-
-    Err(
-        "OmniMed Core could not read a stable hardware identifier. WMI may be restricted and the primary drive serial is unavailable."
-            .to_string(),
-    )
 }
 
 /// Query motherboard serial + CPU Processor ID and SHA-256 the whitespace-free
 /// concatenation. Falls back to the primary volume serial when WMI is blocked.
+/// The first resolved identity is persisted so a transient WMI failure cannot
+/// switch the Device ID between launches.
 #[tauri::command]
-pub fn get_machine_fingerprint() -> Result<MachineIdentity, String> {
-    machine_identity()
+pub fn get_machine_fingerprint(app: tauri::AppHandle) -> Result<MachineIdentity, String> {
+    let (wmi, volume) = candidate_identities();
+    let current = wmi
+        .clone()
+        .or_else(|| volume.clone())
+        .ok_or_else(|| {
+            "OmniMed Core could not read a stable hardware identifier. WMI may be restricted and the primary drive serial is unavailable."
+                .to_string()
+        })?;
+    let path = identity_state_path(&app)?;
+    let cached = load_identity_state(&path).ok().flatten();
+    let licensed = stored_license_device_ids(&app);
+    let (selected, changed) =
+        choose_machine_identity(cached, current, wmi, volume, &licensed);
+    if changed {
+        save_identity_state(
+            &path,
+            &DeviceIdentityState {
+                version: 1,
+                source: selected.source.clone(),
+                fingerprint: selected.fingerprint.clone(),
+            },
+        )?;
+    }
+    Ok(selected)
 }
 
 #[cfg(test)]
@@ -541,6 +719,128 @@ mod tests {
         assert!(error.contains("System Clock Manipulation Detected"));
     }
 
+    fn identity(fingerprint: &str, source: &str) -> MachineIdentity {
+        MachineIdentity {
+            fingerprint: fingerprint.to_string(),
+            source: source.to_string(),
+        }
+    }
+
+    #[test]
+    fn cached_identity_absorbs_wmi_fallback_switches() {
+        let wmi = identity(&"a".repeat(64), "wmi");
+        let volume = identity(&"b".repeat(64), "volume-serial");
+
+        let (selected, changed) = select_machine_identity(
+            Some(DeviceIdentityState {
+                version: 1,
+                source: wmi.source.clone(),
+                fingerprint: wmi.fingerprint.clone(),
+            }),
+            volume,
+        );
+        assert!(!changed);
+        assert_eq!(selected.fingerprint, wmi.fingerprint);
+        assert_eq!(selected.source, "wmi");
+
+        let (selected, changed) = select_machine_identity(
+            Some(DeviceIdentityState {
+                version: 1,
+                source: "volume-serial".to_string(),
+                fingerprint: "b".repeat(64),
+            }),
+            wmi,
+        );
+        assert!(!changed);
+        assert_eq!(selected.fingerprint, "b".repeat(64));
+        assert_eq!(selected.source, "volume-serial");
+    }
+
+    #[test]
+    fn cached_identity_updates_only_when_the_same_source_changes() {
+        let current = identity(&"c".repeat(64), "wmi");
+        let (selected, changed) = select_machine_identity(
+            Some(DeviceIdentityState {
+                version: 1,
+                source: "wmi".to_string(),
+                fingerprint: "d".repeat(64),
+            }),
+            current.clone(),
+        );
+        assert!(changed);
+        assert_eq!(selected.fingerprint, current.fingerprint);
+
+        let (selected, changed) = select_machine_identity(
+            Some(DeviceIdentityState {
+                version: 1,
+                source: "wmi".to_string(),
+                fingerprint: current.fingerprint.clone(),
+            }),
+            current.clone(),
+        );
+        assert!(!changed);
+        assert_eq!(selected.fingerprint, current.fingerprint);
+    }
+
+    #[test]
+    fn preferred_identity_keeps_a_licence_issued_for_the_fallback() {
+        let wmi = identity(&"a".repeat(64), "wmi");
+        let volume = identity(&"b".repeat(64), "volume-serial");
+        let selected = preferred_identity(
+            Some(wmi.clone()),
+            Some(volume.clone()),
+            &["b".repeat(64)],
+        )
+        .expect("identity");
+        assert_eq!(selected.fingerprint, volume.fingerprint);
+        assert_eq!(selected.source, "volume-serial");
+
+        let selected = preferred_identity(Some(wmi.clone()), Some(volume), &[])
+            .expect("identity");
+        assert_eq!(selected.fingerprint, wmi.fingerprint);
+        assert_eq!(selected.source, "wmi");
+    }
+
+    #[test]
+    fn cached_identity_switches_when_only_the_licensed_candidate_matches() {
+        let wmi = identity(&"a".repeat(64), "wmi");
+        let volume = identity(&"b".repeat(64), "volume-serial");
+        let (selected, changed) = choose_machine_identity(
+            Some(DeviceIdentityState {
+                version: 1,
+                source: "wmi".to_string(),
+                fingerprint: "a".repeat(64),
+            }),
+            wmi.clone(),
+            Some(wmi),
+            Some(volume.clone()),
+            &["b".repeat(64)],
+        );
+        assert!(changed);
+        assert_eq!(selected.fingerprint, volume.fingerprint);
+        assert_eq!(selected.source, "volume-serial");
+    }
+
+    #[cfg(windows)]
+    #[test]
+    fn identity_state_round_trip_is_dpapi_protected() {
+        let root = tempfile::tempdir().expect("temp dir");
+        let path = root.path().join(IDENTITY_STATE_FILE_NAME);
+        let state = DeviceIdentityState {
+            version: 1,
+            source: "wmi".to_string(),
+            fingerprint: "a".repeat(64),
+        };
+        save_identity_state(&path, &state).expect("save state");
+        let stored = fs::read(&path).expect("read state");
+        assert_ne!(stored, serde_json::to_vec(&state).expect("json"));
+        let loaded = load_identity_state(&path)
+            .expect("load state")
+            .expect("state");
+        assert_eq!(loaded.fingerprint, state.fingerprint);
+        assert_eq!(loaded.source, state.source);
+    }
+
     #[cfg(windows)]
     #[test]
     fn execution_state_round_trip_is_dpapi_protected() {
@@ -573,7 +873,8 @@ mod tests {
     #[test]
     #[ignore]
     fn machine_identity_smoke() {
-        let identity = machine_identity().expect("machine identity");
+        let (wmi, volume) = candidate_identities();
+        let identity = wmi.or(volume).expect("machine identity");
         assert_eq!(identity.fingerprint.len(), 64);
         eprintln!(
             "source={} fingerprint={}",

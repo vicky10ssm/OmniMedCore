@@ -96,7 +96,9 @@ On the customer machine:
    - **Hardware Device ID** (one per terminal; a 64-character SHA-256 fingerprint)
 4. For multiple terminals, collect every hardware device ID in the initial order.
 5. Verify the customer did not copy an ID from a different browser/profile or test machine. A hardware
-   Device ID changes if the motherboard/CPU identity changes, or if the volume-serial fallback changes.
+   Device ID changes only if the motherboard/CPU identity or the selected volume-serial fallback genuinely
+   changes. Transient WMI/PowerShell failures must not change it because the resolved identity is cached in
+   DPAPI.
 
 IDs are hardware/installation identifiers, not patient data. They can be sent by email or support ticket.
 Do not advise the customer to edit, shorten or reuse a Device ID.
@@ -327,7 +329,7 @@ Do not store portal tokens or private keys in the customer register.
 | Clock appears wrong | Correct system time; investigate clock tampering as a security issue |
 | Clock rollback detected after correction | Restart OmniMed Core; if the high-water time is ahead of a corrected clock, escalate rather than deleting state files |
 | DPAPI licence cannot be decrypted | Re-import the signed file on the current Windows user/machine; confirm whether the profile or hardware changed |
-| WMI restricted / fingerprint fallback used | Confirm the displayed Hardware Device ID is stable; document the volume-serial source in support notes |
+| WMI restricted / fingerprint fallback used | Confirm the displayed Hardware Device ID is stable; the resolved identity is cached in `device-identity.dpapi` so transient WMI failures do not change it. Document the volume-serial source in support notes |
 | Lost licence file | Re-download from the portal by licence ID |
 | Lost private key | Escalate to security owner; existing licences remain valid until expiry |
 | Suspected leaked portal token | Rotate the token, restrict network access, review portal records |

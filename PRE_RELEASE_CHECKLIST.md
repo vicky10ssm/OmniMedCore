@@ -318,11 +318,14 @@ If the release changes licensing or starts a new edition:
 - [ ] Legacy `medicore.license.v1` localStorage entry is removed after migration
 - [ ] Clock rollback fails at startup, after printing, after report creation and during the in-session check
 - [ ] WMI/PowerShell restriction uses the volume-serial fallback; total hardware-access failure fails cleanly
+- [ ] Hardware Device ID stays identical across three launches and a simulated WMI timeout
+- [ ] `device-identity.dpapi` is created and keeps the resolved source stable
+- [ ] A licence issued for the volume-serial fingerprint still matches after WMI becomes available
 - [ ] Production bundle contains no DEV licence fallback or private key
 - [ ] Hand-written `"signature": "development"` licence is rejected by the production build
 
-Record licence ID, edition, tenant ID, Hardware Device ID, fingerprint source (`wmi`/`volume-serial`) and
-expiry.
+Record licence ID, edition, tenant ID, Hardware Device ID, fingerprint source (`wmi`/`volume-serial`),
+`device-identity.dpapi` presence and expiry.
 
 ## Security verification
 

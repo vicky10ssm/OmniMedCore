@@ -146,6 +146,9 @@ Relevant tests:
 | `dpapi_round_trip_protects_payload` / tamper test | Licence and runtime state remain DPAPI-protected |
 | `clock_rollback_is_rejected` | Clock rollback protection still works |
 | `machine_identity_smoke` | Hardware identity smoke test; hardware-dependent and marked ignored by default |
+| `cached_identity_absorbs_wmi_fallback_switches` | Transient WMI timeout does not change a resolved Device ID |
+| `preferred_identity_keeps_a_licence_issued_for_the_fallback` | A volume-serial licence stays selected when WMI later works |
+| `identity_state_round_trip_is_dpapi_protected` | The stable identity cache is DPAPI-protected, not plain JSON |
 
 ## 4. Automatic database backups
 
