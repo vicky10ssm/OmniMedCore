@@ -528,10 +528,16 @@ export default function InvoiceView() {
           <div className="text-right">
             <p className="font-semibold text-slate-500">Referred by</p>
             <p className="mt-0.5 text-sm">
-              {doctor ? `Dr. ${doctor.name}` : "Self / walk-in"}
+              {invoice.referral_type === "hospital" && invoice.referral_name
+                ? invoice.referral_name
+                : doctor
+                  ? `Dr. ${doctor.name}`
+                  : "Self / walk-in"}
             </p>
-            {doctor?.reg_no && (
-              <p className="text-slate-600">Reg. {doctor.reg_no}</p>
+            {invoice.referral_type === "hospital" && invoice.referral_name ? (
+              <p className="text-slate-600">Hospital / facility referral</p>
+            ) : (
+              doctor?.reg_no && <p className="text-slate-600">Reg. {doctor.reg_no}</p>
             )}
           </div>
         </div>

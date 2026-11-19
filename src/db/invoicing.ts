@@ -44,6 +44,8 @@ export interface BillInput {
   patientId: string;
   patientName: string;
   doctorId: string;
+  referralType?: "doctor" | "hospital" | "self";
+  referralName?: string;
   invoiceDate: number;
   lines: BillLineInput[];
   notes: string;
@@ -153,6 +155,12 @@ export async function saveInvoice(
 ): Promise<{ id: string; invoiceNo: string }> {
   if (input.lines.length === 0) throw new Error("Add at least one test to bill");
   if (!input.patientId) throw new Error("Select a patient");
+  const referralType =
+    input.referralType ?? (input.doctorId ? "doctor" : "self");
+  const referralName = (input.referralName ?? "").trim();
+  if (referralType === "hospital" && !referralName) {
+    throw new Error("Enter the referring hospital or facility name.");
+  }
 
   const reportDate = await reportDateForInvoice(db, input.invoiceDate, userId);
 
@@ -175,10 +183,11 @@ export async function saveInvoice(
 
     await db.run(
       `INSERT INTO invoices (id, invoice_no, invoice_date, patient_id, doctor_id, patient_name,
+         referral_type, referral_name,
          subtotal_paise, discount_paise, taxable_paise, cgst_paise, sgst_paise, round_off_paise,
          total_paise, status, cancel_reason, notes, created_by,
          created_at, updated_at, device_id, dirty, deleted, tenant_id)
-       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,'',?,?,?,?,?,1,0,?)`,
+       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,'',?,?,?,?,?,1,0,?)`,
       [
         id,
         invoiceNo,
@@ -186,6 +195,8 @@ export async function saveInvoice(
         input.patientId,
         input.doctorId,
         input.patientName,
+        referralType,
+        referralName,
         totals.subtotal,
         totals.discount,
         totals.taxable,

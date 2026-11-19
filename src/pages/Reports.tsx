@@ -53,6 +53,9 @@ type Filter = "pending" | "done" | "all";
 interface WorkRow extends ReportOrderRow {
   invoice_no: string;
   invoice_date: number;
+  doctor_id?: string;
+  referral_type?: string;
+  referral_name?: string;
   /** Alias of report_orders.test_name — included so print/report code can use one name. */
   patient_name: string;
   patient_phone: string;
@@ -348,6 +351,7 @@ export default function Reports({
     setRows(
       await db.all<WorkRow>(
         `SELECT ro.*, i.invoice_no, i.invoice_date,
+                i.doctor_id, i.referral_type, i.referral_name,
                 p.name AS patient_name, p.phone AS patient_phone,
                 p.age AS patient_age, p.gender AS patient_gender,
                 COALESCE(t.category, '') AS test_category,
@@ -3171,6 +3175,7 @@ function ReportPrint({
       // One report per bill: only this invoice's verified tests.
       const list = await db.all<WorkRow>(
         `SELECT ro.*, i.invoice_no, i.invoice_date,
+                i.doctor_id, i.referral_type, i.referral_name,
                 p.name AS patient_name, p.phone AS patient_phone,
                 p.age AS patient_age, p.gender AS patient_gender,
                 COALESCE(t.category, '') AS test_category,
@@ -3358,8 +3363,15 @@ function ReportPrint({
             <div className="text-right">
               <p className="font-semibold text-slate-500">Referred by</p>
               <p className="mt-0.5 text-sm">
-                {doctorName ? `Dr. ${doctorName}` : "Self / walk-in"}
+                {invoice?.referral_type === "hospital" && invoice.referral_name
+                  ? invoice.referral_name
+                  : doctorName
+                    ? `Dr. ${doctorName}`
+                    : "Self / walk-in"}
               </p>
+              {invoice?.referral_type === "hospital" && invoice.referral_name && (
+                <p className="text-slate-600">Hospital / facility referral</p>
+              )}
             </div>
           </div>
 
@@ -3649,6 +3661,7 @@ function XrayReportPrint({
   const findings = order.findings_text?.trim() || "";
   const impression = order.impression_text?.trim() || "";
   const clinicalHistory = order.clinical_history?.trim() || "";
+  const doctorName = useDoctorName(order.doctor_id ?? "");
   const printConfig = readPrintLetterhead(lab);
   const showSignature = shouldPrintReportSignature(lab);
 
@@ -3714,6 +3727,14 @@ function XrayReportPrint({
                 {order.patient_age != null ? `${order.patient_age} years` : ""}
                 {order.patient_gender ? ` | ${order.patient_gender}` : ""}
                 {order.patient_phone ? ` | ${order.patient_phone}` : ""}
+              </p>
+              <p className="mt-1 text-slate-600">
+                <span className="font-semibold text-slate-500">Referred by: </span>
+                {order.referral_type === "hospital" && order.referral_name
+                  ? order.referral_name
+                  : doctorName
+                    ? `Dr. ${doctorName}`
+                    : "Self / walk-in"}
               </p>
             </div>
             <div className="text-right">

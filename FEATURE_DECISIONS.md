@@ -792,6 +792,15 @@ The second deployment exists. `npm run build` makes the terminal (editing) app; 
 - Pre-printed letterhead margins still apply to every page.
 - No schema change.
 
+## Referral source - built
+
+- New bill records **Self / walk-in**, **Doctor**, or **Hospital / facility**.
+- Doctor mode uses the existing doctor catalogue. Hospital mode stores a free-text facility name on the
+  invoice and prints it in place of the doctor on invoices and pathology reports.
+- Existing invoices with blank referral fields continue to use their linked doctor, or Self / walk-in.
+- No hospital master, external lookup or commission behavior is introduced.
+- Schema 27 adds `invoices.referral_type` and `invoices.referral_name`.
+
 ## Back-dated bill date, results handoff and invoice category filter - built
 
 - **New bill** has an optional **Bill date** field, visible only to an administrator. It defaults to

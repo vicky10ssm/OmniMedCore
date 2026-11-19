@@ -120,6 +120,7 @@ It runs migrations against synthetic databases in `sql.js` and verifies:
 | Tolerant migration applies every statement | One failing `ALTER` does not silently skip later statements |
 | Migration 25 pathologist seed | Legacy settings become catalogue rows exactly once |
 | Migration 26 report date | Existing databases gain the nullable `report_orders.report_date` column |
+| Migration 27 referral source | Existing invoices gain nullable-safe `referral_type` and `referral_name` |
 | Migration 21 GST reset | Historical GST corrections remain deterministic |
 
 The harness also checks that fresh databases have the expected starter test catalogue and that tenant
@@ -234,6 +235,8 @@ Run after the automated gate passes.
 10. Use **Save & enter results** and confirm Reports opens filtered to the invoice with both pathology and
    X-ray orders.
 11. In Invoices, filter by each category and confirm mixed bills appear under every category they contain.
+12. Create self, doctor and hospital-referred bills; confirm the invoice and pathology report show the
+   correct referral source and that a hospital name cannot be blank.
 
 ### 5.4 Backup verification
 
