@@ -19,6 +19,9 @@ control.
   that fallback into a production bypass.
 - A signed licence is bound to both one or more `tenantIds` and one or more hardware fingerprint
   `deviceIds` (SHA-256 of motherboard serial + CPU Processor ID; volume-serial fallback).
+- The first resolved identity is cached in DPAPI `device-identity.dpapi`. Keep it stable across transient
+  WMI/PowerShell failures; do not switch between WMI and volume-serial hashes between launches. If a
+  stored licence already matches one candidate, keep that candidate rather than "upgrading" the source.
 - The desktop app stores the signed licence with Windows DPAPI and keeps an execution-time high-water
   mark in both a DPAPI state file and the encrypted SQLCipher `meta` table.
 
@@ -109,7 +112,8 @@ activation evidence, renewal reminders, upgrades, device replacement, revocation
 5. Set the clock forward, exercise startup/print/report, set it back and verify
    **System Clock Manipulation Detected** on the next check and after restart.
 6. Restrict WMI/PowerShell access and verify the volume-serial fallback; remove both and verify a clean
-   error instead of a crash.
+   error instead of a crash. Confirm the Device ID stays stable across repeated launches and a simulated
+   WMI timeout.
 7. Test active, grace and beyond-grace dates; verify banner, write controls and print access.
 8. Renew and re-import; verify expiry/modules.
 9. Remove the test licence in DEV and verify the development complete fallback returns.
