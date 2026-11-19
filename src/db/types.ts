@@ -127,6 +127,9 @@ export interface InvoiceRow extends SyncCols {
   invoice_date: number;
   patient_id: string;
   doctor_id: string;
+  /** doctor | hospital | self (blank on legacy rows). */
+  referral_type: string;
+  referral_name: string;
   patient_name: string;
   subtotal_paise: number;
   discount_paise: number;

@@ -1,7 +1,7 @@
 # Deployment, architecture and commercial readiness
 
 Last updated: 10 November 2026  
-Current schema: `26`
+Current schema: `27`
 
 ## Current architecture
 
@@ -37,7 +37,7 @@ The target architecture is **not the same as the current deployment**. Be explic
 - Tenant scope is enforced in queries and by a static verification script.
 - A read-only monitor source rejects `run()` and `tx()`.
 - Local print CSS supports invoice A4/thermal, hospital service bills and report letterhead.
-- Tenant/hardware-bound ECDSA P-266 licence verification, DPAPI storage, clock high-water checks,
+- Tenant/hardware-bound ECDSA P-256 licence verification, DPAPI storage, clock high-water checks,
   edition gating, 30-day grace and read-only mode are implemented in the application.
 - A separate vendor licence portal (`npm run license:portal`) issues, renews and revokes signed files;
   it has not been publicly deployed or hardened for internet exposure.

@@ -3,6 +3,33 @@
 All notable changes to OmniMed Core are recorded here. This project follows semantic versioning once
 production releases begin.
 
+## [0.32.0] - 2026-11-19
+
+### Added
+
+- **Referral source** on New bill: **Self / walk-in**, **Doctor**, or **Hospital / facility**.
+  - The doctor selector appears only when Doctor is selected.
+  - Hospital mode accepts a facility name, with suggestions from previously used hospitals.
+  - Invoices and printed pathology reports show the hospital/facility in place of the doctor.
+- Schema 27 adds `invoices.referral_type` and `invoices.referral_name`.
+
+### Safety
+
+- Existing invoices keep blank referral fields and continue to display their linked doctor or
+  **Self / walk-in**.
+- Hospital referral names are stored as entered; no hospital master or external lookup is implied.
+- Doctor reporting, referring-doctor commission behavior and invoice totals are unchanged.
+
+### Verified
+
+- A hospital-referred bill prints the hospital name on the invoice and pathology report.
+- Self and doctor referral modes retain their existing behavior.
+- `npm run check`, terminal build, monitor build and Rust tests pass.
+
+### Database
+
+- Schema **27** adds `invoices.referral_type` and `invoices.referral_name` (tolerant migration).
+
 ## [0.31.1] - 2026-11-19
 
 ### Changed

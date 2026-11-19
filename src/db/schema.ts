@@ -1999,11 +1999,12 @@ export const MIGRATIONS: Migration[] = [
     `,
   },
   {
-    version: 26,
-    name: "admin backdated report date",
+    version: 27,
+    name: "hospital referral source",
     tolerant: true,
     sql: `
-      ALTER TABLE report_orders ADD COLUMN report_date INTEGER;
+      ALTER TABLE invoices ADD COLUMN referral_type TEXT NOT NULL DEFAULT '';
+      ALTER TABLE invoices ADD COLUMN referral_name TEXT NOT NULL DEFAULT '';
     `,
   },
 ];
