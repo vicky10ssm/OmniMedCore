@@ -3,6 +3,42 @@
 All notable changes to OmniMed Core are recorded here. This project follows semantic versioning once
 production releases begin.
 
+## [0.30.0] - 2026-11-19
+
+### Added
+
+- **Back-dated bill date** on New bill. The date defaults to today, accepts a past date and rejects a
+  future date. It is captured at creation only; invoice numbers and dates remain immutable after saving.
+- **Save & enter results** saves the invoice and opens Reports filtered to that bill. Both pathology and
+  X-ray orders are listed, so either result form can be completed immediately.
+- **Invoice category filter** on the Invoices list. Categories come from direct test lines and package
+  component tests, so mixed bills appear under each category they contain.
+
+### Changed
+
+- The Invoices table now shows a **Category** column and the invoice CSV export includes Category.
+- Category filtering combines with the existing search, status and period filters.
+
+### Safety
+
+- Back-dating changes the bill date only. Report entry and release timestamps remain the actual time,
+  preserving the clinical audit trail and append-only report history.
+- Invoice amendment still cannot change the invoice number or date.
+- Package components contribute their test categories without changing package pricing or report
+  expansion.
+
+### Verified
+
+- A back-dated bill saved with `10 Nov 2026`; the invoice list and Reports both show the back-dated date.
+- `Save & enter results` opened Reports filtered to the new invoice and listed both a Pathology and an
+  X-Ray order.
+- The invoice category filter showed `Pathology` and `X-Ray` from the mixed bill and filtered correctly.
+- `npm run check`, terminal build, monitor build and Rust tests pass.
+
+### Database
+
+- No schema change. Schema remains **25**.
+
 ## [0.29.0] - 2026-11-17
 
 ### Added

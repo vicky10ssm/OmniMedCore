@@ -5,7 +5,7 @@
 // out-of-range flags, verify, and print the report on the lab letterhead.
 
 import { Fragment, useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import { useMonitor } from "../app/MonitorContext";
 import { getDb, type DataSource } from "../db";
@@ -252,6 +252,8 @@ export default function Reports({
   const [view, setView] = useState<"bench" | "reports">(initialView);
   const [filter, setFilter] = useState<Filter>("pending");
   const [query, setQuery] = useState("");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const invoiceFilter = searchParams.get("invoice")?.trim() ?? "";
   const [benchFilter, setBenchFilter] = useState<"active" | "exceptions" | "all">("active");
   const [benchQuery, setBenchQuery] = useState("");
   const [rejecting, setRejecting] = useState<BenchGroup | null>(null);
@@ -496,6 +498,7 @@ export default function Reports({
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return rows.filter((r) => {
+      if (invoiceFilter && r.invoice_id !== invoiceFilter) return false;
       const matchF =
         filter === "all"
           ? true
@@ -510,7 +513,19 @@ export default function Reports({
         r.invoice_no.toLowerCase().includes(q);
       return matchF && matchQ;
     });
-  }, [rows, filter, query]);
+  }, [rows, filter, query, invoiceFilter]);
+
+  const invoiceFilterNo = useMemo(
+    () =>
+      rows.find((row) => row.invoice_id === invoiceFilter)?.invoice_no ?? "",
+    [rows, invoiceFilter]
+  );
+
+  const clearInvoiceFilter = () => {
+    const next = new URLSearchParams(searchParams);
+    next.delete("invoice");
+    setSearchParams(next, { replace: true });
+  };
 
   /** Patients with at least one test still to be entered. */
   const waiting = useMemo(() => {
@@ -2092,6 +2107,23 @@ export default function Reports({
                 ))}
               </div>
             </div>
+
+            {invoiceFilter && (
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-teal-100 bg-teal-50 px-3 py-2 text-xs text-teal-800">
+                <span>
+                  Showing results for invoice{" "}
+                  <b className="num">{invoiceFilterNo || "selected bill"}</b> — pathology
+                  and X-ray tests are both listed.
+                </span>
+                <button
+                  type="button"
+                  onClick={clearInvoiceFilter}
+                  className="font-medium underline underline-offset-2"
+                >
+                  Clear filter
+                </button>
+              </div>
+            )}
 
             {!loaded ? (
               <p className="px-4 py-10 text-center text-sm text-slate-400">Loading…</p>

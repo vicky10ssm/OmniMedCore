@@ -80,6 +80,7 @@ export default function Billing() {
   const [mode, setMode] = useState<PaymentMode>("cash");
   const [paymentText, setPaymentText] = useState("");
   const [paymentTouched, setPaymentTouched] = useState(false);
+  const [billDate, setBillDate] = useState(todayInputValue());
   const [notes, setNotes] = useState("");
 
   const [error, setError] = useState("");
@@ -257,10 +258,15 @@ export default function Billing() {
     setPatientResults([]);
   };
 
-  const submit = async () => {
+  const submit = async (enterResults = false) => {
     setError("");
     if (!patient) return setError("Select a patient first");
     if (lines.length === 0) return setError("Add at least one test or package");
+    const invoiceDate = inputDateToTimestamp(billDate);
+    if (invoiceDate === null) return setError("Choose a valid bill date");
+    if (billDate > todayInputValue()) {
+      return setError("Bill date cannot be in the future");
+    }
     setBusy(true);
     try {
       const db = await getDb();
@@ -270,7 +276,7 @@ export default function Billing() {
           patientId: patient.id,
           patientName: patient.name,
           doctorId,
-          invoiceDate: now(),
+          invoiceDate,
           lines: billLines,
           notes,
           paymentPaise:
@@ -279,7 +285,11 @@ export default function Billing() {
         },
         user?.id ?? ""
       );
-      navigate(`/invoices/${id}?print=1`);
+      if (enterResults) {
+        navigate(`/reports?invoice=${encodeURIComponent(id)}`);
+      } else {
+        navigate(`/invoices/${id}?print=1`);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not save invoice");
       setBusy(false);
@@ -530,6 +540,17 @@ export default function Billing() {
             </dl>
 
             <div className="mt-4 space-y-3">
+              <Labeled
+                label="Bill date"
+                hint="Back-date an older bill at creation only. Report entry and release timestamps stay the actual time for clinical traceability."
+              >
+                <TextInput
+                  type="date"
+                  value={billDate}
+                  max={todayInputValue()}
+                  onChange={(e) => setBillDate(e.target.value)}
+                />
+              </Labeled>
               <Labeled label="Payment mode">
                 <Select
                   value={mode}
@@ -578,11 +599,18 @@ export default function Billing() {
               <Btn
                 variant="primary"
                 className="w-full !py-2.5"
-                onClick={() => void submit()}
+                onClick={() => void submit(false)}
                 disabled={busy}
               >
                 <Icon name="check" className="h-4 w-4" />
                 {busy ? "Saving…" : "Save & print invoice"}
+              </Btn>
+              <Btn
+                className="w-full"
+                onClick={() => void submit(true)}
+                disabled={busy}
+              >
+                {busy ? "Saving…" : "Save & enter results"}
               </Btn>
             </div>
           </Card>
@@ -656,4 +684,30 @@ function Row({ label, value }: { label: string; value: string }) {
       <dd className="num text-slate-700">{value}</dd>
     </div>
   );
+}
+
+function todayInputValue(date = new Date()): string {
+  const two = (value: number) => String(value).padStart(2, "0");
+  return `${date.getFullYear()}-${two(date.getMonth() + 1)}-${two(date.getDate())}`;
+}
+
+/**
+ * Converts a date input value to a local-noon timestamp. Noon avoids DST
+ * boundaries moving a bill to the previous or next date.
+ */
+function inputDateToTimestamp(value: string): number | null {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  if (!match) return null;
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const date = new Date(year, month - 1, day, 12, 0, 0, 0);
+  if (
+    date.getFullYear() !== year ||
+    date.getMonth() !== month - 1 ||
+    date.getDate() !== day
+  ) {
+    return null;
+  }
+  return date.getTime();
 }

@@ -156,6 +156,10 @@ Record invoice/payment IDs and totals used for acceptance.
 - [ ] Rejection reason and linked pending-order behavior
 - [ ] Report release blocked for unaccepted/missing sample
 - [ ] Report draft save/reopen preserves selected parameters
+- [ ] Back-dated bill date saves to `invoices.invoice_date` and cannot be changed by amendment
+- [ ] Back-dated bill still exposes full pathology and X-ray result entry
+- [ ] **Save & enter results** opens Reports filtered to the new invoice with both result types
+- [ ] Invoice category filter includes direct test categories and package component categories
 - [ ] Verification requires all selected results
 - [ ] Amendment requires reason and preserves previous revision
 - [ ] Report print shows accession, authorizer and version
