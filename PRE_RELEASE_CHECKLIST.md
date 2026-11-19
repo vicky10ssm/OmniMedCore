@@ -156,7 +156,12 @@ Record invoice/payment IDs and totals used for acceptance.
 - [ ] Rejection reason and linked pending-order behavior
 - [ ] Report release blocked for unaccepted/missing sample
 - [ ] Report draft save/reopen preserves selected parameters
+- [ ] Bill date field is visible only to an administrator; non-admin back-dated submit is rejected
 - [ ] Back-dated bill date saves to `invoices.invoice_date` and cannot be changed by amendment
+- [ ] New pathology and X-ray orders inherit `report_orders.report_date` from the back-dated invoice
+- [ ] Admin can set/clear report date from report entry; change applies to every test on the bill and is audit-logged
+- [ ] Non-admin cannot see or change the report date
+- [ ] Printed report uses report date but footer shows actual `reported_at` release time
 - [ ] Back-dated bill still exposes full pathology and X-ray result entry
 - [ ] **Save & enter results** opens Reports filtered to the new invoice with both result types
 - [ ] Invoice category filter includes direct test categories and package component categories

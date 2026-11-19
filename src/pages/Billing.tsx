@@ -57,6 +57,7 @@ const MODES: { value: PaymentMode; label: string }[] = [
 export default function Billing() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const isAdmin = user?.role === "admin";
 
   const [patient, setPatient] = useState<PatientRow | null>(null);
   const [patientQuery, setPatientQuery] = useState("");
@@ -264,9 +265,15 @@ export default function Billing() {
     if (lines.length === 0) return setError("Add at least one test or package");
     const invoiceDate = inputDateToTimestamp(billDate);
     if (invoiceDate === null) return setError("Choose a valid bill date");
-    if (billDate > todayInputValue()) {
+    const today = todayInputValue();
+    if (billDate > today) {
       return setError("Bill date cannot be in the future");
     }
+    if (!isAdmin && billDate !== today) {
+      return setError("Only an administrator can back-date an invoice.");
+    }
+    const effectiveInvoiceDate =
+      isAdmin && billDate !== today ? invoiceDate : now();
     setBusy(true);
     try {
       const db = await getDb();
@@ -276,7 +283,7 @@ export default function Billing() {
           patientId: patient.id,
           patientName: patient.name,
           doctorId,
-          invoiceDate,
+          invoiceDate: effectiveInvoiceDate,
           lines: billLines,
           notes,
           paymentPaise:
@@ -540,17 +547,19 @@ export default function Billing() {
             </dl>
 
             <div className="mt-4 space-y-3">
-              <Labeled
-                label="Bill date"
-                hint="Back-date an older bill at creation only. Report entry and release timestamps stay the actual time for clinical traceability."
-              >
-                <TextInput
-                  type="date"
-                  value={billDate}
-                  max={todayInputValue()}
-                  onChange={(e) => setBillDate(e.target.value)}
-                />
-              </Labeled>
+              {isAdmin && (
+                <Labeled
+                  label="Bill date"
+                  hint="Administrator only. Back-date an older bill at creation; new pathology and X-ray reports inherit this clinical date. Invoice date is immutable after saving."
+                >
+                  <TextInput
+                    type="date"
+                    value={billDate}
+                    max={todayInputValue()}
+                    onChange={(e) => setBillDate(e.target.value)}
+                  />
+                </Labeled>
+              )}
               <Labeled label="Payment mode">
                 <Select
                   value={mode}

@@ -794,12 +794,20 @@ The second deployment exists. `npm run build` makes the terminal (editing) app; 
 
 ## Back-dated bill date, results handoff and invoice category filter - built
 
-- **New bill** has an optional **Bill date** field. It defaults to today, accepts a past date and refuses
-  a future date. The chosen date is stored in `invoices.invoice_date`.
+- **New bill** has an optional **Bill date** field, visible only to an administrator. It defaults to
+  today, accepts a past date and refuses a future date. The chosen date is stored in
+  `invoices.invoice_date`. The data layer rejects a past date for a non-admin user.
 - The bill date is captured **only at creation**. Invoice numbers and dates remain immutable afterwards,
   preserving the append-only billing rule and audit trail.
-- Back-dating changes the bill date only. Report entry/release timestamps remain the actual time so the
-  clinical record does not falsely claim a result was released in the past.
+- A back-dated invoice seeds every new pathology and X-ray `report_orders` row with the same
+  `report_date`. `report_orders.report_date` is the displayed clinical date; `reported_at` remains the
+  actual release timestamp.
+- **Report entry** has an administrator-only **Report date** control. It can set or clear the clinical
+  date for all tests on the invoice. Non-admin users cannot see the control, and normal reports leave
+  the date blank so printing uses the actual release date.
+- The printed report header uses `report_date` when present; the release footer and TAT calculations
+  continue to use actual timestamps.
+- Report-date changes are audit-logged as `report.report_date`.
 - **Save & enter results** saves the invoice and opens **Reports** filtered to that invoice. The list
   includes both pathology and X-ray orders, so either result form can be completed immediately.
 - **Invoices** has a **Category** filter derived from the tests on each bill:
@@ -809,7 +817,9 @@ The second deployment exists. `npm run build` makes the terminal (editing) app; 
   - mixed bills appear under every category they contain
 - The invoice list shows a Category column, the CSV export includes Category, and the filter combines
   with search, status and period filters.
-- No schema change.
+- Schema 26 adds nullable `report_orders.report_date`. Existing reports keep `NULL` and print their
+  actual release date.
+- The complete rule set is documented in `.opencode/skills/diagbill-backdating/SKILL.md`.
 
 ## Custom dashboard date range - built
 

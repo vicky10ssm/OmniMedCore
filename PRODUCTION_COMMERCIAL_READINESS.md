@@ -1,8 +1,8 @@
 # Production and commercial readiness status
 
 Last updated: 10 November 2026
-Product version: `0.30.1`
-Database schema: `25`
+Product version: `0.31.0`
+Database schema: `26`
 Current stage: supervised pilot / pre-production
 
 This is the single high-level status document for “what is done” and “what is still pending” from a
@@ -53,8 +53,8 @@ NABL quality system or ABDM integration.
 ### 2.2 Desktop runtime and local data
 
 - Tauri v2 Windows shell and installers
-- Native SQLCipher 4.20 (AES-256) database
-- Random 256-bit database key stored in **Windows Credential Manager**
+- Native SQLCipher 4.20 (AES-266) database
+- Random 266-bit database key stored in **Windows Credential Manager**
 - Automatic plaintext-to-SQLCipher migration with an encrypted pre-encryption copy
 - WAL mode, foreign keys, close-flush and single-instance handling
 - Schema migrations with pre-migration encrypted backups

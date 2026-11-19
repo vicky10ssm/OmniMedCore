@@ -119,6 +119,7 @@ It runs migrations against synthetic databases in `sql.js` and verifies:
 | No semicolons inside SQL comments | The statement splitter cannot cut SQL at the wrong point |
 | Tolerant migration applies every statement | One failing `ALTER` does not silently skip later statements |
 | Migration 25 pathologist seed | Legacy settings become catalogue rows exactly once |
+| Migration 26 report date | Existing databases gain the nullable `report_orders.report_date` column |
 | Migration 21 GST reset | Historical GST corrections remain deterministic |
 
 The harness also checks that fresh databases have the expected starter test catalogue and that tenant
@@ -224,11 +225,15 @@ Run after the automated gate passes.
 5. Open the core screens and confirm data is present: Dashboard, Patients, Invoices, Samples, Reports,
    Tests & Packages, Pharmacy, Admissions, Expenses and Settings.
 6. Confirm the current schema version is recorded in `meta.schema_version`.
-7. Create a bill with a past **Bill date**, confirm the saved invoice keeps that date, and confirm an
-   amendment cannot change it.
-8. Use **Save & enter results** and confirm Reports opens filtered to the invoice with both pathology and
+7. As an administrator, create a bill with a past **Bill date**, confirm the saved invoice keeps that
+   date, and confirm an amendment cannot change it. Confirm an operator cannot see or submit a past date.
+8. Confirm new pathology and X-ray report orders carry the same `report_date`, print with that clinical
+   date, and still store the actual release time in `reported_at`.
+9. As an admin, change the report date from report entry and confirm all tests on that invoice update and
+   `report.report_date` is audited. Confirm an operator has no report-date control.
+10. Use **Save & enter results** and confirm Reports opens filtered to the invoice with both pathology and
    X-ray orders.
-9. In Invoices, filter by each category and confirm mixed bills appear under every category they contain.
+11. In Invoices, filter by each category and confirm mixed bills appear under every category they contain.
 
 ### 5.4 Backup verification
 
