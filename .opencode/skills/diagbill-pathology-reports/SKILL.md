@@ -43,6 +43,9 @@ Use this skill for parameter-based pathology reports and the current diagnostic-
   X-ray. It is the displayed clinical date; `reported_at` remains the actual release timestamp. Only an
   administrator can set or change it, and the value applies to every test on the invoice. See
   `.opencode/skills/diagbill-backdating/SKILL.md`.
+- Printed pathology reports show the sample accession and specimen type but deliberately omit the
+  specimen collection timestamp. Collection remains recorded for sample workflow and TAT, not report
+  display.
 - A report becomes printable only when every order on that invoice is `done`. Parameter rows print under their test heading with result, unit, reference range, and abnormal indication.
 - X-ray reports use the radiology form, not the parameter table. Administrators maintain multiple radiologists (name, qualification, signature image) under **Diagnostics -> Radiologists** and multiple pathologists (name, qualification, signature image) under **Diagnostics -> Pathologists**.
 - Pathology entry offers an optional reporting-pathologist selector. On release the selected id/name/qualification/signature is snapshotted onto `report_orders`; printing uses the snapshot first, then the verifying user's name, then the legacy centre profile. Catalogue edits or deletions must not alter issued reports.

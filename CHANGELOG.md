@@ -3,6 +3,24 @@
 All notable changes to OmniMed Core are recorded here. This project follows semantic versioning once
 production releases begin.
 
+## [0.31.1] - 2026-11-19
+
+### Changed
+
+- Removed the specimen **collected** timestamp from the printed pathology report header. Reports now show
+  the sample accession and specimen type only.
+- Removed the unused collected-time field from the Reports worklist query. Sample collection continues to
+  be recorded for sample workflow and TAT; it is simply no longer printed on the report.
+
+### Verified
+
+- `npm run check`, terminal build, monitor build and Rust tests pass.
+- Printed pathology report no longer contains the collection timestamp.
+
+### Database
+
+- No schema change. Schema remains **26**.
+
 ## [0.31.0] - 2026-11-19
 
 ### Added
