@@ -63,7 +63,6 @@ interface WorkRow extends ReportOrderRow {
   accession_no: string | null;
   sample_status: SampleRow["status"] | null;
   sample_specimen_type?: string | null;
-  sample_collected_at?: number | null;
   sample_received_at?: number | null;
   sample_rejection_reason?: string | null;
   verified_by_name?: string;
@@ -355,7 +354,6 @@ export default function Reports({
                 COALESCE(t.loinc_code, '') AS test_loinc_code,
                 smp.accession_no, smp.status AS sample_status,
                 smp.specimen_type AS sample_specimen_type,
-                smp.collected_at AS sample_collected_at,
                 smp.received_at AS sample_received_at,
                 smp.rejection_reason AS sample_rejection_reason,
                 COALESCE(u.full_name, u.username, '') AS verified_by_name,
@@ -3178,7 +3176,6 @@ function ReportPrint({
                 COALESCE(t.category, '') AS test_category,
                 smp.accession_no, smp.status AS sample_status,
                 smp.specimen_type AS sample_specimen_type,
-                smp.collected_at AS sample_collected_at,
                 smp.received_at AS sample_received_at,
                 smp.rejection_reason AS sample_rejection_reason,
                 COALESCE(u.full_name, u.username, '') AS verified_by_name,
@@ -3388,9 +3385,6 @@ function ReportPrint({
                             <span className="ml-2 text-[10px] font-normal text-slate-500">
                               Sample {o.accession_no}
                               {o.sample_specimen_type ? ` · ${o.sample_specimen_type}` : ""}
-                              {o.sample_collected_at
-                                ? ` · collected ${formatDateTime(o.sample_collected_at)}`
-                                : ""}
                             </span>
                           )}
                         </td>
