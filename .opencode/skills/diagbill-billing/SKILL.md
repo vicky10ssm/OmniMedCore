@@ -24,8 +24,12 @@ Use this skill for financial behavior. Preserve the existing accounting invarian
 - Store GST rates in basis points. Prices are pre-tax and CGST/SGST split GST 50/50.
 - A line discount reduces that line's taxable value.
 - Round the grand total to the nearest rupee and retain `round_off_paise` so reports reconcile.
-- Invoice numbers and dates are immutable. Payments, cancellations and issued-report revisions remain
-  append-only.
+- Invoice numbers and dates are immutable after creation. A new invoice may be created with a past bill
+  date; the date cannot be changed later. Back-dating changes the bill date only; report entry/release
+  timestamps stay actual for clinical traceability.
+- Payments, cancellations and issued-report revisions remain append-only.
+- The Invoices list filters by test/package category as well as status, period and search. Category is
+  derived from direct test lines and package component tests; mixed bills appear under each category.
 - A bill may be **amended** only while its linked lab work is work-free: pending orders with no entered
   results and expected samples that have not been collected. Editing quantities, rates, discounts,
   doctor, notes or adding tests is allowed; removing a line is not. The amendment cannot reduce the

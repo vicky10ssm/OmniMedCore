@@ -36,6 +36,8 @@ Expenses profitability card.
 
 - Patient registration, search and shared patient identity
 - GST billing, invoices, payments, dues, bill amendment before lab work starts, cancellation and A4/80 mm printing
+- Back-dated bill date at creation, with a **Save & enter results** handoff that opens both pathology and X-ray work for that invoice
+- Invoice list filters by status, period, search and diagnostic category, including package component categories
 - Multi-test invoices can be printed as one combined report or one report per test; each completed pathology test can also print immediately from its row
 - A4 reports and invoices can independently print with the built-in centre header or on the centre's own pre-printed letterhead with configurable margins
 - Long A4 reports paginate across multiple pages without clipping or dropping parameters

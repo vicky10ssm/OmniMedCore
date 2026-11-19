@@ -17,6 +17,8 @@ interface PaymentLite {
 
 interface InvoiceListRow extends InvoiceRow {
   paid_paise: number;
+  /** Diagnostic categories present on this invoice (tests and package components). */
+  categories: string[];
   /** Payments on this invoice — used by the payments export. */
   payments: PaymentLite[];
 }
@@ -30,6 +32,7 @@ export default function Invoices() {
   const [rows, setRows] = useState<InvoiceListRow[]>([]);
   const { monitor } = useMonitor();
   const [filter, setFilter] = useState<Filter>("all");
+  const [categoryFilter, setCategoryFilter] = useState("all");
   const [period, setPeriod] = useState<Period>("all");
   const [query, setQuery] = useState("");
   const [loaded, setLoaded] = useState(false);
@@ -51,16 +54,42 @@ export default function Invoices() {
          WHERE deleted = 0 ${tenantClause}`,
         tenantParams
       );
+      const categoryRows = await db.all<{
+        invoice_id: string;
+        category: string;
+      }>(
+        `SELECT ii.invoice_id, t.category
+         FROM invoice_items ii
+         JOIN tests t ON t.id = ii.test_id AND t.tenant_id = ii.tenant_id
+         WHERE ii.deleted = 0 AND ii.item_type = 'test' AND ii.tenant_id = ?
+         UNION
+         SELECT ii.invoice_id, t.category
+         FROM invoice_items ii
+         JOIN package_items pi
+           ON pi.package_id = ii.package_id AND pi.tenant_id = ii.tenant_id
+         JOIN tests t ON t.id = pi.test_id AND t.tenant_id = pi.tenant_id
+         WHERE ii.deleted = 0 AND ii.item_type = 'package' AND ii.tenant_id = ?`,
+        [...tenantParams, ...tenantParams]
+      );
       const byInvoice = new Map<string, PaymentLite[]>();
       for (const p of payments) {
         const list = byInvoice.get(p.invoice_id) ?? [];
         list.push(p);
         byInvoice.set(p.invoice_id, list);
       }
+      const categoriesByInvoice = new Map<string, Set<string>>();
+      for (const row of categoryRows) {
+        const category = row.category.trim();
+        if (!category) continue;
+        const set = categoriesByInvoice.get(row.invoice_id) ?? new Set<string>();
+        set.add(category);
+        categoriesByInvoice.set(row.invoice_id, set);
+      }
       setRows(
         invoices.map((r) => ({
           ...r,
           payments: (byInvoice.get(r.id) ?? []).sort((a, b) => a.paid_at - b.paid_at),
+          categories: [...(categoriesByInvoice.get(r.id) ?? new Set(["Uncategorised"]))],
         }))
       );
       setLoaded(true);
@@ -92,6 +121,18 @@ export default function Invoices() {
     [rows, periodStart, periodEnd]
   );
 
+  const categoryOptions = useMemo(() => {
+    const seen = new Set<string>();
+    for (const row of rows) {
+      for (const category of row.categories) seen.add(category);
+    }
+    return [...seen].sort((a, b) => {
+      const rank = (value: string) =>
+        value === "Pathology" ? 0 : /x-?ray|radiology/i.test(value) ? 1 : 2;
+      return rank(a) - rank(b) || a.localeCompare(b);
+    });
+  }, [rows]);
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return inPeriod.filter((r) => {
@@ -107,15 +148,17 @@ export default function Invoices() {
             : filter === "paid"
               ? r.status === "paid"
               : r.status === "unpaid" || r.status === "partial";
-      return matchQ && matchF;
+      const matchCategory =
+        categoryFilter === "all" || r.categories.includes(categoryFilter);
+      return matchQ && matchF && matchCategory;
     });
-  }, [inPeriod, filter, query]);
+  }, [inPeriod, filter, categoryFilter, query]);
 
   const exportInvoices = () => {
     exportCsv(
       `invoices-${period}.csv`,
       [
-        "Invoice no", "Date", "Patient", "Status",
+        "Invoice no", "Date", "Patient", "Category", "Status",
         "Subtotal", "Discount", "Taxable", "CGST", "SGST", "Round off",
         "Total", "Paid", "Balance", "Cancel reason",
       ],
@@ -123,6 +166,7 @@ export default function Invoices() {
         r.invoice_no,
         csvDate(r.invoice_date),
         r.patient_name,
+        r.categories.join(" / "),
         r.status,
         csvRupees(r.subtotal_paise),
         csvRupees(r.discount_paise),
@@ -232,9 +276,22 @@ export default function Invoices() {
             ))}
           </div>
           <Select
+            value={categoryFilter}
+            onChange={(e) => setCategoryFilter(e.target.value)}
+            className="ml-auto max-w-[11rem]"
+            aria-label="Category"
+          >
+            <option value="all">All categories</option>
+            {categoryOptions.map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            ))}
+          </Select>
+          <Select
             value={period}
             onChange={(e) => setPeriod(e.target.value as Period)}
-            className="ml-auto max-w-[11rem]"
+            className="max-w-[11rem]"
             aria-label="Period"
           >
             <option value="all">All dates</option>
@@ -278,6 +335,7 @@ export default function Invoices() {
                 <tr className="border-b border-slate-200 bg-slate-50 text-left text-xs font-medium uppercase tracking-wide text-slate-500">
                   <th className="px-4 py-2.5">Invoice</th>
                   <th className="px-4 py-2.5">Patient</th>
+                  <th className="hidden px-4 py-2.5 lg:table-cell">Category</th>
                   <th className="hidden px-4 py-2.5 sm:table-cell">Date</th>
                   <th className="px-4 py-2.5 text-right">Total</th>
                   <th className="px-4 py-2.5 text-right">Balance</th>
@@ -295,6 +353,9 @@ export default function Invoices() {
                     >
                       <td className="num px-4 py-2.5 font-medium">{r.invoice_no}</td>
                       <td className="px-4 py-2.5">{r.patient_name}</td>
+                      <td className="hidden px-4 py-2.5 text-slate-500 lg:table-cell">
+                        {r.categories.join(", ")}
+                      </td>
                       <td className="hidden px-4 py-2.5 text-slate-500 sm:table-cell">
                         {formatDate(r.invoice_date)}
                       </td>

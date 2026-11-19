@@ -792,6 +792,25 @@ The second deployment exists. `npm run build` makes the terminal (editing) app; 
 - Pre-printed letterhead margins still apply to every page.
 - No schema change.
 
+## Back-dated bill date, results handoff and invoice category filter - built
+
+- **New bill** has an optional **Bill date** field. It defaults to today, accepts a past date and refuses
+  a future date. The chosen date is stored in `invoices.invoice_date`.
+- The bill date is captured **only at creation**. Invoice numbers and dates remain immutable afterwards,
+  preserving the append-only billing rule and audit trail.
+- Back-dating changes the bill date only. Report entry/release timestamps remain the actual time so the
+  clinical record does not falsely claim a result was released in the past.
+- **Save & enter results** saves the invoice and opens **Reports** filtered to that invoice. The list
+  includes both pathology and X-ray orders, so either result form can be completed immediately.
+- **Invoices** has a **Category** filter derived from the tests on each bill:
+  - direct test lines contribute their `tests.category` (`Pathology`, `X-Ray`, custom categories)
+  - package lines contribute the categories of their component tests
+  - invoices with no resolvable category show **Uncategorised**
+  - mixed bills appear under every category they contain
+- The invoice list shows a Category column, the CSV export includes Category, and the filter combines
+  with search, status and period filters.
+- No schema change.
+
 ## Custom dashboard date range - built
 
 - The Dashboard range selector includes **Custom range** alongside Today/7/30/90 days.

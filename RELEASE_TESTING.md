@@ -221,6 +221,11 @@ Run after the automated gate passes.
 5. Open the core screens and confirm data is present: Dashboard, Patients, Invoices, Samples, Reports,
    Tests & Packages, Pharmacy, Admissions, Expenses and Settings.
 6. Confirm the current schema version is recorded in `meta.schema_version`.
+7. Create a bill with a past **Bill date**, confirm the saved invoice keeps that date, and confirm an
+   amendment cannot change it.
+8. Use **Save & enter results** and confirm Reports opens filtered to the invoice with both pathology and
+   X-ray orders.
+9. In Invoices, filter by each category and confirm mixed bills appear under every category they contain.
 
 ### 5.4 Backup verification
 
