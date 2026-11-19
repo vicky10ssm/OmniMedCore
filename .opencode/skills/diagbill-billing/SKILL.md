@@ -25,8 +25,9 @@ Use this skill for financial behavior. Preserve the existing accounting invarian
 - A line discount reduces that line's taxable value.
 - Round the grand total to the nearest rupee and retain `round_off_paise` so reports reconcile.
 - Invoice numbers and dates are immutable after creation. A new invoice may be created with a past bill
-  date; the date cannot be changed later. Back-dating changes the bill date only; report entry/release
-  timestamps stay actual for clinical traceability.
+  date by an **administrator only**; the date cannot be changed later. Back-dating seeds every new
+  pathology/X-ray report order with the same clinical `report_date`; the actual `reported_at` release
+  timestamp stays real. See `.opencode/skills/diagbill-backdating/SKILL.md`.
 - Payments, cancellations and issued-report revisions remain append-only.
 - The Invoices list filters by test/package category as well as status, period and search. Category is
   derived from direct test lines and package component tests; mixed bills appear under each category.

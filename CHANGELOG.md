@@ -3,6 +3,38 @@
 All notable changes to OmniMed Core are recorded here. This project follows semantic versioning once
 production releases begin.
 
+## [0.31.0] - 2026-11-19
+
+### Added
+
+- **Administrator-only back-dated invoices.** The Bill date field is shown only to administrators and
+  the data layer rejects a past bill date for non-admin users.
+- **Back-dated report dates** for both pathology and X-ray. A back-dated invoice seeds every new
+  report order with the same clinical date.
+- **Administrator report-date control** in report entry. It applies to every test on the bill so a
+  combined pathology/X-ray report cannot carry mixed dates. Non-admin users do not see the control.
+- Schema 26 adds nullable `report_orders.report_date`.
+
+### Safety
+
+- `reported_at` still records the actual release time; `report_date` is the displayed clinical date.
+  The report footer continues to show the actual release timestamp.
+- Report-date changes are audit-logged as `report.report_date`.
+- Back-dated invoice creation is audit-logged as before and requires an admin account.
+- Existing reports keep `report_date = NULL` and continue to display their actual release date.
+
+### Verified
+
+- An administrator-created bill dated **10 Nov 2026** produced Pathology and X-Ray report orders with
+  the same report date.
+- A non-admin account cannot select or submit a back-dated bill date.
+- Report entry shows the report-date control only for the administrator.
+- `npm run check`, terminal build, monitor build and Rust tests pass.
+
+### Database
+
+- Schema **26** adds `report_orders.report_date INTEGER` (nullable, tolerant migration).
+
 ## [0.30.1] - 2026-11-19
 
 ### Fixed

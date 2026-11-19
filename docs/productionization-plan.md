@@ -1,8 +1,8 @@
 # Productionization plan
 
 Last updated: 9 November 2026
-Current product version: `0.30.1`  
-Current schema: `25`
+Current product version: `0.31.0`  
+Current schema: `26`
 Current deployment: packaged Windows desktop with SQLCipher, encrypted backups and local Google Drive
 CSV export for supervised pilots; browser build remains development-only
 
@@ -67,7 +67,7 @@ the commercial/legal model to be fully operational. Hosted monitoring is not par
 | Local export | `local_export_queue`, 30-second scheduler, masked flat CSV and Rust background writer | Google Drive folder setup, downstream consumer validation, clean-machine acceptance and retry evidence |
 | Authentication | Password + optional TOTP; admin/operator roles | Lockout/rate limits, session policy, device tokens |
 | Roles | Operator: Expenses only, no Dashboard or profit tile; admin retains full view | Granular permissions and packaged backend enforcement |
-| Licensing | Offline ECDSA P-256 tenant/hardware licences, DPAPI storage, clock high-water checks, editions, 30-day grace/read-only; vendor portal code | Backend entitlement enforcement, hosted/hardened portal, clean-machine acceptance |
+| Licensing | Offline ECDSA P-266 tenant/hardware licences, DPAPI storage, clock high-water checks, editions, 30-day grace/read-only; vendor portal code | Backend entitlement enforcement, hosted/hardened portal, clean-machine acceptance |
 | Billing controls | Referral commissions removed; no commission tab, doctor rules or new accrual/payouts | Legal/compliance gate before any reintroduction |
 | Clinical controls | Accepted-sample disposal blocked until all linked results are complete | QMS/validation evidence and periodic review |
 | Audit | Application audit log | Tamper evidence/export, retention |

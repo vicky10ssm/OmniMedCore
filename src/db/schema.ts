@@ -1998,6 +1998,14 @@ export const MIGRATIONS: Migration[] = [
         );
     `,
   },
+  {
+    version: 26,
+    name: "admin backdated report date",
+    tolerant: true,
+    sql: `
+      ALTER TABLE report_orders ADD COLUMN report_date INTEGER;
+    `,
+  },
 ];
 
 /** First-boot seed data: lab settings, admin user, expense categories, sample catalog. */

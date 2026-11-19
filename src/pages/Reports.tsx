@@ -113,6 +113,35 @@ function numericValue(text: string): number | null {
   return Number.isFinite(value) ? value : null;
 }
 
+function dateInputValue(timestamp: number): string {
+  const date = new Date(timestamp);
+  const two = (value: number) => String(value).padStart(2, "0");
+  return `${date.getFullYear()}-${two(date.getMonth() + 1)}-${two(date.getDate())}`;
+}
+
+function todayInputValue(): string {
+  return dateInputValue(Date.now());
+}
+
+/** Local-noon timestamp for a date input; null when blank or invalid. */
+function inputDateToTimestamp(value: string): number | null {
+  if (!value.trim()) return null;
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value.trim());
+  if (!match) return null;
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const date = new Date(year, month - 1, day, 12, 0, 0, 0);
+  if (
+    date.getFullYear() !== year ||
+    date.getMonth() !== month - 1 ||
+    date.getDate() !== day
+  ) {
+    return null;
+  }
+  return date.getTime();
+}
+
 function parameterFlag(p: ParameterEntry): "Low" | "High" | "" {
   const value = numericValue(p.result);
   if (value === null) return "";
@@ -248,6 +277,7 @@ export default function Reports({
 }) {
   const { user } = useAuth();
   const { monitor } = useMonitor();
+  const isAdmin = user?.role === "admin";
   const [rows, setRows] = useState<WorkRow[]>([]);
   const [view, setView] = useState<"bench" | "reports">(initialView);
   const [filter, setFilter] = useState<Filter>("pending");
@@ -289,6 +319,7 @@ export default function Reports({
   const [entryParameters, setEntryParameters] = useState<ParameterEntry[]>([]);
   const [parametersLoading, setParametersLoading] = useState(false);
   const [amendmentReason, setAmendmentReason] = useState("");
+  const [reportDate, setReportDate] = useState("");
   const [xrayClinicalHistory, setXrayClinicalHistory] = useState("");
   const [xrayFindings, setXrayFindings] = useState("");
   const [xrayImpression, setXrayImpression] = useState("");
@@ -589,6 +620,7 @@ export default function Reports({
     setEntryParameters([]);
     setParametersLoading(true);
     setAmendmentReason("");
+    setReportDate(r.report_date ? dateInputValue(r.report_date) : "");
     setXrayClinicalHistory(r.clinical_history || "");
     setXrayFindings(r.findings_text || "");
     setXrayImpression(r.impression_text || "");
@@ -1493,6 +1525,22 @@ export default function Reports({
       return setError("Enter a result before verifying, or save as pending draft");
     }
 
+    let clinicalReportDate = entering.report_date ?? null;
+    if (isAdmin) {
+      const trimmed = reportDate.trim();
+      if (trimmed) {
+        if (trimmed > todayInputValue()) {
+          return setError("Report date cannot be in the future");
+        }
+        const parsed = inputDateToTimestamp(trimmed);
+        if (parsed === null) return setError("Enter a valid report date");
+        clinicalReportDate = parsed;
+      } else {
+        clinicalReportDate = null;
+      }
+    }
+    const reportDateChanged = clinicalReportDate !== (entering.report_date ?? null);
+
     setBusy(true);
     setError("");
     try {
@@ -1642,6 +1690,7 @@ export default function Reports({
                pathologist_qualification = ?, pathologist_signature = ?,
                result_value = ?, abnormal = ?, status = ?,
                entered_by = ?, verified_by = ?, reported_at = ?,
+               report_date = ?,
                approval_status = ?, approved_by = ?, approved_at = ?,
                analysis_started_at = COALESCE(analysis_started_at, ?),
                analysis_completed_at = CASE WHEN ? = 1 THEN ? ELSE analysis_completed_at END,
@@ -1666,6 +1715,7 @@ export default function Reports({
             user?.id ?? "",
             markDone ? (user?.id ?? "") : "",
             markDone ? ts : null,
+            clinicalReportDate,
             markDone ? "approved" : "pending",
             markDone ? (user?.id ?? "") : "",
             markDone ? ts : null,
@@ -1677,6 +1727,26 @@ export default function Reports({
             ...tenantParams,
           ]
         );
+
+        // An administrator-set clinical date applies to every test on the bill,
+        // so a combined pathology/X-ray report cannot carry mixed dates.
+        if (isAdmin && reportDateChanged) {
+          await db.run(
+            `UPDATE report_orders
+             SET report_date = ?, updated_at = ?, dirty = 1
+             WHERE invoice_id = ? AND deleted = 0 ${tenantClause}`,
+            [clinicalReportDate, ts, entering.invoice_id, ...tenantParams]
+          );
+          await writeAudit(db, {
+            userId: user?.id ?? "",
+            action: "report.report_date",
+            entity: "invoice",
+            entityId: entering.invoice_id,
+            detail: clinicalReportDate
+              ? `Report date set to ${formatDate(clinicalReportDate)}`
+              : "Report date cleared to actual release time",
+          });
+        }
 
         const updatedOrder = await db.get<ReportOrderRow>(
           `SELECT * FROM report_orders WHERE id = ? ${tenantClause}`,
@@ -1727,7 +1797,11 @@ export default function Reports({
             action: isAmendment ? "report.amend" : "report.verify",
             entity: "report_order",
             entityId: entering.id,
-            detail: `Revision ${revision?.n ?? 1}${isAmendment ? ` · ${amendmentReason.trim()}` : ""}`,
+            detail: `Revision ${revision?.n ?? 1}${isAmendment ? ` · ${amendmentReason.trim()}` : ""}${
+              reportDateChanged
+                ? ` · report date ${clinicalReportDate ? formatDate(clinicalReportDate) : "actual release"}`
+                : ""
+            }`,
           });
         }
       });
@@ -2420,6 +2494,20 @@ export default function Reports({
                 </p>
               )}
             </div>
+
+            {isAdmin && (
+              <Labeled
+                label="Report date (administrator)"
+                hint="Applies to every pathology and X-ray test on this bill. Leave blank to use the actual release time. Non-admin users cannot change this."
+              >
+                <TextInput
+                  type="date"
+                  value={reportDate}
+                  max={todayInputValue()}
+                  onChange={(e) => setReportDate(e.target.value)}
+                />
+              </Labeled>
+            )}
 
             {!isRadiologyReport(entering) && (
               <div className="space-y-2">
@@ -3243,7 +3331,11 @@ function ReportPrint({
                 {[
                   invoice?.invoice_no,
                   `Version ${reportVersion}`,
-                  formatDate(orders[0]?.reported_at ?? Date.now()),
+                  formatDate(
+                    orders[0]?.report_date ??
+                      orders[0]?.reported_at ??
+                      Date.now()
+                  ),
                 ]
                   .filter(Boolean)
                   .join(" · ")}
@@ -3432,7 +3524,7 @@ function SeparateReportList({
           test_category: string;
         }>(
           `SELECT ro.id, ro.test_name, p.name AS patient_name,
-                  COALESCE(ro.reported_at, ro.created_at) AS reported_at,
+                  COALESCE(ro.report_date, ro.reported_at, ro.created_at) AS reported_at,
                   COALESCE(t.category, '') AS test_category
            FROM report_orders ro
            JOIN invoices i ON i.id = ro.invoice_id AND i.tenant_id = ro.tenant_id
@@ -3678,7 +3770,19 @@ function XrayReportPrint({
                 </p>
                 <p className="text-slate-500">Radiologist</p>
               </div>
-              <p>Reported {formatDateTime(order.reported_at ?? Date.now())}</p>
+              <div className="text-right">
+                <p>
+                  Reported{" "}
+                  {formatDateTime(
+                    order.report_date ?? order.reported_at ?? Date.now()
+                  )}
+                </p>
+                {order.report_date && (
+                  <p className="text-slate-400">
+                    Released {formatDateTime(order.reported_at ?? Date.now())}
+                  </p>
+                )}
+              </div>
             </div>
           )}
 

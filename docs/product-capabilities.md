@@ -23,8 +23,9 @@ Status meanings: **Ready**, **Pilot**, **Partial**, **Not available**, **Externa
 | Starter parameter templates | Ready | 383 pathology parameters; every pathology test has at least one; every range-like numeric reference has checked Low/High limits; panels and complex reports include CBC 20, LFT 11, KFT 9, Lipid 8, Urine 18, malaria subfields, VDRL/TPHA titres, histopathology sections and cytology findings; X-rays remain text-only |
 | Starter combined packages | Ready | 27 seeded health-check packages (29 total), linking parameterized pathology tests and X-ray report tests; packages are price/name wrappers, items retain their own parameters |
 | GST invoice | Ready | Per-line GST, CGST/SGST split, taxable value, round-off, GSTIN |
-| Back-dated bill date | Ready | Choose a past bill date at creation; the date is immutable after saving. Report entry/release timestamps remain the actual time for clinical traceability |
+| Back-dated bill date | Ready | Administrator-only past bill date at creation; invoice date immutable after saving. Pathology and X-ray report orders inherit the same clinical report date, while actual release timestamps remain recorded |
 | Results handoff | Ready | **Save & enter results** opens Reports filtered to the new invoice, listing both pathology and X-ray orders |
+| Admin report date | Ready | Administrators can set or clear a bill-wide clinical report date while entering a report; non-admin users cannot see the control. Actual release time remains in `reported_at` and the report footer |
 | Invoice category filter | Ready | Filter invoices by test/package category (Pathology, X-Ray, custom categories); mixed bills appear under each category they contain |
 | Invoice discounts | Ready | Line-level discount reducing taxable value |
 | Payments | Ready | Cash, UPI, card, bank, credit; partial payments create dues |

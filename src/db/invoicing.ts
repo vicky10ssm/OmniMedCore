@@ -73,6 +73,39 @@ export interface InvoiceTotals {
   total: number;
 }
 
+function localDayKey(timestamp: number): string {
+  const date = new Date(timestamp);
+  const two = (value: number) => String(value).padStart(2, "0");
+  return `${date.getFullYear()}-${two(date.getMonth() + 1)}-${two(date.getDate())}`;
+}
+
+/**
+ * Back-dating is an administrator-only correction. It also seeds every new
+ * report order with that clinical date. The actual release time is still stored
+ * separately in reported_at.
+ */
+async function reportDateForInvoice(
+  db: DataSource,
+  invoiceDate: number,
+  userId: string
+): Promise<number | null> {
+  const invoiceDay = localDayKey(invoiceDate);
+  const today = localDayKey(now());
+  if (invoiceDay > today) {
+    throw new Error("Bill date cannot be in the future");
+  }
+  if (invoiceDay === today) return null;
+  const [tenantClause, tenantParams] = tenantAnd();
+  const actor = await db.get<{ role: string }>(
+    `SELECT role FROM users WHERE id = ? AND deleted = 0 ${tenantClause}`,
+    [userId, ...tenantParams]
+  );
+  if (actor?.role !== "admin") {
+    throw new Error("Only an administrator can create a back-dated invoice.");
+  }
+  return invoiceDate;
+}
+
 export function computeLine(line: BillLineInput): LineTotals {
   const qty = Math.max(1, Math.floor(line.qty || 1));
   const gross = Math.round(line.unit_price_paise * qty);
@@ -120,6 +153,8 @@ export async function saveInvoice(
 ): Promise<{ id: string; invoiceNo: string }> {
   if (input.lines.length === 0) throw new Error("Add at least one test to bill");
   if (!input.patientId) throw new Error("Select a patient");
+
+  const reportDate = await reportDateForInvoice(db, input.invoiceDate, userId);
 
   return db.tx(async () => {
     const id = uuid();
@@ -223,6 +258,7 @@ export async function saveInvoice(
             refMin: test.ref_min,
             refMax: test.ref_max,
             userId,
+            reportDate,
             sampleSequence: sampleSequence,
           });
           if (created.sampleId) {
@@ -257,6 +293,7 @@ export async function saveInvoice(
             refMin: test.ref_min,
             refMax: test.ref_max,
             userId,
+            reportDate,
             sampleSequence: sampleSequence,
           });
           if (created.sampleId) {
@@ -351,6 +388,10 @@ export async function amendInvoice(
     if (invoice.status === "cancelled") {
       throw new Error("Cancelled invoices cannot be amended");
     }
+    const reportDate =
+      localDayKey(invoice.invoice_date) === localDayKey(now())
+        ? null
+        : invoice.invoice_date;
 
     const currentItems = await db.all<InvoiceItemRow>(
       `SELECT * FROM invoice_items
@@ -569,6 +610,7 @@ export async function amendInvoice(
               refMin: test.ref_min,
               refMax: test.ref_max,
               userId: input.userId,
+              reportDate,
               sampleSequence,
             });
             if (created.sampleId) sampleSequence += 1;
@@ -600,6 +642,7 @@ export async function amendInvoice(
               refMin: test.ref_min,
               refMax: test.ref_max,
               userId: input.userId,
+              reportDate,
               sampleSequence,
             });
             if (created.sampleId) sampleSequence += 1;
@@ -686,6 +729,7 @@ async function insertReportOrder(
     refMin: number | null;
     refMax: number | null;
     userId: string;
+    reportDate: number | null;
     sampleSequence: number;
   }
 ): Promise<{ orderId: string; sampleId: string }> {
@@ -723,9 +767,9 @@ async function insertReportOrder(
   await db.run(
     `INSERT INTO report_orders (id, invoice_id, patient_id, test_id, test_name, package_id, sample_id,
        status, result_value, result_text, unit, ref_range, ref_min, ref_max, abnormal,
-       entered_by, verified_by, reported_at, printed_at,
+       entered_by, verified_by, reported_at, report_date, printed_at,
        created_at, updated_at, device_id, dirty, deleted, tenant_id)
-     VALUES (?,?,?,?,?,?,?,'pending',NULL,'',?,?,?,?,0,'','',NULL,NULL,?,?,?,1,0,?)`,
+     VALUES (?,?,?,?,?,?,?,'pending',NULL,'',?,?,?,?,0,'','',NULL,?,NULL,?,?,?,1,0,?)`,
     [
       orderId,
       o.invoiceId,
@@ -738,6 +782,7 @@ async function insertReportOrder(
       o.refRange,
       o.refMin,
       o.refMax,
+      o.reportDate,
       ts,
       ts,
       getDeviceId(),

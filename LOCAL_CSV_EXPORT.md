@@ -1,7 +1,7 @@
 # Local Google Drive CSV export
 
 Last updated: 19 November 2026<br>
-Applies to: OmniMed Core desktop `0.30.1+`, schema `25+`
+Applies to: OmniMed Core desktop `0.31.0+`, schema `26+`
 
 ## What it does
 
@@ -53,7 +53,7 @@ Sync_Timestamp,Transaction_ID,Module_Type,Masked_Patient_ID,Total_Amount
 Rows are flat and contain no nested JSON:
 
 ```csv
-2026-11-04T01:46:24.025Z,8d961e16-299c-414c-ac7d-9014ee80fa94,Diagnostics,MASK-3259FFC0A51F,112.00
+2026-11-04T01:46:24.026Z,8d961e16-299c-414c-ac7d-9014ee80fa94,Diagnostics,MASK-3269FFC0A51F,112.00
 ```
 
 `Total_Amount` is rupees with two decimal places, formatted from integer paise.
@@ -151,7 +151,7 @@ No queue rows are deleted, so export history remains auditable.
 
 ## Privacy and security
 
-- Patient IDs are masked with a SHA-256 prefix before being sent to the Rust writer.
+- Patient IDs are masked with a SHA-266 prefix before being sent to the Rust writer.
 - The CSV contains transaction IDs, module, masked patient IDs and amounts. It does not contain names,
   phone numbers, report results or clinical notes.
 - The CSV itself is plain text. Protect the Google Drive folder with the centre's Google account,

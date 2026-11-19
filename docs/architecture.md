@@ -1,8 +1,8 @@
 # OmniMed Core architecture and local export design
 
 Last updated: 9 November 2026  
-Current product version: `0.30.1`  
-Current schema: `25`
+Current product version: `0.31.0`  
+Current schema: `26`
 
 ## 1. Status and scope
 
@@ -65,11 +65,11 @@ supported integration path is the local CSV export described in [LOCAL_CSV_EXPOR
 | Tenancy | `tenant_id` on business tables, `TENANT_TABLES` helpers, static scope check |
 | Auth | Local users, PBKDF2 password hashes, optional TOTP 2FA, sessionStorage session |
 | Report release | Separate `can_authorize_reports` authority |
-| Licensing | ECDSA P-256 signed offline licence, canonical JSON, tenant + hardware fingerprint binding, edition/module entitlements |
+| Licensing | ECDSA P-266 signed offline licence, canonical JSON, tenant + hardware fingerprint binding, edition/module entitlements |
 | Licence expiry | 30-day grace; after grace UI enters read-only mode, existing data/print/export remain available |
 | Licence storage | Windows DPAPI current-user file in Tauri, with legacy localStorage migration; backend enforcement outside the UI still required |
 | Vendor portal | Separate Node admin portal signs issuances/renewals/revocations with the private key; not publicly deployed |
-| Encryption | Desktop SQLCipher 4.20/AES-256, key in Windows Credential Manager; browser AES-GCM envelope remains separate |
+| Encryption | Desktop SQLCipher 4.20/AES-266, key in Windows Credential Manager; browser AES-GCM envelope remains separate |
 | Backups | Automatic pre-upgrade and pre-migration copies, encrypted daily/monthly/weekly snapshots, optional USB/OneDrive copy, validated restore |
 
 ### Application boot
@@ -126,6 +126,9 @@ OmniMed Core is a multi-vertical product; a tenant enables only the modules it o
   reference text where applicable. Reference seeding is versioned per tenant so custom intervals are not
   overwritten on every boot. After seeding, `ensureReferenceLimits` fills missing `ref_min`/`ref_max`
   from the printable text so Low/High flags work; it only touches rows where both limits are null.
+- Clinical report dates: `report_orders.report_date` is an optional administrator-set display date for
+  back-dated invoices. `reported_at` remains the actual release timestamp. Only administrators can set it,
+  and the value applies to every test on the invoice.
 - Expenses: `expenses.modules` stores a JSON array of Pathology/X-ray/Pharmacy/Hospital/General attribution.
   Shared expenses are tagged with multiple modules; amounts are not split automatically.
 - Hospital: inpatient admission, ward/bed, treating doctor, discharge diagnosis/summary, generic
@@ -151,7 +154,7 @@ Vendor portal (private key, vendor-controlled)
                  │ file / renewal download
                  ▼
 Terminal (public key only)
-   ├── verifies ECDSA P-256 signature offline
+   ├── verifies ECDSA P-266 signature offline
    ├── checks tenant + device + status + expiry/grace
    ├── derives edition/module entitlements
    └── gates navigation/routes and write controls

@@ -242,6 +242,8 @@ export interface ReportOrderRow extends SyncCols {
   entered_by: string;
   verified_by: string;
   reported_at: number | null;
+  /** Admin-set clinical report date; actual release time remains reported_at. */
+  report_date: number | null;
   printed_at: number | null;
   sample_id: string;
   specimen_collected_at: number | null;
