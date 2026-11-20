@@ -1,6 +1,10 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { getDb } from "../db";
 import { getDeviceId, now, uuid } from "../db/helpers";
+import {
+  normalizeReferrerType,
+  referrerLabel,
+} from "../db/referrer";
 import { getCurrentTenantId, tenantAnd } from "../db/tenant";
 import type { DoctorRow } from "../db/types";
 import {
@@ -207,13 +211,7 @@ export default function Doctors() {
                     className="border-b border-slate-100 last:border-0 hover:bg-slate-50"
                   >
                     <td className="px-4 py-2.5">
-                      <p className="font-medium">
-                        {d.type === "hospital"
-                          ? d.name
-                          : d.type === "self"
-                            ? "Self / walk-in"
-                            : `Dr. ${d.name}`}
-                      </p>
+                      <p className="font-medium">{referrerLabel(d)}</p>
                       <p className="text-xs text-slate-400">
                         {[d.qualification, d.reg_no && `Reg. ${d.reg_no}`]
                           .filter(Boolean)
@@ -222,7 +220,7 @@ export default function Doctors() {
                     </td>
                     <td className="hidden px-4 py-2.5 sm:table-cell">
                       <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium capitalize text-slate-600">
-                        {d.type || "doctor"}
+                        {normalizeReferrerType(d.type)}
                       </span>
                     </td>
                     <td className="hidden px-4 py-2.5 text-slate-600 sm:table-cell">

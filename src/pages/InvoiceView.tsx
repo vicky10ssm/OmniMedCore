@@ -4,6 +4,7 @@ import { useAuth } from "../auth/AuthContext";
 import { useMonitor } from "../app/MonitorContext";
 import { getDb } from "../db";
 import { formatDate, formatDateTime, formatINR, rupeesToPaise } from "../db/helpers";
+import { referrerLabel, referrerOptionLabel } from "../db/referrer";
 import {
   addPayment,
   amendInvoice,
@@ -527,19 +528,11 @@ export default function InvoiceView() {
           </div>
           <div className="text-right">
             <p className="font-semibold text-slate-500">Referred by</p>
-            <p className="mt-0.5 text-sm">
-              {doctor
-                ? doctor.type === "hospital"
-                  ? doctor.name
-                  : doctor.type === "self"
-                    ? "Self / walk-in"
-                    : `Dr. ${doctor.name}`
-                : "Self / walk-in"}
-            </p>
-            {doctor?.type === "hospital" && (
+            <p className="mt-0.5 text-sm">{referrerLabel(doctor)}</p>
+            {doctor?.type?.toLowerCase() === "hospital" && (
               <p className="text-slate-600">Hospital / facility referral</p>
             )}
-            {doctor?.type !== "hospital" && doctor?.reg_no && (
+            {doctor?.type?.toLowerCase() !== "hospital" && doctor?.reg_no && (
               <p className="text-slate-600">Reg. {doctor.reg_no}</p>
             )}
           </div>
@@ -711,16 +704,15 @@ export default function InvoiceView() {
           </p>
 
           <div className="grid gap-3 sm:grid-cols-2">
-            <Labeled label="Referring doctor (optional)">
+            <Labeled label="Referring doctor / hospital (optional)">
               <Select
                 value={amendDoctorId}
                 onChange={(event) => setAmendDoctorId(event.target.value)}
               >
-                <option value="">— None —</option>
+                <option value="">— Self / walk-in —</option>
                 {amendDoctors.map((doctor) => (
                   <option key={doctor.id} value={doctor.id}>
-                    Dr. {doctor.name}
-                    {doctor.specialization ? ` (${doctor.specialization})` : ""}
+                    {referrerOptionLabel(doctor)}
                   </option>
                 ))}
               </Select>

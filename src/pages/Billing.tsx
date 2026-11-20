@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import { getDb } from "../db";
 import { formatINR, getDeviceId, now, rupeesToPaise, uuid } from "../db/helpers";
+import { referrerOptionLabel } from "../db/referrer";
 import {
   computeLine,
   computeTotals,
@@ -406,13 +407,7 @@ export default function Billing() {
                   <option value="">— Self / walk-in —</option>
                   {doctors.map((d) => (
                     <option key={d.id} value={d.id}>
-                      {d.type === "hospital"
-                        ? `${d.name} (Hospital)`
-                        : d.type === "self"
-                          ? "Self / walk-in"
-                          : `Dr. ${d.name}${
-                              d.specialization ? ` (${d.specialization})` : ""
-                            }`}
+                      {referrerOptionLabel(d)}
                     </option>
                   ))}
                 </Select>

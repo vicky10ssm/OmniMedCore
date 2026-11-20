@@ -11,6 +11,7 @@ import { useMonitor } from "../app/MonitorContext";
 import { getDb, type DataSource } from "../db";
 import { writeAudit } from "../db/audit";
 import { formatDate, formatDateTime, getDeviceId, now, uuid } from "../db/helpers";
+import { referrerLabel } from "../db/referrer";
 import type {
   InvoiceRow,
   PatientRow,
@@ -3811,15 +3812,7 @@ function useDoctorReferral(doctorId: string): string {
         `SELECT name, type FROM doctors WHERE id = ? ${tenantClause}`,
         [doctorId, ...tenantParams]
       );
-      if (!row) {
-        setLabel("");
-      } else if (row.type === "hospital") {
-        setLabel(row.name);
-      } else if (row.type === "self") {
-        setLabel("Self / walk-in");
-      } else {
-        setLabel(`Dr. ${row.name}`);
-      }
+      setLabel(row ? referrerLabel(row) : "");
     })();
   }, [doctorId]);
   return label;
