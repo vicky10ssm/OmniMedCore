@@ -1,7 +1,7 @@
 # OmniMed Core buyer documentation
 
 Last updated: 20 November 2026  
-Product version: `0.33.0`  
+Product version: `0.33.1`  
 Database schema: `28`
 
 **OmniMed Core** is the umbrella product name. The internal package/browser storage keys retain the

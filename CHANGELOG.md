@@ -3,6 +3,28 @@
 All notable changes to OmniMed Core are recorded here. This project follows semantic versioning once
 production releases begin.
 
+## [0.33.1] - 2026-11-20
+
+### Fixed
+
+- Hospital and self entries no longer receive a `Dr.` prefix anywhere.
+  - Added a single referrer formatter used by billing, the Doctors catalogue, invoices and reports.
+  - Normalised legacy/imported type values such as `Hospital`, `hospital ` or uppercase variants.
+  - Fixed the remaining `Dr.` prefix in the invoice-amendment selector.
+- The invoice and report print paths now consistently show:
+  - Doctor → `Dr. <name>`
+  - Hospital → the facility name
+  - Self → `Self / walk-in`
+
+### Verified
+
+- The saved hospital entry has type `hospital` and displays without `Dr.` in the Doctors list and billing selector.
+- `npm run check`, terminal build, monitor build and Rust tests pass.
+
+### Database
+
+- No schema change. Schema remains **28**.
+
 ## [0.33.0] - 2026-11-20
 
 ### Changed

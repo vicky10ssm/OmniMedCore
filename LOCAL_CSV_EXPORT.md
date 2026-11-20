@@ -1,7 +1,7 @@
 # Local Google Drive CSV export
 
 Last updated: 20 November 2026<br>
-Applies to: OmniMed Core desktop `0.33.0+`, schema `28+`
+Applies to: OmniMed Core desktop `0.33.1+`, schema `28+`
 
 ## What it does
 
