@@ -3,6 +3,37 @@
 All notable changes to OmniMed Core are recorded here. This project follows semantic versioning once
 production releases begin.
 
+## [0.33.0] - 2026-11-20
+
+### Changed
+
+- Reverted the invoice-level referral source introduced in 0.32.0.
+  - Schema 28 drops `invoices.referral_type` and `invoices.referral_name`.
+  - Existing invoices continue to use their linked doctor or **Self / walk-in**.
+- Added **Type** to the Doctors & hospitals catalogue: **Doctor**, **Hospital / facility**, or
+  **Self / walk-in**.
+  - Billing lists active entries from the same catalogue and shows the type in the selector.
+  - Invoices and reports label the referrer from that type: `Dr. <name>`, the hospital name, or
+    `Self / walk-in`.
+- Renamed the printed document title from **Tax Invoice** to **Invoice**.
+
+### Safety
+
+- Existing doctors default to type `doctor`; no doctor records are removed.
+- Invoice totals, numbering, payments, back-dating and report dates are unchanged.
+- No separate hospital master is introduced; the Doctors catalogue remains the single referrer list.
+
+### Verified
+
+- `npm run check` passed, including migration 28 on fresh, upgraded and idempotent databases.
+- Terminal build, monitor build and `cargo test --lib --locked` passed.
+- Report/invoice print paths use the doctor type.
+- Schema 28 verified.
+
+### Database
+
+- Schema **28** adds `doctors.type` and drops the unused invoice referral columns.
+
 ## [0.32.0] - 2026-11-19
 
 ### Added

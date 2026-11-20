@@ -28,9 +28,9 @@ Load it before touching the test catalogue.
 - X-ray/radiography: **43**
 - Other: **0**
 - Active parameters: **383**
-- Combined packages: **29** total (27 seeded by this skill, plus 2 original packages)
-- Schema: **27**
-- Current release at time of writing: **0.32.0**
+- Combined packages: **29** total (28 seeded by this skill, plus 2 original packages)
+- Schema: **28**
+- Current release at time of writing: **0.33.0**
 
 Counts change when tests/parameters/packages are added. The generated reference files are authoritative
 for the current snapshot; the source modules are authoritative if they disagree.
@@ -113,7 +113,7 @@ for the current snapshot; the source modules are authoritative if they disagree.
 
 ## Package catalogue
 
-The 27 seeded packages cover popular health-check combinations:
+The 28 seeded packages cover popular health-check combinations:
 
 - Basic/Master/Full Body/Executive
 - Diabetic, Cardiac Risk, Thyroid, Anemia, Iron, Vitamin, Metabolic Syndrome

@@ -54,8 +54,6 @@ interface WorkRow extends ReportOrderRow {
   invoice_no: string;
   invoice_date: number;
   doctor_id?: string;
-  referral_type?: string;
-  referral_name?: string;
   /** Alias of report_orders.test_name — included so print/report code can use one name. */
   patient_name: string;
   patient_phone: string;
@@ -351,7 +349,7 @@ export default function Reports({
     setRows(
       await db.all<WorkRow>(
         `SELECT ro.*, i.invoice_no, i.invoice_date,
-                i.doctor_id, i.referral_type, i.referral_name,
+                i.doctor_id,
                 p.name AS patient_name, p.phone AS patient_phone,
                 p.age AS patient_age, p.gender AS patient_gender,
                 COALESCE(t.category, '') AS test_category,
@@ -3175,7 +3173,7 @@ function ReportPrint({
       // One report per bill: only this invoice's verified tests.
       const list = await db.all<WorkRow>(
         `SELECT ro.*, i.invoice_no, i.invoice_date,
-                i.doctor_id, i.referral_type, i.referral_name,
+                i.doctor_id,
                 p.name AS patient_name, p.phone AS patient_phone,
                 p.age AS patient_age, p.gender AS patient_gender,
                 COALESCE(t.category, '') AS test_category,
@@ -3256,7 +3254,7 @@ function ReportPrint({
     }
   }, [ready, orders.length]);
 
-  const doctorName = useDoctorName(invoice?.doctor_id ?? "");
+  const referralLabel = useDoctorReferral(invoice?.doctor_id ?? "");
   const reportVersion = Math.max(1, ...orders.map((o) => o.revision_no ?? 1));
   const snapshotPathologist = orders.find((o) => o.pathologist_name);
   const authorizerName =
@@ -3362,16 +3360,7 @@ function ReportPrint({
             </div>
             <div className="text-right">
               <p className="font-semibold text-slate-500">Referred by</p>
-              <p className="mt-0.5 text-sm">
-                {invoice?.referral_type === "hospital" && invoice.referral_name
-                  ? invoice.referral_name
-                  : doctorName
-                    ? `Dr. ${doctorName}`
-                    : "Self / walk-in"}
-              </p>
-              {invoice?.referral_type === "hospital" && invoice.referral_name && (
-                <p className="text-slate-600">Hospital / facility referral</p>
-              )}
+              <p className="mt-0.5 text-sm">{referralLabel || "Self / walk-in"}</p>
             </div>
           </div>
 
@@ -3661,7 +3650,7 @@ function XrayReportPrint({
   const findings = order.findings_text?.trim() || "";
   const impression = order.impression_text?.trim() || "";
   const clinicalHistory = order.clinical_history?.trim() || "";
-  const doctorName = useDoctorName(order.doctor_id ?? "");
+  const referralLabel = useDoctorReferral(order.doctor_id ?? "");
   const printConfig = readPrintLetterhead(lab);
   const showSignature = shouldPrintReportSignature(lab);
 
@@ -3730,11 +3719,7 @@ function XrayReportPrint({
               </p>
               <p className="mt-1 text-slate-600">
                 <span className="font-semibold text-slate-500">Referred by: </span>
-                {order.referral_type === "hospital" && order.referral_name
-                  ? order.referral_name
-                  : doctorName
-                    ? `Dr. ${doctorName}`
-                    : "Self / walk-in"}
+                {referralLabel || "Self / walk-in"}
               </p>
             </div>
             <div className="text-right">
@@ -3811,23 +3796,31 @@ function XrayReportPrint({
   );
 }
 
-/** Looks up the referring doctor's display name for the report. */
-function useDoctorName(doctorId: string): string {
-  const [name, setName] = useState("");
+/** Formats the referring doctor/hospital from the doctors catalogue. */
+function useDoctorReferral(doctorId: string): string {
+  const [label, setLabel] = useState("");
   useEffect(() => {
     if (!doctorId) {
-      setName("");
+      setLabel("");
       return;
     }
     void (async () => {
       const db = await getDb();
       const [tenantClause, tenantParams] = tenantAnd();
-      const row = await db.get<{ name: string }>(
-        `SELECT name FROM doctors WHERE id = ? ${tenantClause}`,
+      const row = await db.get<{ name: string; type: string }>(
+        `SELECT name, type FROM doctors WHERE id = ? ${tenantClause}`,
         [doctorId, ...tenantParams]
       );
-      setName(row?.name ?? "");
+      if (!row) {
+        setLabel("");
+      } else if (row.type === "hospital") {
+        setLabel(row.name);
+      } else if (row.type === "self") {
+        setLabel("Self / walk-in");
+      } else {
+        setLabel(`Dr. ${row.name}`);
+      }
     })();
   }, [doctorId]);
-  return name;
+  return label;
 }

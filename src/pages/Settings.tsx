@@ -609,7 +609,7 @@ export default function Settings() {
                     </Labeled>
                     <Labeled
                       label="GSTIN"
-                      hint="15 characters. Appears on every tax invoice."
+                      hint="15 characters. Appears on every invoice."
                     >
                       <TextInput
                         value={form.lab_gstin}
@@ -658,7 +658,7 @@ export default function Settings() {
                   </Labeled>
                   <Labeled
                     label="A4 invoice header"
-                    hint="Tax invoices printed on A4 paper."
+                    hint="Invoices printed on A4 paper."
                   >
                     <Select
                       value={form.print_invoice_letterhead_mode}

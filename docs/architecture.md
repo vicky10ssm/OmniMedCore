@@ -1,8 +1,8 @@
 # OmniMed Core architecture and local export design
 
 Last updated: 9 November 2026  
-Current product version: `0.32.0`  
-Current schema: `27`
+Current product version: `0.33.0`  
+Current schema: `28`
 
 ## 1. Status and scope
 
@@ -216,7 +216,7 @@ built-in local dashboard in [DASHBOARD.md](../DASHBOARD.md).
 ### Data ownership in current build
 
 - The local database is the system of record.
-- Browser storage is per origin/profile; `localhost` and `127.0.0.1` are separate stores.
+- Browser storage is per origin/profile; `localhost` and `128.0.0.1` are separate stores.
 - There is no cross-device sharing. �Monitor from anywhere� is **not delivered**; only the local
   read-only monitor build and the one-way Google Drive CSV outbox exist.
 

@@ -165,7 +165,8 @@ Record invoice/payment IDs and totals used for acceptance.
 - [ ] Back-dated bill still exposes full pathology and X-ray result entry
 - [ ] **Save & enter results** opens Reports filtered to the new invoice with both result types
 - [ ] Invoice category filter includes direct test categories and package component categories
-- [ ] Self, doctor and hospital referral sources save and print correctly; blank hospital is rejected
+- [ ] Doctors & hospitals Type = Doctor, Hospital, Self saves and prints correctly; blank/legacy rows default to Doctor
+- [ ] Printed invoice title reads **Invoice**, not **Tax Invoice**
 - [ ] Verification requires all selected results
 - [ ] Amendment requires reason and preserves previous revision
 - [ ] Report print shows accession, authorizer and version

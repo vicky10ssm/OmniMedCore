@@ -792,14 +792,19 @@ The second deployment exists. `npm run build` makes the terminal (editing) app; 
 - Pre-printed letterhead margins still apply to every page.
 - No schema change.
 
-## Referral source - built
+## Referrer types in the Doctors catalogue - built
 
-- New bill records **Self / walk-in**, **Doctor**, or **Hospital / facility**.
-- Doctor mode uses the existing doctor catalogue. Hospital mode stores a free-text facility name on the
-  invoice and prints it in place of the doctor on invoices and pathology reports.
-- Existing invoices with blank referral fields continue to use their linked doctor, or Self / walk-in.
-- No hospital master, external lookup or commission behavior is introduced.
-- Schema 27 adds `invoices.referral_type` and `invoices.referral_name`.
+- The **Doctors & hospitals** catalogue has a **Type** field: Doctor, Hospital / facility, or Self / walk-in.
+- Billing lists active doctors and hospitals from this single catalogue; the selected type controls the
+  label on the invoice and report:
+  - Doctor -> `Dr. <name>`
+  - Hospital -> the facility name
+  - Self -> `Self / walk-in`
+- Selecting no referrer still prints `Self / walk-in`.
+- The invoice-level referral columns introduced in 0.32.0 were reverted. Schema 28 drops
+  `invoices.referral_type` and `invoices.referral_name` and adds `doctors.type`.
+- Existing doctors default to type `doctor`; existing invoices continue to use their linked doctor.
+- The printed invoice title is now **Invoice**, not **Tax Invoice**.
 
 ## Back-dated bill date, results handoff and invoice category filter - built
 
