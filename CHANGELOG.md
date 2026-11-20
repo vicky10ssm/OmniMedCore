@@ -7,9 +7,9 @@ production releases begin.
 
 ### Changed
 
-- **Referred by** now prints the referrer name only:
-  - Doctor → doctor name, without the `Dr.` prefix
-  - Hospital → hospital/facility name
+- **Referred by** now prints only the referrer:
+  - Doctor → `Dr. <name>`
+  - Hospital → hospital/facility name only
   - Self → `Self / walk-in`
 - Removed the secondary **Hospital / facility referral** line and doctor registration line from the
   invoice print.
