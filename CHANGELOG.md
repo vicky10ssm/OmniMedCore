@@ -3,6 +3,27 @@
 All notable changes to OmniMed Core are recorded here. This project follows semantic versioning once
 production releases begin.
 
+## [0.33.2] - 2026-11-20
+
+### Changed
+
+- **Referred by** now prints the referrer name only:
+  - Doctor → doctor name, without the `Dr.` prefix
+  - Hospital → hospital/facility name
+  - Self → `Self / walk-in`
+- Removed the secondary **Hospital / facility referral** line and doctor registration line from the
+  invoice print.
+- The New bill selection dropdown still shows type hints (`(Hospital)`, `Dr.`) to make selection clear.
+
+### Verified
+
+- Invoice and report print paths use the simplified referrer label.
+- `npm run check`, terminal build, monitor build and Rust tests pass.
+
+### Database
+
+- No schema change. Schema remains **28**.
+
 ## [0.33.1] - 2026-11-20
 
 ### Fixed

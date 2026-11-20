@@ -529,12 +529,6 @@ export default function InvoiceView() {
           <div className="text-right">
             <p className="font-semibold text-slate-500">Referred by</p>
             <p className="mt-0.5 text-sm">{referrerLabel(doctor)}</p>
-            {doctor?.type?.toLowerCase() === "hospital" && (
-              <p className="text-slate-600">Hospital / facility referral</p>
-            )}
-            {doctor?.type?.toLowerCase() !== "hospital" && doctor?.reg_no && (
-              <p className="text-slate-600">Reg. {doctor.reg_no}</p>
-            )}
           </div>
         </div>
 
