@@ -73,9 +73,6 @@ export default function Billing() {
 
   const [doctors, setDoctors] = useState<DoctorRow[]>([]);
   const [doctorId, setDoctorId] = useState("");
-  const [referralType, setReferralType] = useState<"self" | "doctor" | "hospital">("self");
-  const [referralName, setReferralName] = useState("");
-  const [hospitalNames, setHospitalNames] = useState<string[]>([]);
 
   const [catalogQuery, setCatalogQuery] = useState("");
   const [catalog, setCatalog] = useState<CatalogOption[]>([]);
@@ -100,18 +97,6 @@ export default function Billing() {
           `SELECT * FROM doctors WHERE deleted = 0 AND is_active = 1 ${tenantClause} ORDER BY name`,
           tenantParams
         )
-      );
-      const hospitals = await db.all<{ referral_name: string }>(
-        `SELECT DISTINCT referral_name FROM invoices
-         WHERE deleted = 0 AND referral_type = 'hospital' AND trim(referral_name) <> ''
-           ${tenantClause}
-         ORDER BY referral_name LIMIT 20`,
-        tenantParams
-      );
-      setHospitalNames(
-        hospitals
-          .map((row) => row.referral_name.trim())
-          .filter((name, index, list) => name && list.indexOf(name) === index)
       );
       const tests = await db.all<TestRow>(
         `SELECT * FROM tests WHERE deleted = 0 AND is_active = 1 ${tenantClause} ORDER BY name`,
@@ -278,9 +263,6 @@ export default function Billing() {
     setError("");
     if (!patient) return setError("Select a patient first");
     if (lines.length === 0) return setError("Add at least one test or package");
-    if (referralType === "hospital" && !referralName.trim()) {
-      return setError("Enter the referring hospital or facility name");
-    }
     const invoiceDate = inputDateToTimestamp(billDate);
     if (invoiceDate === null) return setError("Choose a valid bill date");
     const today = todayInputValue();
@@ -301,8 +283,6 @@ export default function Billing() {
           patientId: patient.id,
           patientName: patient.name,
           doctorId,
-          referralType,
-          referralName: referralName.trim(),
           invoiceDate: effectiveInvoiceDate,
           lines: billLines,
           notes,
@@ -418,52 +398,25 @@ export default function Billing() {
                   </div>
                 )}
               </div>
-              <Labeled label="Referral source">
+              <Labeled label="Referring doctor / hospital (optional)">
                 <Select
-                  value={referralType}
-                  onChange={(e) => {
-                    const next = e.target.value as typeof referralType;
-                    setReferralType(next);
-                    if (next !== "doctor") setDoctorId("");
-                    if (next !== "hospital") setReferralName("");
-                  }}
+                  value={doctorId}
+                  onChange={(e) => setDoctorId(e.target.value)}
                 >
-                  <option value="self">Self / walk-in</option>
-                  <option value="doctor">Doctor</option>
-                  <option value="hospital">Hospital / facility</option>
+                  <option value="">— Self / walk-in —</option>
+                  {doctors.map((d) => (
+                    <option key={d.id} value={d.id}>
+                      {d.type === "hospital"
+                        ? `${d.name} (Hospital)`
+                        : d.type === "self"
+                          ? "Self / walk-in"
+                          : `Dr. ${d.name}${
+                              d.specialization ? ` (${d.specialization})` : ""
+                            }`}
+                    </option>
+                  ))}
                 </Select>
               </Labeled>
-              {referralType === "doctor" && (
-                <Labeled label="Referring doctor">
-                  <Select
-                    value={doctorId}
-                    onChange={(e) => setDoctorId(e.target.value)}
-                  >
-                    <option value="">— Select doctor —</option>
-                    {doctors.map((d) => (
-                      <option key={d.id} value={d.id}>
-                        Dr. {d.name}
-                        {d.specialization ? ` (${d.specialization})` : ""}
-                      </option>
-                    ))}
-                  </Select>
-                </Labeled>
-              )}
-              {referralType === "hospital" && (
-                <Labeled label="Referring hospital / facility *">
-                  <TextInput
-                    value={referralName}
-                    onChange={(e) => setReferralName(e.target.value)}
-                    placeholder="e.g. City General Hospital"
-                    list="referral-hospitals"
-                  />
-                  <datalist id="referral-hospitals">
-                    {hospitalNames.map((name) => (
-                      <option key={name} value={name} />
-                    ))}
-                  </datalist>
-                </Labeled>
-              )}
             </div>
           </Card>
 

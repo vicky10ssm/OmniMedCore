@@ -12,11 +12,13 @@ import {
   Labeled,
   Modal,
   PageHeader,
+  Select,
   TextInput,
 } from "../ui/kit";
 
 interface DoctorForm {
   name: string;
+  type: "doctor" | "hospital" | "self";
   qualification: string;
   specialization: string;
   reg_no: string;
@@ -29,6 +31,7 @@ interface DoctorForm {
 
 const EMPTY: DoctorForm = {
   name: "",
+  type: "doctor",
   qualification: "",
   specialization: "",
   reg_no: "",
@@ -74,6 +77,8 @@ export default function Doctors() {
     setEditing(d);
     setForm({
       name: d.name,
+      type:
+        d.type === "hospital" || d.type === "self" ? d.type : "doctor",
       qualification: d.qualification,
       specialization: d.specialization,
       reg_no: d.reg_no,
@@ -96,6 +101,7 @@ export default function Doctors() {
       const db = await getDb();
       const values = [
         form.name.trim(),
+        form.type,
         form.qualification.trim(),
         form.specialization.trim(),
         form.reg_no.trim(),
@@ -108,16 +114,16 @@ export default function Doctors() {
       if (editing) {
         const [tenantClause, tenantParams] = tenantAnd();
         await db.run(
-          `UPDATE doctors SET name=?, qualification=?, specialization=?, reg_no=?, phone=?, address=?, email=?,
+          `UPDATE doctors SET name=?, type=?, qualification=?, specialization=?, reg_no=?, phone=?, address=?, email=?,
              is_active=?, notes=?, updated_at=?, dirty=1
              WHERE id=? ${tenantClause}`,
           [...values, now(), editing.id, ...tenantParams]
         );
       } else {
         await db.run(
-          `INSERT INTO doctors (id, name, qualification, specialization, reg_no, phone, address, email,
+          `INSERT INTO doctors (id, name, type, qualification, specialization, reg_no, phone, address, email,
              is_active, notes, created_at, updated_at, device_id, dirty, deleted, tenant_id)
-           VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,1,0,?)`,
+           VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,1,0,?)`,
           [
             uuid(),
             ...values,
@@ -142,6 +148,7 @@ export default function Doctors() {
     return (
       !q ||
       d.name.toLowerCase().includes(q) ||
+      (d.type ?? "doctor").toLowerCase().includes(q) ||
       d.specialization.toLowerCase().includes(q) ||
       d.phone.includes(q)
     );
@@ -150,11 +157,11 @@ export default function Doctors() {
   return (
     <>
       <PageHeader
-        title="Doctors"
-        subtitle="Referring doctors directory and contact details"
+        title="Doctors & hospitals"
+        subtitle="Referring doctors, hospitals and self / walk-in entries"
         actions={
           <Btn variant="primary" onClick={openNew}>
-            <Icon name="plus" className="h-4 w-4" /> New doctor
+            <Icon name="plus" className="h-4 w-4" /> New entry
           </Btn>
         }
       />
@@ -170,12 +177,12 @@ export default function Doctors() {
         </div>
         {filtered.length === 0 ? (
           <EmptyState
-            message={rows.length === 0 ? "No doctors yet" : "No match"}
-            hint="Add referring doctors here with their contact and registration details."
+            message={rows.length === 0 ? "No doctors or hospitals yet" : "No match"}
+            hint="Add doctors, hospitals or self / walk-in entries here with their contact and registration details."
             action={
               rows.length === 0 && (
                 <Btn variant="primary" onClick={openNew}>
-                  <Icon name="plus" className="h-4 w-4" /> Add first doctor
+                  <Icon name="plus" className="h-4 w-4" /> Add first entry
                 </Btn>
               )
             }
@@ -185,7 +192,8 @@ export default function Doctors() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-slate-200 bg-slate-50 text-left text-xs font-medium uppercase tracking-wide text-slate-500">
-                  <th className="px-4 py-2.5">Doctor</th>
+                  <th className="px-4 py-2.5">Doctor / hospital</th>
+                  <th className="hidden px-4 py-2.5 sm:table-cell">Type</th>
                   <th className="hidden px-4 py-2.5 sm:table-cell">Specialization</th>
                   <th className="px-4 py-2.5">Phone</th>
                   <th className="px-4 py-2.5">Status</th>
@@ -199,12 +207,23 @@ export default function Doctors() {
                     className="border-b border-slate-100 last:border-0 hover:bg-slate-50"
                   >
                     <td className="px-4 py-2.5">
-                      <p className="font-medium">Dr. {d.name}</p>
+                      <p className="font-medium">
+                        {d.type === "hospital"
+                          ? d.name
+                          : d.type === "self"
+                            ? "Self / walk-in"
+                            : `Dr. ${d.name}`}
+                      </p>
                       <p className="text-xs text-slate-400">
                         {[d.qualification, d.reg_no && `Reg. ${d.reg_no}`]
                           .filter(Boolean)
                           .join(" · ") || "—"}
                       </p>
+                    </td>
+                    <td className="hidden px-4 py-2.5 sm:table-cell">
+                      <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium capitalize text-slate-600">
+                        {d.type || "doctor"}
+                      </span>
                     </td>
                     <td className="hidden px-4 py-2.5 text-slate-600 sm:table-cell">
                       {d.specialization || "—"}
@@ -236,18 +255,39 @@ export default function Doctors() {
 
       <Modal
         open={open}
-        title={editing ? "Edit doctor" : "New doctor"}
+        title={editing ? "Edit doctor / hospital" : "New doctor / hospital"}
         onClose={() => setOpen(false)}
         wide
       >
         <form onSubmit={submit} className="grid gap-3 sm:grid-cols-2">
-          <Labeled label="Doctor name *" className="sm:col-span-2">
+          <Labeled label="Name *" className="sm:col-span-2">
             <TextInput
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
               autoFocus
-              placeholder="Dr. …"
+              placeholder={
+                form.type === "hospital"
+                  ? "e.g. City General Hospital"
+                  : form.type === "self"
+                    ? "Self / walk-in"
+                    : "Dr. …"
+              }
             />
+          </Labeled>
+          <Labeled label="Type">
+            <Select
+              value={form.type}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  type: e.target.value as DoctorForm["type"],
+                })
+              }
+            >
+              <option value="doctor">Doctor</option>
+              <option value="hospital">Hospital / facility</option>
+              <option value="self">Self / walk-in</option>
+            </Select>
           </Labeled>
           <Labeled label="Qualification">
             <TextInput
@@ -314,7 +354,7 @@ export default function Doctors() {
           <div className="flex justify-end gap-2 pt-1 sm:col-span-2">
             <Btn onClick={() => setOpen(false)}>Cancel</Btn>
             <Btn type="submit" variant="primary" disabled={busy}>
-              {busy ? "Saving…" : editing ? "Save changes" : "Add doctor"}
+              {busy ? "Saving…" : editing ? "Save changes" : "Add entry"}
             </Btn>
           </div>
         </form>

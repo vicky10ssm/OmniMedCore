@@ -1,7 +1,7 @@
 # Deployment, architecture and commercial readiness
 
 Last updated: 10 November 2026  
-Current schema: `27`
+Current schema: `28`
 
 ## Current architecture
 
@@ -165,7 +165,7 @@ Not part of the current product scope. Online sync/dashboard was removed in favo
 
 ## Demo URL caution
 
-The development URL (`http://127.0.0.1:5173/`) is for local demonstration only. Never represent it as
+The development URL (`http://128.0.0.1:5173/`) is for local demonstration only. Never represent it as
 hosted production access. Do not use real patient data in demos, screenshots or test backups.
 
 The detailed engineering, backup, security and release plan is in

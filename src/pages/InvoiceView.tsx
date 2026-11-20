@@ -498,7 +498,7 @@ export default function InvoiceView() {
           </div>
           <div className="ml-auto text-right">
             <p className="text-sm font-bold uppercase tracking-widest text-slate-700">
-              Tax Invoice
+              Invoice
             </p>
             <p className="num mt-1 whitespace-nowrap text-sm font-semibold">
               {invoice.invoice_no}{" "}
@@ -528,16 +528,19 @@ export default function InvoiceView() {
           <div className="text-right">
             <p className="font-semibold text-slate-500">Referred by</p>
             <p className="mt-0.5 text-sm">
-              {invoice.referral_type === "hospital" && invoice.referral_name
-                ? invoice.referral_name
-                : doctor
-                  ? `Dr. ${doctor.name}`
-                  : "Self / walk-in"}
+              {doctor
+                ? doctor.type === "hospital"
+                  ? doctor.name
+                  : doctor.type === "self"
+                    ? "Self / walk-in"
+                    : `Dr. ${doctor.name}`
+                : "Self / walk-in"}
             </p>
-            {invoice.referral_type === "hospital" && invoice.referral_name ? (
+            {doctor?.type === "hospital" && (
               <p className="text-slate-600">Hospital / facility referral</p>
-            ) : (
-              doctor?.reg_no && <p className="text-slate-600">Reg. {doctor.reg_no}</p>
+            )}
+            {doctor?.type !== "hospital" && doctor?.reg_no && (
+              <p className="text-slate-600">Reg. {doctor.reg_no}</p>
             )}
           </div>
         </div>

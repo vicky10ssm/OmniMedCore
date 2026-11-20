@@ -36,7 +36,7 @@ Expenses profitability card.
 
 - Patient registration, search and shared patient identity
 - GST billing, invoices, payments, dues, bill amendment before lab work starts, cancellation and A4/80 mm printing
-- Referral source on each bill: self / walk-in, doctor, or hospital / facility; hospital names print on invoices and pathology reports
+- Doctors & hospitals catalogue with a **Type** field (Doctor, Hospital, Self / walk-in); billing and printed reports label the selection from that type
 - **Save & enter results** opens both pathology and X-ray work for the new invoice
 - Administrator-only back-dated bill date at creation; pathology and X-ray reports inherit the same clinical date, while actual release timestamps remain recorded
 - Invoice list filters by status, period, search and diagnostic category, including package component categories

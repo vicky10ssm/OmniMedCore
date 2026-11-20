@@ -24,11 +24,11 @@ Use this skill for financial behavior. Preserve the existing accounting invarian
 - Store GST rates in basis points. Prices are pre-tax and CGST/SGST split GST 50/50.
 - A line discount reduces that line's taxable value.
 - Round the grand total to the nearest rupee and retain `round_off_paise` so reports reconcile.
-- **Referral source:** New bill supports Self / walk-in, Doctor, or Hospital / facility.
-  - Doctor mode uses the tenant doctor catalogue.
-  - Hospital mode stores a free-text facility name on the invoice and prints it as the referral source.
-  - Existing invoices without referral fields fall back to their linked doctor or Self / walk-in.
-  - Do not invent a hospital master or external lookup unless a future change explicitly adds one.
+- **Referrer types:** the Doctors catalogue has Type = Doctor, Hospital / facility, or Self / walk-in.
+  - Billing lists active entries from that catalogue and labels the selection by type.
+  - Doctor prints `Dr. <name>`; Hospital prints the facility name; Self prints `Self / walk-in`.
+  - Existing doctors default to type `doctor`; no invoice-level referral columns are used.
+  - Do not invent a separate hospital master; the Doctors catalogue is the single referrer list.
 - Invoice numbers and dates are immutable after creation. A new invoice may be created with a past bill
   date by an **administrator only**; the date cannot be changed later. Back-dating seeds every new
   pathology/X-ray report order with the same clinical `report_date`; the actual `reported_at` release

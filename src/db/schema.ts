@@ -2007,6 +2007,16 @@ export const MIGRATIONS: Migration[] = [
       ALTER TABLE invoices ADD COLUMN referral_name TEXT NOT NULL DEFAULT '';
     `,
   },
+  {
+    version: 28,
+    name: "doctor type and revert invoice referral fields",
+    tolerant: true,
+    sql: `
+      ALTER TABLE doctors ADD COLUMN type TEXT NOT NULL DEFAULT 'doctor';
+      ALTER TABLE invoices DROP COLUMN referral_type;
+      ALTER TABLE invoices DROP COLUMN referral_name;
+    `,
+  },
 ];
 
 /** First-boot seed data: lab settings, admin user, expense categories, sample catalog. */
