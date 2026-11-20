@@ -24,7 +24,7 @@ export function referrerLabel(doctor: {
     case "self":
       return "Self / walk-in";
     default:
-      return `Dr. ${doctor.name}`;
+      return doctor.name;
   }
 }
 

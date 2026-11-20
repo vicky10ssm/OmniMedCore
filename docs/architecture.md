@@ -1,7 +1,7 @@
 # OmniMed Core architecture and local export design
 
 Last updated: 9 November 2026  
-Current product version: `0.33.1`  
+Current product version: `0.33.2`  
 Current schema: `28`
 
 ## 1. Status and scope
