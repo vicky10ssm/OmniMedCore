@@ -38,8 +38,9 @@ Use this skill for financial behavior. Preserve the existing accounting invarian
   derived from direct test lines and package component tests; mixed bills appear under each category.
 - A bill may be **amended** by an **operator or administrator** only while its linked lab work is
   work-free: pending orders with no entered results and expected samples that have not been collected. Editing quantities, rates, discounts,
-  doctor, notes or adding tests is allowed; removing a line is not. The amendment cannot reduce the
-  total below payments already collected. Audit it as `invoice.amend`.
+  doctor, notes or adding tests is allowed; removing a line is not. A new total below payments
+  already collected requires an **administrator override**; it is audit-logged as an admin override.
+  Audit every amendment as `invoice.amend`.
 - When linked work exists or a refund/reissue is required, use cancellation plus re-issue.
 - Partial payments create dues; later collections are additional payment records, not edits that erase history.
 - Invoice numbers come from tenant-aware blocks so offline terminals cannot collide. The existing block size is 1000 and the optional device code is part of the configured format.

@@ -3,6 +3,25 @@
 All notable changes to OmniMed Core are recorded here. This project follows semantic versioning once
 production releases begin.
 
+## [0.34.1] - 2026-11-26
+
+### Fixed
+
+- Invoice amendments that reduce the total **below payments already collected** are now an explicit
+  **administrator override**.
+  - Operators see the warning and cannot save.
+  - Administrators can save after arranging the refund/credit.
+  - The audit detail records `below collected payments (admin override)`.
+- The amendment form keeps the button enabled only for administrators when the new total is below paid.
+
+### Verified
+
+- `npm run check`, terminal build, monitor build and Rust tests pass.
+
+### Database
+
+- No schema change. Schema remains **28**.
+
 ## [0.34.0] - 2026-11-26
 
 ### Added

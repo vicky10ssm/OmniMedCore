@@ -659,10 +659,19 @@ export async function amendInvoice(
       [input.invoiceId, ...tenantParams]
     );
     const paid = paidRow?.paid ?? 0;
+    let belowPaidOverride = false;
     if (totals.total < paid) {
-      throw new Error(
-        `The amended total is below payments already collected. Refund or cancel/reissue the bill instead.`
+      const [actorTenantClause, actorTenantParams] = tenantAnd();
+      const actor = await db.get<{ role: string }>(
+        `SELECT role FROM users WHERE id = ? AND deleted = 0 ${actorTenantClause}`,
+        [input.userId, ...actorTenantParams]
       );
+      if (actor?.role !== "admin") {
+        throw new Error(
+          `The amended total is below payments already collected. Ask an administrator to amend this bill, or refund/cancel and reissue it.`
+        );
+      }
+      belowPaidOverride = true;
     }
     const status: InvoiceRow["status"] =
       paid <= 0 ? "unpaid" : paid >= totals.total ? "paid" : "partial";
@@ -705,7 +714,7 @@ export async function amendInvoice(
         2
       )} -> ${(totals.total / 100).toFixed(2)}; lines ${currentItems.length} -> ${
         input.lines.length
-      }`,
+      }${belowPaidOverride ? "; below collected payments (admin override)" : ""}`,
     });
 
     return { total: totals.total };
