@@ -225,6 +225,7 @@ const COMMON: Record<string, string> = {
   "rbc count": "Adult male: 4.5-5.9 million/cmm; adult female: 4.1-5.1 million/cmm; children 1-5y: 4.0-5.5; children 6-12y: 4.0-5.2 million/cmm",
   "rbc morphology": "Normocytic, normochromic; no significant abnormality",
   "rbc parasitised": "0% (no parasitised RBCs)",
+  "reading time": "48-72 hours after injection (standard reading window)",
   "recommendation": "Not applicable (descriptive report)",
   "red blood cells": "Adult male: 4.5-5.9 million/cmm; adult female: 4.1-5.1 million/cmm; children 1-5y: 4.0-5.5; children 6-12y: 4.0-5.2 million/cmm",
   "red cell distribution width (rdw)": "Adult: 11.5-14.5%",

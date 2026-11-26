@@ -798,13 +798,15 @@ The second deployment exists. `npm run build` makes the terminal (editing) app; 
 - Added **Mantoux Skin Test (Tuberculin / PPD)** to the starter catalogue:
   - Code `MANTOUX`, category Pathology, department Microbiology
   - Specimen: Intradermal / skin
-  - Parameters: **Induration** (mm, 0-4 mm non-reactive, >=5 mm interpret by risk group) and
-    **Interpretation**
+  - Parameters: **Induration** (mm, 0-4 mm non-reactive, >=5 mm interpret by risk group),
+    **Interpretation** and **Reading Time** (hours after injection, standard window 48-72 h)
 - Pathology reports no longer wait for pending X-ray results:
   - the printable pathology list checks only the pathology orders on the invoice
   - a completed pathology report can print while an X-ray is still pending
   - each X-ray report continues to print independently from its own completed row
-- Current catalogue: 230 tests (187 pathology + 43 X-ray), 385 pathology parameters.
+- Mantoux reading time records when the induration was read; times outside 48-72 hours raise the
+  usual Low/High flag so the report shows a non-standard reading window.
+- Current catalogue: 230 tests (187 pathology + 43 X-ray), 386 pathology parameters.
 - No schema change.
 
 ## Referrer types in the Doctors catalogue - built

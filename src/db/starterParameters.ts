@@ -254,6 +254,13 @@ export const STARTER_PARAMETERS: Record<string, StarterParameter[]> = {
       4
     ),
     p("Interpretation"),
+    nr(
+      "Reading Time",
+      "hours",
+      "48-72 hours after injection (standard reading window)",
+      48,
+      72
+    ),
   ],
   MPAG: [p("Pf Antigen"), p("Pan Antigen"), p("Interpretation")],
   VDRL: [p("VDRL Result"), p("VDRL Titre")],

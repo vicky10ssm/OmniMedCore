@@ -68,7 +68,7 @@ every active tenant. Seeding is additive and idempotent:
 - labs must set prices and validate references (including sex/age variants) before billing or clinical use
 - this is a broad routine/specialty library, not a claim that every possible esoteric test exists
 
-`src/db/starterParameters.ts` seeds 385 pathology parameter templates after the test catalogue:
+`src/db/starterParameters.ts` seeds 386 pathology parameter templates after the test catalogue:
 
 - every pathology test has at least one parameter
 - single-analyte tests receive one parameter named after the test
