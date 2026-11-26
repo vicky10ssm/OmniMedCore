@@ -3,6 +3,26 @@
 All notable changes to OmniMed Core are recorded here. This project follows semantic versioning once
 production releases begin.
 
+## [0.34.2] - 2026-11-26
+
+### Added
+
+- **Mantoux Reading Time** parameter on the Mantoux Skin Test.
+  - Unit: hours after injection
+  - Reference window: 48-72 hours (standard reading window)
+  - Recorded alongside **Induration** and **Interpretation**; readings outside the window raise the
+    usual Low/High flag.
+
+### Verified
+
+- `npm run check`, terminal build, monitor build and Rust tests pass.
+- Live catalogue audit: 230 tests, 386 parameters, 0 errors, 13 deliberate warnings.
+
+### Database
+
+- No schema change. Schema remains **28**.
+- Existing tenants receive the new parameter on boot unless that test already has recorded results.
+
 ## [0.34.1] - 2026-11-26
 
 ### Fixed

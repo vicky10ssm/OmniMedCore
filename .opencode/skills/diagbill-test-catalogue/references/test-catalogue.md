@@ -12,7 +12,7 @@ Generated: 2026-11-26
 - Pathology: **187**
 - X-ray: **43**
 - Other: **0**
-- Active parameters: **385**
+- Active parameters: **386**
 - Packages with at least one item: **29**
 
 Every pathology test has at least one parameter. X-ray tests intentionally have none and use the
@@ -1580,9 +1580,10 @@ own parameters.
 - Specimen: Intradermal / skin | Container: Tuberculin syringe
 - Method: Intradermal tuberculin (PPD) skin test | Report type: numeric
 - Price: ₹0.00 | GST: 0%
-- Parameters (2):
+- Parameters (3):
   - [Mantoux Skin Test (Tuberculin / PPD)] Induration mm; ref 0-4 mm (non-reactive); >=5 mm interpret by risk group; numeric
   - [Mantoux Skin Test (Tuberculin / PPD)] Interpretation; ref Not applicable (clinical interpretation); text
+  - [Mantoux Skin Test (Tuberculin / PPD)] Reading Time hours; ref 48-72 hours after injection (standard reading window); numeric
 
 #### `MRSA` — MRSA Screen
 

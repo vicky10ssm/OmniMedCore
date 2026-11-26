@@ -46,7 +46,7 @@ Expenses profitability card.
 - Printed report signatures can be shown or hidden when the pre-printed stationery already carries the signature
 - Test/package catalogue with GST and specimen metadata
 - Broad starter library: 187 pathology tests and 43 X-ray/radiography exams, with editable prices and reference intervals
-- 385 starter pathology parameter templates; every pathology test has a result parameter, filled reference intervals with numeric limits for Low/High flags, sex/age variants where relevant, and complex-report subfields
+- 386 starter pathology parameter templates; every pathology test has a result parameter, filled reference intervals with numeric limits for Low/High flags, sex/age variants where relevant, and complex-report subfields
 - Report parameters support printable sections; CBC separates Complete Blood Count from Differential Leucocyte Count, and other panels use clinical sections such as Bilirubin/Liver Enzymes/Proteins and Renal Profile/Electrolytes/Minerals
 - 27 combined starter health-check packages combining pathology and X-ray tests
 - Parameter-based pathology reporting with a sample-grouped **Bench**, inline accept/reject/recollect, batch accept/print, normal-only batch release, **Fill normal**, CSV/TSV analyser result import, amendment history, and **Release & print**

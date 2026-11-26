@@ -180,7 +180,8 @@ Record invoice/payment IDs and totals used for acceptance.
 - [ ] Starter references were updated once per tenant and custom references remain editable
 - [ ] Starter catalogue contains 187 pathology and 43 X-ray tests without duplicate names/codes
 - [ ] Absolute Eosinophil Count (AEC) exists with one numeric parameter, cells/cmm and a filled reference interval
-- [ ] Mantoux Skin Test exists with Induration and Interpretation parameters and a filled reference
+- [ ] Mantoux Skin Test exists with Induration, Interpretation and Reading Time parameters and filled references
+- [ ] Mantoux Reading Time is numeric in hours with the 48-72 h standard window as its reference limits
 - [ ] A mixed pathology + X-ray invoice can print the pathology report while the X-ray is pending
 - [ ] An operator can amend an invoice under the existing work-free rules
 - [ ] Malaria Parasite by Quantitative Buffy Coat (QBC) exists with the malaria parameter set and filled references
