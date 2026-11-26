@@ -3,6 +3,34 @@
 All notable changes to OmniMed Core are recorded here. This project follows semantic versioning once
 production releases begin.
 
+## [0.34.0] - 2026-11-26
+
+### Added
+
+- Added **Mantoux Skin Test (Tuberculin / PPD)** to the starter catalogue.
+  - Code `MANTOUX`, category Pathology, department Microbiology
+  - Specimen: Intradermal / skin
+  - Parameters: **Induration** (mm) and **Interpretation**
+  - Reference: 0-4 mm non-reactive; >=5 mm interpret by risk group
+- Operators and administrators can amend invoices under the existing work-free rules.
+
+### Changed
+
+- Pathology reports no longer wait for pending X-ray results.
+  - The printable pathology list checks only pathology orders on the invoice.
+  - A completed pathology report can print while the X-ray is still pending.
+  - X-ray reports continue to print independently from their own completed rows.
+
+### Verified
+
+- `npm run check`, terminal build, monitor build and Rust tests pass.
+- Catalogue audit after adding Mantoux.
+- Pathology report printing with a pending X-ray order.
+
+### Database
+
+- No schema change. Schema remains **28**.
+
 ## [0.33.2] - 2026-11-20
 
 ### Changed

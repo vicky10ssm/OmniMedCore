@@ -58,7 +58,7 @@ Before changing any test, parameter or package, load `diagbill-test-catalogue` a
 `references/test-catalogue.md` and `references/packages.md`. Regenerate both references in the same PR
 after a catalogue change.
 
-`src/db/starterTests.ts` seeds a broad 229-entry library (186 pathology and 43 X-ray) on app boot for
+`src/db/starterTests.ts` seeds a broad 230-entry library (187 pathology and 43 X-ray) on app boot for
 every active tenant. Seeding is additive and idempotent:
 
 - matches by stable seed id, code and case-insensitive name
@@ -68,7 +68,7 @@ every active tenant. Seeding is additive and idempotent:
 - labs must set prices and validate references (including sex/age variants) before billing or clinical use
 - this is a broad routine/specialty library, not a claim that every possible esoteric test exists
 
-`src/db/starterParameters.ts` seeds 383 pathology parameter templates after the test catalogue:
+`src/db/starterParameters.ts` seeds 385 pathology parameter templates after the test catalogue:
 
 - every pathology test has at least one parameter
 - single-analyte tests receive one parameter named after the test

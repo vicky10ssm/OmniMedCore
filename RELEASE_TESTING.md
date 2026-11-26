@@ -238,6 +238,9 @@ Run after the automated gate passes.
 11. In Invoices, filter by each category and confirm mixed bills appear under every category they contain.
 12. Create doctor, hospital and self-type entries in Doctors & hospitals; confirm billing labels and the
     invoice/report referrer follow the selected type. Confirm the invoice title reads **Invoice**.
+13. Create an invoice with one pathology and one X-ray test; complete the pathology result, release and
+    print it before the X-ray result exists.
+14. As an operator, amend an invoice under the work-free rules and confirm the change saves.
 
 ### 5.4 Backup verification
 

@@ -23,14 +23,14 @@ Load it before touching the test catalogue.
 
 ## Current catalogue snapshot
 
-- Tests: **229**
-- Pathology: **186**
+- Tests: **230**
+- Pathology: **187**
 - X-ray/radiography: **43**
 - Other: **0**
-- Active parameters: **383**
-- Combined packages: **29** total (28 seeded by this skill, plus 2 original packages)
+- Active parameters: **385**
+- Combined packages: **29** total (27 seeded by this skill, plus 2 original packages)
 - Schema: **28**
-- Current release at time of writing: **0.33.2**
+- Current release at time of writing: **0.34.0**
 
 Counts change when tests/parameters/packages are added. The generated reference files are authoritative
 for the current snapshot; the source modules are authoritative if they disagree.

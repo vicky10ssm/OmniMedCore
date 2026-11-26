@@ -792,6 +792,21 @@ The second deployment exists. `npm run build` makes the terminal (editing) app; 
 - Pre-printed letterhead margins still apply to every page.
 - No schema change.
 
+## Operator amendments, Mantoux and independent pathology/X-ray results - built
+
+- Operators and administrators can amend invoices under the existing work-free rules.
+- Added **Mantoux Skin Test (Tuberculin / PPD)** to the starter catalogue:
+  - Code `MANTOUX`, category Pathology, department Microbiology
+  - Specimen: Intradermal / skin
+  - Parameters: **Induration** (mm, 0-4 mm non-reactive, >=5 mm interpret by risk group) and
+    **Interpretation**
+- Pathology reports no longer wait for pending X-ray results:
+  - the printable pathology list checks only the pathology orders on the invoice
+  - a completed pathology report can print while an X-ray is still pending
+  - each X-ray report continues to print independently from its own completed row
+- Current catalogue: 230 tests (187 pathology + 43 X-ray), 385 pathology parameters.
+- No schema change.
+
 ## Referrer types in the Doctors catalogue - built
 
 - The **Doctors & hospitals** catalogue has a **Type** field: Doctor, Hospital / facility, or Self / walk-in.

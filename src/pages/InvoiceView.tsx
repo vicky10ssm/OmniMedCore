@@ -81,6 +81,8 @@ export default function InvoiceView() {
   const [params] = useSearchParams();
   const { user } = useAuth();
   const { monitor } = useMonitor();
+  const canAmendInvoice =
+    !monitor && (user?.role === "admin" || user?.role === "operator");
 
   const [invoice, setInvoice] = useState<InvoiceRow | null>(null);
   const [items, setItems] = useState<InvoiceItemRow[]>([]);
@@ -438,7 +440,7 @@ export default function InvoiceView() {
               <Btn onClick={printThermal} title="Print a receipt on an 80mm thermal roll">
                 <Icon name="printer" className="h-4 w-4" /> Thermal 80mm
               </Btn>
-              {!monitor && invoice.status !== "cancelled" && (
+              {canAmendInvoice && invoice.status !== "cancelled" && (
                 <Btn onClick={() => void openAmend()} title="Edit this bill without changing its number">
                   <Icon name="edit" className="h-4 w-4" /> Amend bill
                 </Btn>

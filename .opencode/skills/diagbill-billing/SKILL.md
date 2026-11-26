@@ -36,8 +36,8 @@ Use this skill for financial behavior. Preserve the existing accounting invarian
 - Payments, cancellations and issued-report revisions remain append-only.
 - The Invoices list filters by test/package category as well as status, period and search. Category is
   derived from direct test lines and package component tests; mixed bills appear under each category.
-- A bill may be **amended** only while its linked lab work is work-free: pending orders with no entered
-  results and expected samples that have not been collected. Editing quantities, rates, discounts,
+- A bill may be **amended** by an **operator or administrator** only while its linked lab work is
+  work-free: pending orders with no entered results and expected samples that have not been collected. Editing quantities, rates, discounts,
   doctor, notes or adding tests is allowed; removing a line is not. The amendment cannot reduce the
   total below payments already collected. Audit it as `invoice.amend`.
 - When linked work exists or a refund/reissue is required, use cancellation plus re-issue.

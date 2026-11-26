@@ -245,6 +245,16 @@ export const STARTER_PARAMETERS: Record<string, StarterParameter[]> = {
     n("RBC Parasitised", "%"),
     p("Interpretation"),
   ],
+  MANTOUX: [
+    nr(
+      "Induration",
+      "mm",
+      "0-4 mm (non-reactive); >=5 mm interpret by risk group",
+      0,
+      4
+    ),
+    p("Interpretation"),
+  ],
   MPAG: [p("Pf Antigen"), p("Pan Antigen"), p("Interpretation")],
   VDRL: [p("VDRL Result"), p("VDRL Titre")],
   TPHA: [p("TPHA Result"), p("TPHA Titre")],

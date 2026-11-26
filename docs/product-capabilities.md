@@ -19,8 +19,8 @@ Status meanings: **Ready**, **Pilot**, **Partial**, **Not available**, **Externa
 | Capability | Status | Description |
 | --- | --- | --- |
 | Test catalog and packages | Ready | Price, editable GST rate (default 0%), SAC, department, specimen, container, method, LOINC fields |
-| Starter test library | Ready | 229 entries: 186 pathology and 43 X-ray/radiography tests, including Absolute Eosinophil Count (AEC) and Malaria Parasite by Quantitative Buffy Coat (QBC); additive, idempotent seeding preserves custom, renamed and deleted tests |
-| Starter parameter templates | Ready | 383 pathology parameters; every pathology test has at least one; every range-like numeric reference has checked Low/High limits; panels and complex reports include CBC 20, LFT 11, KFT 9, Lipid 8, Urine 18, malaria subfields, VDRL/TPHA titres, histopathology sections and cytology findings; X-rays remain text-only |
+| Starter test library | Ready | 230 entries: 187 pathology and 43 X-ray/radiography tests, including Absolute Eosinophil Count (AEC), Malaria Parasite by Quantitative Buffy Coat (QBC) and Mantoux Skin Test; additive, idempotent seeding preserves custom, renamed and deleted tests |
+| Starter parameter templates | Ready | 385 pathology parameters; every pathology test has at least one; every range-like numeric reference has checked Low/High limits; panels and complex reports include CBC 20, LFT 11, KFT 9, Lipid 8, Urine 18, malaria subfields, Mantoux induration/interpretation, VDRL/TPHA titres, histopathology sections and cytology findings; X-rays remain text-only |
 | Starter combined packages | Ready | 27 seeded health-check packages (29 total), linking parameterized pathology tests and X-ray report tests; packages are price/name wrappers, items retain their own parameters |
 | GST invoice | Ready | Per-line GST, CGST/SGST split, taxable value, round-off, GSTIN |
 | Referrer types | Ready | Doctors & hospitals catalogue has Type = Doctor, Hospital / facility, or Self / walk-in; billing displays the type and invoices/reports label the referrer accordingly |
@@ -31,7 +31,7 @@ Status meanings: **Ready**, **Pilot**, **Partial**, **Not available**, **Externa
 | Invoice discounts | Ready | Line-level discount reducing taxable value |
 | Payments | Ready | Cash, UPI, card, bank, credit; partial payments create dues |
 | Dues register | Ready | Outstanding bills, ageing/follow-up views and payment collection |
-| Invoice amendment | Ready | Edit quantities, rates, discounts, doctor and notes, or add tests without changing the invoice number/date. Removing a line is allowed only while its linked sample is still expected and no result exists; totals cannot fall below collected payments. Amend is audit-logged |
+| Invoice amendment | Ready | Operators and administrators can edit quantities, rates, discounts, doctor/hospital and notes, or add tests without changing the invoice number/date. Removing a line is allowed only while its linked sample is still expected and no result exists; totals cannot fall below collected payments. Amend is audit-logged |
 | Invoice cancellation | Ready | Reasoned cancellation, history retained; use when linked work exists or a refund/reissue is required |
 | Invoice numbering | Ready | Tenant/terminal-aware block allocation and optional device code |
 | A4 and 80 mm invoice print | Ready | Browser print layouts; A4 invoice header can be built-in or pre-printed centre letterhead with configurable top/bottom/side margins; report header metadata prints horizontally |
