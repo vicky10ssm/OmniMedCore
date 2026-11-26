@@ -178,8 +178,11 @@ Record invoice/payment IDs and totals used for acceptance.
 - [ ] `npm run check:dashboard` passes; the external Google dashboard kit has no desktop-app dependency
 - [ ] Google dashboard local dry run validates the newest snapshot without BigQuery writes
 - [ ] Starter references were updated once per tenant and custom references remain editable
-- [ ] Starter catalogue contains 186 pathology and 43 X-ray tests without duplicate names/codes
+- [ ] Starter catalogue contains 187 pathology and 43 X-ray tests without duplicate names/codes
 - [ ] Absolute Eosinophil Count (AEC) exists with one numeric parameter, cells/cmm and a filled reference interval
+- [ ] Mantoux Skin Test exists with Induration and Interpretation parameters and a filled reference
+- [ ] A mixed pathology + X-ray invoice can print the pathology report while the X-ray is pending
+- [ ] An operator can amend an invoice under the existing work-free rules
 - [ ] Malaria Parasite by Quantitative Buffy Coat (QBC) exists with the malaria parameter set and filled references
 - [ ] Every pathology test has at least one parameter; X-ray tests have none
 - [ ] Starter panel parameters exist for CBC, LFT, KFT, Lipid, Urine, DC, PT/INR, Widal, dengue, cultures, fluids, semen and stool

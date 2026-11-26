@@ -1,7 +1,7 @@
 # OmniMed Core architecture and local export design
 
 Last updated: 9 November 2026  
-Current product version: `0.33.2`  
+Current product version: `0.34.0`  
 Current schema: `28`
 
 ## 1. Status and scope
@@ -120,9 +120,9 @@ OmniMed Core is a multi-vertical product; a tenant enables only the modules it o
   pathology report entry; the selected id/name/qualification/signature is snapshotted onto
   `report_orders`, so later catalogue edits do not rewrite an issued report. When no pathologist is
   selected the printed report falls back to the verifying user, then the legacy centre profile.
-- Starter test catalogue: 186 pathology and 43 X-ray entries seeded additively per tenant at boot;
+- Starter test catalogue: 187 pathology and 43 X-ray entries seeded additively per tenant at boot;
   custom/renamed/deleted tests are preserved, and new entries require local pricing/reference validation.
-- Reference intervals: 383 pathology parameters are seeded with adult ranges and sex/age variants in the
+- Reference intervals: 385 pathology parameters are seeded with adult ranges and sex/age variants in the
   reference text where applicable. Reference seeding is versioned per tenant so custom intervals are not
   overwritten on every boot. After seeding, `ensureReferenceLimits` fills missing `ref_min`/`ref_max`
   from the printable text so Low/High flags work; it only touches rows where both limits are null.

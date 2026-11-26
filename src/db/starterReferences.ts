@@ -156,6 +156,7 @@ const COMMON: Record<string, string> = {
   "inr": "Adult untreated: 0.8-1.2",
   "impression": "Not applicable (descriptive report)",
   "indirect coombs test (iat)": "Negative",
+  "induration": "0-4 mm (non-reactive); >=5 mm interpret by risk group",
   "insulin": "Adult fasting: 2-25 uIU/mL",
   "insulin-like growth factor 1 (igf-1)": "Age/sex-specific; report against reference chart",
   "interpretation": "Not applicable (clinical interpretation)",

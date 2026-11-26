@@ -1,6 +1,6 @@
 # OmniMed Core starter test catalogue
 
-Generated: 2026-11-15
+Generated: 2026-11-26
 
 > This is a generated snapshot. If it disagrees with the database/code, fix the source and regenerate.
 > Source of truth: `src/db/starterTests.ts`, `src/db/starterParameters.ts` and
@@ -8,11 +8,11 @@ Generated: 2026-11-15
 
 ## Counts
 
-- Tests: **229**
-- Pathology: **186**
+- Tests: **230**
+- Pathology: **187**
 - X-ray: **43**
 - Other: **0**
-- Active parameters: **383**
+- Active parameters: **385**
 - Packages with at least one item: **29**
 
 Every pathology test has at least one parameter. X-ray tests intentionally have none and use the
@@ -1573,6 +1573,16 @@ own parameters.
 - Parameters (2):
   - [KOH Mount] KOH Result; ref No fungal elements seen; text
   - [KOH Mount] Fungal Elements; ref Not seen; text
+
+#### `MANTOUX` — Mantoux Skin Test (Tuberculin / PPD)
+
+- Category: Pathology
+- Specimen: Intradermal / skin | Container: Tuberculin syringe
+- Method: Intradermal tuberculin (PPD) skin test | Report type: numeric
+- Price: ₹0.00 | GST: 0%
+- Parameters (2):
+  - [Mantoux Skin Test (Tuberculin / PPD)] Induration mm; ref 0-4 mm (non-reactive); >=5 mm interpret by risk group; numeric
+  - [Mantoux Skin Test (Tuberculin / PPD)] Interpretation; ref Not applicable (clinical interpretation); text
 
 #### `MRSA` — MRSA Screen
 

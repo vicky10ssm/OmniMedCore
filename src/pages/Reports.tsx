@@ -573,7 +573,7 @@ export default function Reports({
     return [...map.entries()].map(([id, v]) => ({ id, ...v }));
   }, [rows]);
 
-  /** Invoice groups whose every test is verified — a printable report each. */
+  /** Pathology groups ready to print; X-ray reports are independent. */
   const printableInvoices = useMemo(() => {
     const byInvoice = new Map<string, WorkRow[]>();
     for (const r of rows) {
@@ -590,11 +590,11 @@ export default function Reports({
     }[] = [];
     for (const [invoiceId, list] of byInvoice) {
       if (list.length === 0) continue;
-      // Printable only when every test in this invoice is verified.
-      if (list.some((r) => r.status !== "done")) continue;
-      // X-ray reporting has its own template and print control.
+      // Pathology is printable when its own tests are verified. Pending X-ray
+      // work must not hold the blood report back.
       const printableOrders = list.filter((r) => !isRadiologyReport(r));
       if (printableOrders.length === 0) continue;
+      if (printableOrders.some((r) => r.status !== "done")) continue;
       out.push({
         invoiceId,
         invoiceNo: list[0].invoice_no,
@@ -2378,8 +2378,8 @@ export default function Reports({
               </ul>
             )}
             <p className="mt-3 text-xs text-slate-400">
-              A report prints once every test on that bill is verified — one report
-              per bill, not per patient.
+              Pathology reports print once their own tests are verified. Pending X-ray results do not
+              hold the blood report back; each X-ray report prints from its own completed row.
             </p>
           </Card>
 

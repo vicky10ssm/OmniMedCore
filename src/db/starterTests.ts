@@ -235,6 +235,16 @@ export const STARTER_TESTS: StarterTest[] = [
   path("LEPTO", "Leptospira IgM", "Serology", ...SERUM, "", "text", "ELISA / rapid"),
   path("BRUCELLA", "Brucella Agglutination", "Serology", ...SERUM, "", "text", "Agglutination"),
   path("IGRA", "TB Interferon Gamma Release Assay", "Serology", ...EDTA, "", "text", "IGRA"),
+  path(
+    "MANTOUX",
+    "Mantoux Skin Test (Tuberculin / PPD)",
+    "Microbiology",
+    "Intradermal / skin",
+    "Tuberculin syringe",
+    "mm",
+    "numeric",
+    "Intradermal tuberculin (PPD) skin test"
+  ),
 
   // ---- Microbiology ----
   path("BLOODC", "Blood Culture", "Microbiology", "Blood", "Blood culture bottle", "", "text", "Automated culture"),
