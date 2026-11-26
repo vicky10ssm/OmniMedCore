@@ -83,6 +83,7 @@ export default function InvoiceView() {
   const { monitor } = useMonitor();
   const canAmendInvoice =
     !monitor && (user?.role === "admin" || user?.role === "operator");
+  const isAdmin = user?.role === "admin";
 
   const [invoice, setInvoice] = useState<InvoiceRow | null>(null);
   const [items, setItems] = useState<InvoiceItemRow[]>([]);
@@ -369,9 +370,9 @@ export default function InvoiceView() {
       setAmendError("Add at least one test or package to the bill");
       return;
     }
-    if (amendBelowPaid) {
+    if (amendBelowPaid && !isAdmin) {
       setAmendError(
-        "The amended total is below payments already collected. Refund or cancel/reissue the bill instead."
+        "The amended total is below payments already collected. Ask an administrator to amend this bill, or refund/cancel and reissue it."
       );
       return;
     }
@@ -872,8 +873,9 @@ export default function InvoiceView() {
 
           {amendBelowPaid && (
             <p className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">
-              The new total is below payments already collected. Refund or cancel/reissue the bill
-              instead of amending it.
+              {isAdmin
+                ? "Administrator override: the new total is below payments already collected. Save only after arranging the refund/credit."
+                : "The new total is below payments already collected. Ask an administrator to amend this bill, or refund/cancel and reissue it."}
             </p>
           )}
           <ErrorNote message={amendError} />
@@ -884,7 +886,7 @@ export default function InvoiceView() {
             <Btn
               variant="primary"
               onClick={() => void submitAmend()}
-              disabled={amendBusy || amendBelowPaid || amendLines.length === 0}
+              disabled={amendBusy || (amendBelowPaid && !isAdmin) || amendLines.length === 0}
             >
               {amendBusy ? "Saving…" : "Save amendment"}
             </Btn>
